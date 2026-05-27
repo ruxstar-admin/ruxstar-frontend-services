@@ -1,0 +1,28 @@
+# dependencies
+node_modules
+
+# build output
+.next
+out
+
+# env (set BACKEND_URL on Cloud Run, not in the image)
+.env
+.env.*
+!.env.example
+
+# git & IDE
+.git
+.gitignore
+.vscode
+.cursor
+
+# docs & misc
+README.md
+*.md
+.DS_Store
+npm-debug.log*
+coverage
+
+# docker
+Dockerfile
+.dockerignore
