@@ -1,8 +1,9 @@
+x
 substitutions:
   _REGION: us-central1
   _AR_REPOSITORY: ruxstar-frontend
-  _SERVICE_NAME: ruxstar-frontend
-  # Set in trigger substitutions or Secret Manager
+  _SERVICE_NAME: ruxstar-frontend-serices
+  _RUN_SERVICE_ACCOUNT: ruxstar-cloudrun-sa@${PROJECT_ID}.iam.gserviceaccount.com
   _BACKEND_URL: ""
 
 options:
@@ -39,6 +40,7 @@ steps:
       - --platform=managed
       - --allow-unauthenticated
       - --port=8080
+      - --service-account=${_RUN_SERVICE_ACCOUNT}
       - --set-env-vars=BACKEND_URL=${_BACKEND_URL}
     waitFor: [push-image]
 
