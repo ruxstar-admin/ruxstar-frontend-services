@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Ruxstar",
-  description: "Backend connectivity demo for Ruxstar platform",
+  description: "Multi-business platform for services, orders, and deliveries",
 };
 
 export default function RootLayout({
