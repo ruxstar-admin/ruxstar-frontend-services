@@ -8,7 +8,7 @@ import { SignupMascot } from "@/components/signup-mascot";
 import { homeForRole, postAuth, saveSession } from "@/lib/api";
 
 const input =
-  "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-white/30 focus:bg-white/[0.07]";
+  "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none transition focus:border-white/30 focus:bg-white/[0.07]";
 const titles = ["Create account", "Verify mobile", "Your details"];
 const roles = [
   { id: "customer", label: "Customer", emoji: "🛍️" },
@@ -111,16 +111,23 @@ export default function SignupPage() {
         </div>
 
         <div className="reveal order-1 lg:order-2" style={{ animationDelay: "0.2s" }}>
-          <div className="glass rounded-2xl p-8 lg:p-10">
+          <div
+            className={`glass rounded-2xl p-6 sm:p-8 ${step === 2 ? "lg:p-7" : "lg:p-10"}`}
+          >
             <p className="text-xs uppercase tracking-widest text-zinc-500">
               Step {step + 1} of 3
             </p>
-            <h1 className="mt-2 text-2xl font-semibold sm:text-3xl">
+            <h1
+              className={`mt-1.5 font-semibold ${step === 2 ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl"}`}
+            >
               <span className="text-gradient">{titles[step]}</span>
             </h1>
 
-            <form onSubmit={onSubmit} className="mt-8">
-              <div key={step} className="signup-step-panel space-y-4">
+            <form onSubmit={onSubmit} className={step === 2 ? "mt-5" : "mt-8"}>
+              <div
+                key={step}
+                className={`signup-step-panel ${step === 2 ? "space-y-3" : "space-y-4"}`}
+              >
                 {step === 0 && (
                   <label className="block text-sm text-zinc-400">
                     Mobile (+91)
@@ -180,18 +187,18 @@ export default function SignupPage() {
 
                     <div>
                       <p className="text-sm text-zinc-400">Pick your role</p>
-                      <div className="mt-2 grid grid-cols-3 gap-2">
+                      <div className="mt-1.5 grid grid-cols-3 gap-3">
                         {roles.map((r) => (
                           <button
                             key={r.id}
                             type="button"
                             onClick={() => setRole(r.id)}
-                            className={`signup-role-chip glass rounded-xl px-2 py-3 text-center text-xs sm:text-sm ${
+                            className={`signup-role-chip glass rounded-lg px-1.5 py-2 text-center text-xs ${
                               role === r.id ? "signup-role-chip-active" : ""
                             }`}
                           >
-                            <span className="text-lg sm:text-xl">{r.emoji}</span>
-                            <span className="mt-1 block font-medium">{r.label}</span>
+                            <span className="text-base leading-none">{r.emoji}</span>
+                            <span className="mt-0.5 block font-medium">{r.label}</span>
                           </button>
                         ))}
                       </div>
@@ -224,7 +231,7 @@ export default function SignupPage() {
                 )}
               </div>
 
-              <div className="mt-6 flex gap-3">
+              <div className={`flex gap-3 ${step === 2 ? "mt-4" : "mt-6"}`}>
                 {step > 0 && (
                   <button
                     type="button"
@@ -232,7 +239,7 @@ export default function SignupPage() {
                       setStep(step - 1);
                       setError("");
                     }}
-                    className="flex-1 rounded-full border border-white/10 py-3 text-sm transition hover:bg-white/5"
+                    className={`flex-1 rounded-full border border-white/10 text-sm transition hover:bg-white/5 ${step === 2 ? "py-2.5" : "py-3"}`}
                   >
                     Back
                   </button>
@@ -240,14 +247,14 @@ export default function SignupPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary flex-1 rounded-full py-3 text-sm font-semibold transition disabled:opacity-60"
+                  className={`btn-primary flex-1 rounded-full text-sm font-semibold transition disabled:opacity-60 ${step === 2 ? "py-2.5" : "py-3"}`}
                 >
                   {loading ? "Hang tight…" : step === 2 ? "Launch me in!" : "Continue"}
                 </button>
               </div>
             </form>
 
-            <p className="mt-6 text-center text-sm text-zinc-500">
+            <p className={`text-center text-sm text-zinc-500 ${step === 2 ? "mt-4" : "mt-6"}`}>
               Have an account?{" "}
               <Link href="/login" className="text-zinc-300 hover:underline">
                 Log in
