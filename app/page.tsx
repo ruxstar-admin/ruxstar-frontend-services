@@ -18,12 +18,20 @@ export default function Home() {
       {/* nav */}
       <header className="reveal relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <span className="text-lg font-semibold tracking-tight">Ruxstar</span>
-        <Link
-          href="/signup"
-          className="glass rounded-full px-5 py-2 text-sm font-medium transition hover:bg-white/10"
-        >
-          Sign up
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="glass rounded-full px-5 py-2 text-sm font-medium transition hover:bg-white/10"
+          >
+            Log in
+          </Link>
+          <Link
+            href="/signup"
+            className="glass rounded-full px-5 py-2 text-sm font-medium transition hover:bg-white/10"
+          >
+            Sign up
+          </Link>
+        </div>
       </header>
 
       {/* hero */}
@@ -55,9 +63,7 @@ export default function Home() {
               className="btn-primary group inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3 text-sm font-semibold transition sm:w-auto"
             >
               Enter Platform
-              <span className="transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
+              <span className="transition-transform group-hover:translate-x-0.5">→</span>
             </Link>
           </div>
         </div>

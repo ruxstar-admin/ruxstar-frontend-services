@@ -7,7 +7,10 @@ async function api(path: string, init?: RequestInit) {
 
   if (!res.ok) {
     if (res.status === 409) {
-      throw new Error("Oops! That number's already on Ruxstar");
+      throw new Error("Oops! That number's already on Ruxstar — log in instead?");
+    }
+    if (res.status === 404) {
+      throw new Error("No account with that number — sign up first?");
     }
     throw new Error(data.message ?? data.error ?? `Request failed (${res.status})`);
   }
