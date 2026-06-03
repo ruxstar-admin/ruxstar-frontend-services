@@ -19,10 +19,10 @@ export default function Home() {
       <header className="reveal relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <span className="text-lg font-semibold tracking-tight">Ruxstar</span>
         <Link
-          href="/login"
+          href="/signup"
           className="glass rounded-full px-5 py-2 text-sm font-medium transition hover:bg-white/10"
         >
-          Sign in
+          Sign up
         </Link>
       </header>
 

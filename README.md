@@ -1,6 +1,6 @@
 # Ruxstar
 
-Minimal Next.js frontend for backend connectivity demos.
+Next.js frontend for the Ruxstar platform.
 
 ## Setup
 
@@ -11,7 +11,7 @@ npm install
 Create `.env.local`:
 
 ```bash
-BACKEND_URL=https://your-backend.example.com
+BACKEND_URL=http://localhost:8080
 ```
 
 ## Development
@@ -19,6 +19,29 @@ BACKEND_URL=https://your-backend.example.com
 ```bash
 npm run dev
 ```
+
+## Project structure
+
+```
+app/
+  page.tsx                 # Landing page
+  login/                   # Login (TODO)
+  signup/                  # Signup flow
+  customer/                # Customer dashboard (placeholder)
+  business/                # Vendor dashboard (placeholder)
+  delivery/                # Delivery dashboard (placeholder)
+  api/[...path]/           # Proxies all /api/* → BACKEND_URL/*
+
+lib/
+  proxy.ts                 # Server-side backend proxy
+  api.ts                   # Client-side API helpers
+
+components/
+  globe.tsx                # Landing page globe
+  particles.tsx            # Landing page particles
+```
+
+API calls from the browser go to `/api/...` (e.g. `/api/auth/signup/send-otp`), which Next.js forwards to the backend.
 
 ## Production
 
@@ -36,4 +59,4 @@ docker run --rm -p 8080:8080 \
   ruxstar-frontend
 ```
 
-Set `BACKEND_URL` on Cloud Run at deploy time (runtime env, not baked into the client).
+Set `BACKEND_URL` on Cloud Run at deploy time.

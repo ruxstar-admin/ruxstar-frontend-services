@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
-export async function proxyRoute(path: string) {
+const FORWARD_HEADERS = ["content-type", "authorization", "accept"];
+
+export async function proxyBackend(path: string, request?: Request) {
   const base = process.env.BACKEND_URL?.trim().replace(/\/$/, "");
 
   if (!base) {
@@ -11,13 +13,24 @@ export async function proxyRoute(path: string) {
   }
 
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const method = request?.method ?? "GET";
+  const headers: Record<string, string> = { Accept: "application/json" };
+
+  if (request) {
+    for (const key of FORWARD_HEADERS) {
+      const value = request.headers.get(key);
+      if (value) headers[key] = value;
+    }
+  }
+
+  const init: RequestInit = { method, headers, cache: "no-store" };
+
+  if (request && method !== "GET" && method !== "HEAD") {
+    init.body = await request.text();
+  }
 
   try {
-    const response = await fetch(`${base}${normalizedPath}`, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      cache: "no-store",
-    });
+    const response = await fetch(`${base}${normalizedPath}`, init);
     const text = await response.text();
 
     return new NextResponse(text, {
