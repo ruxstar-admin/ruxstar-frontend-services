@@ -68,10 +68,8 @@ export function SignupMascot({ step, role, loading, shake, error }: Props) {  co
           className="h-56 w-56 sm:h-64 sm:w-64 lg:h-72 lg:w-72"
           aria-hidden
         >
-          {/* shadow */}
           <ellipse cx="110" cy="248" rx="52" ry="8" fill="rgba(255,255,255,0.08)" />
 
-          {/* legs */}
           <g className="signup-leg-left origin-[88px_200px]">
             <path d="M88 200 Q78 230 72 245" stroke="#e4e4e7" strokeWidth="8" fill="none" strokeLinecap="round" />
             <ellipse cx="70" cy="248" rx="14" ry="8" fill="#d4d4d8" />

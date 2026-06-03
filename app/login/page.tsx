@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LoginMascot } from "@/components/login-mascot";
 import { Particles } from "@/components/particles";
-import { homeForRole, postAuth, saveSession } from "@/lib/api";
+import { homeForUser, postAuth, saveSession } from "@/lib/api";
 
 const input =
   "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none transition focus:border-white/30 focus:bg-white/[0.07]";
@@ -41,7 +41,7 @@ export default function LoginPage() {
         if (!password) throw new Error("Enter your password.");
         const res = await postAuth("login", { mobile, password });
         saveSession(res.token, res.user);
-        router.push(homeForRole(res.user.role ?? "customer"));
+        router.push(homeForUser(res.user));
         return;
       }
 
@@ -53,7 +53,7 @@ export default function LoginPage() {
         if (!otp) throw new Error("Enter the OTP.");
         const res = await postAuth("login/verify-otp", { mobile, otp });
         saveSession(res.token, res.user);
-        router.push(homeForRole(res.user.role ?? "customer"));
+        router.push(homeForUser(res.user));
       }
     } catch (err) {
       fail(err instanceof Error ? err.message : "Something went wrong");

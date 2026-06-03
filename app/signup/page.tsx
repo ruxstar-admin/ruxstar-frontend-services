@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Particles } from "@/components/particles";
 import { SignupMascot } from "@/components/signup-mascot";
-import { homeForRole, postAuth, saveSession } from "@/lib/api";
+import { homeForUser, postAuth, saveSession } from "@/lib/api";
 
 const input =
   "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none transition focus:border-white/30 focus:bg-white/[0.07]";
@@ -66,7 +66,7 @@ export default function SignupPage() {
           role,
         });
         saveSession(res.token, res.user);
-        router.push(homeForRole(res.user.role ?? role));
+        router.push(homeForUser(res.user, role));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

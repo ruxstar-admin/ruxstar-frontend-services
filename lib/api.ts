@@ -1,3 +1,8 @@
+type AuthUser = {
+  role?: string;
+  roles?: string[];
+};
+
 async function api(path: string, init?: RequestInit) {
   const res = await fetch(`/api/${path}`, {
     headers: { "Content-Type": "application/json", ...init?.headers },
@@ -27,8 +32,45 @@ export function saveSession(token: string, user: unknown) {
   localStorage.setItem("ruxstar_user", JSON.stringify(user));
 }
 
+export function clearSession() {
+  localStorage.removeItem("ruxstar_token");
+  localStorage.removeItem("ruxstar_user");
+}
+
+export async function logout() {
+  const token = localStorage.getItem("ruxstar_token");
+  if (token) {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch {
+      // still clear local session
+    }
+  }
+  clearSession();
+}
+
+export function getUserRole(user: AuthUser | null | undefined, fallback = "customer") {
+  if (user?.role) return user.role;
+  const roles = user?.roles?.map((r) => r.toLowerCase()) ?? [];
+  if (roles.includes("vendor")) return "vendor";
+  if (roles.includes("delivery")) return "delivery";
+  if (roles.includes("admin")) return "admin";
+  if (roles.includes("employee")) return "employee";
+  if (roles.length) return roles[0];
+  return fallback;
+}
+
 export function homeForRole(role: string) {
-  if (role === "vendor") return "/business";
-  if (role === "delivery") return "/delivery";
+  const r = role.toLowerCase();
+  if (r === "vendor" || r === "business") return "/business";
+  if (r === "delivery") return "/delivery";
+  if (r === "admin" || r === "employee") return "/admin";
   return "/customer";
+}
+
+export function homeForUser(user: AuthUser | null | undefined, fallback = "customer") {
+  return homeForRole(getUserRole(user, fallback));
 }
