@@ -7,8 +7,7 @@ import { Particles } from "@/components/particles";
 import { SignupMascot } from "@/components/signup-mascot";
 import { homeForUser, postAuth, saveSession } from "@/lib/api";
 
-const input =
-  "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none transition focus:border-white/30 focus:bg-white/[0.07]";
+const input = "field-input";
 const titles = ["Create account", "Verify mobile", "Your details"];
 const roles = [
   { id: "customer", label: "Customer", emoji: "🛍️" },
@@ -135,7 +134,7 @@ export default function SignupPage() {
                       className={`${input} mt-2`}
                       inputMode="numeric"
                       autoFocus
-                      placeholder="9876543210"
+                      autoComplete="tel"
                       value={mobile}
                       onChange={(e) => {
                         clearError();
@@ -158,7 +157,7 @@ export default function SignupPage() {
                         className={`${input} mt-2 tracking-[0.35em]`}
                         inputMode="numeric"
                         autoFocus
-                        placeholder="••••••"
+                        autoComplete="one-time-code"
                         value={otp}
                         onChange={(e) => {
                           clearError();
@@ -176,7 +175,7 @@ export default function SignupPage() {
                       <input
                         className={`${input} mt-2`}
                         autoFocus
-                        placeholder="What should we call you?"
+                        autoComplete="name"
                         value={name}
                         onChange={(e) => {
                           clearError();
@@ -210,7 +209,7 @@ export default function SignupPage() {
                         <input
                           type={showPassword ? "text" : "password"}
                           className={`${input} pr-11`}
-                          placeholder="At least 8 characters"
+                          autoComplete="new-password"
                           value={password}
                           onChange={(e) => {
                             clearError();

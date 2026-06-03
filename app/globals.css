@@ -20,6 +20,28 @@
     color: #ededef;
     background: var(--color-surface);
   }
+
+  input,
+  select,
+  textarea {
+    outline: none;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #131316 inset !important;
+    box-shadow: 0 0 0 1000px #131316 inset !important;
+    -webkit-text-fill-color: #ededef !important;
+    caret-color: #ededef;
+    transition: background-color 99999s ease-in-out 0s;
+  }
+
+  input::selection {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
 }
 
 /* ---- keyframes ---- */
@@ -285,6 +307,43 @@
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .field-input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background-color: rgba(255, 255, 255, 0.06);
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #ededef;
+    outline: none;
+    box-shadow: none;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .field-input:focus,
+  .field-input:focus-visible {
+    border-color: rgba(255, 255, 255, 0.28);
+    background-color: #131316;
+    outline: none;
+    box-shadow: none;
+  }
+
+  .field-input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #121214 inset !important;
+    box-shadow: 0 0 0 1000px #121214 inset !important;
+    -webkit-text-fill-color: #ededef !important;
+    caret-color: #ededef;
+    transition: background-color 99999s ease-in-out 0s;
+  }
+
+  .field-input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #131316 inset !important;
+    box-shadow: 0 0 0 1000px #131316 inset !important;
   }
 
   .text-gradient {
