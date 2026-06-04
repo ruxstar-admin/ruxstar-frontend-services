@@ -99,7 +99,7 @@ export default function SignupPage() {
       </header>
 
       <main className="relative z-10 mx-auto grid min-h-[calc(100vh-5.5rem)] max-w-6xl items-center gap-10 px-6 pb-16 lg:grid-cols-2 lg:gap-16">
-        <div className="reveal order-2 lg:order-1" style={{ animationDelay: "0.1s" }}>
+        <div className="reveal order-1 lg:order-1" style={{ animationDelay: "0.1s" }}>
           <SignupMascot
             step={step}
             role={role}
@@ -109,7 +109,7 @@ export default function SignupPage() {
           />
         </div>
 
-        <div className="reveal order-1 lg:order-2" style={{ animationDelay: "0.2s" }}>
+        <div className="reveal order-2 lg:order-2" style={{ animationDelay: "0.2s" }}>
           <div
             className={`glass rounded-2xl p-6 sm:p-8 ${step === 2 ? "lg:p-7" : "lg:p-10"}`}
           >
