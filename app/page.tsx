@@ -36,7 +36,7 @@ export default function Home() {
 
       {/* hero */}
       <section className="relative z-10 mx-auto grid min-h-[calc(100vh-5.5rem)] max-w-6xl items-center gap-12 px-6 pb-16 lg:grid-cols-2">
-        <div className="text-center lg:text-left">
+        <div className="order-2 text-center lg:order-1 lg:text-left">
           <h1
             className="reveal text-balance text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
             style={{ animationDelay: "0.15s" }}
@@ -70,7 +70,7 @@ export default function Home() {
 
         {/* connected globe */}
         <div
-          className="reveal"
+          className="order-1 reveal lg:order-2"
           style={{ animationDelay: "0.3s" }}
           aria-label="A globe of businesses connected together through Ruxstar"
         >
