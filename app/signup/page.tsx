@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Particles } from "@/components/particles";
 import { SignupMascot } from "@/components/signup-mascot";
-import { homeForUser, postAuth, saveSession } from "@/lib/api";
+import { postAuth, resolvePostAuthPath, saveSession } from "@/lib/api";
 
 const input = "field-input";
 const titles = ["Create account", "Verify mobile", "Your details"];
@@ -65,7 +65,7 @@ export default function SignupPage() {
           role,
         });
         saveSession(res.token, res.user);
-        router.push(homeForUser(res.user, role));
+        router.push(await resolvePostAuthPath(res.user, role));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

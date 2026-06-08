@@ -3,6 +3,24 @@ type AuthUser = {
   roles?: string[];
 };
 
+export type KycOverallStatus =
+  | "pending"
+  | "in_progress"
+  | "pending_review"
+  | "verified"
+  | "rejected";
+
+export type KycStepState = "pending" | "in_progress" | "verified" | "failed";
+
+export type VendorKycStatus = {
+  status: KycOverallStatus;
+  aadhaar?: { status?: KycStepState };
+  pan?: { status?: KycStepState };
+  face?: { status?: KycStepState };
+  rejectReason?: string;
+  reason?: string;
+};
+
 async function api(path: string, init?: RequestInit) {
   const res = await fetch(`/api/${path}`, {
     headers: { "Content-Type": "application/json", ...init?.headers },
@@ -23,8 +41,37 @@ async function api(path: string, init?: RequestInit) {
   return data;
 }
 
+async function authedApi(path: string, init?: RequestInit) {
+  const token = getToken();
+  if (!token) throw new Error("Please log in to continue.");
+
+  return api(path, {
+    ...init,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...init?.headers,
+    },
+  });
+}
+
 export function postAuth(path: string, body: unknown) {
   return api(`auth/${path}`, { method: "POST", body: JSON.stringify(body) });
+}
+
+export function getToken() {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("ruxstar_token");
+}
+
+export function getStoredUser<T = AuthUser>(): T | null {
+  if (typeof window === "undefined") return null;
+  const raw = localStorage.getItem("ruxstar_user");
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
 }
 
 export function saveSession(token: string, user: unknown) {
@@ -73,4 +120,65 @@ export function homeForRole(role: string) {
 
 export function homeForUser(user: AuthUser | null | undefined, fallback = "customer") {
   return homeForRole(getUserRole(user, fallback));
+}
+
+function stepDone(step?: { status?: KycStepState }) {
+  return step?.status === "verified";
+}
+
+export function nextKycStep(kyc: VendorKycStatus | null | undefined) {
+  if (!kyc) return "aadhaar" as const;
+  if (kyc.status === "verified") return "done" as const;
+  if (kyc.status === "pending_review") return "review" as const;
+  if (kyc.status === "rejected") return "rejected" as const;
+  if (!stepDone(kyc.aadhaar)) return "aadhaar" as const;
+  if (!stepDone(kyc.pan)) return "pan" as const;
+  if (!stepDone(kyc.face)) return "face" as const;
+  return "review" as const;
+}
+
+export function vendorDestination(kyc: VendorKycStatus | null | undefined) {
+  if (kyc?.status === "verified") return "/business";
+  return "/business/kyc";
+}
+
+export function getVendorKycStatus() {
+  return authedApi("vendor/kyc/status") as Promise<VendorKycStatus>;
+}
+
+export function startAadhaarKyc(redirectUrl: string) {
+  return authedApi("vendor/kyc/aadhaar/start", {
+    method: "POST",
+    body: JSON.stringify({ redirectUrl, userFlow: "signin" }),
+  }) as Promise<{ url?: string }>;
+}
+
+export function syncAadhaarKyc() {
+  return authedApi("vendor/kyc/aadhaar/sync") as Promise<VendorKycStatus>;
+}
+
+export function verifyPanKyc(pan: string) {
+  return authedApi("vendor/kyc/pan", {
+    method: "POST",
+    body: JSON.stringify({ pan: pan.toUpperCase() }),
+  }) as Promise<VendorKycStatus>;
+}
+
+export function verifyFaceKyc(image: string) {
+  return authedApi("vendor/kyc/face", {
+    method: "POST",
+    body: JSON.stringify({ image }),
+  }) as Promise<VendorKycStatus>;
+}
+
+export async function resolvePostAuthPath(user: AuthUser | null | undefined, fallback = "customer") {
+  const role = getUserRole(user, fallback);
+  if (role !== "vendor") return homeForRole(role);
+
+  try {
+    const kyc = await getVendorKycStatus();
+    return vendorDestination(kyc);
+  } catch {
+    return "/business/kyc";
+  }
 }

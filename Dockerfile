@@ -9,9 +9,11 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 FROM base AS builder
+ARG NEXT_PUBLIC_KYC_REDIRECT_URL=https://ruxstar.com/kyc/done
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_KYC_REDIRECT_URL=$NEXT_PUBLIC_KYC_REDIRECT_URL
 RUN npm run build
 
 FROM base AS runner

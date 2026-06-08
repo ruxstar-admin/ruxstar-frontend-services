@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LoginMascot } from "@/components/login-mascot";
 import { Particles } from "@/components/particles";
-import { homeForUser, postAuth, saveSession } from "@/lib/api";
+import { postAuth, resolvePostAuthPath, saveSession } from "@/lib/api";
 
 const input = "field-input";
 
@@ -40,7 +40,7 @@ export default function LoginPage() {
         if (!password) throw new Error("Enter your password.");
         const res = await postAuth("login", { mobile, password });
         saveSession(res.token, res.user);
-        router.push(homeForUser(res.user));
+        router.push(await resolvePostAuthPath(res.user));
         return;
       }
 
@@ -52,7 +52,7 @@ export default function LoginPage() {
         if (!otp) throw new Error("Enter the OTP.");
         const res = await postAuth("login/verify-otp", { mobile, otp });
         saveSession(res.token, res.user);
-        router.push(homeForUser(res.user));
+        router.push(await resolvePostAuthPath(res.user));
       }
     } catch (err) {
       fail(err instanceof Error ? err.message : "Something went wrong");
