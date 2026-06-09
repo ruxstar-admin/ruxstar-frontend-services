@@ -1,6 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  canvasToJpegDataUrl,
+  compressCanvasToJpegBase64,
+  FACE_IMAGE_MAX_BYTES,
+  FACE_JPEG_QUALITY,
+} from "@/lib/face-image";
 
 type Props = {
   disabled?: boolean;
@@ -9,10 +15,12 @@ type Props = {
 
 export function FaceCapture({ disabled, onCapture }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const captureCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
+  const [captureError, setCaptureError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const stopCamera = useCallback(() => {
@@ -67,32 +75,70 @@ export function FaceCapture({ disabled, onCapture }: Props) {
     const height = video.videoHeight;
     if (!width || !height) return;
 
+    setCaptureError("");
+
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
+    captureCanvasRef.current = canvas;
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      setCaptureError("Could not capture from camera.");
+      return;
+    }
 
     ctx.drawImage(video, 0, 0, width, height);
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
-    stopCamera();
-    setPreview(dataUrl);
+
+    try {
+      const previewUrl = canvasToJpegDataUrl(canvas, FACE_JPEG_QUALITY);
+      stopCamera();
+      setPreview(previewUrl);
+    } catch {
+      setCaptureError("Could not capture JPEG from camera.");
+    }
   }
 
   function retake() {
     setPreview(null);
+    setCaptureError("");
     setCameraError("");
+    captureCanvasRef.current = null;
   }
 
   async function submit() {
-    if (!preview) return;
+    if (!preview && !captureCanvasRef.current) return;
 
-    const base64 = preview.includes(",") ? preview.split(",")[1] : preview;
+    setCaptureError("");
     setSubmitting(true);
+
     try {
+      let base64: string;
+
+      if (captureCanvasRef.current) {
+        base64 = compressCanvasToJpegBase64(captureCanvasRef.current, FACE_IMAGE_MAX_BYTES);
+      } else {
+        const img = new Image();
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject(new Error("Could not read captured preview."));
+          img.src = preview!;
+        });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Could not prepare captured image.");
+        ctx.drawImage(img, 0, 0);
+        base64 = compressCanvasToJpegBase64(canvas, FACE_IMAGE_MAX_BYTES);
+      }
+
       await onCapture(base64);
       setPreview(null);
+      captureCanvasRef.current = null;
+    } catch (err) {
+      setCaptureError(err instanceof Error ? err.message : "Could not submit selfie.");
     } finally {
       setSubmitting(false);
     }
@@ -103,13 +149,16 @@ export function FaceCapture({ disabled, onCapture }: Props) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-zinc-400">
-        Take a live selfie with your camera. We&apos;ll match it against your Aadhaar photo from
-        DigiLocker.
+        Use your device camera for a live selfie (gallery uploads are not used). We&apos;ll match
+        it against your Aadhaar photo from DigiLocker.
+      </p>
+      <p className="text-xs text-zinc-500">
+        JPEG only · max 5 MB · captured at {Math.round(FACE_JPEG_QUALITY * 100)}% quality
       </p>
 
-      {cameraError && (
+      {(cameraError || captureError) && (
         <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-          {cameraError}
+          {cameraError || captureError}
         </p>
       )}
 
@@ -122,6 +171,7 @@ export function FaceCapture({ disabled, onCapture }: Props) {
             ref={videoRef}
             playsInline
             muted
+            autoPlay
             className="aspect-[4/3] w-full scale-x-[-1] object-cover"
           />
         )}

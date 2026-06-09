@@ -1,3 +1,5 @@
+import { normalizeFaceImagePayload } from "@/lib/face-image";
+
 type AuthUser = {
   role?: string;
   roles?: string[];
@@ -302,9 +304,10 @@ export async function verifyPanKyc(pan: string) {
 }
 
 export async function verifyFaceKyc(image: string) {
+  const payload = normalizeFaceImagePayload(image);
   await authedApi("vendor/kyc/face", {
     method: "POST",
-    body: JSON.stringify({ image }),
+    body: JSON.stringify({ image: payload }),
   });
   return getVendorKycStatus();
 }
