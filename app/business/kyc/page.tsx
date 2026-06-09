@@ -9,6 +9,7 @@ import {
   getToken,
   getUserRole,
   getVendorKycStatus,
+  kycStepVisual,
   nextKycStep,
   startAadhaarKyc,
   syncAadhaarKyc,
@@ -165,15 +166,6 @@ export default function VendorKycPage() {
     }
   }
 
-  function stepIndex(id: (typeof steps)[number]["id"]) {
-    return steps.findIndex((s) => s.id === id);
-  }
-
-  const activeIndex =
-    currentStep === "aadhaar" || currentStep === "pan" || currentStep === "face"
-      ? stepIndex(currentStep)
-      : steps.length;
-
   return (
     <div className="relative min-h-screen overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -231,22 +223,23 @@ export default function VendorKycPage() {
           ) : (
             <>
               <ol className="mt-8 flex gap-2">
-                {steps.map((step, i) => {
-                  const done = i < activeIndex;
-                  const active = i === activeIndex;
+                {steps.map((step) => {
+                  const visual = kycStepVisual(step.id, kyc, currentStep);
                   return (
                     <li key={step.id} className="flex-1">
                       <div
                         className={`rounded-lg border px-3 py-3 text-center text-xs transition ${
-                          done
+                          visual === "done"
                             ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-100"
-                            : active
+                            : visual === "active"
                               ? "border-white/20 bg-white/10 text-zinc-100"
                               : "border-white/5 bg-white/5 text-zinc-500"
                         }`}
                       >
                         <span className="block font-medium">{step.label}</span>
-                        <span className="mt-0.5 block opacity-70">{done ? "Done" : step.hint}</span>
+                        <span className="mt-0.5 block opacity-70">
+                          {visual === "done" ? "Done" : step.hint}
+                        </span>
                       </div>
                     </li>
                   );
@@ -279,7 +272,7 @@ export default function VendorKycPage() {
                       onClick={onSyncAadhaar}
                       className="w-full rounded-full border border-white/10 py-3 text-sm transition hover:bg-white/5 disabled:opacity-60"
                     >
-                      I finished on DigiLocker — sync now
+                      {busy ? "Syncing…" : "I finished on DigiLocker — sync now"}
                     </button>
                   </div>
                 )}

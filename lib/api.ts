@@ -12,14 +12,73 @@ export type KycOverallStatus =
 
 export type KycStepState = "pending" | "in_progress" | "verified" | "failed";
 
+export type KycStepInfo = {
+  status?: KycStepState;
+  verified?: boolean;
+};
+
 export type VendorKycStatus = {
   status: KycOverallStatus;
-  aadhaar?: { status?: KycStepState };
-  pan?: { status?: KycStepState };
-  face?: { status?: KycStepState };
+  aadhaar?: KycStepInfo;
+  pan?: KycStepInfo;
+  face?: KycStepInfo;
   rejectReason?: string;
   reason?: string;
 };
+
+function readStep(raw: unknown): KycStepInfo | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+
+  const step = raw as Record<string, unknown>;
+  const statusRaw = step.status ?? step.state ?? step.verificationStatus;
+  let status: KycStepState | undefined;
+
+  if (typeof statusRaw === "string") {
+    const value = statusRaw.toLowerCase();
+    if (value === "verified" || value === "completed" || value === "success" || value === "approved") {
+      status = "verified";
+    } else if (value === "failed" || value === "rejected") {
+      status = "failed";
+    } else if (value === "in_progress" || value === "processing") {
+      status = "in_progress";
+    } else if (value === "pending") {
+      status = "pending";
+    }
+  }
+
+  const verified = step.verified === true || step.isVerified === true || status === "verified";
+
+  return { ...step, status: verified ? "verified" : status, verified };
+}
+
+export function normalizeVendorKycStatus(raw: unknown): VendorKycStatus {
+  const data = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  const nested =
+    data.kyc && typeof data.kyc === "object" ? (data.kyc as Record<string, unknown>) : data;
+
+  const statusRaw = nested.status ?? data.status;
+  const status =
+    typeof statusRaw === "string" ? (statusRaw.toLowerCase() as KycOverallStatus) : "pending";
+
+  return {
+    status,
+    aadhaar: readStep(nested.aadhaar ?? data.aadhaar),
+    pan: readStep(nested.pan ?? data.pan),
+    face: readStep(nested.face ?? data.face),
+    rejectReason:
+      typeof nested.rejectReason === "string"
+        ? nested.rejectReason
+        : typeof data.rejectReason === "string"
+          ? data.rejectReason
+          : undefined,
+    reason:
+      typeof nested.reason === "string"
+        ? nested.reason
+        : typeof data.reason === "string"
+          ? data.reason
+          : undefined,
+  };
+}
 
 async function api(path: string, init?: RequestInit) {
   const res = await fetch(`/api/${path}`, {
@@ -122,8 +181,18 @@ export function homeForUser(user: AuthUser | null | undefined, fallback = "custo
   return homeForRole(getUserRole(user, fallback));
 }
 
-function stepDone(step?: { status?: KycStepState }) {
-  return step?.status === "verified";
+function stepDone(step?: KycStepInfo) {
+  return step?.verified === true || step?.status === "verified";
+}
+
+export function kycStepVisual(
+  stepId: "aadhaar" | "pan" | "face",
+  kyc: VendorKycStatus | null | undefined,
+  currentStep: ReturnType<typeof nextKycStep>,
+) {
+  if (stepDone(kyc?.[stepId])) return "done" as const;
+  if (currentStep === stepId) return "active" as const;
+  return "upcoming" as const;
 }
 
 export function nextKycStep(kyc: VendorKycStatus | null | undefined) {
@@ -142,8 +211,9 @@ export function vendorDestination(kyc: VendorKycStatus | null | undefined) {
   return "/business/kyc";
 }
 
-export function getVendorKycStatus() {
-  return authedApi("vendor/kyc/status") as Promise<VendorKycStatus>;
+export async function getVendorKycStatus() {
+  const data = await authedApi("vendor/kyc/status");
+  return normalizeVendorKycStatus(data);
 }
 
 export function startAadhaarKyc(redirectUrl: string) {
@@ -153,22 +223,29 @@ export function startAadhaarKyc(redirectUrl: string) {
   }) as Promise<{ url?: string }>;
 }
 
-export function syncAadhaarKyc() {
-  return authedApi("vendor/kyc/aadhaar/sync") as Promise<VendorKycStatus>;
+export async function syncAadhaarKyc() {
+  await authedApi("vendor/kyc/aadhaar/sync");
+  return getVendorKycStatus();
 }
 
-export function verifyPanKyc(pan: string) {
-  return authedApi("vendor/kyc/pan", {
+export async function verifyPanKyc(pan: string) {
+  await authedApi("vendor/kyc/pan", {
     method: "POST",
     body: JSON.stringify({ pan: pan.toUpperCase() }),
-  }) as Promise<VendorKycStatus>;
+  });
+  return getVendorKycStatus();
 }
 
-export function verifyFaceKyc(image: string) {
-  return authedApi("vendor/kyc/face", {
+export async function verifyFaceKyc(image: string) {
+  await authedApi("vendor/kyc/face", {
     method: "POST",
     body: JSON.stringify({ image }),
-  }) as Promise<VendorKycStatus>;
+  });
+  return getVendorKycStatus();
+}
+
+export function isAadhaarVerified(kyc: VendorKycStatus | null | undefined) {
+  return stepDone(kyc?.aadhaar);
 }
 
 export async function resolvePostAuthPath(user: AuthUser | null | undefined, fallback = "customer") {

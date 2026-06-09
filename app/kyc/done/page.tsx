@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Particles } from "@/components/particles";
-import { getToken, syncAadhaarKyc } from "@/lib/api";
+import { getToken, isAadhaarVerified, syncAadhaarKyc } from "@/lib/api";
 
 export default function KycDonePage() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function KycDonePage() {
         if (cancelled) return;
         try {
           const data = await syncAadhaarKyc();
-          if (data.aadhaar?.status === "verified" || data.status !== "pending") {
+          if (isAadhaarVerified(data)) {
             router.replace("/business/kyc");
             return;
           }
