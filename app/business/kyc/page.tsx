@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { FaceCapture } from "@/components/face-capture";
 import { LogoutButton } from "@/components/logout-button";
 import { Particles } from "@/components/particles";
 import {
@@ -18,6 +19,10 @@ import {
   verifyPanKyc,
 } from "@/lib/api";
 
+function stepDone(step?: { status?: string; verified?: boolean }) {
+  return step?.verified === true || step?.status === "verified";
+}
+
 const input = "field-input";
 
 const steps = [
@@ -26,23 +31,6 @@ const steps = [
   { id: "face", label: "Selfie", hint: "Match your Aadhaar photo" },
 ] as const;
 
-function fileToBase64(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result !== "string") {
-        reject(new Error("Could not read image."));
-        return;
-      }
-      const base64 = result.includes(",") ? result.split(",")[1] : result;
-      resolve(base64);
-    };
-    reader.onerror = () => reject(new Error("Could not read image."));
-    reader.readAsDataURL(file);
-  });
-}
-
 export default function VendorKycPage() {
   const router = useRouter();
   const [kyc, setKyc] = useState<VendorKycStatus | null>(null);
@@ -50,7 +38,6 @@ export default function VendorKycPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [pan, setPan] = useState("");
-  const [selfieName, setSelfieName] = useState("");
 
   const currentStep = nextKycStep(kyc);
 
@@ -137,32 +124,17 @@ export default function VendorKycPage() {
     }
   }
 
-  async function onSelfieChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  async function onVerifyFace(base64: string) {
     setError("");
-    if (!file.type.startsWith("image/")) {
-      setError("Upload a JPEG or PNG image.");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be under 5 MB.");
-      return;
-    }
-
     setBusy(true);
-    setSelfieName(file.name);
     try {
-      const base64 = await fileToBase64(file);
       const data = await verifyFaceKyc(base64);
       setKyc(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Face verification failed");
-      setSelfieName("");
+      throw err;
     } finally {
       setBusy(false);
-      e.target.value = "";
     }
   }
 
@@ -213,16 +185,21 @@ export default function VendorKycPage() {
                 Check status
               </button>
             </div>
-          ) : currentStep === "rejected" ? (
-            <div className="mt-8 rounded-xl border border-red-500/20 bg-red-500/10 px-5 py-6">
-              <p className="text-lg font-medium text-red-100">KYC rejected</p>
-              <p className="mt-2 text-sm text-red-100/80">
-                {kyc?.rejectReason ?? kyc?.reason ?? "Please contact support or retry verification."}
-              </p>
-            </div>
           ) : (
             <>
-              <ol className="mt-8 flex gap-2">
+              {kyc?.status === "rejected" && (
+                <div className="mt-8 rounded-xl border border-red-500/20 bg-red-500/10 px-5 py-5">
+                  <p className="text-lg font-medium text-red-100">KYC rejected</p>
+                  <p className="mt-2 text-sm text-red-100/80">
+                    {kyc.rejectReason ?? kyc.reason ?? "Your submission was not approved."}
+                  </p>
+                  <p className="mt-3 text-sm text-zinc-400">
+                    Update the step below and submit again — usually a new selfie or corrected PAN.
+                  </p>
+                </div>
+              )}
+
+              <ol className={`flex gap-2 ${kyc?.status === "rejected" ? "mt-6" : "mt-8"}`}>
                 {steps.map((step) => {
                   const visual = kycStepVisual(step.id, kyc, currentStep);
                   return (
@@ -256,7 +233,8 @@ export default function VendorKycPage() {
                 {currentStep === "aadhaar" && (
                   <div className="space-y-4">
                     <p className="text-sm text-zinc-400">
-                      You&apos;ll be redirected to DigiLocker to verify your Aadhaar with OTP and consent.
+                      You&apos;ll be redirected to DigiLocker (government portal) to verify your
+                      real Aadhaar with OTP and consent — not a manual ID upload.
                     </p>
                     <button
                       type="button"
@@ -279,6 +257,11 @@ export default function VendorKycPage() {
 
                 {currentStep === "pan" && (
                   <form onSubmit={onVerifyPan} className="space-y-4">
+                    {kyc?.status === "rejected" && stepDone(kyc.pan) && (
+                      <p className="text-sm text-zinc-400">
+                        Re-enter your PAN if the admin asked you to correct it.
+                      </p>
+                    )}
                     <label className="block text-sm text-zinc-400">
                       PAN number
                       <input
@@ -297,32 +280,19 @@ export default function VendorKycPage() {
                       disabled={busy}
                       className="btn-primary w-full rounded-full py-3 text-sm font-semibold disabled:opacity-60"
                     >
-                      {busy ? "Verifying…" : "Verify PAN"}
+                      {busy ? "Verifying…" : kyc?.status === "rejected" ? "Resubmit PAN" : "Verify PAN"}
                     </button>
                   </form>
                 )}
 
                 {currentStep === "face" && (
                   <div className="space-y-4">
-                    <p className="text-sm text-zinc-400">
-                      Upload a clear selfie. We&apos;ll match it against your Aadhaar photo.
-                    </p>
-                    <label className="block">
-                      <span className="sr-only">Selfie</span>
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                        disabled={busy}
-                        onChange={onSelfieChange}
-                        className="block w-full text-sm text-zinc-400 file:mr-4 file:rounded-full file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-zinc-200 hover:file:bg-white/15"
-                      />
-                    </label>
-                    {selfieName && (
-                      <p className="text-xs text-zinc-500">Uploaded: {selfieName}</p>
+                    {kyc?.status === "rejected" && (
+                      <p className="text-sm text-amber-100/90">
+                        Take a new live selfie to resubmit your KYC for admin review.
+                      </p>
                     )}
-                    {busy && (
-                      <p className="text-sm text-zinc-500">Verifying your selfie…</p>
-                    )}
+                    <FaceCapture disabled={busy} onCapture={onVerifyFace} />
                   </div>
                 )}
               </div>
