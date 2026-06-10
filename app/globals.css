@@ -9,10 +9,23 @@
   --color-muted: #8a8a93;
 }
 
+:root {
+  --rs-ui-scale: 1;
+}
+
+/* External / large monitors: match ~125% browser zoom on laptop DPI */
+@media (min-width: 1920px) {
+  :root {
+    --rs-ui-scale: 1.30;
+  }
+}
+
 @layer base {
   html {
+    font-size: calc(100% * var(--rs-ui-scale));
     color-scheme: dark;
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
