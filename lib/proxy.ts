@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-const FORWARD_HEADERS = ["content-type", "authorization", "accept"];
-
 export async function proxyBackend(path: string, request?: Request) {
   const base = process.env.BACKEND_URL?.trim().replace(/\/$/, "");
 
@@ -14,24 +12,26 @@ export async function proxyBackend(path: string, request?: Request) {
 
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const method = request?.method ?? "GET";
-  const headers: Record<string, string> = { Accept: "application/json" };
+
+  const headers = new Headers();
+  headers.set("Accept", "application/json");
 
   if (request) {
-    for (const key of FORWARD_HEADERS) {
-      const value = request.headers.get(key);
-      if (value) headers[key] = value;
-    }
+    const auth = request.headers.get("authorization");
+    if (auth) headers.set("Authorization", auth);
   }
 
   const init: RequestInit = { method, headers, cache: "no-store" };
 
   if (request && method !== "GET" && method !== "HEAD") {
-    const body = await request.text();
-    if (body) {
+    const body = await request.arrayBuffer();
+    if (body.byteLength > 0) {
       init.body = body;
-      // Express only parses JSON when Content-Type is set.
-      headers["Content-Type"] =
-        request.headers.get("content-type") ?? "application/json";
+      // Express only parses JSON when Content-Type is application/json.
+      headers.set(
+        "Content-Type",
+        request.headers.get("content-type") ?? "application/json",
+      );
     }
   }
 

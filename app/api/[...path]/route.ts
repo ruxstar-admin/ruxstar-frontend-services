@@ -1,5 +1,7 @@
 import { proxyBackend } from "@/lib/proxy";
 
+export const dynamic = "force-dynamic";
+
 type RouteContext = { params: Promise<{ path: string[] }> };
 
 async function handle(request: Request, context: RouteContext) {

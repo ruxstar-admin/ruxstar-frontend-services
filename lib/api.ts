@@ -134,13 +134,19 @@ export function normalizeVendorKycStatus(raw: unknown): VendorKycStatus {
 
 async function api(path: string, init?: RequestInit) {
   const headers = new Headers(init?.headers);
-  if (init?.body != null && !headers.has("Content-Type")) {
+  const body = init?.body;
+  const method = init?.method ?? "GET";
+
+  if (body != null && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
 
   const res = await fetch(`/api/${path}`, {
-    ...init,
+    method,
+    body,
     headers,
+    cache: init?.cache,
+    signal: init?.signal,
   });
   const data = await res.json().catch(() => ({}));
 
