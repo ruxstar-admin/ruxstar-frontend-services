@@ -183,8 +183,8 @@ export default function CustomerPage() {
           <section className="glass rounded-2xl p-6">
             <h2 className="text-lg font-medium">Grow with Ruxstar</h2>
             <p className="mt-1 text-sm text-zinc-400">
-              Sell your services and manage orders. Switch to a business account — your customer
-              profile stays safe and you can switch back anytime.
+              Open your vendor dashboard, complete KYC, then onboard multiple businesses.
+              Your customer profile stays safe — switch back anytime.
             </p>
 
             <form onSubmit={onBecomeVendor} className="mt-6 space-y-4">

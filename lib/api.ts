@@ -490,45 +490,6 @@ export async function updateVendorProfile(patch: VendorProfile): Promise<VendorP
   }
 }
 
-export type VendorCustomer = {
-  id?: string;
-  name?: string;
-  mobile?: string;
-  status?: string;
-};
-
-function readCustomer(raw: Record<string, unknown>): VendorCustomer {
-  return {
-    id: typeof raw._id === "string" ? raw._id : typeof raw.id === "string" ? raw.id : undefined,
-    name: typeof raw.name === "string" ? raw.name : undefined,
-    mobile: typeof raw.mobile === "string" ? raw.mobile : undefined,
-    status: typeof raw.status === "string" ? raw.status : undefined,
-  };
-}
-
-export async function listVendorCustomers(): Promise<VendorCustomer[]> {
-  try {
-    const data = await authedApi("vendor/users");
-    return asList(data).map(readCustomer);
-  } catch (err) {
-    if (err instanceof Error && err.message.includes("kyc")) throw new KycRequiredError();
-    throw err;
-  }
-}
-
-export async function createVendorCustomer(body: {
-  name: string;
-  mobile: string;
-  password: string;
-}): Promise<VendorCustomer> {
-  try {
-    const data = await postAuthed("vendor/users", body);
-    return readCustomer(asRecord(asRecord(data).user));
-  } catch (err) {
-    if (err instanceof Error && err.message.includes("kyc")) throw new KycRequiredError();
-    throw err;
-  }
-}
 
 export type AdminUser = {
   _id?: string;

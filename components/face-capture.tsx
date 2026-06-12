@@ -148,40 +148,44 @@ export function FaceCapture({ disabled, onCapture }: Props) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-zinc-400">
-        Use your device camera for a live selfie (gallery uploads are not used). We&apos;ll match
-        it against your Aadhaar photo from DigiLocker.
-      </p>
-      <p className="text-xs text-zinc-500">
-        JPEG only · max 5 MB · captured at {Math.round(FACE_JPEG_QUALITY * 100)}% quality
-      </p>
-
       {(cameraError || captureError) && (
         <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
           {cameraError || captureError}
         </p>
       )}
 
-      <div className="relative overflow-hidden rounded-xl border border-white/10 bg-black/40">
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/50">
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="Captured selfie preview" className="aspect-[4/3] w-full object-cover" />
         ) : (
-          <video
-            ref={videoRef}
-            playsInline
-            muted
-            autoPlay
-            className="aspect-[4/3] w-full scale-x-[-1] object-cover"
-          />
+          <>
+            <video
+              ref={videoRef}
+              playsInline
+              muted
+              autoPlay
+              className="aspect-[4/3] w-full scale-x-[-1] object-cover"
+            />
+            {cameraReady && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="h-[55%] w-[42%] rounded-[50%] border-2 border-dashed border-white/35 shadow-[inset_0_0_40px_rgba(0,0,0,0.3)]" />
+              </div>
+            )}
+          </>
         )}
 
         {!preview && !cameraReady && !cameraError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-sm text-zinc-400">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 text-sm text-zinc-400">
+            <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />
             Starting camera…
           </div>
         )}
       </div>
+
+      <p className="text-center text-xs text-zinc-600">
+        Align your face inside the oval · good lighting helps
+      </p>
 
       <div className="flex gap-3">
         {preview ? (
@@ -200,28 +204,25 @@ export function FaceCapture({ disabled, onCapture }: Props) {
               onClick={submit}
               className="btn-primary flex-1 rounded-full py-3 text-sm font-semibold disabled:opacity-60"
             >
-              {submitting ? "Verifying…" : "Submit selfie"}
+              {submitting ? (
+                <span className="inline-flex items-center justify-center gap-2">
+                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Verifying…
+                </span>
+              ) : (
+                "Submit selfie"
+              )}
             </button>
           </>
         ) : (
-          <>
-            <button
-              type="button"
-              disabled={busy || !cameraReady}
-              onClick={startCamera}
-              className="flex-1 rounded-full border border-white/10 py-3 text-sm transition hover:bg-white/5 disabled:opacity-60"
-            >
-              Restart camera
-            </button>
-            <button
-              type="button"
-              disabled={busy || !cameraReady}
-              onClick={takePhoto}
-              className="btn-primary flex-1 rounded-full py-3 text-sm font-semibold disabled:opacity-60"
-            >
-              Capture photo
-            </button>
-          </>
+          <button
+            type="button"
+            disabled={busy || !cameraReady}
+            onClick={takePhoto}
+            className="btn-primary w-full rounded-full py-3.5 text-sm font-semibold disabled:opacity-60"
+          >
+            Capture photo
+          </button>
         )}
       </div>
     </div>

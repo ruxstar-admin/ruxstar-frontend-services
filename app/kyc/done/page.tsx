@@ -63,12 +63,22 @@ export default function KycDonePage() {
       </div>
       <Particles />
 
-      <main className="relative z-10 mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center px-6">
+      <main className="relative z-10 mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6">
         <div className="glass w-full rounded-2xl p-8 text-center">
-          <h1 className="text-xl font-semibold">
-            <span className="text-gradient">{failed ? "Almost there" : "Welcome back"}</span>
+          <div
+            className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border text-2xl ${
+              failed
+                ? "border-amber-500/25 bg-amber-500/10"
+                : "border-emerald-500/25 bg-emerald-500/10"
+            }`}
+          >
+            {failed ? "↩" : "🪪"}
+          </div>
+          <p className="mt-5 text-xs uppercase tracking-widest text-zinc-500">Step 1 · Aadhaar</p>
+          <h1 className="mt-2 text-xl font-semibold">
+            <span className="text-gradient">{failed ? "Sync needed" : "Welcome back"}</span>
           </h1>
-          <p className="mt-3 text-sm text-zinc-400">{message}</p>
+          <p className="mt-3 text-sm leading-relaxed text-zinc-400">{message}</p>
           {!failed && (
             <div className="mx-auto mt-6 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />
           )}
@@ -77,7 +87,7 @@ export default function KycDonePage() {
               href="/business/kyc"
               className="btn-primary mt-6 inline-block rounded-full px-6 py-2.5 text-sm font-semibold"
             >
-              Back to KYC
+              Continue KYC
             </Link>
           )}
         </div>
