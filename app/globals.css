@@ -603,6 +603,10 @@
     animation-duration: 1.4s;
   }
 
+  .kyc-review-ring {
+    animation: pulse-ring 2s ease-out infinite;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .reveal,
     .float-y,

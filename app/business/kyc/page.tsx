@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaceCapture } from "@/components/face-capture";
 import { KycAadhaarVisual } from "@/components/kyc-aadhaar-visual";
+import { KycPanVisual } from "@/components/kyc-pan-visual";
+import { KycReviewPanel } from "@/components/kyc-review-panel";
 import { useVendorShell } from "@/components/vendor-shell";
 import {
   kycStepVisual,
@@ -56,9 +58,8 @@ const STEPS = [
     title: "Live face verification",
     subtitle: "Match your face with Aadhaar photo",
     tips: [
-      "Use good lighting and face the camera",
-      "Remove glasses or hat if possible",
-      "Hold still when capturing",
+      "Face the camera with good lighting",
+      "We match your live selfie to your Aadhaar photo",
     ],
   },
 ];
@@ -78,11 +79,13 @@ function StepIndicator({
   kyc: VendorKycStatus | null;
   currentStep: ReturnType<typeof nextKycStep>;
 }) {
+  const inReview = currentStep === "review";
+
   return (
     <ol className="space-y-0">
       {STEPS.map((step, idx) => {
-        const visual = kycStepVisual(step.id, kyc, currentStep);
-        const isLast = idx === STEPS.length - 1;
+        const visual = inReview ? "done" : kycStepVisual(step.id, kyc, currentStep);
+        const isLast = idx === STEPS.length - 1 && !inReview;
 
         return (
           <li key={step.id} className="relative flex gap-4">
@@ -104,7 +107,7 @@ function StepIndicator({
             >
               {visual === "done" ? "✓" : step.number}
             </div>
-            <div className={`pb-8 ${isLast ? "pb-0" : ""}`}>
+            <div className={`pb-8 ${isLast && !inReview ? "pb-0" : ""}`}>
               <p
                 className={`text-sm font-medium ${
                   visual === "active"
@@ -117,12 +120,24 @@ function StepIndicator({
                 {step.label}
               </p>
               <p className="mt-0.5 text-xs text-zinc-600">
-                {visual === "done" ? "Completed" : visual === "active" ? "In progress" : "Pending"}
+                {visual === "done" ? "Verified" : visual === "active" ? "In progress" : "Pending"}
               </p>
             </div>
           </li>
         );
       })}
+
+      {inReview && (
+        <li className="relative flex gap-4">
+          <div className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-400/40 bg-blue-500/15">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-blue-400" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-blue-200">Admin review</p>
+            <p className="mt-0.5 text-xs text-zinc-600">In progress</p>
+          </div>
+        </li>
+      )}
     </ol>
   );
 }
@@ -162,6 +177,7 @@ export default function VendorKycPage() {
   const currentStep = nextKycStep(kyc);
   const done = completedCount(kyc);
   const progress = Math.round((done / 3) * 100);
+  const isReview = currentStep === "review";
 
   const activeMeta = useMemo(() => {
     if (currentStep === "aadhaar") return STEPS[0];
@@ -181,6 +197,12 @@ export default function VendorKycPage() {
   useEffect(() => {
     setLoading(shellLoading);
   }, [shellLoading]);
+
+  useEffect(() => {
+    if (currentStep === "face") {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [currentStep]);
 
   async function onStartAadhaar() {
     setError("");
@@ -237,28 +259,42 @@ export default function VendorKycPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-zinc-500">Identity verification</p>
-          <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">
-            <span className="text-gradient">Complete your KYC</span>
+          <h1 className="mt-1 text-xl font-semibold sm:text-2xl">
+            <span className="text-gradient">
+              {isReview ? "KYC submitted" : "Complete your KYC"}
+            </span>
           </h1>
-          <p className="mt-2 max-w-lg text-sm text-zinc-400">
-            Three quick steps to verify who you are. Required before onboarding businesses.
+          <p className="mt-1 max-w-lg text-sm text-zinc-400">
+            {isReview
+              ? "Waiting for admin approval."
+              : "Three quick steps to verify who you are. Required before onboarding businesses."}
           </p>
         </div>
-        {!loading && currentStep !== "review" && currentStep !== "done" && (
+        {!loading && !isReview && currentStep !== "done" && (
           <div className="text-right">
             <p className="text-xs text-zinc-500">{done} of 3 complete</p>
             <p className="text-lg font-semibold text-zinc-200">{progress}%</p>
           </div>
         )}
+        {!loading && isReview && (
+          <span className="rounded-full border border-blue-500/25 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-200">
+            Pending review
+          </span>
+        )}
       </div>
 
       {/* Progress bar */}
-      {!loading && currentStep !== "review" && currentStep !== "done" && (
+      {!loading && !isReview && currentStep !== "done" && (
         <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-white/5">
           <div
             className="h-full rounded-full bg-gradient-to-r from-emerald-600/80 to-emerald-400/80 transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
+        </div>
+      )}
+      {!loading && isReview && (
+        <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-white/5">
+          <div className="h-full w-full rounded-full bg-gradient-to-r from-blue-600/80 to-blue-400/80" />
         </div>
       )}
 
@@ -279,8 +315,7 @@ export default function VendorKycPage() {
       )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[220px_1fr]">
-        {/* Left: stepper (desktop) */}
-        {!loading && currentStep !== "review" && currentStep !== "done" && (
+        {!loading && currentStep !== "done" && (
           <aside className="hidden lg:block">
             <p className="mb-4 text-xs font-medium uppercase tracking-widest text-zinc-600">
               Your progress
@@ -289,67 +324,33 @@ export default function VendorKycPage() {
           </aside>
         )}
 
-        {/* Main content */}
         <div className="min-w-0">
           {loading ? (
             <div className="glass rounded-2xl p-8">
               <LoadingSkeleton />
             </div>
-          ) : currentStep === "review" ? (
-            <div className="glass rounded-2xl p-8 sm:p-10 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-blue-500/25 bg-blue-500/10 text-3xl">
-                ⏳
-              </div>
-              <h2 className="mt-6 text-xl font-semibold text-blue-100">Under admin review</h2>
-              <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-zinc-400">
-                All three steps are done. Our team is reviewing your documents — this usually
-                takes a short while. You&apos;ll be able to add businesses once approved.
-              </p>
-              <div className="mx-auto mt-8 max-w-sm rounded-xl border border-white/5 bg-white/5 p-4 text-left text-sm">
-                <p className="text-zinc-500">What happens next</p>
-                <ul className="mt-3 space-y-2 text-zinc-400">
-                  <li className="flex gap-2">
-                    <span className="text-blue-300">1.</span> Admin reviews your KYC
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-blue-300">2.</span> You get verified status
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-blue-300">3.</span> My businesses unlocks
-                  </li>
-                </ul>
-              </div>
-              <button
-                type="button"
-                disabled={busy}
-                onClick={async () => {
-                  setError("");
-                  setBusy(true);
-                  try {
-                    await refresh();
-                  } catch (err) {
-                    setError(err instanceof Error ? err.message : "Could not refresh status");
-                  } finally {
-                    setBusy(false);
-                  }
-                }}
-                className="btn-primary mt-8 rounded-full px-8 py-3 text-sm font-semibold disabled:opacity-60"
-              >
-                {busy ? "Checking…" : "Check approval status"}
-              </button>
-              <Link
-                href="/business"
-                className="mt-4 block text-sm text-zinc-500 transition hover:text-zinc-300"
-              >
-                Back to dashboard
-              </Link>
-            </div>
+          ) : isReview ? (
+            <KycReviewPanel
+              busy={busy}
+              error={error}
+              onRefresh={async () => {
+                setError("");
+                setBusy(true);
+                try {
+                  await refresh();
+                } catch (err) {
+                  setError(err instanceof Error ? err.message : "Could not refresh status");
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            />
           ) : activeMeta ? (
             <div className="glass overflow-hidden rounded-2xl">
               {/* Mobile step pills */}
               <div className="flex gap-2 border-b border-white/5 p-4 lg:hidden">
                 {STEPS.map((step) => {
-                  const visual = kycStepVisual(step.id, kyc, currentStep);
+                  const visual = isReview ? "done" : kycStepVisual(step.id, kyc, currentStep);
                   return (
                     <div
                       key={step.id}
@@ -365,11 +366,22 @@ export default function VendorKycPage() {
                     </div>
                   );
                 })}
+                {isReview && (
+                  <div className="flex-1 rounded-lg bg-blue-500/10 py-2 text-center text-xs font-medium text-blue-200">
+                    Review
+                  </div>
+                )}
               </div>
 
               <div className="p-6 sm:p-8">
-                {currentStep === "aadhaar" ? (
-                  <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+                {activeMeta && (
+                  <div
+                    className={`flex flex-col gap-5 ${
+                      currentStep === "face"
+                        ? "lg:grid lg:grid-cols-[1fr_auto] lg:items-start lg:gap-8"
+                        : "sm:flex-row sm:items-start sm:justify-between"
+                    }`}
+                  >
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-medium uppercase tracking-widest text-zinc-500">
                         Step {activeMeta.number} of 3
@@ -378,30 +390,32 @@ export default function VendorKycPage() {
                       <p className="mt-1 text-sm text-zinc-400">{activeMeta.subtitle}</p>
                       <TipsList tips={activeMeta.tips} />
                     </div>
-                    <div className="flex shrink-0 justify-center sm:justify-end sm:pt-1">
-                      <KycAadhaarVisual active={busy} />
+
+                    <div
+                      className={`flex shrink-0 justify-center ${
+                        currentStep === "face" ? "lg:justify-end" : "sm:justify-end sm:pt-1"
+                      }`}
+                    >
+                      {currentStep === "aadhaar" && <KycAadhaarVisual active={busy} />}
+                      {currentStep === "pan" && (
+                        <KycPanVisual active={busy} panPreview={pan.length === 10 ? pan : undefined} />
+                      )}
+                      {currentStep === "face" && (
+                        <FaceCapture compact disabled={busy} onCapture={onVerifyFace} />
+                      )}
                     </div>
-                  </div>
-                ) : (
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-widest text-zinc-500">
-                      Step {activeMeta.number} of 3
-                    </p>
-                    <h2 className="mt-1 text-xl font-semibold text-zinc-100">{activeMeta.title}</h2>
-                    <p className="mt-1 text-sm text-zinc-400">{activeMeta.subtitle}</p>
-                    <TipsList tips={activeMeta.tips} />
                   </div>
                 )}
 
                 {error && (
-                  <p className="mt-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+                  <p className="mt-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
                     {error}
                   </p>
                 )}
 
-                <div className="mt-8 rounded-xl border border-white/5 bg-white/[0.02] p-5 sm:p-6">
-                  {currentStep === "aadhaar" && (
-                    <div className="space-y-4">
+                {currentStep !== "face" && (
+                  <div className="mt-6 rounded-xl border border-white/5 bg-white/[0.02] p-5 sm:p-6">
+                    {currentStep === "aadhaar" && (
                       <button
                         type="button"
                         disabled={busy}
@@ -417,58 +431,48 @@ export default function VendorKycPage() {
                           <>Open DigiLocker →</>
                         )}
                       </button>
-                    </div>
-                  )}
+                    )}
 
-                  {currentStep === "pan" && (
-                    <form onSubmit={onVerifyPan} className="space-y-5">
-                      <label className="block">
-                        <span className="text-sm text-zinc-400">PAN number</span>
-                        <input
-                          className={`${input} mt-2 font-mono text-lg uppercase tracking-[0.2em]`}
-                          value={pan}
-                          maxLength={10}
-                          placeholder="ABCPV1234D"
-                          autoComplete="off"
-                          onChange={(e) => {
-                            setError("");
-                            setPan(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10));
-                          }}
-                        />
-                        <p className="mt-2 text-xs text-zinc-600">
-                          {pan.length}/10 characters · Format ABCDE1234F
-                        </p>
-                      </label>
-                      <button
-                        type="submit"
-                        disabled={busy || pan.length !== 10}
-                        className="btn-primary w-full rounded-full py-3.5 text-sm font-semibold disabled:opacity-50"
-                      >
-                        {busy ? (
-                          <span className="inline-flex items-center gap-2">
-                            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                            Verifying…
-                          </span>
-                        ) : (
-                          "Verify PAN"
-                        )}
-                      </button>
-                    </form>
-                  )}
+                    {currentStep === "pan" && (
+                      <form onSubmit={onVerifyPan} className="space-y-4">
+                        <label className="block">
+                          <span className="text-sm text-zinc-400">PAN number</span>
+                          <input
+                            className={`${input} mt-2 font-mono text-lg uppercase tracking-[0.2em]`}
+                            value={pan}
+                            maxLength={10}
+                            placeholder="ABCPV1234D"
+                            autoComplete="off"
+                            onChange={(e) => {
+                              setError("");
+                              setPan(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10));
+                            }}
+                          />
+                          <p className="mt-2 text-xs text-zinc-600">
+                            {pan.length}/10 · ABCDE1234F
+                          </p>
+                        </label>
+                        <button
+                          type="submit"
+                          disabled={busy || pan.length !== 10}
+                          className="btn-primary w-full rounded-full py-3.5 text-sm font-semibold disabled:opacity-50"
+                        >
+                          {busy ? (
+                            <span className="inline-flex items-center gap-2">
+                              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                              Verifying…
+                            </span>
+                          ) : (
+                            "Verify PAN"
+                          )}
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                )}
 
-                  {currentStep === "face" && (
-                    <div className="space-y-4">
-                      <p className="text-sm text-zinc-400">
-                        Position your face in the frame. We&apos;ll match it against your Aadhaar
-                        photo.
-                      </p>
-                      <FaceCapture disabled={busy} onCapture={onVerifyFace} />
-                    </div>
-                  )}
-                </div>
-
-                {done > 0 && (
-                  <p className="mt-6 text-center text-xs text-zinc-600">
+                {done > 0 && currentStep !== "face" && (
+                  <p className="mt-5 text-center text-xs text-zinc-600">
                     {3 - done} step{3 - done === 1 ? "" : "s"} remaining after this one
                   </p>
                 )}
@@ -476,7 +480,7 @@ export default function VendorKycPage() {
             </div>
           ) : null}
 
-          {!loading && currentStep !== "review" && (
+          {!loading && (
             <p className="mt-6 text-center text-xs text-zinc-600">
               <Link href="/business" className="transition hover:text-zinc-400">
                 ← Back to dashboard

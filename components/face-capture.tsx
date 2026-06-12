@@ -10,10 +10,11 @@ import {
 
 type Props = {
   disabled?: boolean;
+  compact?: boolean;
   onCapture: (base64Jpeg: string) => Promise<void>;
 };
 
-export function FaceCapture({ disabled, onCapture }: Props) {
+export function FaceCapture({ disabled, compact = false, onCapture }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const captureCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -42,8 +43,8 @@ export function FaceCapture({ disabled, onCapture }: Props) {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "user",
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: compact ? 640 : 1280 },
+          height: { ideal: compact ? 480 : 720 },
         },
         audio: false,
       });
@@ -58,7 +59,7 @@ export function FaceCapture({ disabled, onCapture }: Props) {
     } catch {
       setCameraError("Could not access camera. Allow camera permission and try again.");
     }
-  }, [stopCamera]);
+  }, [compact, stopCamera]);
 
   useEffect(() => {
     if (!preview) {
@@ -146,55 +147,56 @@ export function FaceCapture({ disabled, onCapture }: Props) {
 
   const busy = disabled || submitting;
 
+  const frameClass = compact
+    ? "relative mx-auto w-full max-w-[17rem] overflow-hidden rounded-xl border border-white/10 bg-black/50"
+    : "relative overflow-hidden rounded-2xl border border-white/10 bg-black/50";
+
+  const mediaClass = compact
+    ? "aspect-square w-full scale-x-[-1] object-cover"
+    : "aspect-[4/3] w-full scale-x-[-1] object-cover";
+
   return (
-    <div className="space-y-4">
+    <div className={compact ? "w-full max-w-[17rem] space-y-2.5" : "space-y-4"}>
       {(cameraError || captureError) && (
-        <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+        <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-100">
           {cameraError || captureError}
         </p>
       )}
 
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/50">
+      <div className={frameClass}>
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="Captured selfie preview" className="aspect-[4/3] w-full object-cover" />
+          <img src={preview} alt="Captured selfie preview" className={mediaClass} />
         ) : (
           <>
-            <video
-              ref={videoRef}
-              playsInline
-              muted
-              autoPlay
-              className="aspect-[4/3] w-full scale-x-[-1] object-cover"
-            />
+            <video ref={videoRef} playsInline muted autoPlay className={mediaClass} />
             {cameraReady && (
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <div className="h-[55%] w-[42%] rounded-[50%] border-2 border-dashed border-white/35 shadow-[inset_0_0_40px_rgba(0,0,0,0.3)]" />
+                <div
+                  className={`rounded-[50%] border-2 border-dashed border-emerald-400/50 ${
+                    compact ? "h-[68%] w-[52%]" : "h-[55%] w-[42%]"
+                  }`}
+                />
               </div>
             )}
           </>
         )}
 
         {!preview && !cameraReady && !cameraError && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 text-sm text-zinc-400">
-            <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />
-            Starting camera…
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-xs text-zinc-400">
+            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />
           </div>
         )}
       </div>
 
-      <p className="text-center text-xs text-zinc-600">
-        Align your face inside the oval · good lighting helps
-      </p>
-
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         {preview ? (
           <>
             <button
               type="button"
               disabled={busy}
               onClick={retake}
-              className="flex-1 rounded-full border border-white/10 py-3 text-sm transition hover:bg-white/5 disabled:opacity-60"
+              className="flex-1 rounded-full border border-white/10 py-2.5 text-sm transition hover:bg-white/5 disabled:opacity-60"
             >
               Retake
             </button>
@@ -202,16 +204,9 @@ export function FaceCapture({ disabled, onCapture }: Props) {
               type="button"
               disabled={busy}
               onClick={submit}
-              className="btn-primary flex-1 rounded-full py-3 text-sm font-semibold disabled:opacity-60"
+              className="btn-primary flex-1 rounded-full py-2.5 text-sm font-semibold disabled:opacity-60"
             >
-              {submitting ? (
-                <span className="inline-flex items-center justify-center gap-2">
-                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Verifying…
-                </span>
-              ) : (
-                "Submit selfie"
-              )}
+              {submitting ? "Verifying…" : "Submit"}
             </button>
           </>
         ) : (
@@ -219,7 +214,7 @@ export function FaceCapture({ disabled, onCapture }: Props) {
             type="button"
             disabled={busy || !cameraReady}
             onClick={takePhoto}
-            className="btn-primary w-full rounded-full py-3.5 text-sm font-semibold disabled:opacity-60"
+            className="btn-primary w-full rounded-full py-2.5 text-sm font-semibold disabled:opacity-60"
           >
             Capture photo
           </button>
