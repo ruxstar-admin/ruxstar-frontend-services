@@ -58,8 +58,9 @@ export default function VendorDashboardPage() {
         <section className="mt-8 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6">
           <h2 className="text-lg font-medium text-amber-100">Get your Ruxstar Card to start onboarding</h2>
           <p className="mt-2 max-w-xl text-sm text-amber-200/80">
-            Verify your identity (Aadhaar, PAN and selfie) to unlock your Ruxstar Card before you can
-            add businesses. Use the sidebar to open <strong className="font-medium">Ruxstar Card</strong>.
+            Verify your identity (Aadhaar, PAN and selfie), then admin review issues your
+            Ruxstar Card before you can add businesses. Use the sidebar to open{" "}
+            <strong className="font-medium">Ruxstar Card</strong>.
           </p>
           {kyc?.rejectReason && (
             <p className="mt-3 text-sm text-red-200/90">Rejection reason: {kyc.rejectReason}</p>

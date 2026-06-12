@@ -2,48 +2,62 @@
 
 import { useEffect, useState } from "react";
 import { RuxstarCard } from "@/components/ruxstar-card";
-import { getRuxstarCard, type RuxstarCardData } from "@/lib/api";
+import {
+  buildRuxstarCardFromKyc,
+  getRuxstarCard,
+  getVendorKycStatus,
+  type AuthUser,
+  type RuxstarCardData,
+  type VendorKycStatus,
+} from "@/lib/api";
 
 type Props = {
-  fallbackName?: string;
-  fallbackId?: string;
+  user: AuthUser | null;
+  kyc: VendorKycStatus | null;
 };
 
-function fallbackRuxstarId(userId?: string) {
-  if (!userId) return "RUX-0000-0000";
-  const clean = userId.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-  const tail = clean.slice(-8).padStart(8, "0");
-  return `RUX-${tail.slice(0, 4)}-${tail.slice(4, 8)}`;
+function mergeCard(local: RuxstarCardData, api: RuxstarCardData): RuxstarCardData {
+  return {
+    ruxstarId: api.ruxstarId || local.ruxstarId,
+    name: api.name || local.name,
+    mobile: api.mobile || local.mobile,
+    aadhaar: api.aadhaar || local.aadhaar,
+    pan: api.pan || local.pan,
+    memberSince: api.memberSince || local.memberSince,
+  };
 }
 
-export function KycVerifiedPanel({ fallbackName, fallbackId }: Props) {
+export function KycVerifiedPanel({ user, kyc }: Props) {
   const [card, setCard] = useState<RuxstarCardData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    getRuxstarCard()
-      .then((data) => {
-        if (active) setCard(data);
-      })
-      .catch(() => {
-        if (active) {
-          setCard({
-            ruxstarId: fallbackRuxstarId(fallbackId),
-            name: fallbackName ?? null,
-            aadhaar: null,
-            pan: null,
-            memberSince: null,
-          });
-        }
-      })
-      .finally(() => {
+
+    async function load() {
+      const freshKyc = await getVendorKycStatus().catch(() => kyc);
+      const local = buildRuxstarCardFromKyc(user, freshKyc);
+      if (!active) return;
+
+      if (local) setCard(local);
+
+      try {
+        const api = await getRuxstarCard();
+        if (!active) return;
+        if (local) setCard(mergeCard(local, api));
+        else setCard(api);
+      } catch {
+        if (active && local) setCard(local);
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    load();
     return () => {
       active = false;
     };
-  }, [fallbackId, fallbackName]);
+  }, [user, kyc]);
 
   return (
     <div className="mx-auto max-w-md">

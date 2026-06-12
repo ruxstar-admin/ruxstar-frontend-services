@@ -364,10 +364,60 @@ export async function getVendorKycStatus() {
 export type RuxstarCardData = {
   ruxstarId: string;
   name: string | null;
+  mobile: string | null;
   aadhaar: string | null;
   pan: string | null;
   memberSince: string | null;
 };
+
+function formatRuxstarId(userId: string) {
+  const hex = userId.replace(/[^a-f0-9]/gi, "").toUpperCase();
+  const tail = hex.slice(-8).padStart(8, "0");
+  return `RUX-${tail.slice(0, 4)}-${tail.slice(4, 8)}`;
+}
+
+function maskAadhaar(uid: unknown) {
+  if (typeof uid !== "string" || uid.length < 4) return null;
+  return `XXXX XXXX ${uid.slice(-4)}`;
+}
+
+function maskPan(pan: unknown) {
+  if (typeof pan !== "string" || pan.length < 4) return null;
+  return `${pan.slice(0, 2)}XXXX${pan.slice(-2)}`;
+}
+
+function parseMemberSince(raw: unknown): string | null {
+  if (!raw) return null;
+  const d = raw instanceof Date ? raw : new Date(String(raw));
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
+/** Build card display data from the logged-in user + verified KYC on file. */
+export function buildRuxstarCardFromKyc(
+  user: AuthUser | null | undefined,
+  kyc: VendorKycStatus | null | undefined,
+): RuxstarCardData | null {
+  if (kyc?.status !== "verified") return null;
+
+  const aadhaar = kyc.aadhaar as Record<string, unknown> | undefined;
+  const pan = kyc.pan as Record<string, unknown> | undefined;
+  const userId = user?.id ?? user?._id ?? "";
+
+  const name =
+    (typeof aadhaar?.name === "string" ? aadhaar.name : null) ??
+    (typeof pan?.registeredName === "string" ? pan.registeredName : null) ??
+    (typeof user?.name === "string" ? user.name : null);
+
+  return {
+    ruxstarId: userId ? formatRuxstarId(userId) : "RUX-0000-0000",
+    name,
+    mobile: typeof user?.mobile === "string" ? user.mobile : null,
+    aadhaar: maskAadhaar(aadhaar?.uid),
+    pan: maskPan(pan?.pan),
+    memberSince: null,
+  };
+}
 
 export async function getRuxstarCard(): Promise<RuxstarCardData> {
   const data = await authedApi("vendor/card");
@@ -375,9 +425,10 @@ export async function getRuxstarCard(): Promise<RuxstarCardData> {
   return {
     ruxstarId: typeof card.ruxstarId === "string" ? card.ruxstarId : "RUX-0000-0000",
     name: typeof card.name === "string" ? card.name : null,
+    mobile: typeof card.mobile === "string" ? card.mobile : null,
     aadhaar: typeof card.aadhaar === "string" ? card.aadhaar : null,
     pan: typeof card.pan === "string" ? card.pan : null,
-    memberSince: typeof card.memberSince === "string" ? card.memberSince : null,
+    memberSince: parseMemberSince(card.memberSince),
   };
 }
 

@@ -19,11 +19,11 @@ export function KycReviewPanel({ busy, error, onRefresh }: Props) {
     <div className="glass overflow-hidden rounded-2xl">
       <div className="border-b border-white/5 px-6 py-5">
         <p className="text-xs font-medium uppercase tracking-widest text-zinc-500">
-          Submission status
+          Step 4 of 4 · Card generation
         </p>
-        <h2 className="mt-1 text-xl font-semibold text-zinc-100">Pending admin approval</h2>
+        <h2 className="mt-1 text-xl font-semibold text-zinc-100">Generating your Ruxstar Card</h2>
         <p className="mt-1 text-sm text-zinc-400">
-          All checks passed. An admin will approve your KYC before you can onboard businesses.
+          Identity checks are complete. An admin will review and issue your card.
         </p>
       </div>
 
@@ -46,9 +46,9 @@ export function KycReviewPanel({ busy, error, onRefresh }: Props) {
             <span className="relative h-2.5 w-2.5 rounded-full bg-blue-400" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-medium text-blue-100">Under review</p>
+            <p className="text-sm font-medium text-blue-100">Admin review in progress</p>
             <p className="text-xs text-zinc-500">
-              You&apos;ll get verified status once approved. My businesses will unlock automatically.
+              Your Ruxstar Card will appear here automatically once approved.
             </p>
           </div>
         </div>
@@ -66,7 +66,7 @@ export function KycReviewPanel({ busy, error, onRefresh }: Props) {
             onClick={onRefresh}
             className="btn-primary rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-60"
           >
-            {busy ? "Checking…" : "Refresh status"}
+            {busy ? "Checking…" : "Check card status"}
           </button>
           <Link
             href="/business"

@@ -46,12 +46,13 @@ function QrPlaceholder() {
 export function KycAadhaarVisual({ active = false }: Props) {
   return (
     <div
-      className={`relative mx-auto w-full max-w-[15.5rem] sm:max-w-[17rem] ${active ? "kyc-aadhaar-active" : ""}`}
+      className={`relative mx-auto w-full max-w-[13.5rem] lg:mx-0 ${active ? "kyc-aadhaar-active" : ""}`}
       aria-hidden
     >
-      <div className="kyc-aadhaar-glow absolute -inset-4 rounded-2xl" />
+      <div className="relative overflow-hidden rounded-lg py-1">
+        <div className="kyc-aadhaar-glow pointer-events-none absolute inset-0 rounded-2xl" />
 
-      <div className="relative overflow-hidden rounded-lg border border-zinc-300/80 bg-[#fffef9] shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
+        <div className="relative overflow-hidden rounded-lg border border-zinc-300/80 bg-[#fffef9] shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
         {/* Tricolor — matches real Aadhaar card edge */}
         <div className="flex h-2 w-full">
           <span className="flex-[2] bg-[#FF9933]" />
@@ -135,6 +136,7 @@ export function KycAadhaarVisual({ active = false }: Props) {
         {/* Scan beam */}
         <div className="kyc-aadhaar-scan pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-emerald-500/30 via-sky-400/15 to-transparent" />
         <div className="kyc-aadhaar-shimmer pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent opacity-0" />
+        </div>
       </div>
 
       {active && (

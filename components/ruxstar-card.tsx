@@ -38,8 +38,9 @@ export function RuxstarCard({ card }: Props) {
   const [revealed, setRevealed] = useState(false);
   const [motionEnabled, setMotionEnabled] = useState(true);
 
-  const holderName = (card.name ?? "Verified Member").toUpperCase();
+  const holderName = card.name?.trim() ? card.name.trim().toUpperCase() : "—";
   const memberSince = formatMemberSince(card.memberSince);
+  const mobileLabel = card.mobile ? `+91 ${card.mobile}` : null;
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -128,7 +129,7 @@ export function RuxstarCard({ card }: Props) {
                   </p>
                 </div>
                 <p className="mt-1.5 text-[9px] uppercase tracking-[0.26em] text-zinc-500">
-                  Verified Member
+                  {mobileLabel ?? "Ruxstar member"}
                 </p>
               </div>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[9px] font-medium uppercase tracking-wider text-[#c4b49a]">
