@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaceCapture } from "@/components/face-capture";
+import { KycAadhaarVisual } from "@/components/kyc-aadhaar-visual";
 import { useVendorShell } from "@/components/vendor-shell";
 import {
   kycStepVisual,
@@ -16,6 +17,13 @@ import {
 
 const input = "field-input";
 
+function kycRedirectUrl() {
+  return (
+    process.env.NEXT_PUBLIC_KYC_REDIRECT_URL ||
+    (typeof window !== "undefined" ? `${window.location.origin}/kyc/done` : "")
+  );
+}
+
 const STEPS = [
   {
     id: "aadhaar" as const,
@@ -23,7 +31,6 @@ const STEPS = [
     label: "Aadhaar",
     title: "Verify your Aadhaar",
     subtitle: "Government-verified identity via DigiLocker",
-    icon: "🪪",
     tips: [
       "You'll be redirected to the official DigiLocker portal",
       "Enter your Aadhaar-linked mobile OTP",
@@ -36,7 +43,6 @@ const STEPS = [
     label: "PAN",
     title: "Verify your PAN",
     subtitle: "Income Tax Department identity check",
-    icon: "📄",
     tips: [
       "Enter the PAN linked to your name",
       "Format: 5 letters, 4 digits, 1 letter",
@@ -49,7 +55,6 @@ const STEPS = [
     label: "Selfie",
     title: "Live face verification",
     subtitle: "Match your face with Aadhaar photo",
-    icon: "🤳",
     tips: [
       "Use good lighting and face the camera",
       "Remove glasses or hat if possible",
@@ -181,7 +186,7 @@ export default function VendorKycPage() {
     setError("");
     setBusy(true);
     try {
-      const redirectUrl = `${window.location.origin}/kyc/done`;
+      const redirectUrl = kycRedirectUrl();
       const res = await startAadhaarKyc(redirectUrl);
       if (!res.url) throw new Error("DigiLocker link was not returned.");
       window.location.href = res.url;
@@ -363,20 +368,30 @@ export default function VendorKycPage() {
               </div>
 
               <div className="p-6 sm:p-8">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-2xl">
-                    {activeMeta.icon}
+                {currentStep === "aadhaar" ? (
+                  <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium uppercase tracking-widest text-zinc-500">
+                        Step {activeMeta.number} of 3
+                      </p>
+                      <h2 className="mt-1 text-xl font-semibold text-zinc-100">{activeMeta.title}</h2>
+                      <p className="mt-1 text-sm text-zinc-400">{activeMeta.subtitle}</p>
+                      <TipsList tips={activeMeta.tips} />
+                    </div>
+                    <div className="flex shrink-0 justify-center sm:justify-end sm:pt-1">
+                      <KycAadhaarVisual active={busy} />
+                    </div>
                   </div>
+                ) : (
                   <div>
                     <p className="text-xs font-medium uppercase tracking-widest text-zinc-500">
                       Step {activeMeta.number} of 3
                     </p>
                     <h2 className="mt-1 text-xl font-semibold text-zinc-100">{activeMeta.title}</h2>
                     <p className="mt-1 text-sm text-zinc-400">{activeMeta.subtitle}</p>
+                    <TipsList tips={activeMeta.tips} />
                   </div>
-                </div>
-
-                <TipsList tips={activeMeta.tips} />
+                )}
 
                 {error && (
                   <p className="mt-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
