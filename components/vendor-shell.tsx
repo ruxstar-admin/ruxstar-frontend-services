@@ -33,19 +33,12 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { href: "/business", label: "Dashboard", icon: "◉" },
-  { href: "/business/kyc", label: "KYC verification", icon: "✓" },
+  { href: "/business/kyc", label: "Ruxstar Card", icon: "💳" },
   { href: "/business/businesses", label: "My businesses", icon: "🏪", requiresKyc: true },
   { href: "/business/orders", label: "Orders", icon: "📦", requiresKyc: true, soon: true },
   { href: "/business/analytics", label: "Analytics", icon: "📊", requiresKyc: true, soon: true },
   { href: "/business/settings", label: "Account", icon: "⚙" },
 ];
-
-function kycStatusColor(status: string, verified: boolean) {
-  if (verified) return "text-emerald-300";
-  if (status === "rejected") return "text-red-300";
-  if (status === "pending_review") return "text-blue-300";
-  return "text-amber-300";
-}
 
 function SidebarNav({
   kycVerified,
@@ -113,8 +106,6 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const kycVerified = kyc?.status === "verified";
-  const kycStatus = kyc?.status ?? "pending";
-
   const refreshKyc = useCallback(async () => {
     const status = await getVendorKycStatus();
     setKyc(status);
@@ -152,18 +143,6 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
               Ruxstar
             </Link>
             <p className="mt-0.5 text-xs text-zinc-500">Vendor portal</p>
-          </div>
-
-          <div className="border-b border-white/5 px-5 py-4">
-            <p className="truncate text-sm font-medium text-zinc-200">{user?.name || "Vendor"}</p>
-            <p className="mt-0.5 truncate text-xs text-zinc-500">
-              {user?.mobile ? `+91 ${user.mobile}` : ""}
-            </p>
-            <p
-              className={`mt-2 text-xs font-medium capitalize ${kycStatusColor(kycStatus, kycVerified)}`}
-            >
-              KYC {kycVerified ? "verified" : kycStatus.replace(/_/g, " ")}
-            </p>
           </div>
 
           <SidebarNav kycVerified={kycVerified} />
@@ -207,14 +186,6 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
                   >
                     ✕
                   </button>
-                </div>
-                <div className="border-b border-white/5 px-5 py-3">
-                  <p className="text-sm font-medium">{user?.name}</p>
-                  <p
-                    className={`mt-1 text-xs capitalize ${kycStatusColor(kycStatus, kycVerified)}`}
-                  >
-                    KYC {kycVerified ? "verified" : kycStatus.replace(/_/g, " ")}
-                  </p>
                 </div>
                 <SidebarNav
                   kycVerified={kycVerified}

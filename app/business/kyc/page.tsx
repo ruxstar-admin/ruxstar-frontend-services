@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaceCapture } from "@/components/face-capture";
 import { KycAadhaarVisual } from "@/components/kyc-aadhaar-visual";
 import { KycPanVisual } from "@/components/kyc-pan-visual";
 import { KycReviewPanel } from "@/components/kyc-review-panel";
+import { KycVerifiedPanel } from "@/components/kyc-verified-panel";
 import { useVendorShell } from "@/components/vendor-shell";
 import {
   kycStepVisual,
@@ -80,12 +80,14 @@ function StepIndicator({
   currentStep: ReturnType<typeof nextKycStep>;
 }) {
   const inReview = currentStep === "review";
+  const isVerified = currentStep === "done";
+  const allStepsDone = inReview || isVerified;
 
   return (
     <ol className="space-y-0">
       {STEPS.map((step, idx) => {
-        const visual = inReview ? "done" : kycStepVisual(step.id, kyc, currentStep);
-        const isLast = idx === STEPS.length - 1 && !inReview;
+        const visual = allStepsDone ? "done" : kycStepVisual(step.id, kyc, currentStep);
+        const isLast = idx === STEPS.length - 1 && !allStepsDone;
 
         return (
           <li key={step.id} className="relative flex gap-4">
@@ -107,7 +109,7 @@ function StepIndicator({
             >
               {visual === "done" ? "✓" : step.number}
             </div>
-            <div className={`pb-8 ${isLast && !inReview ? "pb-0" : ""}`}>
+            <div className={`pb-8 ${isLast ? "pb-0" : ""}`}>
               <p
                 className={`text-sm font-medium ${
                   visual === "active"
@@ -135,6 +137,18 @@ function StepIndicator({
           <div>
             <p className="text-sm font-medium text-blue-200">Admin review</p>
             <p className="mt-0.5 text-xs text-zinc-600">In progress</p>
+          </div>
+        </li>
+      )}
+
+      {isVerified && (
+        <li className="relative flex gap-4">
+          <div className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-500/40 bg-emerald-500/15 text-emerald-200">
+            ✓
+          </div>
+          <div>
+            <p className="text-sm font-medium text-emerald-200">Admin review</p>
+            <p className="mt-0.5 text-xs text-zinc-600">Approved</p>
           </div>
         </li>
       )}
@@ -166,9 +180,52 @@ function LoadingSkeleton() {
   );
 }
 
+function MobileStepPills({
+  kyc,
+  currentStep,
+}: {
+  kyc: VendorKycStatus | null;
+  currentStep: ReturnType<typeof nextKycStep>;
+}) {
+  const inReview = currentStep === "review";
+  const isVerified = currentStep === "done";
+  const allDone = inReview || isVerified;
+
+  return (
+    <div className="mb-4 flex gap-2 lg:hidden">
+      {STEPS.map((step) => {
+        const visual = allDone ? "done" : kycStepVisual(step.id, kyc, currentStep);
+        return (
+          <div
+            key={step.id}
+            className={`flex-1 rounded-lg py-2 text-center text-xs font-medium ${
+              visual === "done"
+                ? "bg-emerald-500/10 text-emerald-200"
+                : visual === "active"
+                  ? "bg-white/10 text-zinc-100"
+                  : "bg-white/5 text-zinc-600"
+            }`}
+          >
+            {step.label}
+          </div>
+        );
+      })}
+      {inReview && (
+        <div className="flex-1 rounded-lg bg-blue-500/10 py-2 text-center text-xs font-medium text-blue-200">
+          Review
+        </div>
+      )}
+      {isVerified && (
+        <div className="flex-1 rounded-lg bg-emerald-500/10 py-2 text-center text-xs font-medium text-emerald-200">
+          Done
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function VendorKycPage() {
-  const router = useRouter();
-  const { kyc, refreshKyc, loading: shellLoading } = useVendorShell();
+  const { user, kyc, kycVerified, refreshKyc, loading: shellLoading } = useVendorShell();
   const [loading, setLoading] = useState(shellLoading);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -177,7 +234,8 @@ export default function VendorKycPage() {
   const currentStep = nextKycStep(kyc);
   const done = completedCount(kyc);
   const progress = Math.round((done / 3) * 100);
-  const isReview = currentStep === "review";
+  const isVerified = kycVerified || currentStep === "done";
+  const inReview = !isVerified && currentStep === "review";
 
   const activeMeta = useMemo(() => {
     if (currentStep === "aadhaar") return STEPS[0];
@@ -187,12 +245,8 @@ export default function VendorKycPage() {
   }, [currentStep]);
 
   const refresh = useCallback(async () => {
-    const data = await refreshKyc();
-    if (data.status === "verified") {
-      router.replace("/business/businesses");
-    }
-    return data;
-  }, [refreshKyc, router]);
+    return refreshKyc();
+  }, [refreshKyc]);
 
   useEffect(() => {
     setLoading(shellLoading);
@@ -203,6 +257,16 @@ export default function VendorKycPage() {
       window.scrollTo({ top: 0, behavior: "auto" });
     }
   }, [currentStep]);
+
+  // While the card is awaiting admin approval, quietly poll so it flips to the
+  // Ruxstar Card automatically the moment it's approved.
+  useEffect(() => {
+    if (!inReview) return;
+    const id = setInterval(() => {
+      refreshKyc().catch(() => {});
+    }, 15000);
+    return () => clearInterval(id);
+  }, [inReview, refreshKyc]);
 
   async function onStartAadhaar() {
     setError("");
@@ -258,33 +322,44 @@ export default function VendorKycPage() {
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-widest text-zinc-500">Identity verification</p>
+          <p className="text-xs uppercase tracking-widest text-zinc-500">Ruxstar Card</p>
           <h1 className="mt-1 text-xl font-semibold sm:text-2xl">
             <span className="text-gradient">
-              {isReview ? "KYC submitted" : "Complete your KYC"}
+              {isVerified
+                ? "Your Ruxstar Card"
+                : inReview
+                  ? "Card under review"
+                  : "Get your Ruxstar Card"}
             </span>
           </h1>
           <p className="mt-1 max-w-lg text-sm text-zinc-400">
-            {isReview
-              ? "Waiting for admin approval."
-              : "Three quick steps to verify who you are. Required before onboarding businesses."}
+            {isVerified
+              ? "Your verified card is active. You're approved to onboard businesses."
+              : inReview
+                ? "Verification submitted. Your card unlocks once an admin approves."
+                : "Verify your identity in three quick steps to unlock your Ruxstar Card. Required before onboarding businesses."}
           </p>
         </div>
-        {!loading && !isReview && currentStep !== "done" && (
+        {!loading && !inReview && !isVerified && (
           <div className="text-right">
             <p className="text-xs text-zinc-500">{done} of 3 complete</p>
             <p className="text-lg font-semibold text-zinc-200">{progress}%</p>
           </div>
         )}
-        {!loading && isReview && (
+        {!loading && inReview && (
           <span className="rounded-full border border-blue-500/25 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-200">
             Pending review
+          </span>
+        )}
+        {!loading && isVerified && (
+          <span className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-200">
+            Verified
           </span>
         )}
       </div>
 
       {/* Progress bar */}
-      {!loading && !isReview && currentStep !== "done" && (
+      {!loading && !inReview && !isVerified && (
         <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-white/5">
           <div
             className="h-full rounded-full bg-gradient-to-r from-emerald-600/80 to-emerald-400/80 transition-all duration-500"
@@ -292,7 +367,7 @@ export default function VendorKycPage() {
           />
         </div>
       )}
-      {!loading && isReview && (
+      {!loading && inReview && (
         <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-white/5">
           <div className="h-full w-full rounded-full bg-gradient-to-r from-blue-600/80 to-blue-400/80" />
         </div>
@@ -314,8 +389,12 @@ export default function VendorKycPage() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[220px_1fr]">
-        {!loading && currentStep !== "done" && (
+      <div
+        className={`mt-8 ${
+          isVerified ? "" : "grid gap-8 lg:grid-cols-[220px_1fr]"
+        }`}
+      >
+        {!loading && !isVerified && (
           <aside className="hidden lg:block">
             <p className="mb-4 text-xs font-medium uppercase tracking-widest text-zinc-600">
               Your progress
@@ -329,8 +408,15 @@ export default function VendorKycPage() {
             <div className="glass rounded-2xl p-8">
               <LoadingSkeleton />
             </div>
-          ) : isReview ? (
-            <KycReviewPanel
+          ) : isVerified ? (
+            <KycVerifiedPanel
+              fallbackName={user?.name}
+              fallbackId={user?.id ?? user?._id}
+            />
+          ) : inReview ? (
+            <>
+              <MobileStepPills kyc={kyc} currentStep={currentStep} />
+              <KycReviewPanel
               busy={busy}
               error={error}
               onRefresh={async () => {
@@ -345,12 +431,14 @@ export default function VendorKycPage() {
                 }
               }}
             />
+            </>
           ) : activeMeta ? (
             <div className="glass overflow-hidden rounded-2xl">
               {/* Mobile step pills */}
               <div className="flex gap-2 border-b border-white/5 p-4 lg:hidden">
                 {STEPS.map((step) => {
-                  const visual = isReview ? "done" : kycStepVisual(step.id, kyc, currentStep);
+                  const visual =
+                    inReview || isVerified ? "done" : kycStepVisual(step.id, kyc, currentStep);
                   return (
                     <div
                       key={step.id}
@@ -366,9 +454,14 @@ export default function VendorKycPage() {
                     </div>
                   );
                 })}
-                {isReview && (
+                {inReview && (
                   <div className="flex-1 rounded-lg bg-blue-500/10 py-2 text-center text-xs font-medium text-blue-200">
                     Review
+                  </div>
+                )}
+                {isVerified && (
+                  <div className="flex-1 rounded-lg bg-emerald-500/10 py-2 text-center text-xs font-medium text-emerald-200">
+                    Verified
                   </div>
                 )}
               </div>
@@ -480,7 +573,7 @@ export default function VendorKycPage() {
             </div>
           ) : null}
 
-          {!loading && (
+          {!loading && !isVerified && (
             <p className="mt-6 text-center text-xs text-zinc-600">
               <Link href="/business" className="transition hover:text-zinc-400">
                 ← Back to dashboard

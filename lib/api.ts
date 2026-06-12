@@ -106,8 +106,15 @@ export function normalizeVendorKycStatus(raw: unknown): VendorKycStatus {
         : undefined;
 
   const statusRaw = nested.status ?? data.status ?? nested.kycStatus ?? data.kycStatus;
-  const status =
-    typeof statusRaw === "string" ? (statusRaw.toLowerCase() as KycOverallStatus) : "pending";
+  let status: KycOverallStatus = "pending";
+  if (typeof statusRaw === "string") {
+    const value = statusRaw.toLowerCase();
+    if (value === "approved" || value === "completed" || value === "success") {
+      status = "verified";
+    } else if (isKycOverallStatus(value)) {
+      status = value;
+    }
+  }
 
   const read = (key: "aadhaar" | "pan" | "face") => {
     const verifiedKey = `${key}Verified` as const;
@@ -352,6 +359,26 @@ export function vendorDestination(_kyc?: VendorKycStatus | null) {
 export async function getVendorKycStatus() {
   const data = await authedApi("vendor/kyc/status");
   return normalizeVendorKycStatus(data);
+}
+
+export type RuxstarCardData = {
+  ruxstarId: string;
+  name: string | null;
+  aadhaar: string | null;
+  pan: string | null;
+  memberSince: string | null;
+};
+
+export async function getRuxstarCard(): Promise<RuxstarCardData> {
+  const data = await authedApi("vendor/card");
+  const card = asRecord(asRecord(data).card);
+  return {
+    ruxstarId: typeof card.ruxstarId === "string" ? card.ruxstarId : "RUX-0000-0000",
+    name: typeof card.name === "string" ? card.name : null,
+    aadhaar: typeof card.aadhaar === "string" ? card.aadhaar : null,
+    pan: typeof card.pan === "string" ? card.pan : null,
+    memberSince: typeof card.memberSince === "string" ? card.memberSince : null,
+  };
 }
 
 export function startAadhaarKyc(redirectUrl: string) {
