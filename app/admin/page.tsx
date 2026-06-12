@@ -4,16 +4,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 import {
   createAdminUser,
   fetchAllAdminVendorKyc,
   filterAdminVendorKyc,
-  getStoredUser,
-  getToken,
+  getAdminVendorKyc,
   getUserRole,
   isStaffUser,
   listAdminUsers,
   reviewAdminVendorKyc,
+  setAdminUserStatus,
   type AdminUser,
   type AdminVendorKycRow,
   type KycOverallStatus,
@@ -47,7 +48,7 @@ function stepLabel(step?: { status?: string; verified?: boolean }) {
 
 export default function AdminPage() {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const { user: sessionUser, ready } = useRequireAuth({ staff: true });
   const [tab, setTab] = useState<"kyc" | "staff">("kyc");
   const [kycFilter, setKycFilter] = useState<KycOverallStatus | "all">("pending_review");
   const [allKycRows, setAllKycRows] = useState<AdminVendorKycRow[]>([]);
@@ -65,8 +66,8 @@ export default function AdminPage() {
   const [staffRole, setStaffRole] = useState<"employee" | "admin">("employee");
   const [creatingStaff, setCreatingStaff] = useState(false);
 
-  const adminName = getStoredUser()?.name ?? "Admin";
-  const isAdmin = getUserRole(getStoredUser()) === "admin";
+  const adminName = sessionUser?.name ?? "Admin";
+  const isAdmin = getUserRole(sessionUser) === "admin";
 
   const kycRows = useMemo(
     () => filterAdminVendorKyc(allKycRows, kycFilter),
@@ -79,34 +80,65 @@ export default function AdminPage() {
     setPendingCount(rows.filter((row) => row.status === "pending_review").length);
   }, []);
 
+  const loadStaff = useCallback(async () => {
+    const [admins, employees] = await Promise.all([
+      listAdminUsers("admin"),
+      listAdminUsers("employee"),
+    ]);
+    const byId = new Map<string, AdminUser>();
+    for (const u of [...admins, ...employees]) {
+      byId.set(u._id ?? u.id ?? u.mobile ?? Math.random().toString(), u);
+    }
+    setStaff([...byId.values()]);
+  }, []);
+
   const refresh = useCallback(async () => {
     setError("");
     setLoading(true);
     try {
-      const staffRows = await listAdminUsers("employee");
-      await loadKyc();
-      setStaff(staffRows);
+      await Promise.all([loadKyc(), loadStaff()]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load admin data");
     } finally {
       setLoading(false);
     }
-  }, [loadKyc]);
+  }, [loadKyc, loadStaff]);
+
+  async function onToggleStaffStatus(user: AdminUser) {
+    const id = user._id ?? user.id;
+    if (!id) return;
+    const next = user.status === "disabled" ? "active" : "disabled";
+    setBusyId(id);
+    setError("");
+    try {
+      await setAdminUserStatus(id, next);
+      await loadStaff();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not update staff status");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function onRefreshKycRow(vendorUserId: string) {
+    setBusyId(vendorUserId);
+    setError("");
+    try {
+      const fresh = await getAdminVendorKyc(vendorUserId);
+      setAllKycRows((rows) =>
+        rows.map((row) => (row.userId === vendorUserId ? fresh : row)),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not refresh vendor KYC");
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   useEffect(() => {
-    const token = getToken();
-    const user = getStoredUser();
-    if (!token || !user) {
-      router.replace("/login");
-      return;
-    }
-    if (!isStaffUser(user)) {
-      router.replace("/customer");
-      return;
-    }
-    setReady(true);
+    if (!ready) return;
     refresh();
-  }, [refresh, router]);
+  }, [ready, refresh]);
 
   async function onApprove(vendorUserId: string) {
     setBusyId(vendorUserId);
@@ -164,8 +196,7 @@ export default function AdminPage() {
       setStaffName("");
       setStaffPassword("");
       setStaffRole("employee");
-      const staffRows = await listAdminUsers("employee");
-      setStaff(staffRows);
+      await loadStaff();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create staff user");
     } finally {
@@ -276,11 +307,22 @@ export default function AdminPage() {
                           {row.businessName ? ` · ${row.businessName}` : ""}
                         </p>
                       </div>
-                      <span
-                        className={`rounded-full border px-3 py-1 text-xs font-medium capitalize ${statusBadge(row.status)}`}
-                      >
-                        {row.status.replace("_", " ")}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`rounded-full border px-3 py-1 text-xs font-medium capitalize ${statusBadge(row.status)}`}
+                        >
+                          {row.status.replace("_", " ")}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={busyId === row.userId}
+                          onClick={() => onRefreshKycRow(row.userId)}
+                          className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-400 transition hover:bg-white/5 disabled:opacity-60"
+                          title="Pull the latest status for this vendor"
+                        >
+                          {busyId === row.userId ? "…" : "Refresh"}
+                        </button>
+                      </div>
                     </div>
 
                     <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
@@ -373,20 +415,43 @@ export default function AdminPage() {
                 <p className="mt-6 text-sm text-zinc-500">No staff users yet.</p>
               ) : (
                 <ul className="mt-6 space-y-3">
-                  {staff.map((user) => (
-                    <li
-                      key={user._id ?? user.id ?? user.mobile}
-                      className="flex items-center justify-between rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm"
-                    >
-                      <div>
-                        <p className="font-medium text-zinc-200">{user.name ?? "Unnamed"}</p>
-                        <p className="text-zinc-500">
-                          +91 {user.mobile ?? "—"} · {user.role ?? user.roles?.[0] ?? "employee"}
-                        </p>
-                      </div>
-                      <span className="text-xs capitalize text-zinc-500">{user.status ?? "active"}</span>
-                    </li>
-                  ))}
+                  {staff.map((user) => {
+                    const id = user._id ?? user.id;
+                    const disabled = user.status === "disabled";
+                    const isSelf = id != null && id === (sessionUser?.id ?? sessionUser?._id);
+                    return (
+                      <li
+                        key={id ?? user.mobile}
+                        className="flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm"
+                      >
+                        <div>
+                          <p className="font-medium text-zinc-200">{user.name ?? "Unnamed"}</p>
+                          <p className="text-zinc-500">
+                            +91 {user.mobile ?? "—"} · {user.role ?? user.roles?.[0] ?? "employee"}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`text-xs capitalize ${
+                              disabled ? "text-red-300" : "text-emerald-300"
+                            }`}
+                          >
+                            {user.status ?? "active"}
+                          </span>
+                          {isAdmin && !isSelf && (
+                            <button
+                              type="button"
+                              disabled={busyId === id}
+                              onClick={() => onToggleStaffStatus(user)}
+                              className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-300 transition hover:bg-white/5 disabled:opacity-60"
+                            >
+                              {busyId === id ? "…" : disabled ? "Enable" : "Disable"}
+                            </button>
+                          )}
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>

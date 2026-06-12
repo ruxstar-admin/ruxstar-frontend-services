@@ -1,6 +1,19 @@
+"use client";
+
 import { LogoutButton } from "@/components/logout-button";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 
 export default function DeliveryPage() {
+  const { ready } = useRequireAuth({ roles: ["delivery"] });
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-sm text-white/50">Loading…</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">

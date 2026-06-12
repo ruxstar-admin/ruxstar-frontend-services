@@ -1,11 +1,24 @@
 import { normalizeFaceImagePayload } from "@/lib/face-image";
 
-type AuthUser = {
+export type AuthUser = {
+  id?: string;
+  _id?: string;
   role?: string;
   roles?: string[];
   name?: string;
   mobile?: string;
+  status?: string;
 };
+
+export class AuthError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status = 401) {
+    super(message);
+    this.name = "AuthError";
+    this.status = status;
+  }
+}
 
 export type KycOverallStatus =
   | "pending"
@@ -151,12 +164,6 @@ async function api(path: string, init?: RequestInit) {
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    if (res.status === 409) {
-      throw new Error("Oops! That number's already on Ruxstar — log in instead?");
-    }
-    if (res.status === 404) {
-      throw new Error("No account with that number — sign up first?");
-    }
     const detail =
       (typeof data.message === "string" && data.message) ||
       (typeof data.error === "string" && data.error) ||
@@ -164,6 +171,16 @@ async function api(path: string, init?: RequestInit) {
       (data.errors &&
         typeof data.errors === "object" &&
         Object.values(data.errors as Record<string, unknown>).find((v) => typeof v === "string"));
+
+    if (res.status === 401) {
+      throw new AuthError((detail as string | undefined) ?? "Session expired", 401);
+    }
+    if (res.status === 409) {
+      throw new Error("Oops! That number's already on Ruxstar — log in instead?");
+    }
+    if (res.status === 404) {
+      throw new Error((detail as string | undefined) ?? "No account with that number — sign up first?");
+    }
     throw new Error((detail as string | undefined) ?? `Request failed (${res.status})`);
   }
 
@@ -195,6 +212,10 @@ function postAuthed(path: string, body: unknown) {
   return authedApi(path, { method: "POST", body: JSON.stringify(body) });
 }
 
+function postAuthedMethod(path: string, method: "POST" | "PATCH" | "PUT", body: unknown) {
+  return authedApi(path, { method, body: JSON.stringify(body) });
+}
+
 export function postAuth(path: string, body: unknown) {
   return postJson(`auth/${path}`, body);
 }
@@ -224,6 +245,36 @@ export function clearSession() {
   localStorage.removeItem("ruxstar_token");
   localStorage.removeItem("ruxstar_user");
 }
+
+/** Validate JWT with backend and refresh cached user from the database. */
+export async function refreshSession(): Promise<AuthUser> {
+  const token = getToken();
+  if (!token) {
+    throw new AuthError("Please log in to continue.", 401);
+  }
+
+  try {
+    const data = await authedApi("auth/me");
+    const payload = data && typeof data === "object" ? (data as Record<string, unknown>) : {};
+    const user = payload.user;
+
+    if (!user || typeof user !== "object") {
+      clearSession();
+      throw new AuthError("Session invalid", 401);
+    }
+
+    saveSession(token, user);
+    return user as AuthUser;
+  } catch (err) {
+    if (err instanceof AuthError) {
+      clearSession();
+    }
+    throw err;
+  }
+}
+
+/** @deprecated Use refreshSession — kept as a readable alias. */
+export const getMe = refreshSession;
 
 export async function logout() {
   const token = localStorage.getItem("ruxstar_token");
@@ -293,9 +344,9 @@ export function nextKycStep(kyc: VendorKycStatus | null | undefined) {
   return "review" as const;
 }
 
-export function vendorDestination(kyc: VendorKycStatus | null | undefined) {
-  if (kyc?.status === "verified") return "/business";
-  return "/business/kyc";
+export function vendorDestination(_kyc?: VendorKycStatus | null) {
+  // Vendors always land on their dashboard; KYC is gated inside it.
+  return "/business";
 }
 
 export async function getVendorKycStatus() {
@@ -334,15 +385,148 @@ export function isAadhaarVerified(kyc: VendorKycStatus | null | undefined) {
 }
 
 export async function resolvePostAuthPath(user: AuthUser | null | undefined, fallback = "customer") {
-  const role = getUserRole(user, fallback);
-  if (role === "admin" || role === "employee") return "/admin";
-  if (role !== "vendor") return homeForRole(role);
+  return homeForUser(user, fallback);
+}
 
+/* ------------------------------------------------------------------ */
+/* Customer profile + role switching                                   */
+/* ------------------------------------------------------------------ */
+
+export type CustomerProfile = {
+  id?: string;
+  name?: string;
+  mobile?: string;
+  roles?: string[];
+};
+
+export async function getCustomerProfile(): Promise<CustomerProfile> {
+  const data = await authedApi("user/profile");
+  const user = asRecord(asRecord(data).user);
+  return {
+    id: typeof user._id === "string" ? user._id : typeof user.id === "string" ? user.id : undefined,
+    name: typeof user.name === "string" ? user.name : undefined,
+    mobile: typeof user.mobile === "string" ? user.mobile : undefined,
+    roles: Array.isArray(user.roles) ? (user.roles as string[]) : undefined,
+  };
+}
+
+export async function updateCustomerProfile(name: string): Promise<CustomerProfile> {
+  const data = await postAuthedMethod("user/profile", "PATCH", { name });
+  const user = asRecord(asRecord(data).user);
+  return {
+    id: typeof user._id === "string" ? user._id : typeof user.id === "string" ? user.id : undefined,
+    name: typeof user.name === "string" ? user.name : undefined,
+    mobile: typeof user.mobile === "string" ? user.mobile : undefined,
+    roles: Array.isArray(user.roles) ? (user.roles as string[]) : undefined,
+  };
+}
+
+/** Customer → vendor. Saves the refreshed session and returns the new user. */
+export async function becomeVendor(businessName?: string): Promise<AuthUser> {
+  const data = await postAuthed("user/become-vendor", businessName ? { businessName } : {});
+  const payload = asRecord(data);
+  const token = typeof payload.token === "string" ? payload.token : getToken();
+  const user = payload.user as AuthUser | undefined;
+  if (token && user) saveSession(token, user);
+  return (user ?? {}) as AuthUser;
+}
+
+/** Vendor → customer. Saves the refreshed session and returns the new user. */
+export async function becomeCustomer(): Promise<AuthUser> {
+  const data = await postAuthed("vendor/become-customer", {});
+  const payload = asRecord(data);
+  const token = typeof payload.token === "string" ? payload.token : getToken();
+  const user = payload.user as AuthUser | undefined;
+  if (token && user) saveSession(token, user);
+  return (user ?? {}) as AuthUser;
+}
+
+/* ------------------------------------------------------------------ */
+/* Vendor business profile + customers (KYC-verified only)             */
+/* ------------------------------------------------------------------ */
+
+export type VendorProfile = {
+  businessName?: string;
+  category?: string;
+  description?: string;
+  phone?: string;
+  address?: string;
+};
+
+export class KycRequiredError extends Error {
+  constructor() {
+    super("Complete KYC to manage your business.");
+    this.name = "KycRequiredError";
+  }
+}
+
+function readVendorProfile(raw: unknown): VendorProfile {
+  const profile = asRecord(asRecord(raw).profile);
+  const str = (v: unknown) => (typeof v === "string" ? v : undefined);
+  return {
+    businessName: str(profile.businessName),
+    category: str(profile.category),
+    description: str(profile.description),
+    phone: str(profile.phone),
+    address: str(profile.address),
+  };
+}
+
+export async function getVendorProfile(): Promise<VendorProfile> {
   try {
-    const kyc = await getVendorKycStatus();
-    return vendorDestination(kyc);
-  } catch {
-    return "/business/kyc";
+    return readVendorProfile(await authedApi("vendor/profile"));
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("kyc")) throw new KycRequiredError();
+    throw err;
+  }
+}
+
+export async function updateVendorProfile(patch: VendorProfile): Promise<VendorProfile> {
+  try {
+    return readVendorProfile(await postAuthedMethod("vendor/profile", "PATCH", patch));
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("kyc")) throw new KycRequiredError();
+    throw err;
+  }
+}
+
+export type VendorCustomer = {
+  id?: string;
+  name?: string;
+  mobile?: string;
+  status?: string;
+};
+
+function readCustomer(raw: Record<string, unknown>): VendorCustomer {
+  return {
+    id: typeof raw._id === "string" ? raw._id : typeof raw.id === "string" ? raw.id : undefined,
+    name: typeof raw.name === "string" ? raw.name : undefined,
+    mobile: typeof raw.mobile === "string" ? raw.mobile : undefined,
+    status: typeof raw.status === "string" ? raw.status : undefined,
+  };
+}
+
+export async function listVendorCustomers(): Promise<VendorCustomer[]> {
+  try {
+    const data = await authedApi("vendor/users");
+    return asList(data).map(readCustomer);
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("kyc")) throw new KycRequiredError();
+    throw err;
+  }
+}
+
+export async function createVendorCustomer(body: {
+  name: string;
+  mobile: string;
+  password: string;
+}): Promise<VendorCustomer> {
+  try {
+    const data = await postAuthed("vendor/users", body);
+    return readCustomer(asRecord(asRecord(data).user));
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("kyc")) throw new KycRequiredError();
+    throw err;
   }
 }
 
@@ -490,6 +674,11 @@ export async function updateAdminUser(userId: string, body: Record<string, unkno
     method: "PATCH",
     body: JSON.stringify(body),
   });
+}
+
+export async function setAdminUserStatus(userId: string, status: "active" | "disabled") {
+  const data = await updateAdminUser(userId, { status });
+  return normalizeAdminUser(asRecord(asRecord(data).user));
 }
 
 export function filterAdminVendorKyc(

@@ -6,9 +6,8 @@ import { useCallback, useEffect, useState } from "react";
 import { FaceCapture } from "@/components/face-capture";
 import { LogoutButton } from "@/components/logout-button";
 import { Particles } from "@/components/particles";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 import {
-  getToken,
-  getUserRole,
   getVendorKycStatus,
   kycStepVisual,
   nextKycStep,
@@ -33,6 +32,7 @@ const steps = [
 
 export default function VendorKycPage() {
   const router = useRouter();
+  const { ready: authReady } = useRequireAuth({ roles: ["vendor"] });
   const [kyc, setKyc] = useState<VendorKycStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -51,30 +51,12 @@ export default function VendorKycPage() {
   }, [router]);
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
-
-    const user = localStorage.getItem("ruxstar_user");
-    if (user) {
-      try {
-        const parsed = JSON.parse(user);
-        if (getUserRole(parsed) !== "vendor") {
-          router.replace("/customer");
-          return;
-        }
-      } catch {
-        router.replace("/login");
-        return;
-      }
-    }
+    if (!authReady) return;
 
     refresh()
       .catch((err) => setError(err instanceof Error ? err.message : "Could not load KYC status"))
       .finally(() => setLoading(false));
-  }, [refresh, router]);
+  }, [authReady, refresh]);
 
   async function onStartAadhaar() {
     setError("");
@@ -136,6 +118,14 @@ export default function VendorKycPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  if (!authReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-sm text-white/50">Loading…</p>
+      </div>
+    );
   }
 
   return (

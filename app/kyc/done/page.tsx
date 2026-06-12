@@ -4,19 +4,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Particles } from "@/components/particles";
-import { getToken, isAadhaarVerified, syncAadhaarKyc } from "@/lib/api";
+import { useRequireAuth } from "@/hooks/use-require-auth";
+import { isAadhaarVerified, syncAadhaarKyc } from "@/lib/api";
 
 export default function KycDonePage() {
   const router = useRouter();
+  const { ready: authReady } = useRequireAuth({ roles: ["vendor"] });
   const [message, setMessage] = useState("Syncing your Aadhaar verification…");
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
+    if (!authReady) return;
 
     let cancelled = false;
 
@@ -46,7 +44,15 @@ export default function KycDonePage() {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [authReady, router]);
+
+  if (!authReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-sm text-white/50">Loading…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden">
