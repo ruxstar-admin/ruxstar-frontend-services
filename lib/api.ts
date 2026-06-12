@@ -133,12 +133,14 @@ export function normalizeVendorKycStatus(raw: unknown): VendorKycStatus {
 }
 
 async function api(path: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers);
+  if (init?.body != null && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const res = await fetch(`/api/${path}`, {
     ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers as Record<string, string> | undefined),
-    },
+    headers,
   });
   const data = await res.json().catch(() => ({}));
 
@@ -166,17 +168,29 @@ async function authedApi(path: string, init?: RequestInit) {
   const token = getToken();
   if (!token) throw new Error("Please log in to continue.");
 
+  const headers = new Headers(init?.headers);
+  headers.set("Authorization", `Bearer ${token}`);
+
   return api(path, {
     ...init,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...init?.headers,
-    },
+    headers,
   });
 }
 
+function postJson(path: string, body: unknown, init?: Omit<RequestInit, "method" | "body">) {
+  return api(path, {
+    ...init,
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+function postAuthed(path: string, body: unknown) {
+  return authedApi(path, { method: "POST", body: JSON.stringify(body) });
+}
+
 export function postAuth(path: string, body: unknown) {
-  return api(`auth/${path}`, { method: "POST", body: JSON.stringify(body) });
+  return postJson(`auth/${path}`, body);
 }
 
 export function getToken() {
@@ -296,10 +310,7 @@ export async function syncAadhaarKyc() {
 }
 
 export async function verifyPanKyc(pan: string) {
-  await authedApi("vendor/kyc/pan", {
-    method: "POST",
-    body: JSON.stringify({ pan: pan.toUpperCase() }),
-  });
+  await postAuthed("vendor/kyc/pan", { pan: pan.toUpperCase() });
   return getVendorKycStatus();
 }
 

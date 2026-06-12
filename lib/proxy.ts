@@ -26,7 +26,13 @@ export async function proxyBackend(path: string, request?: Request) {
   const init: RequestInit = { method, headers, cache: "no-store" };
 
   if (request && method !== "GET" && method !== "HEAD") {
-    init.body = await request.text();
+    const body = await request.text();
+    if (body) {
+      init.body = body;
+      // Express only parses JSON when Content-Type is set.
+      headers["Content-Type"] =
+        request.headers.get("content-type") ?? "application/json";
+    }
   }
 
   try {
