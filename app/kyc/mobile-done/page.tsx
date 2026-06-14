@@ -51,18 +51,17 @@ function MobileDoneContent() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        {/* Icon */}
-        <div style={{ ...styles.iconWrap, ...styles.iconGreen }}>
-          <span style={{ fontSize: 30, color: "#16a34a", fontWeight: 700 }}>✓</span>
+        {/* Icon — neutral, not a success tick */}
+        <div style={{ ...styles.iconWrap, ...styles.iconBlue }}>
+          <span style={{ fontSize: 30 }}>↩</span>
         </div>
 
         {/* Copy */}
         <div style={{ textAlign: "center" }}>
-          <p style={styles.eyebrow}>Step 1 · Aadhaar</p>
-          <h1 style={styles.heading}>DigiLocker verified!</h1>
+          <p style={styles.eyebrow}>KYC · In progress</p>
+          <h1 style={styles.heading}>Return to the app to continue</h1>
           <p style={styles.sub}>
-            Your Aadhaar authentication is complete. Tap below to return to the
-            Ruxstar app and continue your KYC.
+            Your DigiLocker session is complete. Head back to the Ruxstar app — it will confirm your details and guide you through the remaining steps.
           </p>
         </div>
 
@@ -70,8 +69,8 @@ function MobileDoneContent() {
         {linkFailed && (
           <p style={styles.fallback}>
             The app didn&apos;t open automatically.{" "}
-            <strong style={{ color: "#0A0A0F" }}>Close this page</strong> to
-            return to Ruxstar.
+            <strong style={{ color: "#0A0A0F" }}>Close this page</strong> and
+            reopen Ruxstar to complete the remaining steps.
           </p>
         )}
 
@@ -84,13 +83,12 @@ function MobileDoneContent() {
             ...(opened && !linkFailed ? styles.btnLoading : {}),
           }}
         >
-          {opened && !linkFailed ? "Opening Ruxstar…" : "Continue to Ruxstar →"}
+          {opened && !linkFailed ? "Opening Ruxstar…" : "Continue KYC in Ruxstar →"}
         </button>
 
         <p style={styles.note}>
-          If the app doesn&apos;t open,{" "}
-          <strong style={{ color: "#6C6C70" }}>close this page</strong> to
-          return to Ruxstar.
+          Your KYC is <strong style={{ color: "#AEAEB2" }}>not complete yet</strong> — the app will take care of the next steps.
+          If it doesn&apos;t open, <strong style={{ color: "#6C6C70" }}>close this page</strong> to return.
         </p>
       </div>
 
@@ -105,8 +103,8 @@ export default function KycMobileDonePage() {
       fallback={
         <div style={styles.page}>
           <div style={styles.card}>
-            <div style={{ ...styles.iconWrap, ...styles.iconGreen }}>
-              <span style={{ fontSize: 30, color: "#16a34a", fontWeight: 700 }}>✓</span>
+            <div style={{ ...styles.iconWrap, ...styles.iconBlue }}>
+              <span style={{ fontSize: 30 }}>↩</span>
             </div>
             <p style={styles.sub}>Loading…</p>
           </div>
@@ -156,6 +154,10 @@ const styles: Record<string, React.CSSProperties> = {
   iconGreen: {
     backgroundColor: "rgba(22,163,74,0.10)",
     border: "1px solid rgba(22,163,74,0.25)",
+  },
+  iconBlue: {
+    backgroundColor: "rgba(99,102,241,0.10)",
+    border: "1px solid rgba(99,102,241,0.25)",
   },
   eyebrow: {
     margin: 0,
