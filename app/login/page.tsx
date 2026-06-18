@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { LoginMascot } from "@/components/login-mascot";
 import { Particles } from "@/components/particles-lazy";
 import { postAuth, resolvePostAuthPath, saveSession } from "@/lib/api";
 
 const input = "field-input";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next");
@@ -206,5 +206,19 @@ export default function LoginPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#050505]">
+          <p className="text-sm text-white/50">Loading…</p>
+        </div>
+      }
+    >
+      <LoginPageContent />
+    </Suspense>
   );
 }
