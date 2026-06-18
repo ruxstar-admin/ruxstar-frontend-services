@@ -5,16 +5,16 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   businessPhotoUrl,
-  createCustomerBooking,
   getPublicBusiness,
   getStoredUser,
   getToken,
   getUserRole,
+  initiateCustomerBooking,
   listPublicBusinessSlots,
   type BusinessSlot,
   type PublicBusiness,
 } from "@/lib/api";
-import { invalidateCustomerBookings } from "@/lib/swr-hooks";
+import { openCashfreeCheckout } from "@/lib/cashfree-checkout";
 import { isPartyVenueSetup } from "@/lib/business-setup";
 import {
   addDays,
@@ -292,24 +292,17 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
     setError("");
     setSuccess("");
     try {
-      await createCustomerBooking({
+      const { payment } = await initiateCustomerBooking({
         businessId,
         resourceId: selectedSlot.resourceId,
         startAt: selectedSlot.startAt,
       });
-      const isFullDayBooking = business?.setup.bookingMode === "fullDay";
-      setSuccess(
-        isFullDayBooking
-          ? `Booked full day on ${formatDayLabel(selectedSlot.date)}.`
-          : `Booked ${formatTime12(selectedSlot.startTime)} on ${formatDayLabel(selectedSlot.date)}.`,
+      await openCashfreeCheckout(
+        payment.paymentSessionId,
+        payment.mode === "production" ? "production" : "sandbox",
       );
-      setSlots((prev) =>
-        prev.map((s) => (s.id === selectedSlot.id ? { ...s, status: "unavailable" } : s)),
-      );
-      setSelectedSlot(null);
-      invalidateCustomerBookings();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not complete booking.");
+      setError(err instanceof Error ? err.message : "Could not start payment.");
     } finally {
       setBookingId("");
     }
@@ -432,7 +425,7 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                 Book your slot
               </p>
               <p className="mt-0.5 text-sm text-zinc-400">
-                {isFullDay ? "Pick a day, then confirm." : "Pick a day & time, then confirm."}
+                {isFullDay ? "Pick a day, pay, then you're booked." : "Pick a day & time, pay, then you're booked."}
               </p>
             </div>
 
@@ -610,7 +603,7 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                     onClick={() => void confirmBooking()}
                     className="btn-primary rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-60"
                   >
-                    {bookingId === selectedSlot.id ? "Booking…" : "Confirm booking"}
+                    {bookingId === selectedSlot.id ? "Redirecting to pay…" : "Pay & book"}
                   </button>
                 </div>
               </div>

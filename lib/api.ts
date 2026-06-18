@@ -183,7 +183,11 @@ async function api(path: string, init?: RequestInit) {
       throw new AuthError((detail as string | undefined) ?? "Session expired", 401);
     }
     if (res.status === 409) {
-      throw new Error("Oops! That number's already on Ruxstar — log in instead?");
+      const msg = typeof detail === "string" ? detail : "";
+      if (/mobile already registered/i.test(msg)) {
+        throw new Error("Oops! That number's already on Ruxstar — log in instead?");
+      }
+      throw new Error(msg || "That slot is no longer available. Please pick another time.");
     }
     if (res.status === 404) {
       throw new Error((detail as string | undefined) ?? "No account with that number — sign up first?");
@@ -1246,10 +1250,30 @@ export type CustomerBooking = {
   startAt: string;
   endAt: string;
   pricePerSlot: number;
+  amount?: number;
+  currency?: string;
   customerName: string;
   customerMobile: string;
   status: string;
+  paymentStatus?: string | null;
+  expiresAt?: string | null;
+  paidAt?: string | null;
   createdAt?: string;
+};
+
+export type InitiateBookingPayment = {
+  orderId: string;
+  cashfreeOrderId: string;
+  paymentSessionId: string;
+  amount: number;
+  currency: string;
+  expiresAt: string;
+  mode: "sandbox" | "production";
+};
+
+export type InitiateBookingResult = {
+  booking: CustomerBooking;
+  payment: InitiateBookingPayment;
 };
 
 function normalizePublicBusiness(raw: unknown): PublicBusiness {
@@ -1293,10 +1317,31 @@ function normalizeCustomerBooking(raw: unknown): CustomerBooking | null {
     startAt: str(b.startAt),
     endAt: str(b.endAt),
     pricePerSlot: typeof b.pricePerSlot === "number" ? b.pricePerSlot : 0,
+    amount: typeof b.amount === "number" ? b.amount : undefined,
+    currency: typeof b.currency === "string" ? b.currency : undefined,
     customerName: str(b.customerName),
     customerMobile: str(b.customerMobile),
     status: str(b.status) || "confirmed",
+    paymentStatus: typeof b.paymentStatus === "string" ? b.paymentStatus : null,
+    expiresAt: typeof b.expiresAt === "string" ? b.expiresAt : null,
+    paidAt: typeof b.paidAt === "string" ? b.paidAt : null,
     createdAt: str(b.createdAt) || undefined,
+  };
+}
+
+function normalizeInitiatePayment(raw: unknown): InitiateBookingPayment | null {
+  const p = asRecord(raw);
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const paymentSessionId = str(p.paymentSessionId);
+  if (!paymentSessionId) return null;
+  return {
+    orderId: str(p.orderId),
+    cashfreeOrderId: str(p.cashfreeOrderId),
+    paymentSessionId,
+    amount: typeof p.amount === "number" ? p.amount : 0,
+    currency: str(p.currency) || "INR",
+    expiresAt: str(p.expiresAt),
+    mode: str(p.mode) === "production" ? "production" : "sandbox",
   };
 }
 
@@ -1331,6 +1376,26 @@ export async function createCustomerBooking(body: {
   const data = await postAuthed("user/bookings", body);
   const booking = normalizeCustomerBooking(asRecord(data).booking);
   if (!booking) throw new Error("Booking failed.");
+  return booking;
+}
+
+export async function initiateCustomerBooking(body: {
+  businessId: string;
+  resourceId: string;
+  startAt: string;
+}): Promise<InitiateBookingResult> {
+  const data = await postAuthed("user/bookings/initiate", body);
+  const root = asRecord(data);
+  const booking = normalizeCustomerBooking(root.booking);
+  const payment = normalizeInitiatePayment(root.payment);
+  if (!booking || !payment) throw new Error("Could not start payment.");
+  return { booking, payment };
+}
+
+export async function getCustomerBookingStatus(bookingId: string): Promise<CustomerBooking> {
+  const data = await authedApi(`user/bookings/${encodeURIComponent(bookingId)}`);
+  const booking = normalizeCustomerBooking(asRecord(data).booking);
+  if (!booking) throw new Error("Booking not found.");
   return booking;
 }
 

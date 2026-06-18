@@ -37,9 +37,11 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
   ).length;
 
   const initial = (profile?.name || "?").trim().charAt(0).toUpperCase();
-  const mobileTitle = pathname.startsWith("/customer/book")
-    ? "Book"
-    : NAV.find((n) => n.id === view)?.label ?? "Discover";
+  const mobileTitle = pathname.startsWith("/customer/payment-status")
+    ? "Payment"
+    : pathname.startsWith("/customer/book")
+      ? "Book"
+      : NAV.find((n) => n.id === view)?.label ?? "Discover";
   const isBookPage = pathname.startsWith("/customer/book");
 
   if (!ready) {
