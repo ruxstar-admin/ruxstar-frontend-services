@@ -646,6 +646,28 @@ function FilterChip({
   );
 }
 
+function BookingStatusBadge({ status, paymentStatus }: { status: string; paymentStatus?: string | null }) {
+  let label = "Confirmed";
+  let cls = "border-emerald-400/25 bg-emerald-400/10 text-emerald-300";
+  if (status === "cancelled") {
+    label = "Cancelled";
+    cls = "border-red-400/25 bg-red-400/10 text-red-300";
+  } else if (status === "pending_payment" || paymentStatus === "pending") {
+    label = "Awaiting payment";
+    cls = "border-amber-400/25 bg-amber-400/10 text-amber-300";
+  } else if (status === "expired" || paymentStatus === "failed") {
+    label = "Payment failed";
+    cls = "border-red-400/25 bg-red-400/10 text-red-300";
+  } else if (paymentStatus === "paid") {
+    label = "Paid";
+  }
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${cls}`}>
+      {label}
+    </span>
+  );
+}
+
 function BookingRow({
   booking,
   cancelling,
@@ -658,7 +680,9 @@ function BookingRow({
     resourceName: string;
     startAt: string;
     pricePerSlot: number;
+    amount?: number;
     status: string;
+    paymentStatus?: string | null;
   };
   cancelling?: boolean;
   onCancel?: () => void;
@@ -682,12 +706,16 @@ function BookingRow({
   const timeLabel = formatTime12(istTime);
   const dateLabel = formatDayLabel(booking.startAt.slice(0, 10));
   const cancelled = booking.status === "cancelled";
+  const pending = booking.status === "pending_payment" || booking.paymentStatus === "pending";
+  const amount = typeof booking.amount === "number" ? booking.amount : booking.pricePerSlot;
 
   return (
     <li
-      className={`flex items-center gap-4 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 ${
-        past ? "opacity-70" : ""
-      }`}
+      className={`flex items-center gap-4 rounded-xl border px-4 py-3 ${
+        pending
+          ? "border-amber-400/20 bg-amber-400/[0.03]"
+          : "border-white/5 bg-white/[0.02]"
+      } ${past ? "opacity-70" : ""}`}
     >
       <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-white/5 text-center">
         <span className="text-[10px] uppercase tracking-wide text-zinc-500">{weekday}</span>
@@ -698,11 +726,14 @@ function BookingRow({
         <p className="truncate text-sm text-zinc-500">
           {booking.resourceName} · {dateLabel} · {timeLabel}
         </p>
+        <div className="mt-1.5">
+          <BookingStatusBadge status={booking.status} paymentStatus={booking.paymentStatus} />
+        </div>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
-        <span className="text-sm text-zinc-300">₹{booking.pricePerSlot.toLocaleString("en-IN")}</span>
-        {cancelled ? (
-          <span className="text-xs text-red-300/80">Cancelled</span>
+        <span className="text-sm text-zinc-300">₹{amount.toLocaleString("en-IN")}</span>
+        {cancelled ? null : pending ? (
+          <span className="text-xs text-amber-300/70">Hold</span>
         ) : onCancel ? (
           <button
             type="button"

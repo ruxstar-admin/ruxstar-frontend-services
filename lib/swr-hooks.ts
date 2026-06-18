@@ -7,12 +7,14 @@ import {
   listBusinesses,
   listCustomerBookings,
   listPublicBusinesses,
+  listVendorBookings,
   type Business,
   type BusinessCatalog,
   type CustomerBooking,
   type CustomerProfile,
   type PublicBusinessSummary,
   type RuxstarCardData,
+  type VendorBooking,
   type VendorKycStatus,
 } from "@/lib/api";
 
@@ -24,6 +26,7 @@ export const swrKeys = {
   customerBookings: "swr/user/bookings",
   customerProfile: "swr/user/profile",
   publicBusinesses: "swr/public/businesses",
+  vendorBookings: "swr/vendor/bookings",
 } as const;
 
 export function invalidateBusinesses() {
@@ -78,4 +81,10 @@ export function useCustomerBookings(enabled = true) {
 
 export function useCustomerProfile(enabled = true) {
   return useSWR<CustomerProfile>(enabled ? swrKeys.customerProfile : null, getCustomerProfile);
+}
+
+export function useVendorBookings(enabled = true) {
+  return useSWR<VendorBooking[]>(enabled ? swrKeys.vendorBookings : null, () =>
+    listVendorBookings(),
+  );
 }

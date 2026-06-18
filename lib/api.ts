@@ -1403,6 +1403,27 @@ export async function cancelCustomerBooking(bookingId: string): Promise<void> {
   await authedApi(`user/bookings/${bookingId}`, { method: "DELETE" });
 }
 
+// Vendor-facing bookings (paid orders) reuse the same shape — they carry the
+// customer's name/mobile so vendors know who booked each slot.
+export type VendorBooking = CustomerBooking;
+
+export async function listVendorBookings(params?: {
+  businessId?: string;
+}): Promise<VendorBooking[]> {
+  const qs = new URLSearchParams();
+  if (params?.businessId) qs.set("businessId", params.businessId);
+  const suffix = qs.toString() ? `?${qs}` : "";
+  try {
+    const data = await authedApi(`vendor/bookings${suffix}`);
+    const list = asRecord(data).bookings;
+    return Array.isArray(list)
+      ? list.map(normalizeCustomerBooking).filter((b): b is VendorBooking => b !== null)
+      : [];
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Business catalog (DB-backed, shared by web + app)                   */
 /* ------------------------------------------------------------------ */
