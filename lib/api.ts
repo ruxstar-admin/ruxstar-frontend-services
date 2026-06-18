@@ -569,6 +569,863 @@ export async function updateVendorProfile(patch: VendorProfile): Promise<VendorP
 }
 
 
+/* ------------------------------------------------------------------ */
+/* Vendor businesses (multi-business, KYC-verified only)               */
+/* ------------------------------------------------------------------ */
+
+export type BusinessModule =
+  | "events"
+  | "appointments"
+  | "services"
+  | "commerce"
+  | "creator";
+
+export type DayKey = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
+
+export type DayHours = {
+  open: string;
+  close: string;
+  closed: boolean;
+};
+
+export type WeeklyHours = Record<DayKey, DayHours>;
+
+export type BusinessResource = {
+  id: string;
+  name: string;
+  capacity?: number;
+  description?: string;
+  pricePerSlot?: number;
+};
+
+export type BusinessPhoto = {
+  id: string;
+  mimeType: string;
+  url: string;
+  createdAt?: string;
+};
+
+export type BusinessSetup = {
+  photos: BusinessPhoto[];
+  weeklyHours: WeeklyHours;
+  slotMinutes: number;
+  pricePerSlot: number;
+  resources: BusinessResource[];
+  bookingMode?: "slots" | "fullDay";
+  maxGuests?: number | null;
+  venueRules?: string;
+};
+
+const BUSINESS_MODULES: BusinessModule[] = [
+  "events",
+  "appointments",
+  "services",
+  "commerce",
+  "creator",
+];
+
+export type Business = {
+  id: string;
+  name: string;
+  typeId: string;
+  categoryId: string;
+  typeLabel: string;
+  categoryLabel: string;
+  module: BusinessModule;
+  phone: string;
+  address: string;
+  description: string;
+  thumbnailUrl?: string;
+  thumbnailPhotoId?: string;
+  status: "draft" | "live";
+  setupComplete: boolean;
+  setup?: BusinessSetup;
+  createdAt: string;
+  updatedAt?: string;
+};
+
+export function businessPhotoUrl(businessId: string, photoId: string): string {
+  return `/api/public/businesses/${businessId}/photos/${photoId}`;
+}
+
+/** Profile thumbnail — from create step or first setup photo. */
+export function businessThumbnailUrl(
+  biz: Pick<Business, "id" | "thumbnailUrl" | "thumbnailPhotoId" | "setup">,
+): string | undefined {
+  const direct = biz.thumbnailUrl?.trim();
+  if (direct) return direct;
+  const photoId = biz.thumbnailPhotoId?.trim() || biz.setup?.photos?.[0]?.id?.trim();
+  if (photoId && biz.id) return businessPhotoUrl(biz.id, photoId);
+  const fromSetup = biz.setup?.photos?.[0]?.url?.trim();
+  return fromSetup || undefined;
+}
+
+/** All candidate URLs to try when loading a business thumbnail. */
+export function businessThumbnailCandidates(
+  biz: Pick<Business, "id" | "thumbnailUrl" | "thumbnailPhotoId" | "setup">,
+): string[] {
+  const urls = new Set<string>();
+  const primary = businessThumbnailUrl(biz);
+  if (primary) urls.add(primary);
+  const photoId = biz.thumbnailPhotoId?.trim() || biz.setup?.photos?.[0]?.id?.trim();
+  if (photoId && biz.id) urls.add(businessPhotoUrl(biz.id, photoId));
+  const setupUrl = biz.setup?.photos?.[0]?.url?.trim();
+  if (setupUrl) urls.add(setupUrl);
+  return [...urls];
+}
+
+export type BusinessInput = {
+  name: string;
+  typeId: string;
+  phone?: string;
+  address?: string;
+  description: string;
+  thumbnail: string;
+  bookingMode?: "slots" | "fullDay";
+};
+
+function normalizeDayHours(raw: unknown, fallback: DayHours): DayHours {
+  const row = asRecord(raw);
+  const closed = row.closed === true;
+  const open = typeof row.open === "string" ? row.open : fallback.open;
+  const close = typeof row.close === "string" ? row.close : fallback.close;
+  return { open, close, closed };
+}
+
+function normalizeWeeklyHours(raw: unknown): WeeklyHours | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const src = raw as Record<string, unknown>;
+  const base: DayHours = { open: "09:00", close: "21:00", closed: false };
+  const days: DayKey[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+  const out = {} as WeeklyHours;
+  for (const day of days) {
+    out[day] = normalizeDayHours(src[day], day === "sun" ? { ...base, closed: true } : base);
+  }
+  return out;
+}
+
+function businessPhotoDisplayUrl(businessId: string, photoId: string): string {
+  return businessPhotoUrl(businessId, photoId);
+}
+
+function normalizeSetup(raw: unknown, businessId?: string): BusinessSetup | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const s = asRecord(raw);
+  const photosRaw = s.photos;
+  const photos: BusinessPhoto[] = Array.isArray(photosRaw)
+    ? photosRaw.flatMap((p) => {
+        const photo = asRecord(p);
+        const id = typeof photo.id === "string" ? photo.id : "";
+        const url =
+          id && businessId
+            ? businessPhotoDisplayUrl(businessId, id)
+            : typeof photo.url === "string"
+              ? photo.url
+              : "";
+        if (!id || !url) return [];
+        return [
+          {
+            id,
+            mimeType: typeof photo.mimeType === "string" ? photo.mimeType : "image/jpeg",
+            url,
+            ...(typeof photo.createdAt === "string" ? { createdAt: photo.createdAt } : {}),
+          },
+        ];
+      })
+    : [];
+  const resourcesRaw = s.resources;
+  const resources = Array.isArray(resourcesRaw)
+    ? resourcesRaw
+        .map((r) => {
+          const res = asRecord(r);
+          const id = typeof res.id === "string" ? res.id : "";
+          const name = typeof res.name === "string" ? res.name : "";
+          if (!id || !name) return null;
+          const capacity =
+            typeof res.capacity === "number" && res.capacity > 0 ? res.capacity : undefined;
+          const description =
+            typeof res.description === "string" && res.description.trim()
+              ? res.description.trim()
+              : undefined;
+          return { id, name, ...(capacity ? { capacity } : {}), ...(description ? { description } : {}) };
+        })
+        .filter((r): r is BusinessResource => r !== null)
+    : [];
+
+  const bookingMode = s.bookingMode === "fullDay" ? "fullDay" : "slots";
+  const maxGuestsRaw = s.maxGuests;
+  const maxGuests =
+    typeof maxGuestsRaw === "number" && maxGuestsRaw > 0 ? Math.round(maxGuestsRaw) : null;
+
+  return {
+    photos,
+    weeklyHours: normalizeWeeklyHours(s.weeklyHours) ?? {
+      mon: { open: "09:00", close: "21:00", closed: false },
+      tue: { open: "09:00", close: "21:00", closed: false },
+      wed: { open: "09:00", close: "21:00", closed: false },
+      thu: { open: "09:00", close: "21:00", closed: false },
+      fri: { open: "09:00", close: "21:00", closed: false },
+      sat: { open: "09:00", close: "21:00", closed: false },
+      sun: { open: "09:00", close: "21:00", closed: true },
+    },
+    slotMinutes: typeof s.slotMinutes === "number" ? s.slotMinutes : 60,
+    pricePerSlot: typeof s.pricePerSlot === "number" ? s.pricePerSlot : 0,
+    resources,
+    bookingMode,
+    maxGuests,
+    venueRules: typeof s.venueRules === "string" ? s.venueRules : "",
+  };
+}
+
+function normalizeBusiness(raw: unknown): Business {
+  const b = asRecord(raw);
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const id = str(b._id) || str(b.id);
+  const module = BUSINESS_MODULES.includes(b.module as BusinessModule)
+    ? (b.module as BusinessModule)
+    : "commerce";
+  const setup = normalizeSetup(b.setup, id);
+  const thumbnailPhotoId = str(b.thumbnailPhotoId) || setup?.photos?.[0]?.id || undefined;
+  const thumbnailUrl =
+    str(b.thumbnailUrl) ||
+    (thumbnailPhotoId && id ? businessPhotoUrl(id, thumbnailPhotoId) : "") ||
+    setup?.photos?.[0]?.url ||
+    undefined;
+  return {
+    id,
+    name: str(b.name),
+    typeId: str(b.typeId),
+    categoryId: str(b.categoryId),
+    typeLabel: str(b.typeLabel),
+    categoryLabel: str(b.categoryLabel),
+    module,
+    phone: str(b.phone),
+    address: str(b.address),
+    description: str(b.description),
+    thumbnailUrl: thumbnailUrl || undefined,
+    thumbnailPhotoId: thumbnailPhotoId || undefined,
+    status: b.status === "live" ? "live" : "draft",
+    setupComplete: b.setupComplete === true,
+    setup,
+    createdAt: str(b.createdAt) || new Date().toISOString(),
+    updatedAt: str(b.updatedAt) || undefined,
+  };
+}
+
+function mapKycError(err: unknown): never {
+  if (err instanceof Error && err.message.toLowerCase().includes("kyc")) {
+    throw new KycRequiredError();
+  }
+  throw err;
+}
+
+export async function listBusinesses(): Promise<Business[]> {
+  try {
+    const data = await authedApi("vendor/businesses");
+    const list = asRecord(data).businesses;
+    return Array.isArray(list) ? list.map(normalizeBusiness) : [];
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function getBusiness(id: string): Promise<Business> {
+  try {
+    const data = await authedApi(`vendor/businesses/${id}`);
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function createBusiness(input: BusinessInput): Promise<Business> {
+  try {
+    const data = await postAuthed("vendor/businesses", input);
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+/** Upload or replace the business profile thumbnail (all modules). */
+export async function uploadBusinessThumbnail(id: string, image: string): Promise<Business> {
+  try {
+    const data = await postAuthed(`vendor/businesses/${id}/thumbnail`, { image });
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function updateBusiness(
+  id: string,
+  patch: Partial<BusinessInput>,
+): Promise<Business> {
+  try {
+    const data = await postAuthedMethod(`vendor/businesses/${id}`, "PATCH", patch);
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function deleteBusiness(id: string): Promise<void> {
+  try {
+    await authedApi(`vendor/businesses/${id}`, { method: "DELETE" });
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export type BusinessSetupInput = {
+  weeklyHours?: WeeklyHours;
+  slotMinutes?: number;
+  pricePerSlot?: number;
+  resources?: BusinessResource[];
+  bookingMode?: "slots" | "fullDay";
+  maxGuests?: number | null;
+  venueRules?: string;
+};
+
+export async function getBusinessSetup(id: string): Promise<Business> {
+  try {
+    const data = await authedApi(`vendor/businesses/${id}/setup`);
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function updateBusinessSetup(id: string, patch: BusinessSetupInput): Promise<Business> {
+  try {
+    const data = await postAuthedMethod(`vendor/businesses/${id}/setup`, "PATCH", patch);
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function syncBusinessSetupPhotos(
+  id: string,
+  payload: { images: string[]; removeIds?: string[] },
+): Promise<Business> {
+  try {
+    const data = await postAuthed(`vendor/businesses/${id}/setup/photos/sync`, payload);
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function addBusinessSetupPhoto(id: string, image: string): Promise<Business> {
+  try {
+    const data = await postAuthed(`vendor/businesses/${id}/setup/photos`, { image });
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function removeBusinessSetupPhoto(id: string, photoId: string): Promise<Business> {
+  try {
+    const data = await authedApi(`vendor/businesses/${id}/setup/photos/${photoId}`, {
+      method: "DELETE",
+    });
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function completeBusinessSetup(id: string): Promise<Business> {
+  try {
+    const data = await postAuthed(`vendor/businesses/${id}/setup/complete`, {});
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Business slots (generated from setup + vendor block/unblock)        */
+/* ------------------------------------------------------------------ */
+
+export type SlotStatus = "available" | "blocked" | "booked" | "unavailable";
+
+export type BusinessSlot = {
+  id: string;
+  resourceId: string;
+  resourceName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  startAt: string;
+  endAt: string;
+  pricePerSlot: number;
+  basePricePerSlot?: number;
+  status: SlotStatus;
+  booking?: {
+    customerName?: string;
+    customerMobile?: string;
+  };
+};
+
+export type BusinessSlotsResponse = {
+  businessId: string;
+  from: string;
+  to: string;
+  timezone: string;
+  slotMinutes: number;
+  pricePerSlot: number;
+  bookingMode?: "slots" | "fullDay";
+  resources: BusinessResource[];
+  slots: BusinessSlot[];
+};
+
+function normalizeSlot(raw: unknown): BusinessSlot | null {
+  const s = asRecord(raw);
+  const id = typeof s.id === "string" ? s.id : "";
+  const resourceId = typeof s.resourceId === "string" ? s.resourceId : "";
+  const startAt = typeof s.startAt === "string" ? s.startAt : "";
+  if (!id || !resourceId || !startAt) return null;
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const statusRaw = str(s.status);
+  const status: SlotStatus =
+    statusRaw === "booked"
+      ? "booked"
+      : statusRaw === "blocked"
+        ? "blocked"
+        : statusRaw === "unavailable"
+          ? "unavailable"
+          : "available";
+  return {
+    id,
+    resourceId,
+    resourceName: str(s.resourceName),
+    date: str(s.date),
+    startTime: str(s.startTime),
+    endTime: str(s.endTime),
+    startAt,
+    endAt: str(s.endAt),
+    pricePerSlot: typeof s.pricePerSlot === "number" ? s.pricePerSlot : 0,
+    basePricePerSlot:
+      typeof s.basePricePerSlot === "number" ? s.basePricePerSlot : undefined,
+    status,
+    booking:
+      s.booking && typeof s.booking === "object"
+        ? {
+            customerName:
+              typeof (s.booking as Record<string, unknown>).customerName === "string"
+                ? ((s.booking as Record<string, unknown>).customerName as string)
+                : undefined,
+            customerMobile:
+              typeof (s.booking as Record<string, unknown>).customerMobile === "string"
+                ? ((s.booking as Record<string, unknown>).customerMobile as string)
+                : undefined,
+          }
+        : undefined,
+  };
+}
+
+function normalizeBusinessResource(raw: unknown): BusinessResource | null {
+  const res = asRecord(raw);
+  const id = typeof res.id === "string" ? res.id : "";
+  const name = typeof res.name === "string" ? res.name : "";
+  if (!id || !name) return null;
+  const capacity = typeof res.capacity === "number" && res.capacity > 0 ? res.capacity : undefined;
+  const description =
+    typeof res.description === "string" && res.description.trim() ? res.description.trim() : undefined;
+  const pricePerSlot =
+    typeof res.pricePerSlot === "number" && res.pricePerSlot >= 0
+      ? Math.round(res.pricePerSlot)
+      : undefined;
+  return {
+    id,
+    name,
+    ...(capacity ? { capacity } : {}),
+    ...(description ? { description } : {}),
+    ...(pricePerSlot != null ? { pricePerSlot } : {}),
+  };
+}
+
+function normalizeSlotsResponse(raw: unknown): BusinessSlotsResponse {
+  const data = asRecord(raw);
+  const slotsRaw = data.slots;
+  const resourcesRaw = data.resources;
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  return {
+    businessId: str(data.businessId),
+    from: str(data.from),
+    to: str(data.to),
+    timezone: str(data.timezone) || "Asia/Kolkata",
+    slotMinutes: typeof data.slotMinutes === "number" ? data.slotMinutes : 60,
+    pricePerSlot: typeof data.pricePerSlot === "number" ? data.pricePerSlot : 0,
+    bookingMode: data.bookingMode === "fullDay" ? "fullDay" : "slots",
+    resources: Array.isArray(resourcesRaw)
+      ? resourcesRaw.map(normalizeBusinessResource).filter((r): r is BusinessResource => r !== null)
+      : [],
+    slots: Array.isArray(slotsRaw)
+      ? slotsRaw.map(normalizeSlot).filter((s): s is BusinessSlot => s !== null)
+      : [],
+  };
+}
+
+export async function listBusinessSlots(
+  businessId: string,
+  params: { from: string; to: string; resourceId?: string },
+): Promise<BusinessSlotsResponse> {
+  try {
+    const qs = new URLSearchParams({ from: params.from, to: params.to });
+    if (params.resourceId) qs.set("resourceId", params.resourceId);
+    const data = await authedApi(`vendor/businesses/${businessId}/slots?${qs}`);
+    return normalizeSlotsResponse(data);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function blockBusinessSlot(
+  businessId: string,
+  body: { resourceId: string; startAt: string },
+): Promise<void> {
+  try {
+    await postAuthed(`vendor/businesses/${businessId}/slots/block`, body);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function unblockBusinessSlot(
+  businessId: string,
+  body: { resourceId: string; startAt: string },
+): Promise<void> {
+  try {
+    await postAuthed(`vendor/businesses/${businessId}/slots/unblock`, body);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function setBusinessSlotPrice(
+  businessId: string,
+  body: { resourceId: string; startAt: string; pricePerSlot: number },
+): Promise<void> {
+  try {
+    await postAuthed(`vendor/businesses/${businessId}/slots/price`, body);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function clearBusinessSlotPrice(
+  businessId: string,
+  body: { resourceId: string; startAt: string },
+): Promise<void> {
+  try {
+    await postAuthed(`vendor/businesses/${businessId}/slots/price/clear`, body);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Public booking + customer bookings (Phase 4)                        */
+/* ------------------------------------------------------------------ */
+
+export type PublicBusiness = {
+  id: string;
+  name: string;
+  typeId: string;
+  typeLabel: string;
+  categoryLabel: string;
+  phone: string;
+  address: string;
+  description: string;
+  setup: {
+    photos: BusinessPhoto[];
+    slotMinutes: number;
+    pricePerSlot: number;
+    resources: BusinessResource[];
+    bookingMode?: "slots" | "fullDay";
+    maxGuests?: number | null;
+    venueRules?: string;
+  };
+};
+
+export type PublicBusinessSummary = {
+  id: string;
+  name: string;
+  vendorName: string;
+  typeLabel: string;
+  categoryLabel: string;
+  module: BusinessModule;
+  address: string;
+  description: string;
+  pricePerSlot: number;
+  slotMinutes: number;
+  bookingMode: "slots" | "fullDay";
+  maxGuests: number | null;
+  resourceCount: number;
+  priceFrom: number;
+  priceTo: number;
+  coverUrl?: string;
+};
+
+function normalizePublicBusinessSummary(raw: unknown): PublicBusinessSummary | null {
+  const b = asRecord(raw);
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const num = (v: unknown, fallback: number) =>
+    typeof v === "number" && Number.isFinite(v) ? v : fallback;
+  const id = str(b._id) || str(b.id);
+  if (!id) return null;
+  const module = BUSINESS_MODULES.includes(b.module as BusinessModule)
+    ? (b.module as BusinessModule)
+    : "appointments";
+  const pricePerSlot = num(b.pricePerSlot, 0);
+  const thumbnailUrl = str(b.thumbnailUrl).trim();
+  const thumbnailPhotoId = str(b.thumbnailPhotoId).trim();
+  const coverPhotoUrl = str(b.coverPhotoUrl).trim();
+  const coverPhotoId = str(b.coverPhotoId).trim();
+  const coverUrl =
+    str(b.coverUrl).trim() ||
+    thumbnailUrl ||
+    coverPhotoUrl ||
+    (thumbnailPhotoId ? businessPhotoUrl(id, thumbnailPhotoId) : undefined) ||
+    (coverPhotoId ? businessPhotoUrl(id, coverPhotoId) : undefined) ||
+    undefined;
+  return {
+    id,
+    name: str(b.name),
+    vendorName: str(b.vendorName),
+    typeLabel: str(b.typeLabel),
+    categoryLabel: str(b.categoryLabel),
+    module,
+    address: str(b.address),
+    description: str(b.description),
+    pricePerSlot,
+    slotMinutes: num(b.slotMinutes, 60),
+    bookingMode: b.bookingMode === "fullDay" ? "fullDay" : "slots",
+    maxGuests:
+      typeof b.maxGuests === "number" && Number.isFinite(b.maxGuests) ? b.maxGuests : null,
+    resourceCount: num(b.resourceCount, 0),
+    priceFrom: num(b.priceFrom, pricePerSlot),
+    priceTo: num(b.priceTo, pricePerSlot),
+    coverUrl: coverUrl || undefined,
+  };
+}
+
+export async function listPublicBusinesses(): Promise<PublicBusinessSummary[]> {
+  const res = await fetch("/api/public/businesses", { cache: "no-store" });
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const detail =
+      (typeof data.message === "string" && data.message) ||
+      (typeof data.error === "string" && data.error);
+    if (res.status === 404) {
+      throw new Error(
+        detail ?? "Business listing is not available yet. Refresh in a moment or try again.",
+      );
+    }
+    throw new Error(detail ?? `Could not load businesses (${res.status})`);
+  }
+
+  const list = asRecord(data).businesses;
+  return Array.isArray(list)
+    ? list.map(normalizePublicBusinessSummary).filter((b): b is PublicBusinessSummary => b !== null)
+    : [];
+}
+
+export type CustomerBooking = {
+  id: string;
+  businessId: string;
+  businessName: string;
+  typeLabel: string;
+  resourceId: string;
+  resourceName: string;
+  startAt: string;
+  endAt: string;
+  pricePerSlot: number;
+  customerName: string;
+  customerMobile: string;
+  status: string;
+  createdAt?: string;
+};
+
+function normalizePublicBusiness(raw: unknown): PublicBusiness {
+  const b = asRecord(raw);
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const id = str(b._id) || str(b.id);
+  const setup = normalizeSetup(b.setup, id);
+  return {
+    id,
+    name: str(b.name),
+    typeId: str(b.typeId),
+    typeLabel: str(b.typeLabel),
+    categoryLabel: str(b.categoryLabel),
+    phone: str(b.phone),
+    address: str(b.address),
+    description: str(b.description),
+    setup: {
+      photos: setup?.photos ?? [],
+      slotMinutes: setup?.slotMinutes ?? 60,
+      pricePerSlot: setup?.pricePerSlot ?? 0,
+      resources: setup?.resources ?? [],
+      bookingMode: setup?.bookingMode ?? "slots",
+      maxGuests: setup?.maxGuests ?? null,
+      venueRules: setup?.venueRules ?? "",
+    },
+  };
+}
+
+function normalizeCustomerBooking(raw: unknown): CustomerBooking | null {
+  const b = asRecord(raw);
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const id = str(b.id) || str(b._id);
+  if (!id) return null;
+  return {
+    id,
+    businessId: str(b.businessId),
+    businessName: str(b.businessName),
+    typeLabel: str(b.typeLabel),
+    resourceId: str(b.resourceId),
+    resourceName: str(b.resourceName),
+    startAt: str(b.startAt),
+    endAt: str(b.endAt),
+    pricePerSlot: typeof b.pricePerSlot === "number" ? b.pricePerSlot : 0,
+    customerName: str(b.customerName),
+    customerMobile: str(b.customerMobile),
+    status: str(b.status) || "confirmed",
+    createdAt: str(b.createdAt) || undefined,
+  };
+}
+
+export async function getPublicBusiness(businessId: string): Promise<PublicBusiness> {
+  const data = await api(`public/businesses/${businessId}`);
+  return normalizePublicBusiness(asRecord(data).business);
+}
+
+export async function listPublicBusinessSlots(
+  businessId: string,
+  params: { from: string; to: string; resourceId?: string },
+): Promise<BusinessSlotsResponse> {
+  const qs = new URLSearchParams({ from: params.from, to: params.to });
+  if (params.resourceId) qs.set("resourceId", params.resourceId);
+  const data = await api(`public/businesses/${businessId}/slots?${qs}`);
+  return normalizeSlotsResponse(data);
+}
+
+export async function listCustomerBookings(): Promise<CustomerBooking[]> {
+  const data = await authedApi("user/bookings");
+  const list = asRecord(data).bookings;
+  return Array.isArray(list)
+    ? list.map(normalizeCustomerBooking).filter((b): b is CustomerBooking => b !== null)
+    : [];
+}
+
+export async function createCustomerBooking(body: {
+  businessId: string;
+  resourceId: string;
+  startAt: string;
+}): Promise<CustomerBooking> {
+  const data = await postAuthed("user/bookings", body);
+  const booking = normalizeCustomerBooking(asRecord(data).booking);
+  if (!booking) throw new Error("Booking failed.");
+  return booking;
+}
+
+export async function cancelCustomerBooking(bookingId: string): Promise<void> {
+  await authedApi(`user/bookings/${bookingId}`, { method: "DELETE" });
+}
+
+/* ------------------------------------------------------------------ */
+/* Business catalog (DB-backed, shared by web + app)                   */
+/* ------------------------------------------------------------------ */
+
+export type CatalogBusinessType = {
+  id: string;
+  categoryId: string;
+  label: string;
+  description: string;
+  examples: string;
+  namePlaceholder: string;
+  detailHint: string;
+  module: BusinessModule;
+  sortOrder?: number;
+};
+
+export type CatalogBusinessCategory = {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;
+  sortOrder?: number;
+  types: CatalogBusinessType[];
+};
+
+export type BusinessCatalog = {
+  categories: CatalogBusinessCategory[];
+  modules: Record<string, string>;
+};
+
+function normalizeCatalogType(raw: unknown): CatalogBusinessType | null {
+  const t = asRecord(raw);
+  const id = typeof t.id === "string" ? t.id : "";
+  if (!id) return null;
+  const module = BUSINESS_MODULES.includes(t.module as BusinessModule)
+    ? (t.module as BusinessModule)
+    : "commerce";
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  return {
+    id,
+    categoryId: str(t.categoryId),
+    label: str(t.label),
+    description: str(t.description),
+    examples: str(t.examples),
+    namePlaceholder: str(t.namePlaceholder),
+    detailHint: str(t.detailHint),
+    module,
+    sortOrder: typeof t.sortOrder === "number" ? t.sortOrder : undefined,
+  };
+}
+
+function normalizeCatalogCategory(raw: unknown): CatalogBusinessCategory | null {
+  const c = asRecord(raw);
+  const id = typeof c.id === "string" ? c.id : "";
+  if (!id) return null;
+  const typesRaw = c.types;
+  const types = Array.isArray(typesRaw)
+    ? typesRaw.map(normalizeCatalogType).filter((t): t is CatalogBusinessType => t !== null)
+    : [];
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  return {
+    id,
+    label: str(c.label),
+    description: str(c.description),
+    icon: str(c.icon) || "🏪",
+    sortOrder: typeof c.sortOrder === "number" ? c.sortOrder : undefined,
+    types,
+  };
+}
+
+export async function getBusinessCatalog(): Promise<BusinessCatalog> {
+  const data = await api("catalog/business");
+  const payload = asRecord(data);
+  const categoriesRaw = payload.categories;
+  const categories = Array.isArray(categoriesRaw)
+    ? categoriesRaw
+        .map(normalizeCatalogCategory)
+        .filter((c): c is CatalogBusinessCategory => c !== null)
+    : [];
+  const modulesRaw = asRecord(payload.modules);
+  const modules: Record<string, string> = {};
+  for (const [key, value] of Object.entries(modulesRaw)) {
+    if (typeof value === "string") modules[key] = value;
+  }
+  return { categories, modules };
+}
+
+
 export type AdminUser = {
   _id?: string;
   id?: string;

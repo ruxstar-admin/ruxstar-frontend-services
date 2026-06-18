@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Particles } from "@/components/particles";
+import { Particles } from "@/components/particles-lazy";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 import { isAadhaarVerified, syncAadhaarKyc } from "@/lib/api";
 

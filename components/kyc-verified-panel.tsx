@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { RuxstarCard } from "@/components/ruxstar-card";
 import {
   buildRuxstarCardFromKyc,
-  getRuxstarCard,
-  getVendorKycStatus,
   type AuthUser,
   type RuxstarCardData,
   type VendorKycStatus,
 } from "@/lib/api";
+import { useRuxstarCard } from "@/lib/swr-hooks";
 
 type Props = {
   user: AuthUser | null;
@@ -28,43 +27,20 @@ function mergeCard(local: RuxstarCardData, api: RuxstarCardData): RuxstarCardDat
 }
 
 export function KycVerifiedPanel({ user, kyc }: Props) {
-  const [card, setCard] = useState<RuxstarCardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const localCard = useMemo(() => buildRuxstarCardFromKyc(user, kyc), [user, kyc]);
+  const { data: apiCard } = useRuxstarCard(kyc?.status === "verified");
 
-  useEffect(() => {
-    let active = true;
-
-    async function load() {
-      const freshKyc = await getVendorKycStatus().catch(() => kyc);
-      const local = buildRuxstarCardFromKyc(user, freshKyc);
-      if (!active) return;
-
-      if (local) setCard(local);
-
-      try {
-        const api = await getRuxstarCard();
-        if (!active) return;
-        if (local) setCard(mergeCard(local, api));
-        else setCard(api);
-      } catch {
-        if (active && local) setCard(local);
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-
-    load();
-    return () => {
-      active = false;
-    };
-  }, [user, kyc]);
+  const card = useMemo(() => {
+    if (localCard && apiCard) return mergeCard(localCard, apiCard);
+    return localCard ?? apiCard ?? null;
+  }, [localCard, apiCard]);
 
   return (
     <div className="mx-auto max-w-md">
-      {loading || !card ? (
-        <div className="aspect-[1.586/1] w-full animate-pulse rounded-2xl bg-white/5" />
-      ) : (
+      {card ? (
         <RuxstarCard card={card} />
+      ) : (
+        <div className="aspect-[1.586/1] w-full animate-pulse rounded-2xl bg-white/5" />
       )}
     </div>
   );

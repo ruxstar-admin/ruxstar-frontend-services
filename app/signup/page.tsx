@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Particles } from "@/components/particles";
+import { Particles } from "@/components/particles-lazy";
 import { SignupMascot } from "@/components/signup-mascot";
 import { postAuth, resolvePostAuthPath, saveSession } from "@/lib/api";
 

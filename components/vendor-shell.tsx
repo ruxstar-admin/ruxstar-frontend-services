@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { useRequireAuth } from "@/hooks/use-require-auth";
+import { useVendorKyc } from "@/lib/swr-hooks";
 import { getVendorKycStatus, type AuthUser, type VendorKycStatus } from "@/lib/api";
 
 type VendorShellContext = {
@@ -100,22 +101,18 @@ function SidebarNav({
 }
 
 export function VendorShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const { user, ready } = useRequireAuth({ roles: ["vendor"] });
-  const [kyc, setKyc] = useState<VendorKycStatus | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: kyc, isLoading: kycLoading, mutate: mutateKyc } = useVendorKyc();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const kycVerified = kyc?.status === "verified";
+  const loading = kycLoading;
   const refreshKyc = useCallback(async () => {
     const status = await getVendorKycStatus();
-    setKyc(status);
+    await mutateKyc(status, { revalidate: false });
     return status;
-  }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    refreshKyc().finally(() => setLoading(false));
-  }, [ready, refreshKyc]);
+  }, [mutateKyc]);
 
   if (!ready) {
     return (
@@ -127,15 +124,17 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
 
   const ctx: VendorShellContext = {
     user,
-    kyc,
+    kyc: kyc ?? null,
     kycVerified,
     loading,
     refreshKyc,
   };
 
+  const businessesListPage = pathname.startsWith("/business/businesses");
+
   return (
     <VendorCtx.Provider value={ctx}>
-      <div className="flex min-h-screen bg-[#050505] text-[#ededef]">
+      <div id="vendor-shell" className="flex h-screen overflow-hidden bg-[#050505] text-[#ededef]">
         {/* Desktop sidebar */}
         <aside className="hidden w-64 shrink-0 flex-col border-r border-white/5 bg-[#0a0a0b] lg:flex">
           <div className="border-b border-white/5 px-5 py-6">
@@ -153,7 +152,7 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
         </aside>
 
         {/* Mobile header + drawer */}
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <header className="flex items-center justify-between border-b border-white/5 bg-[#0a0a0b] px-4 py-4 lg:hidden">
             <button
               type="button"
@@ -195,7 +194,15 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
             </div>
           )}
 
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">{children}</main>
+          <main
+            className={
+              businessesListPage
+                ? "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-4 sm:p-6 lg:p-8"
+                : "min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-8"
+            }
+          >
+            {children}
+          </main>
         </div>
       </div>
     </VendorCtx.Provider>

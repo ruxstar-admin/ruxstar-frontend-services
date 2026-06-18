@@ -1,20 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useVendorShell } from "@/components/vendor-shell";
-import { loadVendorBusinesses } from "@/lib/vendor-businesses";
+import { useVendorBusinesses } from "@/lib/swr-hooks";
 
 export default function VendorDashboardPage() {
   const { user, kyc, kycVerified, loading } = useVendorShell();
-  const userId = user?.id ?? user?._id ?? "";
-  const [businessCount, setBusinessCount] = useState(0);
+  const { data: businesses } = useVendorBusinesses(kycVerified);
 
+  const businessCount = kycVerified ? (businesses?.length ?? 0) : 0;
   const kycStatus = kyc?.status ?? "pending";
-
-  useEffect(() => {
-    if (userId) setBusinessCount(loadVendorBusinesses(userId).length);
-  }, [userId]);
 
   if (loading) {
     return <p className="text-sm text-zinc-500">Loading dashboard…</p>;
@@ -76,22 +71,6 @@ export default function VendorDashboardPage() {
                 : kycStatus === "pending_review"
                   ? "View card status"
                   : "Get your Ruxstar Card"}
-          </Link>
-        </section>
-      )}
-
-      {kycVerified && businessCount === 0 && (
-        <section className="mt-8 glass rounded-2xl p-8 text-center">
-          <p className="text-4xl">🏪</p>
-          <h2 className="mt-4 text-lg font-medium">Your Ruxstar Card is active — add a business</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-zinc-400">
-            You&apos;re verified. Head to My businesses in the sidebar to onboard your first one.
-          </p>
-          <Link
-            href="/business/businesses"
-            className="btn-primary mt-6 inline-block rounded-full px-6 py-2.5 text-sm font-semibold"
-          >
-            Go to My businesses
           </Link>
         </section>
       )}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Particles } from "@/components/particles";
+import { Particles } from "@/components/particles-lazy";
 import { Globe } from "@/components/globe";
 
 export default function Home() {

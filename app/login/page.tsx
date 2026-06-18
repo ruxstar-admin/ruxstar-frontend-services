@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { LoginMascot } from "@/components/login-mascot";
-import { Particles } from "@/components/particles";
+import { Particles } from "@/components/particles-lazy";
 import { postAuth, resolvePostAuthPath, saveSession } from "@/lib/api";
 
 const input = "field-input";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get("next");
   const [mode, setMode] = useState<"password" | "otp">("password");
   const [otpStep, setOtpStep] = useState(0);
   const [mobile, setMobile] = useState("");
@@ -40,7 +42,7 @@ export default function LoginPage() {
         if (!password) throw new Error("Enter your password.");
         const res = await postAuth("login", { mobile, password });
         saveSession(res.token, res.user);
-        router.push(await resolvePostAuthPath(res.user));
+        router.push(nextPath || (await resolvePostAuthPath(res.user)));
         return;
       }
 
@@ -52,7 +54,7 @@ export default function LoginPage() {
         if (!otp) throw new Error("Enter the OTP.");
         const res = await postAuth("login/verify-otp", { mobile, otp });
         saveSession(res.token, res.user);
-        router.push(await resolvePostAuthPath(res.user));
+        router.push(nextPath || (await resolvePostAuthPath(res.user)));
       }
     } catch (err) {
       fail(err instanceof Error ? err.message : "Something went wrong");
