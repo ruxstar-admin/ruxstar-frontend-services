@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { BusinessSetupWizard } from "@/components/business-setup-wizard";
 import { useVendorShell } from "@/components/vendor-shell";
 import { businessThumbnailUrl, type Business, getBusinessSetup } from "@/lib/api";
-import { supportsAppointmentSetup } from "@/lib/business-setup";
+import { supportsAppointmentSetup, supportsEvents } from "@/lib/business-setup";
 
 export default function BusinessSetupPage() {
   const params = useParams();
@@ -65,6 +65,12 @@ export default function BusinessSetupPage() {
         </div>
       </div>
     );
+  }
+
+  // Events businesses don't use appointment setup — send them straight to events.
+  if (supportsEvents(business.module)) {
+    router.replace(`/business/businesses/${businessId}/events/new`);
+    return <div className="glass h-full w-full animate-pulse rounded-2xl" />;
   }
 
   if (!supportsAppointmentSetup(business.module)) {

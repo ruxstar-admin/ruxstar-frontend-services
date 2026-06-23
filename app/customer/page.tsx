@@ -9,12 +9,15 @@ import {
   cancelCustomerBooking,
   updateCustomerProfile,
   type PublicBusinessSummary,
+  type RuxEvent,
 } from "@/lib/api";
 import {
   invalidateCustomerBookings,
   useCustomerBookings,
   useCustomerProfile,
+  useMyEventRegistrations,
   usePublicBusinesses,
+  usePublicEvents,
 } from "@/lib/swr-hooks";
 import { formatDayLabel, formatTime12 } from "@/lib/date-utils";
 
@@ -103,6 +106,8 @@ export default function CustomerPage() {
     isLoading: businessesLoading,
     mutate: mutatePublicBusinesses,
   } = usePublicBusinesses(true);
+  const { data: events = [], isLoading: eventsLoading } = usePublicEvents(true);
+  const { data: myRegistrations = [] } = useMyEventRegistrations(true);
 
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(false);
@@ -439,6 +444,13 @@ export default function CustomerPage() {
                     ))}
                   </ul>
                 )}
+
+                <EventsDiscoverSection
+                  events={events}
+                  loading={eventsLoading}
+                  query={query}
+                  onOpen={(id) => router.push(`/customer/events/${id}`)}
+                />
               </section>
             )}
 
@@ -498,6 +510,11 @@ export default function CustomerPage() {
                     )}
                   </div>
                 )}
+
+                <MyEventsSection
+                  registrations={myRegistrations}
+                  onOpen={(id) => router.push(`/customer/events/${id}`)}
+                />
               </section>
             )}
 
@@ -643,6 +660,174 @@ function FilterChip({
     >
       {label}
     </button>
+  );
+}
+
+function eventWhen(iso: string | null) {
+  if (!iso) return "Date TBD";
+  return new Date(iso).toLocaleString("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Kolkata",
+  });
+}
+
+function EventsDiscoverSection({
+  events,
+  loading,
+  query,
+  onOpen,
+}: {
+  events: RuxEvent[];
+  loading: boolean;
+  query: string;
+  onOpen: (id: string) => void;
+}) {
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? events.filter((e) =>
+        `${e.title} ${e.tournamentType} ${e.venue} ${e.businessName}`.toLowerCase().includes(q),
+      )
+    : events;
+
+  if (loading && events.length === 0) return null;
+  if (filtered.length === 0) return null;
+
+  return (
+    <div className="mt-12">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-zinc-100">Events & tournaments</h2>
+        <span className="text-xs text-zinc-500">{filtered.length} upcoming</span>
+      </div>
+      <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {filtered.map((ev) => (
+          <li key={ev.id}>
+            <button
+              type="button"
+              onClick={() => onOpen(ev.id)}
+              className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] text-left transition hover:border-white/20 hover:bg-white/[0.04]"
+            >
+              <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-violet-500/20 via-white/5 to-transparent">
+                {ev.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={ev.coverUrl} alt={ev.title} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="grid h-full w-full place-items-center text-4xl opacity-80">
+                    {ev.kind === "tournament" ? "🏆" : "🎫"}
+                  </div>
+                )}
+                <span className="absolute left-3 top-3 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-200 backdrop-blur">
+                  {ev.kind === "tournament" ? "Tournament" : "Event"}
+                </span>
+                {ev.spotsLeft != null && ev.spotsLeft <= 5 && ev.spotsLeft > 0 && (
+                  <span className="absolute right-3 top-3 rounded-full bg-amber-500/80 px-2 py-1 text-[10px] font-semibold text-black">
+                    {ev.spotsLeft} left
+                  </span>
+                )}
+                {ev.spotsLeft === 0 && (
+                  <span className="absolute right-3 top-3 rounded-full bg-red-500/80 px-2 py-1 text-[10px] font-semibold text-white">
+                    Full
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-1 flex-col p-4">
+                <h3 className="text-base font-semibold text-zinc-100">{ev.title}</h3>
+                <p className="mt-0.5 text-xs text-zinc-500">
+                  {ev.tournamentType ? `${ev.tournamentType} · ` : ""}
+                  {ev.businessName}
+                </p>
+                <p className="mt-2 flex items-start gap-1 text-xs text-zinc-500">
+                  <span aria-hidden>🗓️</span>
+                  <span className="truncate">{eventWhen(ev.startAt)}</span>
+                </p>
+                {ev.venue && (
+                  <p className="mt-1 flex items-start gap-1 text-xs text-zinc-500">
+                    <span aria-hidden>📍</span>
+                    <span className="truncate">{ev.venue}</span>
+                  </p>
+                )}
+                <div className="mt-auto flex items-center justify-between pt-4">
+                  <span className="text-sm font-semibold text-emerald-300">
+                    {ev.entryFee > 0 ? `₹${ev.entryFee.toLocaleString("en-IN")}` : "Free"}
+                  </span>
+                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition group-hover:bg-emerald-500/20 group-hover:text-emerald-200">
+                    {ev.format === "team" ? "Register team →" : "Register →"}
+                  </span>
+                </div>
+              </div>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function MyEventsSection({
+  registrations,
+  onOpen,
+}: {
+  registrations: {
+    id: string;
+    eventId: string;
+    eventTitle: string;
+    startAt: string | null;
+    amount: number;
+    status: string;
+    teamName: string | null;
+    kind: string;
+  }[];
+  onOpen: (eventId: string) => void;
+}) {
+  if (registrations.length === 0) return null;
+  return (
+    <div className="mt-10">
+      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-violet-300/80">
+        Events & tournaments
+      </p>
+      <ul className="space-y-2">
+        {registrations.map((r) => {
+          const pending = r.status === "pending_payment";
+          return (
+            <li
+              key={r.id}
+              className={`flex items-center gap-4 rounded-xl border px-4 py-3 ${
+                pending ? "border-amber-400/20 bg-amber-400/[0.03]" : "border-white/5 bg-white/[0.02]"
+              }`}
+            >
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-white/5 text-xl">
+                {r.kind === "tournament" ? "🏆" : "🎫"}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-zinc-100">{r.eventTitle}</p>
+                <p className="truncate text-sm text-zinc-500">
+                  {r.teamName ? `${r.teamName} · ` : ""}
+                  {eventWhen(r.startAt)}
+                </p>
+                <div className="mt-1.5">
+                  <BookingStatusBadge status={r.status} paymentStatus={pending ? "pending" : "paid"} />
+                </div>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span className="text-sm text-zinc-300">
+                  {r.amount > 0 ? `₹${r.amount.toLocaleString("en-IN")}` : "Free"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onOpen(r.eventId)}
+                  className="text-xs text-zinc-500 hover:text-zinc-300"
+                >
+                  View
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 

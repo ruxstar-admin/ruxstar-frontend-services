@@ -6,13 +6,18 @@ import {
   getVendorKycStatus,
   listBusinesses,
   listCustomerBookings,
+  listMyEventRegistrations,
   listPublicBusinesses,
+  listPublicEvents,
   listVendorBookings,
+  listVendorEvents,
   type Business,
   type BusinessCatalog,
   type CustomerBooking,
   type CustomerProfile,
+  type EventRegistration,
   type PublicBusinessSummary,
+  type RuxEvent,
   type RuxstarCardData,
   type VendorBooking,
   type VendorKycStatus,
@@ -27,6 +32,9 @@ export const swrKeys = {
   customerProfile: "swr/user/profile",
   publicBusinesses: "swr/public/businesses",
   vendorBookings: "swr/vendor/bookings",
+  publicEvents: "swr/public/events",
+  vendorEvents: "swr/vendor/events",
+  myEventRegistrations: "swr/user/event-registrations",
 } as const;
 
 export function invalidateBusinesses() {
@@ -87,4 +95,27 @@ export function useVendorBookings(enabled = true) {
   return useSWR<VendorBooking[]>(enabled ? swrKeys.vendorBookings : null, () =>
     listVendorBookings(),
   );
+}
+
+export function usePublicEvents(enabled = true) {
+  return useSWR<RuxEvent[]>(enabled ? swrKeys.publicEvents : null, listPublicEvents);
+}
+
+export function useVendorEvents(enabled = true) {
+  return useSWR<RuxEvent[]>(enabled ? swrKeys.vendorEvents : null, listVendorEvents);
+}
+
+export function useMyEventRegistrations(enabled = true) {
+  return useSWR<EventRegistration[]>(
+    enabled ? swrKeys.myEventRegistrations : null,
+    listMyEventRegistrations,
+  );
+}
+
+export function invalidateVendorEvents() {
+  return globalMutate(swrKeys.vendorEvents);
+}
+
+export function invalidateMyEventRegistrations() {
+  return globalMutate(swrKeys.myEventRegistrations);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   BusinessOnboardWizard,
@@ -16,13 +17,15 @@ import {
   uploadBusinessThumbnail,
   type Business,
   type BusinessModule,
+  type RuxEvent,
 } from "@/lib/api";
 import {
   invalidateBusinesses,
   useBusinessCatalog,
   useVendorBusinesses,
+  useVendorEvents,
 } from "@/lib/swr-hooks";
-import { supportsAppointmentSetup } from "@/lib/business-setup";
+import { supportsAppointmentSetup, supportsEvents } from "@/lib/business-setup";
 import { BusinessThumbnail } from "@/components/business-thumbnail";
 import { compressImageForUpload } from "@/lib/compress-image";
 
@@ -38,6 +41,7 @@ type StatusFilter = "all" | "live" | "setup" | "soon";
 
 function businessStatusKey(biz: Business): Exclude<StatusFilter, "all"> {
   if (biz.setupComplete) return "live";
+  if (supportsEvents(biz.module)) return "live";
   if (supportsAppointmentSetup(biz.module)) return "setup";
   return "soon";
 }
@@ -48,7 +52,7 @@ const toolbarBtn =
 const cardActionBtn =
   "btn-primary inline-flex h-8 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-3.5 text-xs font-semibold sm:px-4";
 
-function businessAction(biz: Business) {
+function businessAction(biz: Business, events: RuxEvent[]) {
   if (biz.setupComplete && supportsAppointmentSetup(biz.module)) {
     return {
       href: `/business/businesses/${biz.id}/calendar`,
@@ -63,6 +67,22 @@ function businessAction(biz: Business) {
       disabled: false,
     };
   }
+  if (supportsEvents(biz.module)) {
+    // No event yet → set one up. Otherwise open it directly (edit +
+    // registrations), like an appointments business opens its calendar.
+    if (events.length === 0) {
+      return {
+        href: `/business/businesses/${biz.id}/events/new`,
+        label: "Set up event",
+        disabled: false,
+      };
+    }
+    return {
+      href: `/business/businesses/${biz.id}/events/${events[0].id}`,
+      label: "Manage registrations",
+      disabled: false,
+    };
+  }
   return {
     href: null,
     label: "Setup coming soon",
@@ -74,6 +94,7 @@ const removeBtnClass =
   "inline-flex h-8 items-center rounded-full border border-white/15 bg-white/5 px-3.5 text-xs font-medium text-zinc-300 transition hover:bg-white/10 hover:text-white disabled:opacity-50";
 
 export default function VendorBusinessesPage() {
+  const router = useRouter();
   const { kycVerified, kyc } = useVendorShell();
 
   const {
@@ -82,6 +103,7 @@ export default function VendorBusinessesPage() {
     error: fetchError,
     mutate: mutateBusinesses,
   } = useVendorBusinesses(kycVerified);
+  const { data: vendorEvents = [] } = useVendorEvents(kycVerified);
   const { data: catalog } = useBusinessCatalog();
   const moduleLabels = catalog?.modules ?? {};
 
@@ -102,6 +124,16 @@ export default function VendorBusinessesPage() {
     }
     return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
   }, [businesses]);
+
+  const eventsByBusiness = useMemo(() => {
+    const map = new Map<string, RuxEvent[]>();
+    for (const event of vendorEvents) {
+      const list = map.get(event.businessId) ?? [];
+      list.push(event);
+      map.set(event.businessId, list);
+    }
+    return map;
+  }, [vendorEvents]);
 
   const filteredBusinesses = useMemo(() => {
     return businesses.filter((biz) => {
@@ -182,6 +214,14 @@ export default function VendorBusinessesPage() {
       await mutateBusinesses([created, ...businesses], { revalidate: false });
       invalidateBusinesses();
       setShowWizard(false);
+      if (supportsEvents(created.module)) {
+        router.push(`/business/businesses/${created.id}/events/new`);
+        return;
+      }
+      if (supportsAppointmentSetup(created.module)) {
+        router.push(`/business/businesses/${created.id}/setup`);
+        return;
+      }
       setNotice(`"${created.name}" is onboarded.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save business.");
@@ -332,71 +372,78 @@ export default function VendorBusinessesPage() {
           ) : (
           <div className="grid gap-4 pb-2 sm:grid-cols-2">
           {filteredBusinesses.map((biz) => {
-            const action = businessAction(biz);
-            const thumbUrl = businessThumbnailUrl(biz);
+            const action = businessAction(biz, eventsByBusiness.get(biz.id) ?? []);
             const thumbInputId = `thumb-${biz.id}`;
             return (
               <article key={biz.id} className="glass group overflow-hidden rounded-2xl">
-                <div className="relative aspect-[16/9] w-full border-b border-white/5 bg-[#121214]">
-                  <BusinessThumbnail
-                    business={biz}
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                    uploading={thumbUploadId === biz.id}
-                    onMissingClick={
-                      thumbUrl || thumbUploadId === biz.id
-                        ? undefined
-                        : () => document.getElementById(thumbInputId)?.click()
-                    }
-                  />
-                  <input
-                    id={thumbInputId}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    disabled={thumbUploadId === biz.id}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      e.target.value = "";
-                      if (file) void onUploadThumbnail(biz, file);
-                    }}
-                  />
-                  {thumbUrl && (
-                    <label
-                      htmlFor={thumbInputId}
-                      className="absolute bottom-2 right-2 cursor-pointer rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[10px] text-zinc-200 opacity-0 backdrop-blur-sm transition group-hover:opacity-100"
-                    >
-                      {thumbUploadId === biz.id ? "Uploading…" : "Change photo"}
-                    </label>
-                  )}
-                  <span
-                    className={`absolute right-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm ${MODULE_STYLES[biz.module]}`}
-                  >
-                    {moduleLabel(biz.module, moduleLabels)}
-                  </span>
-                </div>
-                {action.disabled ? (
-                  <div className="block p-5">
-                    <h3 className="truncate font-medium text-zinc-100">{biz.name}</h3>
-                    <p className="mt-0.5 text-sm text-zinc-500">
-                      {biz.typeLabel}
-                      <span className="text-zinc-600"> · {biz.categoryLabel}</span>
-                    </p>
-                    {biz.address && (
-                      <p className="mt-1 truncate text-xs text-zinc-600">{biz.address}</p>
-                    )}
-                  </div>
+                {action.disabled || !action.href ? (
+                  <>
+                    <div className="relative aspect-[16/9] w-full border-b border-white/5 bg-[#121214]">
+                      <BusinessThumbnail
+                        business={biz}
+                        className="h-full w-full object-cover"
+                        uploading={thumbUploadId === biz.id}
+                        onMissingClick={
+                          businessThumbnailUrl(biz) || thumbUploadId === biz.id
+                            ? undefined
+                            : () => document.getElementById(thumbInputId)?.click()
+                        }
+                      />
+                      <input
+                        id={thumbInputId}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={thumbUploadId === biz.id}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          e.target.value = "";
+                          if (file) void onUploadThumbnail(biz, file);
+                        }}
+                      />
+                      <span
+                        className={`absolute right-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm ${MODULE_STYLES[biz.module]}`}
+                      >
+                        {moduleLabel(biz.module, moduleLabels)}
+                      </span>
+                    </div>
+                    <div className="block p-5">
+                      <h3 className="truncate font-medium text-zinc-100">{biz.name}</h3>
+                      <p className="mt-0.5 text-sm text-zinc-500">
+                        {biz.typeLabel}
+                        <span className="text-zinc-600"> · {biz.categoryLabel}</span>
+                      </p>
+                      {biz.address && (
+                        <p className="mt-1 truncate text-xs text-zinc-600">{biz.address}</p>
+                      )}
+                    </div>
+                  </>
                 ) : (
-                  <Link href={action.href!} className="block p-5">
-                    <h3 className="truncate font-medium text-zinc-100 group-hover:text-white">
-                      {biz.name}
-                    </h3>
-                    <p className="mt-0.5 text-sm text-zinc-500">
-                      {biz.typeLabel}
-                      <span className="text-zinc-600"> · {biz.categoryLabel}</span>
-                    </p>
-                    {biz.address && (
-                      <p className="mt-1 truncate text-xs text-zinc-600">{biz.address}</p>
-                    )}
+                  <Link href={action.href} className="block">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/5 bg-[#121214]">
+                      <BusinessThumbnail
+                        business={biz}
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                        uploading={thumbUploadId === biz.id}
+                      />
+                      <span
+                        className={`absolute right-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm ${MODULE_STYLES[biz.module]}`}
+                      >
+                        {moduleLabel(biz.module, moduleLabels)}
+                      </span>
+                    </div>
+                    <div className="p-5">
+                      <h3 className="truncate font-medium text-zinc-100 group-hover:text-white">
+                        {biz.name}
+                      </h3>
+                      <p className="mt-0.5 text-sm text-zinc-500">
+                        {biz.typeLabel}
+                        <span className="text-zinc-600"> · {biz.categoryLabel}</span>
+                      </p>
+                      {biz.address && (
+                        <p className="mt-1 truncate text-xs text-zinc-600">{biz.address}</p>
+                      )}
+                    </div>
                   </Link>
                 )}
                 <div className="flex items-center justify-between gap-2 border-t border-white/5 px-4 py-3">
@@ -422,6 +469,20 @@ export default function VendorBusinessesPage() {
                     {removingId === biz.id ? "Removing…" : "Remove"}
                   </button>
                 </div>
+                {!action.disabled && action.href && (
+                  <input
+                    id={thumbInputId}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={thumbUploadId === biz.id}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      e.target.value = "";
+                      if (file) void onUploadThumbnail(biz, file);
+                    }}
+                  />
+                )}
               </article>
             );
           })}

@@ -146,28 +146,25 @@ export default function VendorOrdersPage() {
         />
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2">
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <select
+          value={tab}
+          onChange={(e) => setTab(e.target.value as Tab)}
+          className="field-input h-9 w-full py-0 text-sm sm:w-44"
+          aria-label="Filter bookings"
+        >
           {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTab(t.id)}
-              className={`rounded-full px-3.5 py-1.5 text-sm transition ${
-                tab === t.id
-                  ? "bg-white/15 text-zinc-100"
-                  : "border border-white/10 bg-white/[0.02] text-zinc-400 hover:border-white/20 hover:text-zinc-200"
-              }`}
-            >
+            <option key={t.id} value={t.id}>
               {t.label}
-            </button>
+            </option>
           ))}
-        </div>
+        </select>
         {businessOptions.length > 1 && (
           <select
             value={businessId}
             onChange={(e) => setBusinessId(e.target.value)}
             className="field-input h-9 w-full py-0 text-sm sm:w-52"
+            aria-label="Filter by business"
           >
             <option value="all">All businesses</option>
             {businessOptions.map((b) => (

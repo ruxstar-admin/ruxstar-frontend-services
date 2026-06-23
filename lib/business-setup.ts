@@ -124,3 +124,21 @@ export function resourceCopy(typeId: string) {
 export function supportsAppointmentSetup(module: string) {
   return module === "appointments";
 }
+
+export function supportsEvents(module: string) {
+  return module === "events";
+}
+
+/** Infer tournament vs ticketed event from the business type chosen at onboarding. */
+export function defaultEventKindForBusiness(business: {
+  typeId: string;
+  typeLabel?: string;
+}): "tournament" | "event" {
+  if (business.typeId === "sports_event") return "tournament";
+  if (business.typeId === "concert") return "event";
+  const hint = `${business.typeId} ${business.typeLabel ?? ""}`.toLowerCase();
+  if (/sport|tournament|cricket|football|badminton|tennis|esports/.test(hint)) {
+    return "tournament";
+  }
+  return "event";
+}

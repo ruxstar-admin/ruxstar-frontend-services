@@ -3,8 +3,32 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { getCustomerBookingStatus } from "@/lib/api";
-import { invalidateCustomerBookings } from "@/lib/swr-hooks";
+import { getCustomerBookingStatus, getEventRegistrationStatus } from "@/lib/api";
+import { invalidateCustomerBookings, invalidateMyEventRegistrations } from "@/lib/swr-hooks";
+
+// The Cashfree return URL carries the order id (a booking id OR an event
+// registration id). Probe the booking endpoint first; if it 404s, treat the id
+// as an event registration. Both expose { status, paymentStatus }.
+type StatusEntity = {
+  kind: "booking" | "event";
+  title: string;
+  status: string;
+  paymentStatus?: string | null;
+};
+
+async function fetchStatus(id: string): Promise<StatusEntity | null> {
+  try {
+    const b = await getCustomerBookingStatus(id);
+    return { kind: "booking", title: b.businessName, status: b.status, paymentStatus: b.paymentStatus };
+  } catch {
+    try {
+      const r = await getEventRegistrationStatus(id);
+      return { kind: "event", title: r.eventTitle, status: r.status, paymentStatus: r.paymentStatus };
+    } catch {
+      return null;
+    }
+  }
+}
 
 function PaymentStatusContent() {
   const router = useRouter();
@@ -14,11 +38,12 @@ function PaymentStatusContent() {
   const [status, setStatus] = useState<"loading" | "confirmed" | "failed" | "pending">("loading");
   const [message, setMessage] = useState("Checking your payment…");
   const [businessName, setBusinessName] = useState("");
+  const [kind, setKind] = useState<"booking" | "event">("booking");
 
   useEffect(() => {
     if (!bookingId) {
       setStatus("failed");
-      setMessage("Missing booking reference. Please try booking again.");
+      setMessage("Missing payment reference. Please try again.");
       return;
     }
 
@@ -28,50 +53,48 @@ function PaymentStatusContent() {
 
     const poll = async () => {
       attempts += 1;
-      try {
-        const booking = await getCustomerBookingStatus(bookingId);
-        if (cancelled) return;
-        setBusinessName(booking.businessName);
+      const entity = await fetchStatus(bookingId);
+      if (cancelled) return;
 
-        if (booking.status === "confirmed" && booking.paymentStatus === "paid") {
+      if (entity) {
+        setBusinessName(entity.title);
+        setKind(entity.kind);
+        const isEvent = entity.kind === "event";
+
+        if (entity.status === "confirmed" && entity.paymentStatus === "paid") {
           setStatus("confirmed");
-          setMessage("Payment received — your slot is booked.");
-          invalidateCustomerBookings();
+          setMessage(
+            isEvent ? "Payment received — you're registered." : "Payment received — your slot is booked.",
+          );
+          if (isEvent) invalidateMyEventRegistrations();
+          else invalidateCustomerBookings();
           return;
         }
 
         if (
-          booking.status === "payment_failed" ||
-          booking.status === "expired" ||
-          booking.paymentStatus === "failed"
+          entity.status === "payment_failed" ||
+          entity.status === "expired" ||
+          entity.paymentStatus === "failed"
         ) {
           setStatus("failed");
           setMessage(
-            booking.status === "expired"
-              ? "Payment window expired. The slot was released — please book again."
+            entity.status === "expired"
+              ? "Payment window expired — your spot was released. Please try again."
               : "Payment did not go through. Please try again.",
           );
           return;
         }
-
-        if (attempts >= maxAttempts) {
-          setStatus("pending");
-          setMessage("Payment is still processing. Check My bookings in a minute.");
-          return;
-        }
-
-        setStatus("loading");
-        setMessage("Waiting for payment confirmation…");
-        window.setTimeout(() => void poll(), 2000);
-      } catch {
-        if (cancelled) return;
-        if (attempts >= maxAttempts) {
-          setStatus("failed");
-          setMessage("Could not verify payment. Check My bookings or contact support.");
-          return;
-        }
-        window.setTimeout(() => void poll(), 2000);
       }
+
+      if (attempts >= maxAttempts) {
+        setStatus("pending");
+        setMessage("Payment is still processing. Check My bookings in a minute.");
+        return;
+      }
+
+      setStatus("loading");
+      setMessage("Waiting for payment confirmation…");
+      window.setTimeout(() => void poll(), 2000);
     };
 
     void poll();
@@ -99,7 +122,9 @@ function PaymentStatusContent() {
 
         <h1 className="text-xl font-semibold text-zinc-100">
           {status === "confirmed"
-            ? "Booking confirmed"
+            ? kind === "event"
+              ? "Registration confirmed"
+              : "Booking confirmed"
             : status === "failed"
               ? "Payment not completed"
               : status === "pending"

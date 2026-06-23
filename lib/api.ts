@@ -1403,6 +1403,293 @@ export async function cancelCustomerBooking(bookingId: string): Promise<void> {
   await authedApi(`user/bookings/${bookingId}`, { method: "DELETE" });
 }
 
+/* ------------------------------------------------------------------ */
+/* Events & tournaments                                                */
+/* ------------------------------------------------------------------ */
+
+export type EventKind = "tournament" | "event";
+export type EventFormat = "individual" | "team";
+export type EventStatus = "draft" | "published" | "cancelled" | "completed";
+
+export type RuxEvent = {
+  id: string;
+  businessId: string;
+  businessName: string;
+  kind: EventKind;
+  title: string;
+  description: string;
+  tournamentType: string;
+  format: EventFormat;
+  teamSize: number | null;
+  capacity: number | null;
+  reservedCount: number;
+  confirmedCount: number;
+  spotsLeft: number | null;
+  entryFee: number;
+  currency: string;
+  venue: string;
+  coverUrl: string | null;
+  skillLevel: string;
+  ageCategory: string;
+  genderCategory: string;
+  rules: string;
+  startAt: string | null;
+  endAt: string | null;
+  registrationDeadline: string | null;
+  status: EventStatus;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type EventRegistration = {
+  id: string;
+  eventId: string;
+  eventTitle: string;
+  businessId: string;
+  businessName: string;
+  kind: EventKind;
+  format: EventFormat;
+  teamName: string | null;
+  participants: { name: string }[];
+  customerName: string;
+  customerMobile: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentStatus?: string | null;
+  paymentSessionId?: string | null;
+  startAt: string | null;
+  venue: string;
+  expiresAt?: string | null;
+  paidAt?: string | null;
+  createdAt?: string;
+};
+
+export type EventInput = {
+  businessId?: string;
+  kind?: EventKind;
+  title?: string;
+  description?: string;
+  tournamentType?: string;
+  format?: EventFormat;
+  teamSize?: number | null;
+  capacity?: number | null;
+  entryFee?: number;
+  venue?: string;
+  skillLevel?: string;
+  ageCategory?: string;
+  genderCategory?: string;
+  rules?: string;
+  startAt?: string;
+  endAt?: string | null;
+  registrationDeadline?: string | null;
+};
+
+export type RegisterEventResult = {
+  registration: EventRegistration;
+  payment: InitiateBookingPayment | null;
+};
+
+function normalizeEvent(raw: unknown): RuxEvent | null {
+  const e = asRecord(raw);
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const numOrNull = (v: unknown) => (typeof v === "number" ? v : null);
+  const id = str(e.id) || str(e._id);
+  if (!id) return null;
+  return {
+    id,
+    businessId: str(e.businessId),
+    businessName: str(e.businessName),
+    kind: e.kind === "event" ? "event" : "tournament",
+    title: str(e.title),
+    description: str(e.description),
+    tournamentType: str(e.tournamentType),
+    format: e.format === "team" ? "team" : "individual",
+    teamSize: numOrNull(e.teamSize),
+    capacity: numOrNull(e.capacity),
+    reservedCount: typeof e.reservedCount === "number" ? e.reservedCount : 0,
+    confirmedCount: typeof e.confirmedCount === "number" ? e.confirmedCount : 0,
+    spotsLeft: numOrNull(e.spotsLeft),
+    entryFee: typeof e.entryFee === "number" ? e.entryFee : 0,
+    currency: str(e.currency) || "INR",
+    venue: str(e.venue),
+    coverUrl: typeof e.coverUrl === "string" ? e.coverUrl : null,
+    skillLevel: str(e.skillLevel),
+    ageCategory: str(e.ageCategory),
+    genderCategory: str(e.genderCategory),
+    rules: str(e.rules),
+    startAt: typeof e.startAt === "string" ? e.startAt : null,
+    endAt: typeof e.endAt === "string" ? e.endAt : null,
+    registrationDeadline: typeof e.registrationDeadline === "string" ? e.registrationDeadline : null,
+    status: (["draft", "published", "cancelled", "completed"] as const).includes(
+      e.status as EventStatus,
+    )
+      ? (e.status as EventStatus)
+      : "draft",
+    createdAt: str(e.createdAt) || undefined,
+    updatedAt: str(e.updatedAt) || undefined,
+  };
+}
+
+function normalizeRegistration(raw: unknown): EventRegistration | null {
+  const r = asRecord(raw);
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const id = str(r.id) || str(r._id);
+  if (!id) return null;
+  const participants = Array.isArray(r.participants)
+    ? r.participants
+        .map((p) => ({ name: str(asRecord(p).name) }))
+        .filter((p) => p.name)
+    : [];
+  return {
+    id,
+    eventId: str(r.eventId),
+    eventTitle: str(r.eventTitle),
+    businessId: str(r.businessId),
+    businessName: str(r.businessName),
+    kind: r.kind === "event" ? "event" : "tournament",
+    format: r.format === "team" ? "team" : "individual",
+    teamName: typeof r.teamName === "string" ? r.teamName : null,
+    participants,
+    customerName: str(r.customerName),
+    customerMobile: str(r.customerMobile),
+    amount: typeof r.amount === "number" ? r.amount : 0,
+    currency: str(r.currency) || "INR",
+    status: str(r.status) || "confirmed",
+    paymentStatus: typeof r.paymentStatus === "string" ? r.paymentStatus : null,
+    paymentSessionId: typeof r.paymentSessionId === "string" ? r.paymentSessionId : null,
+    startAt: typeof r.startAt === "string" ? r.startAt : null,
+    venue: str(r.venue),
+    expiresAt: typeof r.expiresAt === "string" ? r.expiresAt : null,
+    paidAt: typeof r.paidAt === "string" ? r.paidAt : null,
+    createdAt: str(r.createdAt) || undefined,
+  };
+}
+
+// ── Public discovery ──
+export async function listPublicEvents(): Promise<RuxEvent[]> {
+  const data = await api("public/events");
+  const list = asRecord(data).events;
+  return Array.isArray(list)
+    ? list.map(normalizeEvent).filter((e): e is RuxEvent => e !== null)
+    : [];
+}
+
+export async function getPublicEvent(eventId: string): Promise<RuxEvent> {
+  const data = await api(`public/events/${encodeURIComponent(eventId)}`);
+  const event = normalizeEvent(asRecord(data).event);
+  if (!event) throw new Error("Event not found.");
+  return event;
+}
+
+// ── Customer registration ──
+export async function registerForEvent(
+  eventId: string,
+  body: { teamName?: string; participants?: { name: string }[] },
+): Promise<RegisterEventResult> {
+  const data = await postAuthed(`user/events/${encodeURIComponent(eventId)}/register`, body);
+  const root = asRecord(data);
+  const registration = normalizeRegistration(root.registration);
+  if (!registration) throw new Error("Could not register.");
+  const payment = root.payment ? normalizeInitiatePayment(root.payment) : null;
+  return { registration, payment };
+}
+
+export async function listMyEventRegistrations(): Promise<EventRegistration[]> {
+  const data = await authedApi("user/event-registrations");
+  const list = asRecord(data).registrations;
+  return Array.isArray(list)
+    ? list.map(normalizeRegistration).filter((r): r is EventRegistration => r !== null)
+    : [];
+}
+
+export async function getEventRegistrationStatus(id: string): Promise<EventRegistration> {
+  const data = await authedApi(`user/event-registrations/${encodeURIComponent(id)}`);
+  const reg = normalizeRegistration(asRecord(data).registration);
+  if (!reg) throw new Error("Registration not found.");
+  return reg;
+}
+
+// ── Vendor authoring ──
+export async function listVendorEvents(): Promise<RuxEvent[]> {
+  try {
+    const data = await authedApi("vendor/events");
+    const list = asRecord(data).events;
+    return Array.isArray(list)
+      ? list.map(normalizeEvent).filter((e): e is RuxEvent => e !== null)
+      : [];
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function getVendorEvent(
+  eventId: string,
+): Promise<{ event: RuxEvent; registrations: EventRegistration[] }> {
+  try {
+    const data = await authedApi(`vendor/events/${encodeURIComponent(eventId)}`);
+    const root = asRecord(data);
+    const event = normalizeEvent(root.event);
+    if (!event) throw new Error("Event not found.");
+    const registrations = Array.isArray(root.registrations)
+      ? root.registrations
+          .map(normalizeRegistration)
+          .filter((r): r is EventRegistration => r !== null)
+      : [];
+    return { event, registrations };
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function createVendorEvent(body: EventInput): Promise<RuxEvent> {
+  try {
+    const data = await postAuthed("vendor/events", body);
+    const event = normalizeEvent(asRecord(data).event);
+    if (!event) throw new Error("Could not create event.");
+    return event;
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function updateVendorEvent(eventId: string, body: EventInput): Promise<RuxEvent> {
+  try {
+    const data = await postAuthedMethod(
+      `vendor/events/${encodeURIComponent(eventId)}`,
+      "PATCH",
+      body,
+    );
+    const event = normalizeEvent(asRecord(data).event);
+    if (!event) throw new Error("Could not update event.");
+    return event;
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function setVendorEventStatus(
+  eventId: string,
+  action: "publish" | "unpublish" | "cancel",
+): Promise<RuxEvent> {
+  try {
+    const data = await postAuthed(`vendor/events/${encodeURIComponent(eventId)}/${action}`, {});
+    const event = normalizeEvent(asRecord(data).event);
+    if (!event) throw new Error("Could not update event.");
+    return event;
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function deleteVendorEvent(eventId: string): Promise<void> {
+  try {
+    await authedApi(`vendor/events/${encodeURIComponent(eventId)}`, { method: "DELETE" });
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
 // Vendor-facing bookings (paid orders) reuse the same shape — they carry the
 // customer's name/mobile so vendors know who booked each slot.
 export type VendorBooking = CustomerBooking;
