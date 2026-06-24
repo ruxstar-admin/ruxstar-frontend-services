@@ -1,9 +1,13 @@
 import useSWR, { mutate as globalMutate } from "swr";
 import {
+  fetchAllAdminVendorKyc,
   getBusinessCatalog,
   getCustomerProfile,
   getRuxstarCard,
   getVendorKycStatus,
+  listAdminCategories,
+  listAdminTypes,
+  listAdminUsers,
   listBusinesses,
   listCustomerBookings,
   listMyEventRegistrations,
@@ -11,6 +15,10 @@ import {
   listPublicEvents,
   listVendorBookings,
   listVendorEvents,
+  type AdminCatalogCategory,
+  type AdminCatalogType,
+  type AdminUser,
+  type AdminVendorKycRow,
   type Business,
   type BusinessCatalog,
   type CustomerBooking,
@@ -35,6 +43,9 @@ export const swrKeys = {
   publicEvents: "swr/public/events",
   vendorEvents: "swr/vendor/events",
   myEventRegistrations: "swr/user/event-registrations",
+  adminKyc: "swr/admin/kyc",
+  adminStaff: "swr/admin/staff",
+  adminCatalog: "swr/admin/catalog",
 } as const;
 
 export function invalidateBusinesses() {
@@ -92,8 +103,16 @@ export function useCustomerProfile(enabled = true) {
 }
 
 export function useVendorBookings(enabled = true) {
-  return useSWR<VendorBooking[]>(enabled ? swrKeys.vendorBookings : null, () =>
-    listVendorBookings(),
+  return useSWR<VendorBooking[]>(
+    enabled ? swrKeys.vendorBookings : null,
+    () => listVendorBookings(),
+    {
+      // Near real-time: poll while the tab is open, refresh on focus/reconnect.
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+      keepPreviousData: true,
+    },
   );
 }
 
@@ -118,4 +137,59 @@ export function invalidateVendorEvents() {
 
 export function invalidateMyEventRegistrations() {
   return globalMutate(swrKeys.myEventRegistrations);
+}
+
+/* --------------------------------- Admin --------------------------------- */
+
+export function useAdminVendorKyc(enabled = true) {
+  return useSWR<AdminVendorKycRow[]>(
+    enabled ? swrKeys.adminKyc : null,
+    fetchAllAdminVendorKyc,
+    { revalidateOnFocus: true, keepPreviousData: true },
+  );
+}
+
+export function invalidateAdminKyc() {
+  return globalMutate(swrKeys.adminKyc);
+}
+
+export function useAdminStaff(enabled = true) {
+  return useSWR<AdminUser[]>(enabled ? swrKeys.adminStaff : null, async () => {
+    const [admins, employees] = await Promise.all([
+      listAdminUsers("admin"),
+      listAdminUsers("employee"),
+    ]);
+    const byId = new Map<string, AdminUser>();
+    for (const u of [...admins, ...employees]) {
+      byId.set(u._id ?? u.id ?? u.mobile ?? crypto.randomUUID(), u);
+    }
+    return [...byId.values()];
+  });
+}
+
+export function invalidateAdminStaff() {
+  return globalMutate(swrKeys.adminStaff);
+}
+
+export type AdminCatalog = {
+  categories: AdminCatalogCategory[];
+  types: AdminCatalogType[];
+};
+
+export function useAdminCatalog(enabled = true) {
+  return useSWR<AdminCatalog>(
+    enabled ? swrKeys.adminCatalog : null,
+    async () => {
+      const [categories, types] = await Promise.all([
+        listAdminCategories(),
+        listAdminTypes(),
+      ]);
+      return { categories, types };
+    },
+    { keepPreviousData: true },
+  );
+}
+
+export function invalidateAdminCatalog() {
+  return globalMutate(swrKeys.adminCatalog);
 }

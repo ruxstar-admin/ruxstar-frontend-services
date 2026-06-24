@@ -43,6 +43,7 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
       ? "Book"
       : NAV.find((n) => n.id === view)?.label ?? "Discover";
   const isBookPage = pathname.startsWith("/customer/book");
+  const isCustomerHub = pathname === "/customer";
 
   if (!ready) {
     return (
@@ -108,7 +109,13 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="relative min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
+        <main
+          className={
+            isCustomerHub
+              ? "relative flex min-h-0 flex-1 flex-col overflow-hidden"
+              : "relative min-w-0 flex-1 overflow-x-hidden overflow-y-auto"
+          }
+        >
           <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
             <div className="bg-grid absolute inset-0" />
             <div className="spotlight absolute inset-0" />
@@ -116,7 +123,11 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
 
           <div
             className={`mx-auto min-w-0 sm:px-8 ${
-              isBookPage ? "max-w-6xl px-0 pb-28 pt-3 lg:pb-12" : "max-w-5xl px-5 pb-28 pt-8 lg:pb-12"
+              isBookPage
+                ? "max-w-6xl px-0 pb-28 pt-3 lg:pb-12"
+                : isCustomerHub
+                  ? "flex h-full min-h-0 w-full max-w-5xl flex-1 flex-col px-5 pb-4 pt-8 lg:pb-8"
+                  : "max-w-5xl px-5 pb-28 pt-8 lg:pb-12"
             }`}
           >
             {children}

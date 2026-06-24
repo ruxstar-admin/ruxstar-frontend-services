@@ -36,7 +36,13 @@ export async function proxyBackend(path: string, request?: Request) {
   }
 
   try {
-    const response = await fetch(`${base}${normalizedPath}`, init);
+    let upstreamUrl = `${base}${normalizedPath}`;
+    if (request) {
+      const search = new URL(request.url).search;
+      if (search) upstreamUrl += search;
+    }
+
+    const response = await fetch(upstreamUrl, init);
     const text = await response.text();
 
     return new NextResponse(text, {

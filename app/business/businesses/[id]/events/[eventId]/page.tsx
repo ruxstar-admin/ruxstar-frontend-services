@@ -359,18 +359,13 @@ function RegistrationsSection({
                 <span aria-hidden>↻</span> Refresh
               </button>
             </div>
-            <div className="relative">
-              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500">
-                🔍
-              </span>
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={isTeam ? "Search by team, captain, or phone…" : "Search by name or phone…"}
-                className="field-input w-full py-2.5 pl-10 text-sm"
-              />
-            </div>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={isTeam ? "Search by team, captain, or phone…" : "Search by name or phone…"}
+              className="field-input w-full py-2.5 text-sm"
+            />
             <div className="flex flex-wrap gap-2">
               {chips.map((chip) => {
                 const active = filter === chip.id;

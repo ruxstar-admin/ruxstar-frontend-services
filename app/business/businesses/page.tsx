@@ -374,78 +374,73 @@ export default function VendorBusinessesPage() {
           {filteredBusinesses.map((biz) => {
             const action = businessAction(biz, eventsByBusiness.get(biz.id) ?? []);
             const thumbInputId = `thumb-${biz.id}`;
+            const hasThumbnail = Boolean(businessThumbnailUrl(biz));
             return (
               <article key={biz.id} className="glass group overflow-hidden rounded-2xl">
+                <div className="relative aspect-[16/9] w-full border-b border-white/5 bg-[#121214]">
+                  <BusinessThumbnail
+                    business={biz}
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                    uploading={thumbUploadId === biz.id}
+                    onMissingClick={
+                      hasThumbnail || thumbUploadId === biz.id
+                        ? undefined
+                        : () => document.getElementById(thumbInputId)?.click()
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById(thumbInputId)?.click()}
+                    disabled={thumbUploadId === biz.id}
+                    className="absolute bottom-3 left-3 rounded-full border border-white/15 bg-black/55 px-3 py-1 text-xs font-medium text-zinc-100 backdrop-blur-sm transition hover:bg-black/70 disabled:opacity-50"
+                  >
+                    {thumbUploadId === biz.id ? "Uploading…" : hasThumbnail ? "Edit cover" : "Add cover"}
+                  </button>
+                  <input
+                    id={thumbInputId}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={thumbUploadId === biz.id}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      e.target.value = "";
+                      if (file) void onUploadThumbnail(biz, file);
+                    }}
+                  />
+                  <span
+                    className={`absolute right-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm ${MODULE_STYLES[biz.module]}`}
+                  >
+                    {moduleLabel(biz.module, moduleLabels)}
+                  </span>
+                </div>
+
                 {action.disabled || !action.href ? (
-                  <>
-                    <div className="relative aspect-[16/9] w-full border-b border-white/5 bg-[#121214]">
-                      <BusinessThumbnail
-                        business={biz}
-                        className="h-full w-full object-cover"
-                        uploading={thumbUploadId === biz.id}
-                        onMissingClick={
-                          businessThumbnailUrl(biz) || thumbUploadId === biz.id
-                            ? undefined
-                            : () => document.getElementById(thumbInputId)?.click()
-                        }
-                      />
-                      <input
-                        id={thumbInputId}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        disabled={thumbUploadId === biz.id}
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          e.target.value = "";
-                          if (file) void onUploadThumbnail(biz, file);
-                        }}
-                      />
-                      <span
-                        className={`absolute right-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm ${MODULE_STYLES[biz.module]}`}
-                      >
-                        {moduleLabel(biz.module, moduleLabels)}
-                      </span>
-                    </div>
-                    <div className="block p-5">
-                      <h3 className="truncate font-medium text-zinc-100">{biz.name}</h3>
-                      <p className="mt-0.5 text-sm text-zinc-500">
-                        {biz.typeLabel}
-                        <span className="text-zinc-600"> · {biz.categoryLabel}</span>
-                      </p>
-                      {biz.address && (
-                        <p className="mt-1 truncate text-xs text-zinc-600">{biz.address}</p>
-                      )}
-                    </div>
-                  </>
+                  <div className="block p-5">
+                    <h3 className="truncate font-medium text-zinc-100">{biz.name}</h3>
+                    <p className="mt-0.5 text-sm text-zinc-500">
+                      {biz.typeLabel}
+                      <span className="text-zinc-600"> · {biz.categoryLabel}</span>
+                    </p>
+                    {biz.address && (
+                      <p className="mt-1 truncate text-xs text-zinc-600">{biz.address}</p>
+                    )}
+                  </div>
                 ) : (
-                  <Link href={action.href} className="block">
-                    <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/5 bg-[#121214]">
-                      <BusinessThumbnail
-                        business={biz}
-                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                        uploading={thumbUploadId === biz.id}
-                      />
-                      <span
-                        className={`absolute right-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm ${MODULE_STYLES[biz.module]}`}
-                      >
-                        {moduleLabel(biz.module, moduleLabels)}
-                      </span>
-                    </div>
-                    <div className="p-5">
-                      <h3 className="truncate font-medium text-zinc-100 group-hover:text-white">
-                        {biz.name}
-                      </h3>
-                      <p className="mt-0.5 text-sm text-zinc-500">
-                        {biz.typeLabel}
-                        <span className="text-zinc-600"> · {biz.categoryLabel}</span>
-                      </p>
-                      {biz.address && (
-                        <p className="mt-1 truncate text-xs text-zinc-600">{biz.address}</p>
-                      )}
-                    </div>
+                  <Link href={action.href} className="block p-5">
+                    <h3 className="truncate font-medium text-zinc-100 group-hover:text-white">
+                      {biz.name}
+                    </h3>
+                    <p className="mt-0.5 text-sm text-zinc-500">
+                      {biz.typeLabel}
+                      <span className="text-zinc-600"> · {biz.categoryLabel}</span>
+                    </p>
+                    {biz.address && (
+                      <p className="mt-1 truncate text-xs text-zinc-600">{biz.address}</p>
+                    )}
                   </Link>
                 )}
+
                 <div className="flex items-center justify-between gap-2 border-t border-white/5 px-4 py-3">
                   {action.disabled || !action.href ? (
                     <span
@@ -469,20 +464,6 @@ export default function VendorBusinessesPage() {
                     {removingId === biz.id ? "Removing…" : "Remove"}
                   </button>
                 </div>
-                {!action.disabled && action.href && (
-                  <input
-                    id={thumbInputId}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    disabled={thumbUploadId === biz.id}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      e.target.value = "";
-                      if (file) void onUploadThumbnail(biz, file);
-                    }}
-                  />
-                )}
               </article>
             );
           })}

@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { BusinessSlotCalendar } from "@/components/business-slot-calendar";
+import { ServiceAppointmentsBoard } from "@/components/service-appointments-board";
 import { useVendorShell } from "@/components/vendor-shell";
 import { type Business, getBusiness } from "@/lib/api";
-import { supportsAppointmentSetup } from "@/lib/business-setup";
+import { isServiceSetup, supportsAppointmentSetup } from "@/lib/business-setup";
 
 export default function BusinessCalendarPage() {
   const params = useParams();
@@ -119,7 +120,11 @@ export default function BusinessCalendarPage() {
         </Link>
       </div>
       <div className="mt-4 flex min-h-0 flex-1 flex-col">
-        <BusinessSlotCalendar businessId={business.id} businessName={business.name} />
+        {isServiceSetup(business.typeId) ? (
+          <ServiceAppointmentsBoard businessId={business.id} />
+        ) : (
+          <BusinessSlotCalendar businessId={business.id} businessName={business.name} />
+        )}
       </div>
     </div>
   );

@@ -7,6 +7,8 @@ export type SetupStepId =
   | "hourly-slots"
   | "full-day-days"
   | "resources"
+  | "staff"
+  | "services"
   | "review";
 
 export type RulesVariant = "venue" | "venue-hourly" | "turf-fullday" | "generic-fullday";
@@ -20,6 +22,8 @@ export type SetupStepConfig = {
     rulesVariant?: RulesVariant;
     resourcesVariant?: ResourcesVariant;
     showHallFields?: boolean;
+    hideSlotLength?: boolean;
+    staffNoun?: string;
   };
 };
 
@@ -162,9 +166,9 @@ const SETUP_FLOWS: SetupFlow[] = [
     ],
   },
   {
-    id: "salon-hourly",
+    id: "salon-services",
     typeId: "salon",
-    bookingMode: "slots",
+    bookingMode: "services",
     title: "Salon & spa",
     steps: [
       {
@@ -174,22 +178,28 @@ const SETUP_FLOWS: SetupFlow[] = [
       },
       {
         id: "hourly-slots",
-        label: "Hours & slots",
-        intro: "Opening hours, appointment length, and price per slot.",
+        label: "Hours",
+        intro: "The hours you're open for appointments.",
+        props: { hideSlotLength: true },
       },
       {
-        id: "resources",
-        label: "Stations",
-        intro: "Chairs, rooms, or stylists customers book with.",
-        props: { resourcesVariant: "salon", showHallFields: false },
+        id: "staff",
+        label: "Staff",
+        intro: "Add the stylists or therapists who take appointments.",
+        props: { staffNoun: "stylist" },
+      },
+      {
+        id: "services",
+        label: "Services",
+        intro: "Each service with its duration, price, and who can perform it.",
       },
       { id: "review", label: "Review", intro: "Start taking salon appointments." },
     ],
   },
   {
-    id: "clinic-hourly",
+    id: "clinic-services",
     typeId: "clinic",
-    bookingMode: "slots",
+    bookingMode: "services",
     title: "Clinic & consultation",
     steps: [
       {
@@ -199,22 +209,28 @@ const SETUP_FLOWS: SetupFlow[] = [
       },
       {
         id: "hourly-slots",
-        label: "Hours & slots",
-        intro: "Consultation hours, slot length, and fee per slot.",
+        label: "Hours",
+        intro: "Consultation hours patients can book within.",
+        props: { hideSlotLength: true },
       },
       {
-        id: "resources",
-        label: "Rooms",
-        intro: "Consultation rooms or doctors patients can book.",
-        props: { resourcesVariant: "clinic", showHallFields: false },
+        id: "staff",
+        label: "Doctors",
+        intro: "Add the doctors or practitioners patients can book.",
+        props: { staffNoun: "doctor" },
+      },
+      {
+        id: "services",
+        label: "Consultations",
+        intro: "Each consultation type with its length, fee, and practitioner.",
       },
       { id: "review", label: "Review", intro: "Go live for patient bookings." },
     ],
   },
   {
-    id: "coaching-hourly",
+    id: "coaching-services",
     typeId: "coaching",
-    bookingMode: "slots",
+    bookingMode: "services",
     title: "Coaching & classes",
     steps: [
       {
@@ -224,14 +240,20 @@ const SETUP_FLOWS: SetupFlow[] = [
       },
       {
         id: "hourly-slots",
-        label: "Hours & slots",
-        intro: "Class schedule window, session length, and price.",
+        label: "Hours",
+        intro: "The hours you run sessions.",
+        props: { hideSlotLength: true },
       },
       {
-        id: "resources",
+        id: "staff",
+        label: "Coaches",
+        intro: "Add the coaches or instructors students can book.",
+        props: { staffNoun: "coach" },
+      },
+      {
+        id: "services",
         label: "Sessions",
-        intro: "Batches, courts, or rooms students book into.",
-        props: { resourcesVariant: "default", showHallFields: false },
+        intro: "Each session type with its length, price, and coach.",
       },
       { id: "review", label: "Review", intro: "Open for class bookings." },
     ],
@@ -261,10 +283,12 @@ const DEFAULT_FLOW: SetupFlow = {
 };
 
 export function resolveSetupFlow(typeId: string, bookingMode: BookingMode): SetupFlow {
-  const mode = bookingMode === "fullDay" ? "fullDay" : "slots";
+  const mode: BookingMode =
+    bookingMode === "fullDay" ? "fullDay" : bookingMode === "services" ? "services" : "slots";
+  const fallbackMode: BookingMode = mode === "services" ? "services" : "slots";
   const match =
     SETUP_FLOWS.find((f) => f.typeId === typeId && f.bookingMode === mode) ??
-    SETUP_FLOWS.find((f) => f.typeId === typeId && f.bookingMode === "slots");
+    SETUP_FLOWS.find((f) => f.typeId === typeId && f.bookingMode === fallbackMode);
   return match ?? { ...DEFAULT_FLOW, typeId };
 }
 

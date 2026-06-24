@@ -149,6 +149,8 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
   const [rangeStart, setRangeStart] = useState(todayLocal());
   const [selectedDate, setSelectedDate] = useState(todayLocal());
   const [resourceId, setResourceId] = useState("");
+  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
+  const [staffId, setStaffId] = useState("");
   const [selectedSlot, setSelectedSlot] = useState<BusinessSlot | null>(null);
   const [slots, setSlots] = useState<BusinessSlot[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(true);
@@ -181,7 +183,7 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
 
   useEffect(() => {
     setSelectedSlot(null);
-  }, [selectedDate, resourceId]);
+  }, [selectedDate, resourceId, staffId, selectedServiceIds]);
 
   useEffect(() => {
     let cancelled = false;
@@ -204,16 +206,41 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
     };
   }, [businessId]);
 
+  const isService = business?.setup.bookingMode === "services";
+
   useEffect(() => {
     if (!business) return;
+    if (isService) return;
     const resources = business.setup.resources;
     if (resources.length > 1 && !resourceId) {
       setResourceId(resources[0].id);
     }
-  }, [business, resourceId]);
+  }, [business, resourceId, isService]);
+
+  // Staff who can perform every selected service (for the staff picker).
+  const eligibleStaff = useMemo(() => {
+    if (!business || !isService) return [];
+    const staff = business.setup.staff ?? [];
+    const services = business.setup.services ?? [];
+    if (selectedServiceIds.length === 0) return staff;
+    const selected = services.filter((s) => selectedServiceIds.includes(s.id));
+    return staff.filter((st) => selected.every((s) => s.staffIds.includes(st.id)));
+  }, [business, isService, selectedServiceIds]);
+
+  // Drop a chosen staff member if they can no longer do the selected services.
+  useEffect(() => {
+    if (staffId && !eligibleStaff.some((s) => s.id === staffId)) setStaffId("");
+  }, [eligibleStaff, staffId]);
 
   const loadSlots = useCallback(async () => {
-    if (!resourceId && (business?.setup.resources.length ?? 0) > 1) return;
+    if (!business) return;
+    const serviceMode = business.setup.bookingMode === "services";
+    if (serviceMode && selectedServiceIds.length === 0) {
+      setSlots([]);
+      setSlotsLoading(false);
+      return;
+    }
+    if (!serviceMode && !resourceId && (business.setup.resources.length ?? 0) > 1) return;
     setSlotsLoading(true);
     setSlots([]);
     setSelectedSlot(null);
@@ -221,7 +248,9 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
       const slotData = await listPublicBusinessSlots(businessId, {
         from: range.from,
         to: range.to,
-        resourceId: resourceId || undefined,
+        resourceId: serviceMode ? undefined : resourceId || undefined,
+        serviceIds: serviceMode ? selectedServiceIds : undefined,
+        staffId: serviceMode && staffId ? staffId : undefined,
       });
       setSlots(slotData.slots);
     } catch (err) {
@@ -229,7 +258,7 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
     } finally {
       setSlotsLoading(false);
     }
-  }, [businessId, business?.setup.resources.length, range.from, range.to, resourceId]);
+  }, [businessId, business, range.from, range.to, resourceId, selectedServiceIds, staffId]);
 
   useEffect(() => {
     if (!business) return;
@@ -237,9 +266,9 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
   }, [business, loadSlots]);
 
   const filteredSlots = useMemo(() => {
-    if (!resourceId) return slots;
+    if (isService || !resourceId) return slots;
     return slots.filter((s) => s.resourceId === resourceId);
-  }, [slots, resourceId]);
+  }, [slots, resourceId, isService]);
 
   const slotsByDate = useMemo(() => {
     const map = new Map<string, BusinessSlot[]>();
@@ -294,8 +323,13 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
     try {
       const { payment } = await initiateCustomerBooking({
         businessId,
-        resourceId: selectedSlot.resourceId,
         startAt: selectedSlot.startAt,
+        ...(isService
+          ? {
+              serviceIds: selectedServiceIds,
+              ...(staffId ? { staffId } : {}),
+            }
+          : { resourceId: selectedSlot.resourceId }),
       });
       await openCashfreeCheckout(
         payment.paymentSessionId,
@@ -367,8 +401,14 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
             <h1 className="mt-2 text-2xl font-semibold text-zinc-100 sm:text-3xl">{business.name}</h1>
             {business.address && <p className="mt-1 text-sm text-zinc-400">{business.address}</p>}
             <p className="mt-2 text-xs text-zinc-500">
-              {isFullDay ? "Full-day booking" : `${business.setup.slotMinutes}-min slots`}
-              {isVenue && business.setup.maxGuests ? ` · up to ${business.setup.maxGuests} guests` : ""}
+              {isService
+                ? `${business.setup.services.length} service${business.setup.services.length === 1 ? "" : "s"} · ${business.setup.staff.length} staff`
+                : isFullDay
+                  ? "Full-day booking"
+                  : `${business.setup.slotMinutes}-min slots`}
+              {!isService && isVenue && business.setup.maxGuests
+                ? ` · up to ${business.setup.maxGuests} guests`
+                : ""}
             </p>
           </div>
 
@@ -430,8 +470,74 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
             </div>
 
             <div className="p-4">
+            {/* Service-first picker — services then staff */}
+            {isService && (
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs font-medium text-zinc-500">Choose service(s)</p>
+                  <div className="mt-2 space-y-1.5">
+                    {business.setup.services.length === 0 && (
+                      <p className="text-sm text-zinc-600">No services available yet.</p>
+                    )}
+                    {business.setup.services.map((svc) => {
+                      const on = selectedServiceIds.includes(svc.id);
+                      return (
+                        <button
+                          key={svc.id}
+                          type="button"
+                          onClick={() =>
+                            setSelectedServiceIds((prev) =>
+                              prev.includes(svc.id)
+                                ? prev.filter((x) => x !== svc.id)
+                                : [...prev, svc.id],
+                            )
+                          }
+                          className={`flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left text-sm transition ${
+                            on
+                              ? "border-emerald-400/50 bg-emerald-500/15 text-emerald-100"
+                              : "border-white/10 bg-white/[0.03] text-zinc-200 hover:border-emerald-500/30"
+                          }`}
+                        >
+                          <span className="min-w-0">
+                            <span className="block truncate font-medium">{svc.name}</span>
+                            <span className="block text-[11px] text-zinc-500">
+                              {svc.durationMinutes} min
+                            </span>
+                          </span>
+                          <span className="shrink-0 font-semibold">
+                            ₹{svc.price.toLocaleString("en-IN")}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {selectedServiceIds.length > 0 && (
+                  <label className="flex items-center gap-2">
+                    <span className="shrink-0 text-xs font-medium text-zinc-500">With</span>
+                    <select
+                      value={staffId}
+                      onChange={(e) => setStaffId(e.target.value)}
+                      className="min-w-0 flex-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5 text-sm text-zinc-100 outline-none focus:border-emerald-500/40"
+                    >
+                      <option value="" className="bg-[#0c0c0e]">
+                        Anyone available
+                      </option>
+                      {eligibleStaff.map((st) => (
+                        <option key={st.id} value={st.id} className="bg-[#0c0c0e]">
+                          {st.name}
+                          {st.role ? ` · ${st.role}` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+              </div>
+            )}
+
             {/* Space picker — compact dropdown */}
-            {business.setup.resources.length > 1 && (
+            {!isService && business.setup.resources.length > 1 && (
               <label className="flex items-center gap-2">
                 <span className="shrink-0 text-xs font-medium text-zinc-500">Space</span>
                 <select
@@ -451,7 +557,13 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
               </label>
             )}
 
-            <div className={business.setup.resources.length > 1 ? "mt-3" : ""}>
+            {isService && selectedServiceIds.length === 0 ? (
+              <p className="mt-3 rounded-lg border border-dashed border-white/10 px-4 py-6 text-center text-sm text-zinc-600">
+                Pick a service to see available times.
+              </p>
+            ) : (
+            <>
+            <div className={isService || business.setup.resources.length > 1 ? "mt-3" : ""}>
               <SlotDateNav
                 rangeStart={range.from}
                 rangeEnd={range.to}
@@ -572,6 +684,8 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                 </div>
               )}
             </div>
+            </>
+            )}
           </div>
 
           {/* Sticky confirm bar inside booking deck */}
@@ -583,8 +697,22 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                   <p className="truncate text-sm font-medium text-zinc-100">
                     {formatDayLabel(selectedSlot.date)}
                     {!isFullDay && ` · ${formatTime12(selectedSlot.startTime)}`}
-                    {selectedResource && ` · ${selectedResource.name}`}
+                    {isService
+                      ? selectedSlot.staffName
+                        ? ` · ${selectedSlot.staffName}`
+                        : ""
+                      : selectedResource
+                        ? ` · ${selectedResource.name}`
+                        : ""}
                   </p>
+                  {isService && (
+                    <p className="truncate text-xs text-zinc-500">
+                      {business.setup.services
+                        .filter((s) => selectedServiceIds.includes(s.id))
+                        .map((s) => s.name)
+                        .join(", ")}
+                    </p>
+                  )}
                   <p className="text-sm font-semibold text-emerald-300">
                     ₹{selectedSlot.pricePerSlot.toLocaleString("en-IN")}
                   </p>

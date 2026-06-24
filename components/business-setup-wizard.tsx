@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Business, BusinessResource, BusinessSetupInput, WeeklyHours } from "@/lib/api";
+import type {
+  Business,
+  BusinessResource,
+  BusinessService,
+  BusinessSetupInput,
+  BusinessStaff,
+  WeeklyHours,
+} from "@/lib/api";
 import {
   completeBusinessSetup,
   getBusinessSetup,
@@ -15,6 +22,8 @@ import { SetupStepPhotos } from "@/components/business-setup/setup-step-photos";
 import { SetupStepResources } from "@/components/business-setup/setup-step-resources";
 import { SetupStepReview } from "@/components/business-setup/setup-step-review";
 import { SetupStepRules } from "@/components/business-setup/setup-step-rules";
+import { SetupStepStaff } from "@/components/business-setup/setup-step-staff";
+import { SetupStepServices } from "@/components/business-setup/setup-step-services";
 import {
   applyFullDayHours,
   bookingModeLabel,
@@ -39,12 +48,18 @@ type Props = {
 
 export function BusinessSetupWizard({ business, editMode = false, onComplete }: Props) {
   const setup = business.setup!;
-  const bookingMode: BookingMode = setup.bookingMode === "fullDay" ? "fullDay" : "slots";
+  const bookingMode: BookingMode =
+    setup.bookingMode === "fullDay"
+      ? "fullDay"
+      : setup.bookingMode === "services"
+        ? "services"
+        : "slots";
   const flow = useMemo(
     () => resolveSetupFlow(business.typeId, bookingMode),
     [business.typeId, bookingMode],
   );
   const isFullDay = bookingMode === "fullDay";
+  const isService = bookingMode === "services";
 
   const [stepIndex, setStepIndex] = useState(0);
   const currentStep: SetupStepConfig = flow.steps[stepIndex] ?? flow.steps[0];
@@ -62,6 +77,8 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
       pricePerSlot: r.pricePerSlot ?? (setup.pricePerSlot > 0 ? setup.pricePerSlot : undefined),
     })),
   );
+  const [staff, setStaff] = useState<BusinessStaff[]>(() => setup.staff ?? []);
+  const [services, setServices] = useState<BusinessService[]>(() => setup.services ?? []);
   const [savedPhotos, setSavedPhotos] = useState(setup.photos);
   const [pendingPhotos, setPendingPhotos] = useState<{ id: string; preview: string }[]>([]);
   const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([]);
@@ -69,6 +86,7 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   const [resourcePrice, setResourcePrice] = useState("");
   const [resourceCapacity, setResourceCapacity] = useState("");
   const [resourceDescription, setResourceDescription] = useState("");
+  const [bufferMinutes, setBufferMinutes] = useState(setup.bufferMinutes ?? 0);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -138,6 +156,14 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   }
 
   function buildSetupPatch(): BusinessSetupInput {
+    if (isService) {
+      return {
+        weeklyHours,
+        staff,
+        services,
+        bufferMinutes,
+      };
+    }
     const guests = maxGuests.trim() ? Math.round(Number(maxGuests)) : null;
     const prices = resources.map((r) => resourceBasePrice(r, setup.pricePerSlot));
     const patch: BusinessSetupInput = {
@@ -151,6 +177,84 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
       patch.venueRules = venueRules.trim();
     }
     return patch;
+  }
+
+  function addStaff(name: string, role: string) {
+    setStaff((prev) => [...prev, { id: crypto.randomUUID(), name, ...(role ? { role } : {}) }]);
+    setError("");
+  }
+
+  function removeStaff(id: string) {
+    setStaff((prev) => prev.filter((s) => s.id !== id));
+    setServices((prev) =>
+      prev.map((svc) => ({ ...svc, staffIds: svc.staffIds.filter((x) => x !== id) })),
+    );
+  }
+
+  function addService(svc: { name: string; durationMinutes: number; price: number }) {
+    setServices((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), ...svc, staffIds: staff.map((s) => s.id) },
+    ]);
+    setError("");
+  }
+
+  function removeService(id: string) {
+    setServices((prev) => prev.filter((s) => s.id !== id));
+  }
+
+  function toggleServiceStaff(serviceId: string, staffId: string) {
+    setServices((prev) =>
+      prev.map((svc) =>
+        svc.id === serviceId
+          ? {
+              ...svc,
+              staffIds: svc.staffIds.includes(staffId)
+                ? svc.staffIds.filter((x) => x !== staffId)
+                : [...svc.staffIds, staffId],
+            }
+          : svc,
+      ),
+    );
+  }
+
+  async function saveStaffAndContinue() {
+    if (!staff.length) {
+      setError("Add at least one before continuing.");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      await updateBusinessSetup(business.id, { staff });
+      goNext();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save staff.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveServicesAndContinue() {
+    if (!services.length) {
+      setError("Add at least one service.");
+      return;
+    }
+    const missing = services.find((svc) => svc.staffIds.length === 0);
+    if (missing) {
+      setError(`Assign at least one person to "${missing.name}".`);
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      await updateBusinessSetup(business.id, { staff, services, bufferMinutes });
+      goNext();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save services.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function syncPhotosIfNeeded() {
@@ -271,20 +375,44 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
     setBusy(true);
     setError("");
     try {
-      if (!resources.length) {
-        setError("Add at least one bookable space.");
-        goToStep("resources");
-        return;
-      }
-      if (!resourcesHavePrices()) {
-        setError(`Set a ${priceLabel(bookingMode).toLowerCase()} for each hall or court.`);
-        goToStep("resources");
-        return;
-      }
-      if (openDays.length === 0) {
-        setError("Select at least one open day.");
-        goToStep(isFullDay ? "full-day-days" : "hourly-slots");
-        return;
+      if (isService) {
+        if (openDays.length === 0) {
+          setError("Select at least one open day.");
+          goToStep("hourly-slots");
+          return;
+        }
+        if (!staff.length) {
+          setError("Add at least one staff member.");
+          goToStep("staff");
+          return;
+        }
+        if (!services.length) {
+          setError("Add at least one service.");
+          goToStep("services");
+          return;
+        }
+        const missing = services.find((svc) => svc.staffIds.length === 0);
+        if (missing) {
+          setError(`Assign at least one person to "${missing.name}".`);
+          goToStep("services");
+          return;
+        }
+      } else {
+        if (!resources.length) {
+          setError("Add at least one bookable space.");
+          goToStep("resources");
+          return;
+        }
+        if (!resourcesHavePrices()) {
+          setError(`Set a ${priceLabel(bookingMode).toLowerCase()} for each hall or court.`);
+          goToStep("resources");
+          return;
+        }
+        if (openDays.length === 0) {
+          setError("Select at least one open day.");
+          goToStep(isFullDay ? "full-day-days" : "hourly-slots");
+          return;
+        }
       }
 
       await persistEverything();
@@ -375,6 +503,12 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
       case "resources":
         await saveResourcesAndContinue();
         break;
+      case "staff":
+        await saveStaffAndContinue();
+        break;
+      case "services":
+        await saveServicesAndContinue();
+        break;
       case "review":
         await onFinish();
         break;
@@ -457,10 +591,51 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
             weeklyHours={weeklyHours}
             slotMinutes={slotMinutes}
             hoursRefDay={hoursRefDay}
+            hideSlotLength={isService || currentStep.props?.hideSlotLength}
             onSlotMinutesChange={setSlotMinutes}
             onToggleDay={toggleDayOpen}
             onUniformHours={setUniformHours}
           />
+        )}
+
+        {step === "staff" && (
+          <SetupStepStaff
+            staff={staff}
+            staffNoun={currentStep.props?.staffNoun ?? "staff member"}
+            onAdd={addStaff}
+            onRemove={removeStaff}
+          />
+        )}
+
+        {step === "services" && (
+          <div className="space-y-5">
+            <SetupStepServices
+              services={services}
+              staff={staff}
+              onAdd={addService}
+              onRemove={removeService}
+              onToggleStaff={toggleServiceStaff}
+            />
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+              <label className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-zinc-300">Gap between appointments</span>
+                <select
+                  className="field-input w-32 py-2 text-sm"
+                  value={bufferMinutes}
+                  onChange={(e) => setBufferMinutes(Number(e.target.value))}
+                >
+                  {[0, 5, 10, 15, 20, 30].map((m) => (
+                    <option key={m} value={m}>
+                      {m === 0 ? "None" : `${m} min`}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p className="mt-1.5 text-xs text-zinc-600">
+                Cleanup or buffer time held after each appointment.
+              </p>
+            </div>
+          </div>
         )}
 
         {step === "full-day-days" && (
@@ -495,7 +670,7 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
           />
         )}
 
-        {step === "review" && (
+        {step === "review" && !isService && (
           <SetupStepReview
             isFullDay={isFullDay}
             slotMinutes={slotMinutes}
@@ -508,6 +683,42 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
             showRules={showRules}
             showHallFields={showHallFields}
           />
+        )}
+
+        {step === "review" && isService && (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Open days</p>
+              <p className="mt-1 text-sm text-zinc-200">
+                {openDays.length ? openDays.join(", ") : "No days selected"}
+                {bufferMinutes > 0 ? ` · ${bufferMinutes} min gap` : ""}
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+                Team ({staff.length})
+              </p>
+              <p className="mt-1 text-sm text-zinc-200">
+                {staff.map((s) => s.name).join(", ") || "None"}
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+                Services ({services.length})
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                {services.map((svc) => (
+                  <li key={svc.id} className="flex items-center justify-between text-sm">
+                    <span className="text-zinc-200">{svc.name}</span>
+                    <span className="text-zinc-500">
+                      {svc.durationMinutes} min · ₹{svc.price.toLocaleString("en-IN")}
+                    </span>
+                  </li>
+                ))}
+                {services.length === 0 && <li className="text-sm text-zinc-600">None</li>}
+              </ul>
+            </div>
+          </div>
         )}
       </div>
 

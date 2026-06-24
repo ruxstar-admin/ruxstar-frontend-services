@@ -29,15 +29,14 @@ type NavItem = {
   label: string;
   icon: string;
   requiresKyc?: boolean;
-  soon?: boolean;
 };
 
 const NAV: NavItem[] = [
   { href: "/business", label: "Dashboard", icon: "◉" },
   { href: "/business/kyc", label: "Ruxstar Card", icon: "💳" },
   { href: "/business/businesses", label: "My businesses", icon: "🏪", requiresKyc: true },
-  { href: "/business/orders", label: "Orders", icon: "📦", requiresKyc: true, soon: true },
-  { href: "/business/analytics", label: "Analytics", icon: "📊", requiresKyc: true, soon: true },
+  { href: "/business/orders", label: "Orders", icon: "📦", requiresKyc: true },
+  { href: "/business/payments", label: "Payments", icon: "💰", requiresKyc: true },
   { href: "/business/settings", label: "Account", icon: "⚙" },
 ];
 
@@ -88,11 +87,6 @@ function SidebarNav({
           >
             <span className="w-5 text-center">{item.icon}</span>
             <span className="flex-1">{item.label}</span>
-            {item.soon && (
-              <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-zinc-500">
-                Soon
-              </span>
-            )}
           </Link>
         );
       })}
@@ -130,7 +124,8 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
     refreshKyc,
   };
 
-  const businessesListPage = pathname.startsWith("/business/businesses");
+  const usePageInternalScroll =
+    pathname.startsWith("/business/businesses") || pathname === "/business/orders";
 
   return (
     <VendorCtx.Provider value={ctx}>
@@ -196,7 +191,7 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
 
           <main
             className={
-              businessesListPage
+              usePageInternalScroll
                 ? "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-4 sm:p-6 lg:p-8"
                 : "min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-8"
             }

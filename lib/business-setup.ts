@@ -26,7 +26,14 @@ export const SLOT_MINUTES_OPTIONS = [15, 30, 45, 60, 90, 120];
 
 export const VENUE_TYPE_ID = "venue";
 
-export type BookingMode = "slots" | "fullDay";
+export type BookingMode = "slots" | "fullDay" | "services";
+
+/** Service-first appointment types (salon/clinic/coaching). */
+export const SERVICE_TYPE_IDS = ["salon", "clinic", "coaching"] as const;
+
+export function isServiceSetup(typeId: string) {
+  return (SERVICE_TYPE_IDS as readonly string[]).includes(typeId);
+}
 
 export function isPartyVenueSetup(typeId: string) {
   return typeId === VENUE_TYPE_ID;
@@ -45,7 +52,8 @@ export function hasSetupRulesStep(typeId: string, bookingMode: BookingMode) {
   return isPartyVenueSetup(typeId) || bookingMode === "fullDay";
 }
 
-export function defaultBookingModeForType(_typeId: string): BookingMode {
+export function defaultBookingModeForType(typeId: string): BookingMode {
+  if (isServiceSetup(typeId)) return "services";
   return "slots";
 }
 

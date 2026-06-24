@@ -49,6 +49,18 @@ function modeLabel(biz: PublicBusinessSummary) {
   return "Slot booking";
 }
 
+const EVENTS_CATEGORY = "Events and tournaments";
+
+function eventTypeLabel(ev: RuxEvent) {
+  return ev.tournamentType?.trim() || (ev.kind === "tournament" ? "Tournament" : "Event");
+}
+
+function eventSearchText(ev: RuxEvent) {
+  return [ev.title, ev.tournamentType, ev.venue, ev.businessName, ev.description]
+    .join(" ")
+    .toLowerCase();
+}
+
 function businessSearchText(biz: PublicBusinessSummary) {
   return [
     biz.name,
@@ -61,6 +73,10 @@ function businessSearchText(biz: PublicBusinessSummary) {
     .join(" ")
     .toLowerCase();
 }
+
+type DiscoverItem =
+  | { kind: "business"; biz: PublicBusinessSummary }
+  | { kind: "event"; ev: RuxEvent };
 
 function BusinessCoverImage({ biz }: { biz: PublicBusinessSummary }) {
   const [failed, setFailed] = useState(false);
@@ -144,27 +160,53 @@ export default function CustomerPage() {
     for (const b of businesses) {
       if (b.categoryLabel.trim()) labels.add(b.categoryLabel.trim());
     }
+    if (events.length > 0) labels.add(EVENTS_CATEGORY);
     return [...labels].sort((a, b) => a.localeCompare(b));
-  }, [businesses]);
+  }, [businesses, events]);
 
   const typeOptions = useMemo(() => {
     const labels = new Set<string>();
+    if (categoryFilter === EVENTS_CATEGORY) {
+      for (const e of events) {
+        const label = eventTypeLabel(e);
+        if (label) labels.add(label);
+      }
+      return [...labels].sort((a, b) => a.localeCompare(b));
+    }
     for (const b of businesses) {
       if (categoryFilter !== "all" && b.categoryLabel !== categoryFilter) continue;
       if (b.typeLabel.trim()) labels.add(b.typeLabel.trim());
     }
     return [...labels].sort((a, b) => a.localeCompare(b));
-  }, [businesses, categoryFilter]);
+  }, [businesses, events, categoryFilter]);
 
-  const filteredBusinesses = useMemo(() => {
+  const totalDiscoverCount = businesses.length + events.length;
+
+  const discoverItems = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return businesses.filter((b) => {
-      if (categoryFilter !== "all" && b.categoryLabel !== categoryFilter) return false;
-      if (typeFilter !== "all" && b.typeLabel !== typeFilter) return false;
-      if (!q) return true;
-      return businessSearchText(b).includes(q);
-    });
-  }, [businesses, query, categoryFilter, typeFilter]);
+    const items: DiscoverItem[] = [];
+    const showBusinesses = categoryFilter === "all" || categoryFilter !== EVENTS_CATEGORY;
+    const showEvents = categoryFilter === "all" || categoryFilter === EVENTS_CATEGORY;
+
+    if (showBusinesses) {
+      for (const b of businesses) {
+        if (categoryFilter !== "all" && b.categoryLabel !== categoryFilter) continue;
+        if (typeFilter !== "all" && b.typeLabel !== typeFilter) continue;
+        if (q && !businessSearchText(b).includes(q)) continue;
+        items.push({ kind: "business", biz: b });
+      }
+    }
+
+    if (showEvents) {
+      for (const e of events) {
+        if (typeFilter !== "all" && eventTypeLabel(e) !== typeFilter) continue;
+        if (q && !eventSearchText(e).includes(q)) continue;
+        items.push({ kind: "event", ev: e });
+      }
+    }
+
+    return items;
+  }, [businesses, events, query, categoryFilter, typeFilter]);
 
   const hasActiveFilters =
     query.trim().length > 0 || categoryFilter !== "all" || typeFilter !== "all";
@@ -233,37 +275,49 @@ export default function CustomerPage() {
 
   return (
     <>
-      {error && (
+      {view !== "discover" && view !== "bookings" && error && (
         <p className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
           {error}
         </p>
       )}
-      {notice && (
+      {view !== "discover" && view !== "bookings" && notice && (
         <p className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
           {notice}
         </p>
       )}
 
       {view === "discover" && (
-              <section>
-                <div>
-                  <h1 className="text-2xl font-semibold sm:text-3xl">
-                    Book <span className="text-gradient">turfs, salons & venues</span>
-                  </h1>
-                  <p className="mt-1 text-sm text-zinc-500">
-                    {businessesLoading
-                      ? "Finding places near you…"
-                      : `${businesses.length} ${businesses.length === 1 ? "place" : "places"} live right now`}
-                  </p>
-                </div>
+              <section className="flex h-full min-h-0 flex-col">
+                <div className="shrink-0">
+                  {error && (
+                    <p className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+                      {error}
+                    </p>
+                  )}
+                  {notice && (
+                    <p className="mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+                      {notice}
+                    </p>
+                  )}
 
-                {!businessesLoading && businesses.length > 0 && (
-                  <div className="mt-5 space-y-3">
+                  <div>
+                    <h1 className="text-2xl font-semibold sm:text-3xl">
+                      Discover <span className="text-gradient">places & events</span>
+                    </h1>
+                    <p className="mt-1 text-sm text-zinc-500">
+                      {businessesLoading || eventsLoading
+                        ? "Loading…"
+                        : `${totalDiscoverCount} ${totalDiscoverCount === 1 ? "listing" : "listings"} live right now`}
+                    </p>
+                  </div>
+
+                  {!businessesLoading && !eventsLoading && totalDiscoverCount > 0 && (
+                    <div className="mt-5 space-y-3 border-b border-white/5 pb-4">
                     <div className="relative">
                       <input
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search by business name, vendor, or location…"
+                        placeholder="Search turfs, salons, venues, events, tournaments…"
                         className={`${input} w-full`}
                       />
                       {query && (
@@ -277,7 +331,7 @@ export default function CustomerPage() {
                       )}
                     </div>
 
-                    {(categoryOptions.length > 1 || typeOptions.length > 1) && (
+                    {categoryOptions.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         <FilterChip
                           active={categoryFilter === "all"}
@@ -285,7 +339,7 @@ export default function CustomerPage() {
                             setCategoryFilter("all");
                             setTypeFilter("all");
                           }}
-                          label="All categories"
+                          label="All"
                         />
                         {categoryOptions.map((label) => (
                           <FilterChip
@@ -322,7 +376,7 @@ export default function CustomerPage() {
                     {hasActiveFilters && (
                       <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
                         <span>
-                          Showing {filteredBusinesses.length} of {businesses.length}
+                          Showing {discoverItems.length} of {totalDiscoverCount}
                         </span>
                         <button
                           type="button"
@@ -338,16 +392,18 @@ export default function CustomerPage() {
                       </div>
                     )}
                   </div>
-                )}
+                  )}
+                </div>
 
-                {businessesLoading ? (
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="scroll-pane min-h-0 flex-1 pt-4">
+                {businessesLoading || eventsLoading ? (
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {[0, 1, 2].map((i) => (
                       <div key={i} className="h-56 animate-pulse rounded-2xl bg-white/5" />
                     ))}
                   </div>
                 ) : businessesError ? (
-                  <div className="mt-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
+                  <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
                     <p className="text-sm text-amber-200/90">{businessesError}</p>
                     <button
                       type="button"
@@ -357,17 +413,17 @@ export default function CustomerPage() {
                       Try again
                     </button>
                   </div>
-                ) : businesses.length === 0 ? (
-                  <div className="mt-6 rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
+                ) : totalDiscoverCount === 0 ? (
+                  <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
                     <p className="text-3xl">🛎️</p>
-                    <p className="mt-3 text-sm text-zinc-400">No bookable places yet.</p>
+                    <p className="mt-3 text-sm text-zinc-400">Nothing to discover yet.</p>
                     <p className="mt-1 text-xs text-zinc-600">
-                      Vendors must finish setup and go live before they appear here.
+                      Vendors must finish setup and publish before listings appear here.
                     </p>
                   </div>
-                ) : filteredBusinesses.length === 0 ? (
-                  <div className="mt-6 rounded-2xl border border-white/8 bg-white/[0.02] p-8 text-center">
-                    <p className="text-sm text-zinc-400">No places match your search.</p>
+                ) : discoverItems.length === 0 ? (
+                  <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-8 text-center">
+                    <p className="text-sm text-zinc-400">No listings match your search.</p>
                     {hasActiveFilters && (
                       <button
                         type="button"
@@ -383,90 +439,162 @@ export default function CustomerPage() {
                     )}
                   </div>
                 ) : (
-                  <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {filteredBusinesses.map((biz) => (
-                      <li key={biz.id}>
-                        <Link
-                          href={`/customer/book/${biz.id}`}
-                          className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] transition hover:border-white/20 hover:bg-white/[0.04]"
-                        >
-                          <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-emerald-500/15 via-white/5 to-transparent">
-                            <BusinessCoverImage biz={biz} />
-                            <span className="absolute left-3 top-3 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-200 backdrop-blur">
-                              {biz.typeLabel || biz.categoryLabel}
-                            </span>
-                          </div>
+                  <ul className="grid gap-4 pb-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {discoverItems.map((item) =>
+                      item.kind === "business" ? (
+                        <li key={`biz-${item.biz.id}`}>
+                          <Link
+                            href={`/customer/book/${item.biz.id}`}
+                            className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] transition hover:border-white/20 hover:bg-white/[0.04]"
+                          >
+                            <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-emerald-500/15 via-white/5 to-transparent">
+                              <BusinessCoverImage biz={item.biz} />
+                              <span className="absolute left-3 top-3 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-200 backdrop-blur">
+                                {item.biz.typeLabel || item.biz.categoryLabel}
+                              </span>
+                            </div>
 
-                          <div className="flex flex-1 flex-col p-4">
-                            <h3 className="text-base font-semibold text-zinc-100">{biz.name}</h3>
-                            {biz.vendorName && (
-                              <p className="mt-0.5 text-xs text-zinc-500">by {biz.vendorName}</p>
-                            )}
-                            {biz.address && (
-                              <p className="mt-1 flex items-start gap-1 text-xs text-zinc-500">
-                                <span aria-hidden>📍</span>
-                                <span className="truncate">{biz.address}</span>
-                              </p>
-                            )}
-                            {biz.description && (
-                              <p className="mt-2 line-clamp-2 text-xs text-zinc-500">
-                                {biz.description}
-                              </p>
-                            )}
-
-                            <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
-                              <span className="text-zinc-400">{modeLabel(biz)}</span>
-                              {biz.resourceCount > 1 && (
-                                <>
-                                  <span aria-hidden>·</span>
-                                  <span>{biz.resourceCount} options</span>
-                                </>
+                            <div className="flex flex-1 flex-col p-4">
+                              <h3 className="text-base font-semibold text-zinc-100">{item.biz.name}</h3>
+                              {item.biz.vendorName && (
+                                <p className="mt-0.5 text-xs text-zinc-500">by {item.biz.vendorName}</p>
                               )}
-                              {biz.bookingMode === "fullDay" && biz.maxGuests ? (
-                                <>
-                                  <span aria-hidden>·</span>
-                                  <span>up to {biz.maxGuests} guests</span>
-                                </>
-                              ) : null}
-                            </div>
+                              {item.biz.address && (
+                                <p className="mt-1 flex items-start gap-1 text-xs text-zinc-500">
+                                  <span aria-hidden>📍</span>
+                                  <span className="truncate">{item.biz.address}</span>
+                                </p>
+                              )}
+                              {item.biz.description && (
+                                <p className="mt-2 line-clamp-2 text-xs text-zinc-500">
+                                  {item.biz.description}
+                                </p>
+                              )}
 
-                            <div className="mt-auto flex items-center justify-between pt-4">
-                              <span className="text-sm font-semibold text-emerald-300">
-                                {priceTag(biz)}
-                              </span>
-                              <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition group-hover:bg-emerald-500/20 group-hover:text-emerald-200">
-                                Book →
-                              </span>
+                              <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
+                                <span className="text-zinc-400">{modeLabel(item.biz)}</span>
+                                {item.biz.resourceCount > 1 && (
+                                  <>
+                                    <span aria-hidden>·</span>
+                                    <span>{item.biz.resourceCount} options</span>
+                                  </>
+                                )}
+                                {item.biz.bookingMode === "fullDay" && item.biz.maxGuests ? (
+                                  <>
+                                    <span aria-hidden>·</span>
+                                    <span>up to {item.biz.maxGuests} guests</span>
+                                  </>
+                                ) : null}
+                              </div>
+
+                              <div className="mt-auto flex items-center justify-between pt-4">
+                                <span className="text-sm font-semibold text-emerald-300">
+                                  {priceTag(item.biz)}
+                                </span>
+                                <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition group-hover:bg-emerald-500/20 group-hover:text-emerald-200">
+                                  Book →
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        </Link>
-                      </li>
-                    ))}
+                          </Link>
+                        </li>
+                      ) : (
+                        <li key={`ev-${item.ev.id}`}>
+                          <button
+                            type="button"
+                            onClick={() => router.push(`/customer/events/${item.ev.id}`)}
+                            className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] text-left transition hover:border-white/20 hover:bg-white/[0.04]"
+                          >
+                            <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-violet-500/20 via-white/5 to-transparent">
+                              {item.ev.coverUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={item.ev.coverUrl}
+                                  alt={item.ev.title}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="grid h-full w-full place-items-center text-4xl opacity-80">
+                                  {item.ev.kind === "tournament" ? "🏆" : "🎫"}
+                                </div>
+                              )}
+                              <span className="absolute left-3 top-3 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-200 backdrop-blur">
+                                {eventTypeLabel(item.ev)}
+                              </span>
+                              {item.ev.spotsLeft != null && item.ev.spotsLeft <= 5 && item.ev.spotsLeft > 0 && (
+                                <span className="absolute right-3 top-3 rounded-full bg-amber-500/80 px-2 py-1 text-[10px] font-semibold text-black">
+                                  {item.ev.spotsLeft} left
+                                </span>
+                              )}
+                              {item.ev.spotsLeft === 0 && (
+                                <span className="absolute right-3 top-3 rounded-full bg-red-500/80 px-2 py-1 text-[10px] font-semibold text-white">
+                                  Full
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex flex-1 flex-col p-4">
+                              <h3 className="text-base font-semibold text-zinc-100">{item.ev.title}</h3>
+                              <p className="mt-0.5 text-xs text-zinc-500">{item.ev.businessName}</p>
+                              <p className="mt-2 flex items-start gap-1 text-xs text-zinc-500">
+                                <span aria-hidden>🗓️</span>
+                                <span className="truncate">{eventWhen(item.ev.startAt)}</span>
+                              </p>
+                              {item.ev.venue && (
+                                <p className="mt-1 flex items-start gap-1 text-xs text-zinc-500">
+                                  <span aria-hidden>📍</span>
+                                  <span className="truncate">{item.ev.venue}</span>
+                                </p>
+                              )}
+                              <div className="mt-auto flex items-center justify-between pt-4">
+                                <span className="text-sm font-semibold text-emerald-300">
+                                  {item.ev.entryFee > 0
+                                    ? `₹${item.ev.entryFee.toLocaleString("en-IN")}`
+                                    : "Free"}
+                                </span>
+                                <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition group-hover:bg-emerald-500/20 group-hover:text-emerald-200">
+                                  {item.ev.format === "team" ? "Register team →" : "Register →"}
+                                </span>
+                              </div>
+                            </div>
+                          </button>
+                        </li>
+                      ),
+                    )}
                   </ul>
                 )}
-
-                <EventsDiscoverSection
-                  events={events}
-                  loading={eventsLoading}
-                  query={query}
-                  onOpen={(id) => router.push(`/customer/events/${id}`)}
-                />
+                </div>
               </section>
             )}
 
             {view === "bookings" && (
-              <section>
-                <h1 className="text-2xl font-semibold sm:text-3xl">My bookings</h1>
-                <p className="mt-1 text-sm text-zinc-500">Your upcoming and past slots.</p>
+              <section className="flex h-full min-h-0 flex-col">
+                <div className="shrink-0 border-b border-white/5 pb-4">
+                  {error && (
+                    <p className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+                      {error}
+                    </p>
+                  )}
+                  {notice && (
+                    <p className="mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+                      {notice}
+                    </p>
+                  )}
 
+                  <h1 className="text-2xl font-semibold sm:text-3xl">My bookings</h1>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    Your slot bookings and event registrations.
+                  </p>
+                </div>
+
+                <div className="scroll-pane min-h-0 flex-1 pt-4">
                 {bookingsLoading ? (
-                  <div className="mt-6 space-y-2">
+                  <div className="space-y-2">
                     {[0, 1].map((i) => (
                       <div key={i} className="h-16 animate-pulse rounded-xl bg-white/5" />
                     ))}
                   </div>
-                ) : bookings.length === 0 ? (
-                  <div className="mt-6 rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
+                ) : bookings.length === 0 && myRegistrations.length === 0 ? (
+                  <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
                     <p className="text-3xl">🎟️</p>
                     <p className="mt-3 text-sm text-zinc-400">No bookings yet.</p>
                     <button
@@ -478,7 +606,7 @@ export default function CustomerPage() {
                     </button>
                   </div>
                 ) : (
-                  <div className="mt-6 space-y-8">
+                  <div className="space-y-8 pb-4">
                     {upcoming.length > 0 && (
                       <div>
                         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-emerald-400/80">
@@ -508,13 +636,13 @@ export default function CustomerPage() {
                         </ul>
                       </div>
                     )}
+                    <MyEventsSection
+                      registrations={myRegistrations}
+                      onOpen={(id) => router.push(`/customer/events/${id}`)}
+                    />
                   </div>
                 )}
-
-                <MyEventsSection
-                  registrations={myRegistrations}
-                  onOpen={(id) => router.push(`/customer/events/${id}`)}
-                />
+                </div>
               </section>
             )}
 
@@ -675,97 +803,6 @@ function eventWhen(iso: string | null) {
   });
 }
 
-function EventsDiscoverSection({
-  events,
-  loading,
-  query,
-  onOpen,
-}: {
-  events: RuxEvent[];
-  loading: boolean;
-  query: string;
-  onOpen: (id: string) => void;
-}) {
-  const q = query.trim().toLowerCase();
-  const filtered = q
-    ? events.filter((e) =>
-        `${e.title} ${e.tournamentType} ${e.venue} ${e.businessName}`.toLowerCase().includes(q),
-      )
-    : events;
-
-  if (loading && events.length === 0) return null;
-  if (filtered.length === 0) return null;
-
-  return (
-    <div className="mt-12">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-zinc-100">Events & tournaments</h2>
-        <span className="text-xs text-zinc-500">{filtered.length} upcoming</span>
-      </div>
-      <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((ev) => (
-          <li key={ev.id}>
-            <button
-              type="button"
-              onClick={() => onOpen(ev.id)}
-              className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] text-left transition hover:border-white/20 hover:bg-white/[0.04]"
-            >
-              <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-violet-500/20 via-white/5 to-transparent">
-                {ev.coverUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={ev.coverUrl} alt={ev.title} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="grid h-full w-full place-items-center text-4xl opacity-80">
-                    {ev.kind === "tournament" ? "🏆" : "🎫"}
-                  </div>
-                )}
-                <span className="absolute left-3 top-3 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-200 backdrop-blur">
-                  {ev.kind === "tournament" ? "Tournament" : "Event"}
-                </span>
-                {ev.spotsLeft != null && ev.spotsLeft <= 5 && ev.spotsLeft > 0 && (
-                  <span className="absolute right-3 top-3 rounded-full bg-amber-500/80 px-2 py-1 text-[10px] font-semibold text-black">
-                    {ev.spotsLeft} left
-                  </span>
-                )}
-                {ev.spotsLeft === 0 && (
-                  <span className="absolute right-3 top-3 rounded-full bg-red-500/80 px-2 py-1 text-[10px] font-semibold text-white">
-                    Full
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-1 flex-col p-4">
-                <h3 className="text-base font-semibold text-zinc-100">{ev.title}</h3>
-                <p className="mt-0.5 text-xs text-zinc-500">
-                  {ev.tournamentType ? `${ev.tournamentType} · ` : ""}
-                  {ev.businessName}
-                </p>
-                <p className="mt-2 flex items-start gap-1 text-xs text-zinc-500">
-                  <span aria-hidden>🗓️</span>
-                  <span className="truncate">{eventWhen(ev.startAt)}</span>
-                </p>
-                {ev.venue && (
-                  <p className="mt-1 flex items-start gap-1 text-xs text-zinc-500">
-                    <span aria-hidden>📍</span>
-                    <span className="truncate">{ev.venue}</span>
-                  </p>
-                )}
-                <div className="mt-auto flex items-center justify-between pt-4">
-                  <span className="text-sm font-semibold text-emerald-300">
-                    {ev.entryFee > 0 ? `₹${ev.entryFee.toLocaleString("en-IN")}` : "Free"}
-                  </span>
-                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition group-hover:bg-emerald-500/20 group-hover:text-emerald-200">
-                    {ev.format === "team" ? "Register team →" : "Register →"}
-                  </span>
-                </div>
-              </div>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 function MyEventsSection({
   registrations,
   onOpen,
@@ -863,6 +900,7 @@ function BookingRow({
     id: string;
     businessName: string;
     resourceName: string;
+    serviceLabel?: string;
     startAt: string;
     pricePerSlot: number;
     amount?: number;
@@ -909,7 +947,8 @@ function BookingRow({
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium text-zinc-100">{booking.businessName}</p>
         <p className="truncate text-sm text-zinc-500">
-          {booking.resourceName} · {dateLabel} · {timeLabel}
+          {[booking.serviceLabel, booking.resourceName].filter(Boolean).join(" · ")} · {dateLabel} ·{" "}
+          {timeLabel}
         </p>
         <div className="mt-1.5">
           <BookingStatusBadge status={booking.status} paymentStatus={booking.paymentStatus} />

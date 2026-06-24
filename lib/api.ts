@@ -609,13 +609,31 @@ export type BusinessPhoto = {
   createdAt?: string;
 };
 
+export type BusinessStaff = {
+  id: string;
+  name: string;
+  role?: string;
+};
+
+export type BusinessService = {
+  id: string;
+  name: string;
+  durationMinutes: number;
+  price: number;
+  staffIds: string[];
+  description?: string;
+};
+
 export type BusinessSetup = {
   photos: BusinessPhoto[];
   weeklyHours: WeeklyHours;
   slotMinutes: number;
   pricePerSlot: number;
   resources: BusinessResource[];
-  bookingMode?: "slots" | "fullDay";
+  services: BusinessService[];
+  staff: BusinessStaff[];
+  bufferMinutes: number;
+  bookingMode?: "slots" | "fullDay" | "services";
   maxGuests?: number | null;
   venueRules?: string;
 };
@@ -685,7 +703,7 @@ export type BusinessInput = {
   address?: string;
   description: string;
   thumbnail: string;
-  bookingMode?: "slots" | "fullDay";
+  bookingMode?: "slots" | "fullDay" | "services";
 };
 
 function normalizeDayHours(raw: unknown, fallback: DayHours): DayHours {
@@ -756,7 +774,11 @@ function normalizeSetup(raw: unknown, businessId?: string): BusinessSetup | unde
         .filter((r): r is BusinessResource => r !== null)
     : [];
 
-  const bookingMode = s.bookingMode === "fullDay" ? "fullDay" : "slots";
+  const staff = normalizeStaffList(s.staff);
+  const services = normalizeServiceList(s.services);
+
+  const bookingMode =
+    s.bookingMode === "fullDay" ? "fullDay" : s.bookingMode === "services" ? "services" : "slots";
   const maxGuestsRaw = s.maxGuests;
   const maxGuests =
     typeof maxGuestsRaw === "number" && maxGuestsRaw > 0 ? Math.round(maxGuestsRaw) : null;
@@ -775,10 +797,53 @@ function normalizeSetup(raw: unknown, businessId?: string): BusinessSetup | unde
     slotMinutes: typeof s.slotMinutes === "number" ? s.slotMinutes : 60,
     pricePerSlot: typeof s.pricePerSlot === "number" ? s.pricePerSlot : 0,
     resources,
+    services,
+    staff,
+    bufferMinutes:
+      typeof s.bufferMinutes === "number" && s.bufferMinutes >= 0 ? Math.round(s.bufferMinutes) : 0,
     bookingMode,
     maxGuests,
     venueRules: typeof s.venueRules === "string" ? s.venueRules : "",
   };
+}
+
+function normalizeStaffList(raw: unknown): BusinessStaff[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((r) => {
+      const st = asRecord(r);
+      const id = typeof st.id === "string" ? st.id : "";
+      const name = typeof st.name === "string" ? st.name : "";
+      if (!id || !name) return null;
+      const role = typeof st.role === "string" && st.role.trim() ? st.role.trim() : undefined;
+      return { id, name, ...(role ? { role } : {}) };
+    })
+    .filter((s): s is BusinessStaff => s !== null);
+}
+
+function normalizeServiceList(raw: unknown): BusinessService[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((r) => {
+      const sv = asRecord(r);
+      const id = typeof sv.id === "string" ? sv.id : "";
+      const name = typeof sv.name === "string" ? sv.name : "";
+      if (!id || !name) return null;
+      const durationMinutes =
+        typeof sv.durationMinutes === "number" && sv.durationMinutes > 0
+          ? Math.round(sv.durationMinutes)
+          : 30;
+      const price = typeof sv.price === "number" && sv.price >= 0 ? Math.round(sv.price) : 0;
+      const staffIds = Array.isArray(sv.staffIds)
+        ? sv.staffIds.filter((x): x is string => typeof x === "string")
+        : [];
+      const description =
+        typeof sv.description === "string" && sv.description.trim()
+          ? sv.description.trim()
+          : undefined;
+      return { id, name, durationMinutes, price, staffIds, ...(description ? { description } : {}) };
+    })
+    .filter((s): s is BusinessService => s !== null);
 }
 
 function normalizeBusiness(raw: unknown): Business {
@@ -886,7 +951,10 @@ export type BusinessSetupInput = {
   slotMinutes?: number;
   pricePerSlot?: number;
   resources?: BusinessResource[];
-  bookingMode?: "slots" | "fullDay";
+  services?: BusinessService[];
+  staff?: BusinessStaff[];
+  bufferMinutes?: number;
+  bookingMode?: "slots" | "fullDay" | "services";
   maxGuests?: number | null;
   venueRules?: string;
 };
@@ -960,6 +1028,9 @@ export type BusinessSlot = {
   id: string;
   resourceId: string;
   resourceName: string;
+  staffId?: string;
+  staffName?: string;
+  durationMinutes?: number;
   date: string;
   startTime: string;
   endTime: string;
@@ -981,8 +1052,13 @@ export type BusinessSlotsResponse = {
   timezone: string;
   slotMinutes: number;
   pricePerSlot: number;
-  bookingMode?: "slots" | "fullDay";
+  bookingMode?: "slots" | "fullDay" | "services";
   resources: BusinessResource[];
+  services?: BusinessService[];
+  staff?: BusinessStaff[];
+  bufferMinutes?: number;
+  selectedServiceIds?: string[];
+  durationMinutes?: number;
   slots: BusinessSlot[];
 };
 
@@ -1006,6 +1082,10 @@ function normalizeSlot(raw: unknown): BusinessSlot | null {
     id,
     resourceId,
     resourceName: str(s.resourceName),
+    staffId: typeof s.staffId === "string" ? s.staffId : undefined,
+    staffName: typeof s.staffName === "string" ? s.staffName : undefined,
+    durationMinutes:
+      typeof s.durationMinutes === "number" ? Math.round(s.durationMinutes) : undefined,
     date: str(s.date),
     startTime: str(s.startTime),
     endTime: str(s.endTime),
@@ -1064,10 +1144,26 @@ function normalizeSlotsResponse(raw: unknown): BusinessSlotsResponse {
     timezone: str(data.timezone) || "Asia/Kolkata",
     slotMinutes: typeof data.slotMinutes === "number" ? data.slotMinutes : 60,
     pricePerSlot: typeof data.pricePerSlot === "number" ? data.pricePerSlot : 0,
-    bookingMode: data.bookingMode === "fullDay" ? "fullDay" : "slots",
+    bookingMode:
+      data.bookingMode === "fullDay"
+        ? "fullDay"
+        : data.bookingMode === "services"
+          ? "services"
+          : "slots",
     resources: Array.isArray(resourcesRaw)
       ? resourcesRaw.map(normalizeBusinessResource).filter((r): r is BusinessResource => r !== null)
       : [],
+    services: normalizeServiceList(data.services),
+    staff: normalizeStaffList(data.staff),
+    bufferMinutes:
+      typeof data.bufferMinutes === "number" && data.bufferMinutes >= 0
+        ? Math.round(data.bufferMinutes)
+        : 0,
+    selectedServiceIds: Array.isArray(data.selectedServiceIds)
+      ? data.selectedServiceIds.filter((x): x is string => typeof x === "string")
+      : [],
+    durationMinutes:
+      typeof data.durationMinutes === "number" ? Math.round(data.durationMinutes) : 0,
     slots: Array.isArray(slotsRaw)
       ? slotsRaw.map(normalizeSlot).filter((s): s is BusinessSlot => s !== null)
       : [],
@@ -1076,11 +1172,13 @@ function normalizeSlotsResponse(raw: unknown): BusinessSlotsResponse {
 
 export async function listBusinessSlots(
   businessId: string,
-  params: { from: string; to: string; resourceId?: string },
+  params: { from: string; to: string; resourceId?: string; serviceIds?: string[]; staffId?: string },
 ): Promise<BusinessSlotsResponse> {
   try {
     const qs = new URLSearchParams({ from: params.from, to: params.to });
     if (params.resourceId) qs.set("resourceId", params.resourceId);
+    if (params.serviceIds?.length) qs.set("serviceIds", params.serviceIds.join(","));
+    if (params.staffId) qs.set("staffId", params.staffId);
     const data = await authedApi(`vendor/businesses/${businessId}/slots?${qs}`);
     return normalizeSlotsResponse(data);
   } catch (err) {
@@ -1150,7 +1248,10 @@ export type PublicBusiness = {
     slotMinutes: number;
     pricePerSlot: number;
     resources: BusinessResource[];
-    bookingMode?: "slots" | "fullDay";
+    services: BusinessService[];
+    staff: BusinessStaff[];
+    bufferMinutes: number;
+    bookingMode?: "slots" | "fullDay" | "services";
     maxGuests?: number | null;
     venueRules?: string;
   };
@@ -1167,7 +1268,7 @@ export type PublicBusinessSummary = {
   description: string;
   pricePerSlot: number;
   slotMinutes: number;
-  bookingMode: "slots" | "fullDay";
+  bookingMode: "slots" | "fullDay" | "services";
   maxGuests: number | null;
   resourceCount: number;
   priceFrom: number;
@@ -1208,7 +1309,8 @@ function normalizePublicBusinessSummary(raw: unknown): PublicBusinessSummary | n
     description: str(b.description),
     pricePerSlot,
     slotMinutes: num(b.slotMinutes, 60),
-    bookingMode: b.bookingMode === "fullDay" ? "fullDay" : "slots",
+    bookingMode:
+      b.bookingMode === "fullDay" ? "fullDay" : b.bookingMode === "services" ? "services" : "slots",
     maxGuests:
       typeof b.maxGuests === "number" && Number.isFinite(b.maxGuests) ? b.maxGuests : null,
     resourceCount: num(b.resourceCount, 0),
@@ -1247,6 +1349,9 @@ export type CustomerBooking = {
   typeLabel: string;
   resourceId: string;
   resourceName: string;
+  services?: { id: string; name: string }[];
+  serviceLabel?: string;
+  durationMinutes?: number | null;
   startAt: string;
   endAt: string;
   pricePerSlot: number;
@@ -1295,6 +1400,9 @@ function normalizePublicBusiness(raw: unknown): PublicBusiness {
       slotMinutes: setup?.slotMinutes ?? 60,
       pricePerSlot: setup?.pricePerSlot ?? 0,
       resources: setup?.resources ?? [],
+      services: setup?.services ?? [],
+      staff: setup?.staff ?? [],
+      bufferMinutes: setup?.bufferMinutes ?? 0,
       bookingMode: setup?.bookingMode ?? "slots",
       maxGuests: setup?.maxGuests ?? null,
       venueRules: setup?.venueRules ?? "",
@@ -1314,6 +1422,16 @@ function normalizeCustomerBooking(raw: unknown): CustomerBooking | null {
     typeLabel: str(b.typeLabel),
     resourceId: str(b.resourceId),
     resourceName: str(b.resourceName),
+    services: Array.isArray(b.services)
+      ? b.services
+          .map((sv) => {
+            const r = asRecord(sv);
+            return { id: str(r.id), name: str(r.name) };
+          })
+          .filter((sv) => sv.name)
+      : [],
+    serviceLabel: typeof b.serviceLabel === "string" ? b.serviceLabel : "",
+    durationMinutes: typeof b.durationMinutes === "number" ? b.durationMinutes : null,
     startAt: str(b.startAt),
     endAt: str(b.endAt),
     pricePerSlot: typeof b.pricePerSlot === "number" ? b.pricePerSlot : 0,
@@ -1352,10 +1470,12 @@ export async function getPublicBusiness(businessId: string): Promise<PublicBusin
 
 export async function listPublicBusinessSlots(
   businessId: string,
-  params: { from: string; to: string; resourceId?: string },
+  params: { from: string; to: string; resourceId?: string; serviceIds?: string[]; staffId?: string },
 ): Promise<BusinessSlotsResponse> {
   const qs = new URLSearchParams({ from: params.from, to: params.to });
   if (params.resourceId) qs.set("resourceId", params.resourceId);
+  if (params.serviceIds?.length) qs.set("serviceIds", params.serviceIds.join(","));
+  if (params.staffId) qs.set("staffId", params.staffId);
   const data = await api(`public/businesses/${businessId}/slots?${qs}`);
   return normalizeSlotsResponse(data);
 }
@@ -1368,22 +1488,22 @@ export async function listCustomerBookings(): Promise<CustomerBooking[]> {
     : [];
 }
 
-export async function createCustomerBooking(body: {
+export type BookingRequest = {
   businessId: string;
-  resourceId: string;
   startAt: string;
-}): Promise<CustomerBooking> {
+  resourceId?: string;
+  serviceIds?: string[];
+  staffId?: string;
+};
+
+export async function createCustomerBooking(body: BookingRequest): Promise<CustomerBooking> {
   const data = await postAuthed("user/bookings", body);
   const booking = normalizeCustomerBooking(asRecord(data).booking);
   if (!booking) throw new Error("Booking failed.");
   return booking;
 }
 
-export async function initiateCustomerBooking(body: {
-  businessId: string;
-  resourceId: string;
-  startAt: string;
-}): Promise<InitiateBookingResult> {
+export async function initiateCustomerBooking(body: BookingRequest): Promise<InitiateBookingResult> {
   const data = await postAuthed("user/bookings/initiate", body);
   const root = asRecord(data);
   const booking = normalizeCustomerBooking(root.booking);
@@ -1798,6 +1918,94 @@ export async function getBusinessCatalog(): Promise<BusinessCatalog> {
   return { categories, modules };
 }
 
+
+/* ------------------------------------------------------------------ */
+/* Admin catalog management (categories + types)                       */
+/* ------------------------------------------------------------------ */
+
+export type AdminCatalogCategory = CatalogBusinessCategory & { active: boolean };
+export type AdminCatalogType = CatalogBusinessType & { active: boolean };
+
+function normalizeAdminCategory(raw: unknown): AdminCatalogCategory | null {
+  const base = normalizeCatalogCategory(raw);
+  if (!base) return null;
+  const c = asRecord(raw);
+  return { ...base, active: c.active !== false };
+}
+
+function normalizeAdminType(raw: unknown): AdminCatalogType | null {
+  const base = normalizeCatalogType(raw);
+  if (!base) return null;
+  const t = asRecord(raw);
+  return { ...base, active: t.active !== false };
+}
+
+export async function listAdminCategories(): Promise<AdminCatalogCategory[]> {
+  const data = await authedApi("admin/business-categories");
+  const list = asRecord(data).categories;
+  return Array.isArray(list)
+    ? list.map(normalizeAdminCategory).filter((c): c is AdminCatalogCategory => c !== null)
+    : [];
+}
+
+export async function listAdminTypes(categoryId?: string): Promise<AdminCatalogType[]> {
+  const qs = categoryId ? `?categoryId=${encodeURIComponent(categoryId)}` : "";
+  const data = await authedApi(`admin/business-types${qs}`);
+  const list = asRecord(data).types;
+  return Array.isArray(list)
+    ? list.map(normalizeAdminType).filter((t): t is AdminCatalogType => t !== null)
+    : [];
+}
+
+export type CatalogCategoryInput = {
+  id?: string;
+  label: string;
+  description?: string;
+  icon?: string;
+  sortOrder?: number;
+  active?: boolean;
+};
+
+export type CatalogTypeInput = {
+  id?: string;
+  categoryId: string;
+  label: string;
+  module: BusinessModule;
+  description?: string;
+  examples?: string;
+  namePlaceholder?: string;
+  detailHint?: string;
+  sortOrder?: number;
+  active?: boolean;
+};
+
+export async function createAdminCategory(body: CatalogCategoryInput) {
+  return authedApi("admin/business-categories", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function updateAdminCategory(id: string, body: Partial<CatalogCategoryInput>) {
+  return authedApi(`admin/business-categories/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function createAdminType(body: CatalogTypeInput) {
+  return authedApi("admin/business-types", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function updateAdminType(id: string, body: Partial<CatalogTypeInput>) {
+  return authedApi(`admin/business-types/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
 
 export type AdminUser = {
   _id?: string;

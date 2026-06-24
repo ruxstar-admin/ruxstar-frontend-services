@@ -15,6 +15,7 @@ type Props = {
   weeklyHours: WeeklyHours;
   slotMinutes: number;
   hoursRefDay: (typeof SETUP_DAYS)[number];
+  hideSlotLength?: boolean;
   onSlotMinutesChange: (m: number) => void;
   onToggleDay: (day: (typeof SETUP_DAYS)[number]) => void;
   onUniformHours: (open: string, close: string) => void;
@@ -25,6 +26,7 @@ export function SetupStepHourlySlots({
   weeklyHours,
   slotMinutes,
   hoursRefDay,
+  hideSlotLength = false,
   onSlotMinutesChange,
   onToggleDay,
   onUniformHours,
@@ -32,19 +34,21 @@ export function SetupStepHourlySlots({
   return (
     <div className="space-y-4">
       {intro ? <p className="text-sm text-zinc-400">{intro}</p> : null}
-      <div className="max-w-xs">
-        <select
-          className={`${input} w-full py-2 text-sm`}
-          value={slotMinutes}
-          onChange={(e) => onSlotMinutesChange(Number(e.target.value))}
-        >
-          {SLOT_MINUTES_OPTIONS.map((m) => (
-            <option key={m} value={m}>
-              {m} min slots
-            </option>
-          ))}
-        </select>
-      </div>
+      {!hideSlotLength && (
+        <div className="max-w-xs">
+          <select
+            className={`${input} w-full py-2 text-sm`}
+            value={slotMinutes}
+            onChange={(e) => onSlotMinutesChange(Number(e.target.value))}
+          >
+            {SLOT_MINUTES_OPTIONS.map((m) => (
+              <option key={m} value={m}>
+                {m} min slots
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="flex items-center gap-2">
         <input
           type="time"
