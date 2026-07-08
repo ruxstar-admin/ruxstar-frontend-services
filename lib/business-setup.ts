@@ -133,6 +133,36 @@ export function supportsAppointmentSetup(module: string) {
   return module === "appointments";
 }
 
+// Legacy print type ids kept here so existing print businesses created before
+// the types were collapsed still resolve to the print-on-demand setup flow.
+export const PRINT_TYPE_IDS = [
+  "print_shop",
+  "custom_merch",
+  "creator_merch",
+  "corporate_printing",
+  "event_printing",
+  "branding_agency",
+] as const;
+
+export function isPrintType(typeId?: string) {
+  return !!typeId && (PRINT_TYPE_IDS as readonly string[]).includes(typeId);
+}
+
+/**
+ * Print-on-demand vendors run a lightweight setup (categories + service area).
+ * We also key off the type id so a business still resolves to the print flow
+ * even if its stored `module` is stale (e.g. created before `print` existed and
+ * normalized to a fallback module).
+ */
+export function supportsPrintSetup(module: string, typeId?: string) {
+  return module === "print" || isPrintType(typeId);
+}
+
+/** Any module that uses the post-create setup wizard. */
+export function supportsSetup(module: string, typeId?: string) {
+  return supportsAppointmentSetup(module) || supportsPrintSetup(module, typeId);
+}
+
 export function supportsEvents(module: string) {
   return module === "events";
 }

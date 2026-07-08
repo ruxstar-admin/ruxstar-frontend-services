@@ -6,7 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 import { BusinessSetupWizard } from "@/components/business-setup-wizard";
 import { useVendorShell } from "@/components/vendor-shell";
 import { businessThumbnailUrl, type Business, getBusinessSetup } from "@/lib/api";
-import { supportsAppointmentSetup, supportsEvents } from "@/lib/business-setup";
+import {
+  supportsEvents,
+  supportsPrintSetup,
+  supportsSetup,
+} from "@/lib/business-setup";
 
 export default function BusinessSetupPage() {
   const params = useParams();
@@ -73,7 +77,12 @@ export default function BusinessSetupPage() {
     return <div className="glass h-full w-full animate-pulse rounded-2xl" />;
   }
 
-  if (!supportsAppointmentSetup(business.module)) {
+  const isPrint = supportsPrintSetup(business.module, business.typeId);
+  const doneHref = isPrint
+    ? "/business/print-orders"
+    : `/business/businesses/${business.id}/calendar`;
+
+  if (!supportsSetup(business.module, business.typeId)) {
     const thumbUrl = businessThumbnailUrl(business);
     return (
       <div className="mx-auto max-w-2xl">
@@ -109,16 +118,15 @@ export default function BusinessSetupPage() {
     return (
       <div className="flex h-full min-h-0 w-full flex-col">
         <div className="shrink-0">
-          <Link
-            href={`/business/businesses/${business.id}/calendar`}
-            className="text-sm text-zinc-500 hover:text-zinc-300"
-          >
-            ← Slot calendar
+          <Link href={doneHref} className="text-sm text-zinc-500 hover:text-zinc-300">
+            {isPrint ? "← Orders" : "← Slot calendar"}
           </Link>
           <p className="mt-2 text-sm text-zinc-500">
-            {business.setup?.bookingMode === "fullDay"
-              ? "Update rules, photos, open days, halls, and daily price."
-              : "Update photos, hours, resources, and pricing."}
+            {isPrint
+              ? "Update your print categories, service area, and pricing."
+              : business.setup?.bookingMode === "fullDay"
+                ? "Update rules, photos, open days, halls, and daily price."
+                : "Update photos, hours, resources, and pricing."}
           </p>
         </div>
         <div className="mt-4 flex min-h-0 flex-1 flex-col">
@@ -127,7 +135,7 @@ export default function BusinessSetupPage() {
             editMode
             onComplete={(updated) => {
               setBusiness(updated);
-              router.push(`/business/businesses/${updated.id}/calendar`);
+              router.push(doneHref);
             }}
           />
         </div>
@@ -150,7 +158,9 @@ export default function BusinessSetupPage() {
           ← My businesses
         </Link>
         <p className="mt-2 text-sm text-zinc-500">
-          Profile saved. Complete setup below to open bookings.
+          {isPrint
+            ? "Profile saved. Complete setup below to start receiving print orders."
+            : "Profile saved. Complete setup below to open bookings."}
         </p>
       </div>
       <div className="mt-4 flex min-h-0 flex-1 flex-col">
@@ -158,7 +168,7 @@ export default function BusinessSetupPage() {
           business={business}
           onComplete={(updated) => {
             setBusiness(updated);
-            router.push(`/business/businesses/${updated.id}/calendar`);
+            router.push(doneHref);
           }}
         />
       </div>

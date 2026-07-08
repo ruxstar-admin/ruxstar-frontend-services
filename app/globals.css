@@ -324,6 +324,55 @@
   }
 }
 
+/* ---- print order progress ---- */
+@keyframes prog-wiggle {
+  0%,
+  100% {
+    transform: rotate(-6deg) translateY(0);
+  }
+  50% {
+    transform: rotate(6deg) translateY(-6px);
+  }
+}
+
+@keyframes prog-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes prog-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes prog-confetti {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-56px) rotate(220deg);
+  }
+}
+
 /* ---- utilities ---- */
 @layer utilities {
   .reveal {
@@ -707,6 +756,54 @@
 
   .kyc-review-ring {
     animation: pulse-ring 2s ease-out infinite;
+  }
+
+  /* ---- print order progress ---- */
+  .prog-mascot {
+    animation: float-y 3.4s ease-in-out infinite;
+  }
+
+  .prog-wiggle {
+    animation: prog-wiggle 1.6s ease-in-out infinite;
+  }
+
+  .prog-node-pop {
+    animation: prog-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .prog-fill {
+    background: linear-gradient(90deg, #34d399, #10b981);
+    transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .prog-fill-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 255, 255, 0.55) 50%,
+      rgba(255, 255, 255, 0) 70%
+    );
+    background-size: 200% 100%;
+    animation: prog-shimmer 2.2s linear infinite;
+  }
+
+  .prog-confetti span {
+    position: absolute;
+    top: 0;
+    width: 7px;
+    height: 10px;
+    border-radius: 2px;
+    animation: prog-confetti 1.4s ease-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .prog-mascot,
+    .prog-wiggle,
+    .prog-node-pop,
+    .prog-fill-shimmer,
+    .prog-confetti span {
+      animation: none;
+    }
   }
 
   /* ---- Ruxstar card ---- */

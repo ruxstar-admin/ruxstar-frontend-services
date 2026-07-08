@@ -3,6 +3,7 @@ import {
   fetchAllAdminVendorKyc,
   getBusinessCatalog,
   getCustomerProfile,
+  getPrintCatalog,
   getRuxstarCard,
   getVendorKycStatus,
   listAdminCategories,
@@ -11,25 +12,60 @@ import {
   listBusinesses,
   listCustomerBookings,
   listMyEventRegistrations,
+  listMyPrintOrders,
+  listNotifications,
   listPublicBusinesses,
   listPublicEvents,
   listVendorBookings,
   listVendorEvents,
+  listVendorPrintOrders,
   type AdminCatalogCategory,
   type AdminCatalogType,
   type AdminUser,
   type AdminVendorKycRow,
+  type AppNotification,
   type Business,
   type BusinessCatalog,
   type CustomerBooking,
   type CustomerProfile,
   type EventRegistration,
+  type NotificationsResult,
+  type PrintCategory,
+  type PrintOrder,
   type PublicBusinessSummary,
   type RuxEvent,
   type RuxstarCardData,
   type VendorBooking,
   type VendorKycStatus,
+  type VendorPrintOrders,
 } from "@/lib/api";
+
+/** Shared polling options — pauses when tab is hidden, avoids focus bursts. */
+export function pollOpts(intervalMs: number) {
+  return {
+    refreshInterval: () => (typeof document !== "undefined" && document.hidden ? 0 : intervalMs),
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+    refreshWhenHidden: false,
+    keepPreviousData: true,
+  } as const;
+}
+
+/**
+ * Print-on-demand polling options — fast + revalidates on focus.
+ * Focus revalidation is essential so status updates land instantly when the
+ * customer returns from the payment gateway or switches back to the tab.
+ */
+export function podPollOpts(intervalMs = 8_000) {
+  return {
+    refreshInterval: () => (typeof document !== "undefined" && document.hidden ? 0 : intervalMs),
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
+    refreshWhenHidden: false,
+    keepPreviousData: true,
+    dedupingInterval: 2_000,
+  } as const;
+}
 
 export const swrKeys = {
   catalog: "swr/catalog/business",
@@ -46,6 +82,10 @@ export const swrKeys = {
   adminKyc: "swr/admin/kyc",
   adminStaff: "swr/admin/staff",
   adminCatalog: "swr/admin/catalog",
+  printCatalog: "swr/catalog/print",
+  myPrintOrders: "swr/pod/orders",
+  vendorPrintOrders: "swr/pod/vendor/orders",
+  notifications: "swr/notifications",
 } as const;
 
 export function invalidateBusinesses() {
@@ -106,13 +146,7 @@ export function useVendorBookings(enabled = true) {
   return useSWR<VendorBooking[]>(
     enabled ? swrKeys.vendorBookings : null,
     () => listVendorBookings(),
-    {
-      // Near real-time: poll while the tab is open, refresh on focus/reconnect.
-      refreshInterval: 30000,
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-      keepPreviousData: true,
-    },
+    pollOpts(45_000),
   );
 }
 
@@ -193,3 +227,47 @@ export function useAdminCatalog(enabled = true) {
 export function invalidateAdminCatalog() {
   return globalMutate(swrKeys.adminCatalog);
 }
+
+/* --------------------------- Print on demand --------------------------- */
+
+export function usePrintCatalog(enabled = true) {
+  return useSWR<PrintCategory[]>(enabled ? swrKeys.printCatalog : null, getPrintCatalog, {
+    revalidateIfStale: false,
+  });
+}
+
+export function useMyPrintOrders(enabled = true) {
+  return useSWR<PrintOrder[]>(enabled ? swrKeys.myPrintOrders : null, listMyPrintOrders, podPollOpts(15_000));
+}
+
+export function invalidateMyPrintOrders() {
+  return globalMutate(swrKeys.myPrintOrders);
+}
+
+export function useVendorPrintOrders(enabled = true) {
+  return useSWR<VendorPrintOrders>(
+    enabled ? swrKeys.vendorPrintOrders : null,
+    listVendorPrintOrders,
+    podPollOpts(15_000),
+  );
+}
+
+export function invalidateVendorPrintOrders() {
+  return globalMutate(swrKeys.vendorPrintOrders);
+}
+
+/* ----------------------------- Notifications ---------------------------- */
+
+export function useNotifications(enabled = true) {
+  return useSWR<NotificationsResult>(
+    enabled ? swrKeys.notifications : null,
+    listNotifications,
+    pollOpts(30_000),
+  );
+}
+
+export function invalidateNotifications() {
+  return globalMutate(swrKeys.notifications);
+}
+
+export type { AppNotification };

@@ -30,6 +30,7 @@ export const FALLBACK_MODULE_LABELS: Record<BusinessModule, string> = {
   services: "Service requests",
   commerce: "Products & shop",
   creator: "Creator storefront",
+  print: "Print on demand",
 };
 
 export function moduleLabel(

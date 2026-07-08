@@ -582,7 +582,8 @@ export type BusinessModule =
   | "appointments"
   | "services"
   | "commerce"
-  | "creator";
+  | "creator"
+  | "print";
 
 export type DayKey = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
 
@@ -636,6 +637,7 @@ export type BusinessSetup = {
   bookingMode?: "slots" | "fullDay" | "services";
   maxGuests?: number | null;
   venueRules?: string;
+  printProfile?: PrintProfile;
 };
 
 const BUSINESS_MODULES: BusinessModule[] = [
@@ -644,7 +646,28 @@ const BUSINESS_MODULES: BusinessModule[] = [
   "services",
   "commerce",
   "creator",
+  "print",
 ];
+
+export type PrintProfile = {
+  serviceCategories: string[];
+  cities: string[];
+  serveAll: boolean;
+  turnaroundDays: number;
+  minOrderValue: number;
+  notes: string;
+};
+
+export function defaultPrintProfile(): PrintProfile {
+  return {
+    serviceCategories: [],
+    cities: [],
+    serveAll: false,
+    turnaroundDays: 3,
+    minOrderValue: 0,
+    notes: "",
+  };
+}
 
 export type Business = {
   id: string;
@@ -804,6 +827,23 @@ function normalizeSetup(raw: unknown, businessId?: string): BusinessSetup | unde
     bookingMode,
     maxGuests,
     venueRules: typeof s.venueRules === "string" ? s.venueRules : "",
+    printProfile: normalizePrintProfile(s.printProfile),
+  };
+}
+
+function normalizePrintProfile(raw: unknown): PrintProfile {
+  const p = asRecord(raw);
+  const strList = (v: unknown) =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+  const num = (v: unknown, fallback: number) =>
+    typeof v === "number" && Number.isFinite(v) ? Math.round(v) : fallback;
+  return {
+    serviceCategories: strList(p.serviceCategories),
+    cities: strList(p.cities),
+    serveAll: p.serveAll === true,
+    turnaroundDays: num(p.turnaroundDays, 3),
+    minOrderValue: num(p.minOrderValue, 0),
+    notes: typeof p.notes === "string" ? p.notes : "",
   };
 }
 
@@ -957,6 +997,7 @@ export type BusinessSetupInput = {
   bookingMode?: "slots" | "fullDay" | "services";
   maxGuests?: number | null;
   venueRules?: string;
+  printProfile?: PrintProfile;
 };
 
 export async function getBusinessSetup(id: string): Promise<Business> {
@@ -2194,4 +2235,419 @@ export async function reviewAdminVendorKyc(
     method: "PATCH",
     body: JSON.stringify(body),
   });
+}
+
+/* ------------------------------------------------------------------ */
+/* Print on demand — catalog, orders, notifications                    */
+/* ------------------------------------------------------------------ */
+
+export type PrintRequirementType = "select" | "text" | "textarea" | "file";
+
+export type PrintRequirementField = {
+  key: string;
+  label: string;
+  type: PrintRequirementType;
+  required: boolean;
+  hint: string;
+  placeholder: string;
+};
+
+export type PrintCategory = {
+  id: string;
+  label: string;
+  icon: string;
+  description: string;
+  minQuantity: number;
+  sizes: string[];
+  printTypes: string[];
+  materials: string[];
+  colorOptions: string[];
+  requirements: PrintRequirementField[];
+};
+
+function strArray(raw: unknown): string[] {
+  return Array.isArray(raw) ? raw.filter((x): x is string => typeof x === "string") : [];
+}
+
+function normalizePrintRequirement(raw: unknown): PrintRequirementField | null {
+  const r = asRecord(raw);
+  const key = typeof r.key === "string" ? r.key.trim() : "";
+  if (!key || !/^[a-z][a-z0-9_]{0,31}$/.test(key)) return null;
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const typeRaw = str(r.type);
+  const selectKeys = new Set(["size", "material", "printType", "color"]);
+  let type: PrintRequirementType = "text";
+  if (typeRaw === "select" || typeRaw === "text" || typeRaw === "textarea" || typeRaw === "file") {
+    type = typeRaw;
+  } else if (key === "designImage") {
+    type = "file";
+  } else if (selectKeys.has(key)) {
+    type = "select";
+  }
+  return {
+    key,
+    label: str(r.label) || key,
+    type,
+    required: r.required === true,
+    hint: str(r.hint),
+    placeholder: str(r.placeholder),
+  };
+}
+
+function normalizePrintCategory(raw: unknown): PrintCategory | null {
+  const c = asRecord(raw);
+  const id = typeof c.id === "string" ? c.id : "";
+  if (!id) return null;
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const requirements = Array.isArray(c.requirements)
+    ? c.requirements
+        .map(normalizePrintRequirement)
+        .filter((field): field is PrintRequirementField => field !== null)
+    : [];
+  return {
+    id,
+    label: str(c.label),
+    icon: str(c.icon) || "🖨️",
+    description: str(c.description),
+    minQuantity: typeof c.minQuantity === "number" ? c.minQuantity : 1,
+    sizes: strArray(c.sizes),
+    printTypes: strArray(c.printTypes),
+    materials: strArray(c.materials),
+    colorOptions: strArray(c.colorOptions),
+    requirements,
+  };
+}
+
+export async function getPrintCatalog(): Promise<PrintCategory[]> {
+  const data = await api("catalog/print");
+  const list = asRecord(data).categories;
+  return Array.isArray(list)
+    ? list.map(normalizePrintCategory).filter((c): c is PrintCategory => c !== null)
+    : [];
+}
+
+export type PrintOrderAttributes = {
+  printType?: string;
+  material?: string;
+  color?: string;
+  size?: string;
+  extras?: Record<string, string>;
+};
+
+export type PrintOrderStatus =
+  | "open"
+  | "accepted"
+  | "pending_payment"
+  | "confirmed"
+  | "in_production"
+  | "ready"
+  | "completed"
+  | "cancelled"
+  | "expired";
+
+export type PrintQuote = {
+  vendorId: string;
+  businessName: string;
+  vendorName: string;
+  quoteAmount: number | null;
+  vendorNote: string;
+  createdAt: string | null;
+};
+
+export type MyPrintQuote = {
+  quoteAmount: number | null;
+  vendorNote: string;
+  createdAt: string | null;
+};
+
+export type PrintOrder = {
+  id: string;
+  customerName: string;
+  customerMobile: string;
+  categoryId: string;
+  categoryLabel: string;
+  title: string;
+  attributes: PrintOrderAttributes;
+  quantity: number | null;
+  notes: string;
+  city: string;
+  pincode: string;
+  hasDesign: boolean;
+  designImageUrl: string | null;
+  designImage?: string;
+  status: PrintOrderStatus;
+  assignedVendorId: string | null;
+  assignedBusinessId: string | null;
+  vendorName: string | null;
+  businessName: string | null;
+  vendorMobile: string | null;
+  vendorNote: string;
+  quoteAmount: number | null;
+  currency: string;
+  paymentStatus: string | null;
+  acceptedAt: string | null;
+  paidAt: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  // Marketplace quotes (customer view) / this vendor's own quote (vendor view).
+  quotes?: PrintQuote[];
+  myQuote?: MyPrintQuote | null;
+  quoteCount?: number;
+};
+
+function normalizePrintQuote(raw: unknown): PrintQuote | null {
+  const q = asRecord(raw);
+  const vendorId = typeof q.vendorId === "string" ? q.vendorId : "";
+  if (!vendorId) return null;
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  return {
+    vendorId,
+    businessName: str(q.businessName),
+    vendorName: str(q.vendorName),
+    quoteAmount: typeof q.quoteAmount === "number" ? q.quoteAmount : null,
+    vendorNote: str(q.vendorNote),
+    createdAt: typeof q.createdAt === "string" ? q.createdAt : null,
+  };
+}
+
+function normalizePrintOrder(raw: unknown): PrintOrder | null {
+  const o = asRecord(raw);
+  const id = typeof o.id === "string" ? o.id : "";
+  if (!id) return null;
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const attrs = asRecord(o.attributes);
+  const rawExtras = asRecord(attrs.extras);
+  const extras: Record<string, string> = {};
+  for (const [k, v] of Object.entries(rawExtras)) {
+    if (typeof v === "string" && v.trim()) extras[k] = v.trim();
+  }
+  return {
+    id,
+    customerName: str(o.customerName),
+    customerMobile: str(o.customerMobile),
+    categoryId: str(o.categoryId),
+    categoryLabel: str(o.categoryLabel),
+    title: str(o.title),
+    attributes: {
+      printType: str(attrs.printType) || undefined,
+      material: str(attrs.material) || undefined,
+      color: str(attrs.color) || undefined,
+      size: str(attrs.size) || undefined,
+      ...(Object.keys(extras).length ? { extras } : {}),
+    },
+    quantity: typeof o.quantity === "number" ? o.quantity : null,
+    notes: str(o.notes),
+    city: str(o.city),
+    pincode: str(o.pincode),
+    hasDesign: o.hasDesign === true,
+    designImageUrl: typeof o.designImageUrl === "string" ? o.designImageUrl : null,
+    designImage: typeof o.designImage === "string" ? o.designImage : undefined,
+    status: (str(o.status) || "open") as PrintOrderStatus,
+    assignedVendorId: typeof o.assignedVendorId === "string" ? o.assignedVendorId : null,
+    assignedBusinessId: typeof o.assignedBusinessId === "string" ? o.assignedBusinessId : null,
+    vendorName: typeof o.vendorName === "string" ? o.vendorName : null,
+    businessName: typeof o.businessName === "string" ? o.businessName : null,
+    vendorMobile: typeof o.vendorMobile === "string" ? o.vendorMobile : null,
+    vendorNote: str(o.vendorNote),
+    quoteAmount: typeof o.quoteAmount === "number" ? o.quoteAmount : null,
+    currency: str(o.currency) || "INR",
+    paymentStatus: typeof o.paymentStatus === "string" ? o.paymentStatus : null,
+    acceptedAt: typeof o.acceptedAt === "string" ? o.acceptedAt : null,
+    paidAt: typeof o.paidAt === "string" ? o.paidAt : null,
+    createdAt: typeof o.createdAt === "string" ? o.createdAt : null,
+    updatedAt: typeof o.updatedAt === "string" ? o.updatedAt : null,
+    ...(Array.isArray(o.quotes)
+      ? {
+          quotes: o.quotes
+            .map(normalizePrintQuote)
+            .filter((q): q is PrintQuote => q !== null),
+        }
+      : {}),
+    ...(o.myQuote !== undefined
+      ? {
+          myQuote:
+            o.myQuote && typeof o.myQuote === "object"
+              ? {
+                  quoteAmount:
+                    typeof asRecord(o.myQuote).quoteAmount === "number"
+                      ? (asRecord(o.myQuote).quoteAmount as number)
+                      : null,
+                  vendorNote:
+                    typeof asRecord(o.myQuote).vendorNote === "string"
+                      ? (asRecord(o.myQuote).vendorNote as string)
+                      : "",
+                  createdAt:
+                    typeof asRecord(o.myQuote).createdAt === "string"
+                      ? (asRecord(o.myQuote).createdAt as string)
+                      : null,
+                }
+              : null,
+        }
+      : {}),
+    ...(typeof o.quoteCount === "number" ? { quoteCount: o.quoteCount } : {}),
+  };
+}
+
+export type CreatePrintOrderInput = {
+  categoryId: string;
+  quantity: number;
+  city: string;
+  title?: string;
+  pincode?: string;
+  notes?: string;
+  attributes?: PrintOrderAttributes;
+  designImage?: string;
+};
+
+// ── Customer ──
+export async function createPrintOrder(body: CreatePrintOrderInput): Promise<PrintOrder> {
+  const data = await postAuthed("pod/orders", body);
+  const order = normalizePrintOrder(asRecord(data).order);
+  if (!order) throw new Error("Could not place order.");
+  return order;
+}
+
+export async function listMyPrintOrders(): Promise<PrintOrder[]> {
+  const data = await authedApi("pod/orders");
+  const list = asRecord(data).orders;
+  return Array.isArray(list)
+    ? list.map(normalizePrintOrder).filter((o): o is PrintOrder => o !== null)
+    : [];
+}
+
+export async function getPrintOrder(id: string): Promise<PrintOrder> {
+  const data = await authedApi(`pod/orders/${encodeURIComponent(id)}`);
+  const order = normalizePrintOrder(asRecord(data).order);
+  if (!order) throw new Error("Order not found.");
+  return order;
+}
+
+export async function payPrintOrder(
+  id: string,
+): Promise<{ order: PrintOrder; payment: InitiateBookingPayment }> {
+  const data = await postAuthed(`pod/orders/${encodeURIComponent(id)}/pay`, {});
+  const root = asRecord(data);
+  const order = normalizePrintOrder(root.order);
+  const payment = normalizeInitiatePayment(root.payment);
+  if (!order || !payment) throw new Error("Could not start payment.");
+  return { order, payment };
+}
+
+export async function cancelPrintOrder(id: string): Promise<void> {
+  await postAuthed(`pod/orders/${encodeURIComponent(id)}/cancel`, {});
+}
+
+export async function selectPrintQuote(id: string, vendorId: string): Promise<PrintOrder> {
+  const data = await postAuthed(`pod/orders/${encodeURIComponent(id)}/select`, { vendorId });
+  const order = normalizePrintOrder(asRecord(data).order);
+  if (!order) throw new Error("Could not choose that vendor.");
+  return order;
+}
+
+// ── Vendor ──
+export type VendorPrintOrders = {
+  open: PrintOrder[];
+  assigned: PrintOrder[];
+  eligible: { categories: string[]; hasPrintBusiness: boolean };
+};
+
+export async function listVendorPrintOrders(): Promise<VendorPrintOrders> {
+  try {
+    const data = await authedApi("pod/vendor/orders");
+    const root = asRecord(data);
+    const mapOrders = (v: unknown) =>
+      Array.isArray(v)
+        ? v.map(normalizePrintOrder).filter((o): o is PrintOrder => o !== null)
+        : [];
+    const eligible = asRecord(root.eligible);
+    return {
+      open: mapOrders(root.open),
+      assigned: mapOrders(root.assigned),
+      eligible: {
+        categories: strArray(eligible.categories),
+        hasPrintBusiness: eligible.hasPrintBusiness === true,
+      },
+    };
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function getVendorPrintOrder(id: string): Promise<PrintOrder> {
+  const data = await authedApi(`pod/vendor/orders/${encodeURIComponent(id)}`);
+  const order = normalizePrintOrder(asRecord(data).order);
+  if (!order) throw new Error("Order not found.");
+  return order;
+}
+
+export async function submitPrintQuote(
+  id: string,
+  body: { quoteAmount: number; vendorNote?: string },
+): Promise<PrintOrder> {
+  const data = await postAuthed(`pod/vendor/orders/${encodeURIComponent(id)}/quote`, body);
+  const order = normalizePrintOrder(asRecord(data).order);
+  if (!order) throw new Error("Could not submit quote.");
+  return order;
+}
+
+export async function updatePrintOrderStatus(
+  id: string,
+  status: PrintOrderStatus,
+): Promise<PrintOrder> {
+  const data = await postAuthed(`pod/vendor/orders/${encodeURIComponent(id)}/status`, { status });
+  const order = normalizePrintOrder(asRecord(data).order);
+  if (!order) throw new Error("Could not update order.");
+  return order;
+}
+
+// ── Notifications (shared by customers + vendors) ──
+export type AppNotification = {
+  id: string;
+  type: string;
+  title: string;
+  body: string;
+  data: Record<string, unknown>;
+  read: boolean;
+  createdAt: string | null;
+};
+
+function normalizeNotification(raw: unknown): AppNotification | null {
+  const n = asRecord(raw);
+  const id = typeof n.id === "string" ? n.id : "";
+  if (!id) return null;
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  return {
+    id,
+    type: str(n.type) || "info",
+    title: str(n.title),
+    body: str(n.body),
+    data: asRecord(n.data),
+    read: n.read === true,
+    createdAt: typeof n.createdAt === "string" ? n.createdAt : null,
+  };
+}
+
+export type NotificationsResult = {
+  notifications: AppNotification[];
+  unreadCount: number;
+};
+
+export async function listNotifications(): Promise<NotificationsResult> {
+  const data = await authedApi("notifications");
+  const root = asRecord(data);
+  const list = Array.isArray(root.notifications)
+    ? root.notifications.map(normalizeNotification).filter((n): n is AppNotification => n !== null)
+    : [];
+  return {
+    notifications: list,
+    unreadCount: typeof root.unreadCount === "number" ? root.unreadCount : 0,
+  };
+}
+
+export async function markNotificationRead(id: string): Promise<void> {
+  await postAuthed(`notifications/${encodeURIComponent(id)}/read`, {});
+}
+
+export async function markAllNotificationsRead(): Promise<void> {
+  await postAuthed("notifications/read-all", {});
 }

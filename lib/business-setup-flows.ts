@@ -9,7 +9,17 @@ export type SetupStepId =
   | "resources"
   | "staff"
   | "services"
+  | "print-profile"
   | "review";
+
+const PRINT_TYPE_IDS = [
+  "print_shop",
+  "custom_merch",
+  "creator_merch",
+  "corporate_printing",
+  "event_printing",
+  "branding_agency",
+];
 
 export type RulesVariant = "venue" | "venue-hourly" | "turf-fullday" | "generic-fullday";
 export type ResourcesVariant = "turf" | "venue" | "salon" | "clinic" | "default";
@@ -282,7 +292,29 @@ const DEFAULT_FLOW: SetupFlow = {
   ],
 };
 
+const PRINT_FLOW: SetupFlow = {
+  id: "print-on-demand",
+  typeId: "_print",
+  bookingMode: "slots",
+  title: "Print on demand",
+  steps: [
+    {
+      id: "photos",
+      label: "Photos",
+      intro: "Add sample work or shop photos (your thumbnail is already set). Up to 3 total.",
+    },
+    {
+      id: "print-profile",
+      label: "Products & area",
+      intro: "Pick the print categories you offer and the cities you serve.",
+    },
+    { id: "review", label: "Review", intro: "Go live to start receiving print orders." },
+  ],
+};
+
 export function resolveSetupFlow(typeId: string, bookingMode: BookingMode): SetupFlow {
+  if (PRINT_TYPE_IDS.includes(typeId)) return { ...PRINT_FLOW, typeId };
+
   const mode: BookingMode =
     bookingMode === "fullDay" ? "fullDay" : bookingMode === "services" ? "services" : "slots";
   const fallbackMode: BookingMode = mode === "services" ? "services" : "slots";

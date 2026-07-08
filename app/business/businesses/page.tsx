@@ -25,7 +25,12 @@ import {
   useVendorBusinesses,
   useVendorEvents,
 } from "@/lib/swr-hooks";
-import { supportsAppointmentSetup, supportsEvents } from "@/lib/business-setup";
+import {
+  supportsAppointmentSetup,
+  supportsEvents,
+  supportsPrintSetup,
+  supportsSetup,
+} from "@/lib/business-setup";
 import { BusinessThumbnail } from "@/components/business-thumbnail";
 import { compressImageForUpload } from "@/lib/compress-image";
 
@@ -35,6 +40,7 @@ const MODULE_STYLES: Record<BusinessModule, string> = {
   services: "border-amber-500/25 bg-amber-500/10 text-amber-200",
   commerce: "border-emerald-500/25 bg-emerald-500/10 text-emerald-200",
   creator: "border-pink-500/25 bg-pink-500/10 text-pink-200",
+  print: "border-orange-500/25 bg-orange-500/10 text-orange-200",
 };
 
 type StatusFilter = "all" | "live" | "setup" | "soon";
@@ -42,7 +48,7 @@ type StatusFilter = "all" | "live" | "setup" | "soon";
 function businessStatusKey(biz: Business): Exclude<StatusFilter, "all"> {
   if (biz.setupComplete) return "live";
   if (supportsEvents(biz.module)) return "live";
-  if (supportsAppointmentSetup(biz.module)) return "setup";
+  if (supportsSetup(biz.module, biz.typeId)) return "setup";
   return "soon";
 }
 
@@ -57,6 +63,16 @@ function businessAction(biz: Business, events: RuxEvent[]) {
     return {
       href: `/business/businesses/${biz.id}/calendar`,
       label: "View calendar",
+      disabled: false,
+    };
+  }
+  if (supportsPrintSetup(biz.module, biz.typeId)) {
+    if (biz.setupComplete) {
+      return { href: "/business/print-orders", label: "Orders", disabled: false };
+    }
+    return {
+      href: `/business/businesses/${biz.id}/setup`,
+      label: "Finish setup",
       disabled: false,
     };
   }
@@ -218,7 +234,7 @@ export default function VendorBusinessesPage() {
         router.push(`/business/businesses/${created.id}/events/new`);
         return;
       }
-      if (supportsAppointmentSetup(created.module)) {
+      if (supportsSetup(created.module, created.typeId)) {
         router.push(`/business/businesses/${created.id}/setup`);
         return;
       }
@@ -344,8 +360,8 @@ export default function VendorBusinessesPage() {
       </div>
 
       {loading && kycVerified ? (
-        <div className="mt-6 grid shrink-0 gap-4 sm:grid-cols-2">
-          {[0, 1].map((i) => (
+        <div className="mt-6 grid shrink-0 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2].map((i) => (
             <div key={i} className="glass h-40 animate-pulse rounded-2xl" />
           ))}
         </div>
@@ -370,7 +386,7 @@ export default function VendorBusinessesPage() {
               </button>
             </div>
           ) : (
-          <div className="grid gap-4 pb-2 sm:grid-cols-2">
+          <div className="grid gap-4 pb-2 sm:grid-cols-2 lg:grid-cols-3">
           {filteredBusinesses.map((biz) => {
             const action = businessAction(biz, eventsByBusiness.get(biz.id) ?? []);
             const thumbInputId = `thumb-${biz.id}`;
@@ -416,7 +432,7 @@ export default function VendorBusinessesPage() {
                 </div>
 
                 {action.disabled || !action.href ? (
-                  <div className="block p-5">
+                  <div className="block p-4">
                     <h3 className="truncate font-medium text-zinc-100">{biz.name}</h3>
                     <p className="mt-0.5 text-sm text-zinc-500">
                       {biz.typeLabel}
@@ -427,7 +443,7 @@ export default function VendorBusinessesPage() {
                     )}
                   </div>
                 ) : (
-                  <Link href={action.href} className="block p-5">
+                  <Link href={action.href} className="block p-4">
                     <h3 className="truncate font-medium text-zinc-100 group-hover:text-white">
                       {biz.name}
                     </h3>

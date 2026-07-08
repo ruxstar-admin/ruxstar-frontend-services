@@ -3,18 +3,22 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LogoutButton } from "@/components/logout-button";
+import { NotificationBell } from "@/components/notification-bell";
 import { useRequireAuth } from "@/hooks/use-require-auth";
-import { useCustomerBookings, useCustomerProfile } from "@/lib/swr-hooks";
-
-export type CustomerView = "discover" | "bookings" | "account";
+import { useCustomerBookings, useCustomerProfile, useNotifications } from "@/lib/swr-hooks";
+export type CustomerView = "discover" | "print" | "orders" | "bookings" | "account";
 
 const NAV: { id: CustomerView; label: string; icon: string; href: string }[] = [
   { id: "discover", label: "Discover", icon: "🔎", href: "/customer" },
+  { id: "print", label: "Print", icon: "🖨️", href: "/customer/print" },
+  { id: "orders", label: "My orders", icon: "📦", href: "/customer/orders" },
   { id: "bookings", label: "My bookings", icon: "🎟️", href: "/customer?view=bookings" },
   { id: "account", label: "Account", icon: "⚙", href: "/customer?view=account" },
 ];
 
 function activeView(pathname: string, viewParam: string | null): CustomerView {
+  if (pathname.startsWith("/customer/orders")) return "orders";
+  if (pathname.startsWith("/customer/print")) return "print";
   if (pathname.startsWith("/customer/book")) return "discover";
   if (viewParam === "bookings") return "bookings";
   if (viewParam === "account") return "account";
@@ -31,6 +35,8 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
   const { ready } = useRequireAuth({ roles: ["customer"] });
   const { data: profile } = useCustomerProfile(ready);
   const { data: bookings = [] } = useCustomerBookings(ready);
+  const { data: notifications } = useNotifications(ready);
+  const unreadNotifications = notifications?.unreadCount ?? 0;
 
   const upcomingCount = bookings.filter(
     (b) => new Date(b.startAt).getTime() > Date.now() && b.status !== "cancelled",
@@ -39,11 +45,16 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
   const initial = (profile?.name || "?").trim().charAt(0).toUpperCase();
   const mobileTitle = pathname.startsWith("/customer/payment-status")
     ? "Payment"
-    : pathname.startsWith("/customer/book")
-      ? "Book"
-      : NAV.find((n) => n.id === view)?.label ?? "Discover";
+    : pathname.startsWith("/customer/notifications")
+      ? "Notifications"
+      : pathname.startsWith("/customer/book")
+        ? "Book"
+        : NAV.find((n) => n.id === view)?.label ?? "Discover";
   const isBookPage = pathname.startsWith("/customer/book");
   const isCustomerHub = pathname === "/customer";
+  const isPrintFlow =
+    pathname.startsWith("/customer/print") || pathname.startsWith("/customer/orders");
+  const isFixedViewport = isCustomerHub || isPrintFlow;
 
   if (!ready) {
     return (
@@ -56,9 +67,12 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden bg-[#050505] text-[#ededef]">
       <aside className="hidden w-60 shrink-0 flex-col border-r border-white/5 bg-[#0a0a0b] lg:flex">
-        <div className="border-b border-white/5 px-5 py-6">
-          <span className="text-lg font-semibold tracking-tight">Ruxstar</span>
-          <p className="mt-0.5 text-xs text-zinc-500">Book & manage</p>
+        <div className="flex items-start justify-between border-b border-white/5 px-5 py-6">
+          <div>
+            <span className="text-lg font-semibold tracking-tight">Ruxstar</span>
+            <p className="mt-0.5 text-xs text-zinc-500">Book & manage</p>
+          </div>
+          <NotificationBell enabled={ready} pageHref="/customer/notifications" unread={unreadNotifications} />
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 py-4">
@@ -105,13 +119,14 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
           <span className="text-base font-semibold tracking-tight">Ruxstar</span>
           <div className="flex items-center gap-3">
             <span className="text-sm text-zinc-400">{mobileTitle}</span>
+            <NotificationBell enabled={ready} pageHref="/customer/notifications" unread={unreadNotifications} />
             <LogoutButton />
           </div>
         </header>
 
         <main
           className={
-            isCustomerHub
+            isFixedViewport
               ? "relative flex min-h-0 flex-1 flex-col overflow-hidden"
               : "relative min-w-0 flex-1 overflow-x-hidden overflow-y-auto"
           }
@@ -122,12 +137,14 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div
-            className={`mx-auto min-w-0 sm:px-8 ${
+            className={`mx-auto min-w-0 ${
               isBookPage
                 ? "max-w-6xl px-0 pb-28 pt-3 lg:pb-12"
-                : isCustomerHub
-                  ? "flex h-full min-h-0 w-full max-w-5xl flex-1 flex-col px-5 pb-4 pt-8 lg:pb-8"
-                  : "max-w-5xl px-5 pb-28 pt-8 lg:pb-12"
+                : isPrintFlow
+                  ? "flex h-full min-h-0 w-full max-w-none flex-1 flex-col px-0 pb-0 pt-0"
+                : isFixedViewport
+                  ? "flex h-full min-h-0 w-full max-w-5xl flex-1 flex-col px-5 pb-4 pt-6 sm:px-8 lg:pb-6 lg:pt-8"
+                  : "max-w-5xl px-5 pb-28 pt-8 sm:px-8 lg:pb-12"
             }`}
           >
             {children}

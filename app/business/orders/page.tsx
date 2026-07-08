@@ -122,7 +122,7 @@ export default function VendorOrdersPage() {
         <div className="glass rounded-2xl p-10">
           <p className="text-4xl">🔒</p>
           <h1 className="mt-4 text-xl font-semibold">Complete KYC first</h1>
-          <p className="mt-2 text-sm text-zinc-400">Orders unlock after identity verification.</p>
+          <p className="mt-2 text-sm text-zinc-400">Bookings unlock after identity verification.</p>
           <Link
             href="/business/kyc"
             className="btn-primary mt-6 inline-block rounded-full px-6 py-2.5 text-sm font-semibold"
@@ -137,7 +137,7 @@ export default function VendorOrdersPage() {
   return (
     <div className="mx-auto flex h-full min-h-0 w-full max-w-4xl flex-col">
       <div className="shrink-0">
-        <p className="text-xs uppercase tracking-widest text-zinc-400">Orders</p>
+        <p className="text-xs uppercase tracking-widest text-zinc-400">Vendor</p>
         <h1 className="mt-1 text-2xl font-semibold text-zinc-50 sm:text-3xl">Bookings</h1>
         <p className="mt-1 text-sm text-zinc-300">
           Paid slot bookings from your turf, salon, venue, and clinic businesses.

@@ -7,15 +7,18 @@ import type {
   BusinessService,
   BusinessSetupInput,
   BusinessStaff,
+  PrintProfile,
   WeeklyHours,
 } from "@/lib/api";
+import { defaultPrintProfile } from "@/lib/api";
 import {
   completeBusinessSetup,
   getBusinessSetup,
   syncBusinessSetupPhotos,
   updateBusinessSetup,
 } from "@/lib/api";
-import { invalidateBusinesses, invalidatePublicBusinesses } from "@/lib/swr-hooks";
+import { invalidateBusinesses, invalidatePublicBusinesses, usePrintCatalog } from "@/lib/swr-hooks";
+import { prettyCity } from "@/lib/cities";
 import { SetupStepFullDayDays } from "@/components/business-setup/setup-step-full-day-days";
 import { SetupStepHourlySlots } from "@/components/business-setup/setup-step-hourly-slots";
 import { SetupStepPhotos } from "@/components/business-setup/setup-step-photos";
@@ -24,9 +27,11 @@ import { SetupStepReview } from "@/components/business-setup/setup-step-review";
 import { SetupStepRules } from "@/components/business-setup/setup-step-rules";
 import { SetupStepStaff } from "@/components/business-setup/setup-step-staff";
 import { SetupStepServices } from "@/components/business-setup/setup-step-services";
+import { SetupStepPrintProfile } from "@/components/business-setup/setup-step-print-profile";
 import {
   applyFullDayHours,
   bookingModeLabel,
+  isPrintType,
   needsBookingModeOnCreate,
   priceLabel,
   resourceBasePrice,
@@ -60,6 +65,7 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   );
   const isFullDay = bookingMode === "fullDay";
   const isService = bookingMode === "services";
+  const isPrint = business.module === "print" || isPrintType(business.typeId);
 
   const [stepIndex, setStepIndex] = useState(0);
   const currentStep: SetupStepConfig = flow.steps[stepIndex] ?? flow.steps[0];
@@ -79,6 +85,28 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   );
   const [staff, setStaff] = useState<BusinessStaff[]>(() => setup.staff ?? []);
   const [services, setServices] = useState<BusinessService[]>(() => setup.services ?? []);
+  const [printProfile, setPrintProfile] = useState<PrintProfile>(
+    () => setup.printProfile ?? defaultPrintProfile(),
+  );
+  const { data: printCatalog = [] } = usePrintCatalog(isPrint);
+  const printCategoryLabels = useMemo(() => {
+    const map = new Map(printCatalog.map((c) => [c.id, c.name]));
+    return printProfile.serviceCategories.map((id) => map.get(id) ?? prettyCity(id.replace(/[-_]/g, " ")));
+  }, [printCatalog, printProfile.serviceCategories]);
+  const printCityLabels = useMemo(() => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const raw of printProfile.cities) {
+      // Stored values may include a "city, district" form — show just the place.
+      const place = raw.split(",")[0].trim();
+      const label = prettyCity(place);
+      const key = label.toLowerCase();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      out.push(label);
+    }
+    return out;
+  }, [printProfile.cities]);
   const [savedPhotos, setSavedPhotos] = useState(setup.photos);
   const [pendingPhotos, setPendingPhotos] = useState<{ id: string; preview: string }[]>([]);
   const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([]);
@@ -156,6 +184,9 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   }
 
   function buildSetupPatch(): BusinessSetupInput {
+    if (isPrint) {
+      return { printProfile };
+    }
     if (isService) {
       return {
         weeklyHours,
@@ -345,6 +376,27 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
     }
   }
 
+  async function savePrintProfileAndContinue() {
+    if (!printProfile.serviceCategories.length) {
+      setError("Select at least one print category you offer.");
+      return;
+    }
+    if (!printProfile.serveAll && !printProfile.cities.length) {
+      setError('Add at least one service city, or turn on "Serve everywhere".');
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      await updateBusinessSetup(business.id, { printProfile });
+      goNext();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function saveResourcesAndContinue() {
     if (!resources.length) {
       setError("Add at least one before continuing.");
@@ -375,7 +427,18 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
     setBusy(true);
     setError("");
     try {
-      if (isService) {
+      if (isPrint) {
+        if (!printProfile.serviceCategories.length) {
+          setError("Select at least one print category you offer.");
+          goToStep("print-profile");
+          return;
+        }
+        if (!printProfile.serveAll && !printProfile.cities.length) {
+          setError('Add at least one service city, or turn on "Serve everywhere".');
+          goToStep("print-profile");
+          return;
+        }
+      } else if (isService) {
         if (openDays.length === 0) {
           setError("Select at least one open day.");
           goToStep("hourly-slots");
@@ -509,6 +572,9 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
       case "services":
         await saveServicesAndContinue();
         break;
+      case "print-profile":
+        await savePrintProfileAndContinue();
+        break;
       case "review":
         await onFinish();
         break;
@@ -530,11 +596,13 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
             ? "Open days & price"
             : step === "resources"
               ? resourceLabel
-              : step === "review"
-                ? editMode
-                  ? "Review changes"
-                  : "Review & go live"
-                : currentStep.label;
+              : step === "print-profile"
+                ? "Products & service area"
+                : step === "review"
+                  ? editMode
+                    ? "Review changes"
+                    : "Review & go live"
+                  : currentStep.label;
 
   useEffect(() => {
     bodyRef.current?.scrollTo({ top: 0, behavior: "auto" });
@@ -638,6 +706,13 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
           </div>
         )}
 
+        {step === "print-profile" && (
+          <SetupStepPrintProfile
+            value={printProfile}
+            onChange={(patch) => setPrintProfile((prev) => ({ ...prev, ...patch }))}
+          />
+        )}
+
         {step === "full-day-days" && (
           <SetupStepFullDayDays
             intro=""
@@ -670,7 +745,61 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
           />
         )}
 
-        {step === "review" && !isService && (
+        {step === "review" && isPrint && (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+                Print categories ({printCategoryLabels.length})
+              </p>
+              {printCategoryLabels.length ? (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {printCategoryLabels.map((label) => (
+                    <span
+                      key={label}
+                      className="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-200"
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-1 text-sm text-zinc-500">None selected</p>
+              )}
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+                Service area
+              </p>
+              {printProfile.serveAll ? (
+                <p className="mt-1 text-sm text-zinc-200">Everywhere (pan-India)</p>
+              ) : printCityLabels.length ? (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {printCityLabels.map((label) => (
+                    <span
+                      key={label}
+                      className="inline-flex items-center rounded-full bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-zinc-200"
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-1 text-sm text-zinc-500">No cities set</p>
+              )}
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Details</p>
+              <p className="mt-1 text-sm text-zinc-200">
+                Turnaround: {printProfile.turnaroundDays || 0} days
+                {printProfile.minOrderValue > 0
+                  ? ` · Min order ₹${printProfile.minOrderValue.toLocaleString("en-IN")}`
+                  : ""}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {step === "review" && !isService && !isPrint && (
           <SetupStepReview
             isFullDay={isFullDay}
             slotMinutes={slotMinutes}
