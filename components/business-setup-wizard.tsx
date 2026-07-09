@@ -90,7 +90,7 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   );
   const { data: printCatalog = [] } = usePrintCatalog(isPrint);
   const printCategoryLabels = useMemo(() => {
-    const map = new Map(printCatalog.map((c) => [c.id, c.name]));
+    const map = new Map(printCatalog.map((c) => [c.id, c.label]));
     return printProfile.serviceCategories.map((id) => map.get(id) ?? prettyCity(id.replace(/[-_]/g, " ")));
   }, [printCatalog, printProfile.serviceCategories]);
   const printCityLabels = useMemo(() => {
