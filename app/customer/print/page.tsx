@@ -419,6 +419,9 @@ function OrderForm({
   onPlaced: () => void;
 }) {
   const requirements = categoryRequirements(category);
+  const hasDesignField = requirements.some(
+    (f) => f.type === "file" || f.key === "designImage",
+  );
 
   const [quantity, setQuantity] = useState(String(category.minQuantity || 1));
   const [city, setCity] = useState("");
@@ -620,6 +623,26 @@ function OrderForm({
                 onClearDesign={() => setDesignImage("")}
               />
             ))}
+
+            {!hasDesignField && (
+              <RequirementFieldInput
+                field={{
+                  key: "designImage",
+                  label: "Artwork / design",
+                  type: "file",
+                  required: false,
+                  hint: "Upload your logo, photo or design (optional)",
+                  placeholder: "",
+                }}
+                category={category}
+                value={designImage}
+                onChange={() => {}}
+                designImage={designImage}
+                uploading={uploading}
+                onPickImage={onPickImage}
+                onClearDesign={() => setDesignImage("")}
+              />
+            )}
 
             <label className="block text-sm text-zinc-400">
               Pincode <span className="text-zinc-600">(optional)</span>
