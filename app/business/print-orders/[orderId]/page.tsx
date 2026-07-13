@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { use, useState } from "react";
 import useSWR from "swr";
 import { useVendorShell } from "@/components/vendor-shell";
 import {
-  submitPrintQuote,
   getVendorPrintOrder,
   updatePrintOrderStatus,
   type PrintOrder,
@@ -48,51 +47,8 @@ export default function VendorPrintOrderDetailPage({
     podPollOpts(8_000),
   );
 
-  const [quote, setQuote] = useState("");
-  const [note, setNote] = useState("");
-  const [prefilled, setPrefilled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState("");
-
-  useEffect(() => {
-    if (prefilled || !data?.myQuote) return;
-    if (data.myQuote.quoteAmount != null) setQuote(String(data.myQuote.quoteAmount));
-    if (data.myQuote.vendorNote) setNote(data.myQuote.vendorNote);
-    setPrefilled(true);
-  }, [data, prefilled]);
-
-  async function onQuote() {
-    if (!data) return;
-    const amount = Math.round(Number(quote));
-    if (!Number.isFinite(amount) || amount < 1) {
-      setActionError("Enter a valid quote amount.");
-      return;
-    }
-    setBusy(true);
-    setActionError("");
-    const optimistic: PrintOrder = {
-      ...data,
-      myQuote: {
-        quoteAmount: amount,
-        vendorNote: note.trim(),
-        createdAt: data.myQuote?.createdAt ?? new Date().toISOString(),
-      },
-    };
-    try {
-      await mutate(
-        async () => {
-          await submitPrintQuote(data.id, { quoteAmount: amount, vendorNote: note.trim() });
-          return getVendorPrintOrder(data.id);
-        },
-        { optimisticData: optimistic, rollbackOnError: true, revalidate: true },
-      );
-      invalidateVendorPrintOrders();
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : "Could not submit quote.");
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function onAdvance(next: PrintOrderStatus) {
     if (!data) return;
@@ -235,91 +191,25 @@ export default function VendorPrintOrderDetailPage({
           <div className="space-y-4">
             {specRows.length > 0 && <OrderSpecsPanel rows={specRows} />}
 
-            {order.status === "open" && (
-              <div className="glass rounded-2xl p-4 sm:p-5">
-                {order.myQuote ? (
-                  <div className="rounded-xl border border-emerald-400/30 bg-emerald-400/[0.08] p-4">
-                    <div className="flex items-center gap-2.5">
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-emerald-400/40 bg-emerald-400/20 text-lg">
-                        ✓
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-emerald-100">Quote submitted</p>
-                        <p className="text-xs text-emerald-200/70">Waiting for customer to choose</p>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between rounded-lg border border-emerald-400/20 bg-emerald-400/[0.06] px-3 py-2">
-                      <span className="text-xs text-zinc-400">Your quote</span>
-                      <span className="text-lg font-semibold text-emerald-300">
-                        {money(order.myQuote.quoteAmount)}
-                      </span>
-                    </div>
-                    {order.myQuote.vendorNote && (
-                      <p className="mt-2 text-xs text-zinc-500">“{order.myQuote.vendorNote}”</p>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-sm font-medium text-zinc-100">Submit your quote</p>
-                )}
-                <label className="mt-4 block">
-                  <span className="text-xs text-zinc-500">Quote amount (₹)</span>
-                  <input
-                    type="number"
-                    min={1}
-                    value={quote}
-                    onChange={(e) => setQuote(e.target.value)}
-                    placeholder="e.g. 1200"
-                    className="field-input mt-1 py-2 text-sm"
-                  />
-                </label>
-                <label className="mt-3 block">
-                  <span className="text-xs text-zinc-500">Note to customer (optional)</span>
-                  <input
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    placeholder="e.g. 3 day delivery, includes design"
-                    className="field-input mt-1 py-2 text-sm"
-                  />
-                </label>
+            <div className="glass rounded-2xl p-4 sm:p-5">
+              <p className="text-xs text-zinc-500">Order total</p>
+              <p className="mt-0.5 text-2xl font-semibold text-zinc-100">
+                {money(order.quoteAmount)}
+              </p>
+              {(order.status === "accepted" || order.status === "pending_payment") && (
+                <p className="mt-2 text-xs text-amber-300/80">Waiting for customer payment</p>
+              )}
+              {next && (
                 <button
                   type="button"
                   disabled={busy}
-                  onClick={onQuote}
-                  className="btn-primary mt-4 w-full rounded-full py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-60"
+                  onClick={() => onAdvance(next.status)}
+                  className="btn-primary mt-4 w-full rounded-full py-2.5 text-sm font-semibold disabled:opacity-60"
                 >
-                  {busy
-                    ? "Saving…"
-                    : order.myQuote
-                      ? "Update quote"
-                      : "Submit quote"}
+                  {busy ? "Saving…" : next.label}
                 </button>
-              </div>
-            )}
-
-            {order.status !== "open" && (
-              <div className="glass rounded-2xl p-4 sm:p-5">
-                <p className="text-xs text-zinc-500">Your quote</p>
-                <p className="mt-0.5 text-2xl font-semibold text-zinc-100">
-                  {money(order.quoteAmount)}
-                </p>
-                {order.vendorNote && (
-                  <p className="mt-2 text-xs text-zinc-500">“{order.vendorNote}”</p>
-                )}
-                {order.status === "accepted" && (
-                  <p className="mt-2 text-xs text-amber-300/80">Waiting for customer payment</p>
-                )}
-                {next && (
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => onAdvance(next.status)}
-                    className="btn-primary mt-4 w-full rounded-full py-2.5 text-sm font-semibold disabled:opacity-60"
-                  >
-                    {busy ? "Saving…" : next.label}
-                  </button>
-                )}
-              </div>
-            )}
+              )}
+            </div>
 
             {showCustomer && (
               <div className="glass rounded-2xl p-4 sm:p-5">

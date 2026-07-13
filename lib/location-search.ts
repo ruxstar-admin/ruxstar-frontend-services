@@ -24,6 +24,48 @@ type IndiaPostResponse = {
   PostOffice?: IndiaPostOffice[] | null;
 }[];
 
+type ReverseGeocode = {
+  city?: string;
+  locality?: string;
+  principalSubdivision?: string;
+};
+
+/**
+ * Detects the user's current city via the browser Geolocation API + a free,
+ * key-less reverse-geocode. Rejects if permission is denied/unavailable so the
+ * caller can silently fall back to showing all shops.
+ */
+export async function detectCurrentCity(): Promise<string> {
+  if (typeof navigator === "undefined" || !navigator.geolocation) {
+    throw new Error("Location not supported");
+  }
+  // Some embedded/webview browsers never fire the geolocation callback (the
+  // permission prompt just hangs), so race a hard timeout as a safety net.
+  const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("Location timed out")), 9000);
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        clearTimeout(timer);
+        resolve(p);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 },
+    );
+  });
+  const { latitude, longitude } = pos.coords;
+  const res = await fetch(
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
+  );
+  if (!res.ok) throw new Error("Could not resolve location");
+  const data = (await res.json()) as ReverseGeocode;
+  const city = (data.city || data.locality || data.principalSubdivision || "").trim();
+  if (!city) throw new Error("Could not resolve city");
+  return city;
+}
+
 function curatedMatches(query: string): PlaceSuggestion[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];

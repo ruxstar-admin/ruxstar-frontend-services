@@ -14,24 +14,17 @@ type Step = {
 
 const STEPS: Step[] = [
   {
-    key: "open",
-    label: "Collecting quotes",
-    icon: "📝",
-    customer: { title: "Order placed!", sub: "Vendors nearby are sending quotes — you pick one." },
-    vendor: { title: "New order in", sub: "Send your best quote to win this job." },
-  },
-  {
     key: "accepted",
-    label: "Vendor chosen",
-    icon: "🤝",
-    customer: { title: "Vendor chosen 🎉", sub: "Pay your chosen quote to confirm." },
-    vendor: { title: "You won this order 🎉", sub: "Waiting for the customer to pay." },
+    label: "Awaiting payment",
+    icon: "🧾",
+    customer: { title: "Order placed 🎉", sub: "Pay now to confirm your order." },
+    vendor: { title: "New order in 🎉", sub: "Waiting for the customer to pay." },
   },
   {
     key: "confirmed",
     label: "Payment confirmed",
     icon: "💳",
-    customer: { title: "Payment confirmed", sub: "Your vendor is getting started." },
+    customer: { title: "Payment confirmed", sub: "Your shop is getting started." },
     vendor: { title: "Payment received 💰", sub: "Time to start production." },
   },
   {
@@ -58,13 +51,12 @@ const STEPS: Step[] = [
 ];
 
 const STEP_INDEX: Record<string, number> = {
-  open: 0,
-  accepted: 1,
-  pending_payment: 1,
-  confirmed: 2,
-  in_production: 3,
-  ready: 4,
-  completed: 5,
+  accepted: 0,
+  pending_payment: 0,
+  confirmed: 1,
+  in_production: 2,
+  ready: 3,
+  completed: 4,
 };
 
 const CONFETTI = ["#34d399", "#fbbf24", "#f472b6", "#60a5fa", "#f87171", "#a78bfa"];
@@ -105,7 +97,7 @@ export function PrintProgress({
             </p>
             <p className="mt-0.5 text-sm text-red-200/70">
               {status === "expired"
-                ? "No vendor accepted this order in time."
+                ? "This order expired before payment."
                 : "This order is no longer active."}
             </p>
           </div>

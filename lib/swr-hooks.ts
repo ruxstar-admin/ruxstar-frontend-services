@@ -13,6 +13,7 @@ import {
   listCustomerBookings,
   listMyEventRegistrations,
   listMyPrintOrders,
+  listPrintShops,
   listNotifications,
   listPublicBusinesses,
   listPublicEvents,
@@ -32,6 +33,7 @@ import {
   type NotificationsResult,
   type PrintCategory,
   type PrintOrder,
+  type PrintShop,
   type PublicBusinessSummary,
   type RuxEvent,
   type RuxstarCardData,
@@ -234,6 +236,17 @@ export function usePrintCatalog(enabled = true) {
   return useSWR<PrintCategory[]>(enabled ? swrKeys.printCatalog : null, getPrintCatalog, {
     revalidateIfStale: false,
   });
+}
+
+// Passing an empty city returns every live shop for the category (all areas),
+// so the customer UI can fall back to "all shops" instead of blocking.
+export function useAvailablePrintShops(categoryId: string | null, city: string, enabled = true) {
+  const ready = enabled && !!categoryId;
+  return useSWR<PrintShop[]>(
+    ready ? ["pod-shops", categoryId, city.trim().toLowerCase()] : null,
+    () => listPrintShops(categoryId as string, city),
+    { keepPreviousData: true, revalidateOnFocus: true },
+  );
 }
 
 export function useMyPrintOrders(enabled = true) {

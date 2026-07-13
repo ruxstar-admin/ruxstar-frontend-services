@@ -28,6 +28,7 @@ import { SetupStepRules } from "@/components/business-setup/setup-step-rules";
 import { SetupStepStaff } from "@/components/business-setup/setup-step-staff";
 import { SetupStepServices } from "@/components/business-setup/setup-step-services";
 import { SetupStepPrintProfile } from "@/components/business-setup/setup-step-print-profile";
+import { SetupStepPrintPricing } from "@/components/business-setup/setup-step-print-pricing";
 import {
   applyFullDayHours,
   bookingModeLabel,
@@ -397,6 +398,42 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
     }
   }
 
+  function printPricingError(): string | null {
+    const byId = new Map(printCatalog.map((c) => [c.id, c]));
+    for (const catId of printProfile.serviceCategories) {
+      const cat = byId.get(catId);
+      const label = cat?.label ?? catId;
+      const pricing = printProfile.pricing[catId];
+      if (!pricing || pricing.enabled === false) return `Set a price for "${label}".`;
+      if (cat?.pricingModel === "per_page") {
+        if (!((pricing.perPage?.bw ?? 0) > 0 || (pricing.perPage?.color ?? 0) > 0)) {
+          return `Set a per-page price for "${label}".`;
+        }
+      } else if (!((pricing.basePrice ?? 0) > 0)) {
+        return `Set a base price for "${label}".`;
+      }
+    }
+    return null;
+  }
+
+  async function savePrintPricingAndContinue() {
+    const err = printPricingError();
+    if (err) {
+      setError(err);
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      await updateBusinessSetup(business.id, { printProfile });
+      goNext();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not save pricing.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function saveResourcesAndContinue() {
     if (!resources.length) {
       setError("Add at least one before continuing.");
@@ -436,6 +473,12 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
         if (!printProfile.serveAll && !printProfile.cities.length) {
           setError('Add at least one service city, or turn on "Serve everywhere".');
           goToStep("print-profile");
+          return;
+        }
+        const pricingErr = printPricingError();
+        if (pricingErr) {
+          setError(pricingErr);
+          goToStep("print-pricing");
           return;
         }
       } else if (isService) {
@@ -575,6 +618,9 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
       case "print-profile":
         await savePrintProfileAndContinue();
         break;
+      case "print-pricing":
+        await savePrintPricingAndContinue();
+        break;
       case "review":
         await onFinish();
         break;
@@ -598,6 +644,8 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
               ? resourceLabel
               : step === "print-profile"
                 ? "Products & service area"
+                : step === "print-pricing"
+                ? "Product pricing"
                 : step === "review"
                   ? editMode
                     ? "Review changes"
@@ -708,6 +756,13 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
 
         {step === "print-profile" && (
           <SetupStepPrintProfile
+            value={printProfile}
+            onChange={(patch) => setPrintProfile((prev) => ({ ...prev, ...patch }))}
+          />
+        )}
+
+        {step === "print-pricing" && (
+          <SetupStepPrintPricing
             value={printProfile}
             onChange={(patch) => setPrintProfile((prev) => ({ ...prev, ...patch }))}
           />

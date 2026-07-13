@@ -4,11 +4,17 @@ import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
 import { useVendorShell } from "@/components/vendor-shell";
 import {
+  setPrintAcceptingOrders,
   updatePrintOrderStatus,
+  type Business,
   type PrintOrder,
   type PrintOrderStatus,
 } from "@/lib/api";
-import { invalidateVendorPrintOrders, useVendorPrintOrders } from "@/lib/swr-hooks";
+import {
+  invalidateVendorPrintOrders,
+  useVendorBusinesses,
+  useVendorPrintOrders,
+} from "@/lib/swr-hooks";
 import { formatPrintOrderAttributes } from "@/lib/print-requirements";
 
 const money = (n: number | null | undefined) =>
@@ -35,21 +41,21 @@ const NEXT_STATUS: Partial<Record<string, { status: PrintOrderStatus; label: str
 export default function VendorPrintOrdersPage() {
   const { kycVerified, kyc } = useVendorShell();
   const { data, isLoading } = useVendorPrintOrders(kycVerified);
-  const [tab, setTab] = useState<"open" | "assigned">("open");
   const [error, setError] = useState("");
 
-  const open = useMemo(() => data?.open ?? [], [data]);
   const assigned = useMemo(() => data?.assigned ?? [], [data]);
   const hasPrintBusiness = data?.eligible.hasPrintBusiness ?? false;
 
   const stats = useMemo(() => {
-    const quoted = open.filter((o) => o.myQuote).length;
+    const awaiting = assigned.filter((o) =>
+      ["accepted", "pending_payment"].includes(o.status),
+    ).length;
     const active = assigned.filter((o) =>
       ["confirmed", "in_production", "ready"].includes(o.status),
     ).length;
     const completed = assigned.filter((o) => o.status === "completed").length;
-    return { open: open.length, quoted, active, completed };
-  }, [open, assigned]);
+    return { total: assigned.length, awaiting, active, completed };
+  }, [assigned]);
 
   if (!kycVerified) {
     return (
@@ -72,7 +78,7 @@ export default function VendorPrintOrdersPage() {
     );
   }
 
-  const list = tab === "open" ? open : assigned;
+  const list = assigned;
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
@@ -85,35 +91,17 @@ export default function VendorPrintOrdersPage() {
               <span className="text-gradient">Orders</span>
             </h1>
           </div>
-          <div className="inline-flex rounded-full border border-white/10 p-1 text-sm">
-            <button
-              type="button"
-              onClick={() => setTab("open")}
-              className={`rounded-full px-4 py-1.5 transition ${
-                tab === "open" ? "bg-white/10 text-zinc-100" : "text-zinc-400"
-              }`}
-            >
-              Open ({open.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setTab("assigned")}
-              className={`rounded-full px-4 py-1.5 transition ${
-                tab === "assigned" ? "bg-white/10 text-zinc-100" : "text-zinc-400"
-              }`}
-            >
-              My orders ({assigned.length})
-            </button>
-          </div>
         </div>
 
         {/* Summary stats */}
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="Open orders" value={stats.open} accent="sky" />
-          <StatCard label="You quoted" value={stats.quoted} accent="amber" />
+          <StatCard label="All orders" value={stats.total} accent="sky" />
+          <StatCard label="Awaiting payment" value={stats.awaiting} accent="amber" />
           <StatCard label="In progress" value={stats.active} accent="emerald" />
           <StatCard label="Completed" value={stats.completed} accent="zinc" />
         </div>
+
+        <ShopAvailabilityBar enabled={kycVerified} />
 
         {error && (
           <p className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
@@ -140,23 +128,74 @@ export default function VendorPrintOrdersPage() {
             ))}
           </div>
         ) : list.length === 0 ? (
-          <EmptyState
-            text={
-              tab === "open"
-                ? "No open orders right now. You'll be notified when a matching order comes in."
-                : "You haven't won any orders yet."
-            }
-          />
+          <EmptyState text="No orders yet. Customers who order from your shop will appear here." />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {tab === "open"
-              ? open.map((order) => <OpenOrderCard key={order.id} order={order} />)
-              : assigned.map((order) => (
-                  <AssignedOrderCard key={order.id} order={order} onError={setError} />
-                ))}
+            {assigned.map((order) => (
+              <AssignedOrderCard key={order.id} order={order} onError={setError} />
+            ))}
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ShopAvailabilityBar({ enabled }: { enabled: boolean }) {
+  const { data: businesses = [], mutate } = useVendorBusinesses(enabled);
+  const [override, setOverride] = useState<Record<string, boolean>>({});
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const printShops = businesses.filter((b) => b.module === "print");
+  if (printShops.length === 0) return null;
+
+  const isAccepting = (shop: Business) =>
+    override[shop.id] ?? (shop.setup?.printProfile?.acceptingOrders ?? true);
+
+  async function toggle(shop: Business) {
+    const next = !isAccepting(shop);
+    setOverride((o) => ({ ...o, [shop.id]: next }));
+    setBusyId(shop.id);
+    try {
+      await setPrintAcceptingOrders(shop.id, next);
+      await mutate();
+    } catch {
+      setOverride((o) => ({ ...o, [shop.id]: !next }));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-2">
+      <span className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+        Your shops
+      </span>
+      {printShops.map((shop) => {
+        const accepting = isAccepting(shop);
+        return (
+          <button
+            key={shop.id}
+            type="button"
+            disabled={busyId === shop.id}
+            onClick={() => void toggle(shop)}
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition disabled:opacity-60 ${
+              accepting
+                ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20"
+                : "border-zinc-500/30 bg-white/[0.03] text-zinc-400 hover:bg-white/5"
+            }`}
+            title={accepting ? "Tap to stop accepting orders" : "Tap to start accepting orders"}
+          >
+            <span
+              className={`h-2 w-2 rounded-full ${accepting ? "bg-emerald-400" : "bg-zinc-500"}`}
+            />
+            <span className="max-w-[10rem] truncate">{shop.name}</span>
+            <span className="text-[10px] uppercase tracking-wide">
+              {busyId === shop.id ? "…" : accepting ? "Open" : "Closed"}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -213,45 +252,6 @@ function OrderCardShell({
       </Link>
       {footer && <div className="mt-3 border-t border-white/8 pt-3">{footer}</div>}
     </article>
-  );
-}
-
-function OpenOrderCard({ order }: { order: PrintOrder }) {
-  const href = `/business/print-orders/${order.id}`;
-  const attrs = formatPrintOrderAttributes(order.attributes);
-  const hasQuoted = !!order.myQuote;
-
-  return (
-    <OrderCardShell
-      href={href}
-      footer={
-        <div className="flex items-center justify-between gap-3">
-          {hasQuoted ? (
-            <span className="text-xs text-emerald-400">
-              Quoted {money(order.myQuote?.quoteAmount)}
-            </span>
-          ) : (
-            <span className="text-xs text-zinc-500">Tap to review</span>
-          )}
-          <Link
-            href={href}
-            className="btn-primary shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold text-zinc-900 sm:text-sm"
-          >
-            {hasQuoted ? "Update quote" : "Submit quote"}
-          </Link>
-        </div>
-      }
-    >
-      <p className="truncate font-medium text-zinc-100">
-        {order.quantity} × {order.categoryLabel}
-      </p>
-      <p className="mt-0.5 line-clamp-2 text-xs text-zinc-500">
-        {[attrs, order.city].filter(Boolean).join(" · ")}
-      </p>
-      {order.notes && (
-        <p className="mt-1.5 line-clamp-2 text-xs italic text-zinc-600">“{order.notes}”</p>
-      )}
-    </OrderCardShell>
   );
 }
 

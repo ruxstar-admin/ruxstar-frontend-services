@@ -15,9 +15,8 @@ const PAGE_HEADER =
 const SCROLL_BODY = "scroll-pane min-h-0 flex-1 px-4 py-4 sm:px-6 lg:px-8";
 
 const CUSTOMER_STATUS: Record<string, { label: string; cls: string }> = {
-  open: { label: "Collecting quotes", cls: "border-sky-400/25 bg-sky-400/10 text-sky-300" },
   accepted: {
-    label: "Vendor chosen · pay now",
+    label: "Pay now",
     cls: "border-emerald-400/25 bg-emerald-400/10 text-emerald-300",
   },
   pending_payment: {
@@ -60,7 +59,7 @@ export default function CustomerOrdersPage() {
   const { data: orders = [], isLoading } = useMyPrintOrders(true);
 
   const activeCount = useMemo(
-    () => orders.filter((o) => o.status === "accepted" || o.status === "open").length,
+    () => orders.filter((o) => o.status === "accepted" || o.status === "pending_payment").length,
     [orders],
   );
 
@@ -128,9 +127,7 @@ export default function CustomerOrdersPage() {
 
 function OrderRow({ order, onOpen }: { order: PrintOrder; onOpen: () => void }) {
   const attrs = formatPrintOrderAttributes(order.attributes);
-  const needsPay = order.status === "accepted";
-  const quoteCount = order.quotes?.length ?? order.quoteCount ?? 0;
-  const hasQuotesToPick = order.status === "open" && quoteCount > 0;
+  const needsPay = order.status === "accepted" || order.status === "pending_payment";
   return (
     <li>
       <button
@@ -139,9 +136,7 @@ function OrderRow({ order, onOpen }: { order: PrintOrder; onOpen: () => void }) 
         className={`flex h-full min-h-[6.5rem] w-full flex-col rounded-2xl border p-4 text-left transition hover:bg-white/[0.04] ${
           needsPay
             ? "border-emerald-400/25 bg-emerald-400/[0.04]"
-            : hasQuotesToPick
-              ? "border-amber-400/25 bg-amber-400/[0.04]"
-              : "border-white/8 bg-white/[0.02]"
+            : "border-white/8 bg-white/[0.02]"
         }`}
       >
         <div className="flex items-start justify-between gap-2">
@@ -159,16 +154,8 @@ function OrderRow({ order, onOpen }: { order: PrintOrder; onOpen: () => void }) 
         </p>
         <div className="mt-auto flex items-center justify-between pt-3">
           <StatusBadge status={order.status} />
-          <span
-            className={`text-xs ${
-              needsPay ? "text-emerald-300" : hasQuotesToPick ? "text-amber-300" : "text-zinc-500"
-            }`}
-          >
-            {needsPay
-              ? "Pay now →"
-              : hasQuotesToPick
-                ? `${quoteCount} quote${quoteCount > 1 ? "s" : ""} · choose →`
-                : "View →"}
+          <span className={`text-xs ${needsPay ? "text-emerald-300" : "text-zinc-500"}`}>
+            {needsPay ? "Pay now →" : "View →"}
           </span>
         </div>
       </button>

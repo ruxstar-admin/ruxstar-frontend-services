@@ -8,9 +8,7 @@ import {
   cancelPrintOrder,
   getPrintOrder,
   payPrintOrder,
-  selectPrintQuote,
   type PrintOrder,
-  type PrintQuote,
 } from "@/lib/api";
 import { openCashfreeCheckout } from "@/lib/cashfree-checkout";
 import { invalidateMyPrintOrders, podPollOpts } from "@/lib/swr-hooks";
@@ -53,41 +51,7 @@ export default function CustomerPrintOrderPage({
 
   const [paying, setPaying] = useState(false);
   const [cancelling, setCancelling] = useState(false);
-  const [choosing, setChoosing] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
-
-  async function onChoose(vendorId: string) {
-    if (!data) return;
-    setChoosing(vendorId);
-    setActionError("");
-    const chosen = (data.quotes ?? []).find((q) => q.vendorId === vendorId);
-    const optimistic: PrintOrder = {
-      ...data,
-      status: "accepted",
-      quoteAmount: chosen?.quoteAmount ?? data.quoteAmount,
-      vendorNote: chosen?.vendorNote ?? data.vendorNote,
-      businessName: chosen?.businessName ?? data.businessName,
-      vendorName: chosen?.vendorName ?? data.vendorName,
-    };
-    try {
-      await mutate(
-        async () => {
-          await selectPrintQuote(data.id, vendorId);
-          return getPrintOrder(data.id);
-        },
-        {
-          optimisticData: optimistic,
-          rollbackOnError: true,
-          revalidate: true,
-        },
-      );
-      invalidateMyPrintOrders();
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : "Could not choose that vendor.");
-    } finally {
-      setChoosing(null);
-    }
-  }
 
   async function onPay() {
     if (!data) return;
@@ -160,7 +124,7 @@ export default function CustomerPrintOrderPage({
   const order = data;
   const step = STEP_INDEX[order.status] ?? 0;
   const isCancelled = order.status === "cancelled" || order.status === "expired";
-  const canCancel = order.status === "open" || order.status === "accepted";
+  const canCancel = order.status === "accepted" || order.status === "pending_payment";
   const vendorRevealed = step >= 1 && !isCancelled;
   const contactRevealed = step >= 2;
   const attrs = formatPrintOrderAttributes(order.attributes);
@@ -214,7 +178,7 @@ export default function CustomerPrintOrderPage({
               {order.quoteAmount != null && (
                 <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3">
                   <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-500">
-                    Quote
+                    Total
                   </p>
                   <p className="mt-1 text-xl font-semibold text-emerald-300">
                     {money(order.quoteAmount)}
@@ -229,15 +193,6 @@ export default function CustomerPrintOrderPage({
       <div className={SCROLL_BODY}>
         <PrintProgress status={order.status} role="customer" size="sm" className="mb-6" />
 
-        {order.status === "open" && (
-          <QuotesPanel
-            quotes={order.quotes ?? []}
-            choosing={choosing}
-            onChoose={onChoose}
-            className="mb-6"
-          />
-        )}
-
         {(order.status === "accepted" ||
           contactRevealed ||
           order.designImageUrl) && (
@@ -249,7 +204,7 @@ export default function CustomerPrintOrderPage({
                     ✓
                   </span>
                   <div className="min-w-0">
-                    <p className="font-semibold text-emerald-100">Vendor chosen</p>
+                    <p className="font-semibold text-emerald-100">Order placed</p>
                     {vendorRevealed && (order.businessName || order.vendorName) && (
                       <p className="truncate text-sm text-zinc-300">
                         {order.businessName || order.vendorName}
@@ -328,94 +283,5 @@ export default function CustomerPrintOrderPage({
         </div>
       )}
     </section>
-  );
-}
-
-function QuotesPanel({
-  quotes,
-  choosing,
-  onChoose,
-  className = "",
-}: {
-  quotes: PrintQuote[];
-  choosing: string | null;
-  onChoose: (vendorId: string) => void;
-  className?: string;
-}) {
-  if (quotes.length === 0) {
-    return (
-      <div
-        className={`rounded-2xl border border-white/8 bg-white/[0.02] p-6 text-center ${className}`}
-      >
-        <p className="text-2xl">📨</p>
-        <p className="mt-2 text-sm font-medium text-zinc-200">Collecting quotes…</p>
-        <p className="mt-1 text-xs text-zinc-500">
-          Vendors near you are reviewing your order. Quotes appear here as they arrive — you choose
-          who prints it.
-        </p>
-      </div>
-    );
-  }
-
-  const cheapest = quotes[0]?.quoteAmount ?? null;
-
-  return (
-    <div className={`rounded-2xl border border-white/8 bg-white/[0.02] p-5 sm:p-6 ${className}`}>
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold text-zinc-100">
-          {quotes.length} {quotes.length === 1 ? "quote" : "quotes"} received
-        </p>
-        <p className="text-xs text-zinc-500">Sorted by price · you choose the vendor</p>
-      </div>
-
-      <ul className="mt-4 space-y-3">
-        {quotes.map((q, i) => {
-          const isCheapest = i === 0 && q.quoteAmount != null && q.quoteAmount === cheapest;
-          const busy = choosing === q.vendorId;
-          return (
-            <li
-              key={q.vendorId}
-              className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4 ${
-                isCheapest
-                  ? "border-emerald-400/30 bg-emerald-400/[0.05]"
-                  : "border-white/8 bg-white/[0.02]"
-              }`}
-            >
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="truncate font-medium text-zinc-100">
-                    {q.businessName || q.vendorName || "Vendor"}
-                  </p>
-                  {isCheapest && (
-                    <span className="shrink-0 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                      Best price
-                    </span>
-                  )}
-                </div>
-                {q.vendorNote && (
-                  <p className="mt-1 text-xs text-zinc-500">“{q.vendorNote}”</p>
-                )}
-              </div>
-              <div className="flex items-center gap-4">
-                <p className="text-lg font-semibold text-zinc-100">{money(q.quoteAmount)}</p>
-                <button
-                  type="button"
-                  disabled={busy || choosing !== null}
-                  onClick={() => onChoose(q.vendorId)}
-                  className="btn-primary shrink-0 rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-60"
-                >
-                  {busy ? "Choosing…" : "Choose"}
-                </button>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-
-      <p className="mt-4 text-xs text-zinc-600">
-        Choosing a vendor locks in their quote and unlocks payment. Contact details are shared after
-        you pay.
-      </p>
-    </div>
   );
 }

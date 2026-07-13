@@ -649,6 +649,30 @@ const BUSINESS_MODULES: BusinessModule[] = [
   "print",
 ];
 
+export type PricingTier = { minQty?: number; minPages?: number; unitPrice: number };
+
+export type PricingAddons = {
+  sides?: Record<string, number>;
+  size?: Record<string, number>;
+  printType?: Record<string, number>;
+  material?: Record<string, number>;
+  color?: Record<string, number>;
+  doubleSided?: number;
+  binding?: Record<string, number>;
+  paperSize?: Record<string, number>;
+};
+
+/** A vendor's fixed price config for one product category. */
+export type CategoryPricing = {
+  enabled: boolean;
+  minQuantity: number;
+  turnaroundDays: number;
+  basePrice?: number; // per_unit
+  perPage?: { bw: number; color: number }; // per_page (documents)
+  addons?: PricingAddons;
+  tiers?: PricingTier[];
+};
+
 export type PrintProfile = {
   serviceCategories: string[];
   cities: string[];
@@ -656,6 +680,8 @@ export type PrintProfile = {
   turnaroundDays: number;
   minOrderValue: number;
   notes: string;
+  acceptingOrders: boolean;
+  pricing: Record<string, CategoryPricing>;
 };
 
 export function defaultPrintProfile(): PrintProfile {
@@ -666,7 +692,16 @@ export function defaultPrintProfile(): PrintProfile {
     turnaroundDays: 3,
     minOrderValue: 0,
     notes: "",
+    acceptingOrders: true,
+    pricing: {},
   };
+}
+
+export function defaultCategoryPricing(pricingModel: string, minQuantity = 1): CategoryPricing {
+  const base: CategoryPricing = { enabled: true, minQuantity, turnaroundDays: 3, addons: {}, tiers: [] };
+  if (pricingModel === "per_page") base.perPage = { bw: 0, color: 0 };
+  else base.basePrice = 0;
+  return base;
 }
 
 export type Business = {
@@ -844,7 +879,73 @@ function normalizePrintProfile(raw: unknown): PrintProfile {
     turnaroundDays: num(p.turnaroundDays, 3),
     minOrderValue: num(p.minOrderValue, 0),
     notes: typeof p.notes === "string" ? p.notes : "",
+    acceptingOrders: p.acceptingOrders !== false,
+    pricing: normalizePricingMap(p.pricing),
   };
+}
+
+function normalizeMoneyMap(raw: unknown): Record<string, number> {
+  const out: Record<string, number> = {};
+  const rec = asRecord(raw);
+  for (const [k, v] of Object.entries(rec)) {
+    const n = Math.round(Number(v));
+    if (Number.isFinite(n) && n > 0) out[k] = n;
+  }
+  return out;
+}
+
+function normalizeCategoryPricing(raw: unknown): CategoryPricing {
+  const p = asRecord(raw);
+  const num = (v: unknown, fallback: number) =>
+    Number.isFinite(Number(v)) ? Math.round(Number(v)) : fallback;
+  const addonsRaw = asRecord(p.addons);
+  const addons: PricingAddons = {
+    sides: normalizeMoneyMap(addonsRaw.sides),
+    size: normalizeMoneyMap(addonsRaw.size),
+    printType: normalizeMoneyMap(addonsRaw.printType),
+    material: normalizeMoneyMap(addonsRaw.material),
+    color: normalizeMoneyMap(addonsRaw.color),
+    binding: normalizeMoneyMap(addonsRaw.binding),
+    paperSize: normalizeMoneyMap(addonsRaw.paperSize),
+    doubleSided: num(addonsRaw.doubleSided, 0),
+  };
+  const perPageRaw = asRecord(p.perPage);
+  const tiers = Array.isArray(p.tiers)
+    ? p.tiers
+        .map((t) => {
+          const tr = asRecord(t);
+          const unitPrice = num(tr.unitPrice, 0);
+          const minQty = num(tr.minQty, 0);
+          const minPages = num(tr.minPages, 0);
+          if (unitPrice <= 0) return null;
+          return {
+            unitPrice,
+            ...(minQty > 0 ? { minQty } : {}),
+            ...(minPages > 0 ? { minPages } : {}),
+          } as PricingTier;
+        })
+        .filter((t): t is PricingTier => t !== null)
+    : [];
+  return {
+    enabled: p.enabled !== false,
+    minQuantity: Math.max(1, num(p.minQuantity, 1)),
+    turnaroundDays: num(p.turnaroundDays, 3),
+    ...(p.basePrice !== undefined ? { basePrice: num(p.basePrice, 0) } : {}),
+    ...(p.perPage !== undefined
+      ? { perPage: { bw: num(perPageRaw.bw, 0), color: num(perPageRaw.color, 0) } }
+      : {}),
+    addons,
+    tiers,
+  };
+}
+
+function normalizePricingMap(raw: unknown): Record<string, CategoryPricing> {
+  const out: Record<string, CategoryPricing> = {};
+  const rec = asRecord(raw);
+  for (const [k, v] of Object.entries(rec)) {
+    out[k] = normalizeCategoryPricing(v);
+  }
+  return out;
 }
 
 function normalizeStaffList(raw: unknown): BusinessStaff[] {
@@ -1053,6 +1154,16 @@ export async function removeBusinessSetupPhoto(id: string, photoId: string): Pro
 export async function completeBusinessSetup(id: string): Promise<Business> {
   try {
     const data = await postAuthed(`vendor/businesses/${id}/setup/complete`, {});
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+/** Toggle a print shop's "Accepting orders" availability. */
+export async function setPrintAcceptingOrders(id: string, accepting: boolean): Promise<Business> {
+  try {
+    const data = await postAuthed(`pod/vendor/businesses/${id}/accepting`, { accepting });
     return normalizeBusiness(asRecord(data).business);
   } catch (err) {
     return mapKycError(err);
@@ -2252,16 +2363,21 @@ export type PrintRequirementField = {
   placeholder: string;
 };
 
+export type PrintPricingModel = "per_unit" | "per_page";
+
 export type PrintCategory = {
   id: string;
   label: string;
   icon: string;
   description: string;
+  pricingModel: PrintPricingModel;
   minQuantity: number;
   sizes: string[];
   printTypes: string[];
   materials: string[];
   colorOptions: string[];
+  sides: string[];
+  bindingOptions: string[];
   requirements: PrintRequirementField[];
 };
 
@@ -2309,11 +2425,14 @@ function normalizePrintCategory(raw: unknown): PrintCategory | null {
     label: str(c.label),
     icon: str(c.icon) || "🖨️",
     description: str(c.description),
+    pricingModel: c.pricingModel === "per_page" ? "per_page" : "per_unit",
     minQuantity: typeof c.minQuantity === "number" ? c.minQuantity : 1,
     sizes: strArray(c.sizes),
     printTypes: strArray(c.printTypes),
     materials: strArray(c.materials),
     colorOptions: strArray(c.colorOptions),
+    sides: strArray(c.sides),
+    bindingOptions: strArray(c.bindingOptions),
     requirements,
   };
 }
@@ -2345,19 +2464,15 @@ export type PrintOrderStatus =
   | "cancelled"
   | "expired";
 
-export type PrintQuote = {
-  vendorId: string;
-  businessName: string;
-  vendorName: string;
-  quoteAmount: number | null;
-  vendorNote: string;
-  createdAt: string | null;
-};
-
-export type MyPrintQuote = {
-  quoteAmount: number | null;
-  vendorNote: string;
-  createdAt: string | null;
+// A customer's configured selection, recomputed + priced server-side at order time.
+export type PrintOrderSelection = {
+  quantity?: number;
+  copies?: number;
+  options?: Record<string, string>;
+  sections?: { pages: number; color: "bw" | "color" }[];
+  doubleSided?: boolean;
+  binding?: string;
+  paperSize?: string;
 };
 
 export type PrintOrder = {
@@ -2389,26 +2504,7 @@ export type PrintOrder = {
   paidAt: string | null;
   createdAt: string | null;
   updatedAt: string | null;
-  // Marketplace quotes (customer view) / this vendor's own quote (vendor view).
-  quotes?: PrintQuote[];
-  myQuote?: MyPrintQuote | null;
-  quoteCount?: number;
 };
-
-function normalizePrintQuote(raw: unknown): PrintQuote | null {
-  const q = asRecord(raw);
-  const vendorId = typeof q.vendorId === "string" ? q.vendorId : "";
-  if (!vendorId) return null;
-  const str = (v: unknown) => (typeof v === "string" ? v : "");
-  return {
-    vendorId,
-    businessName: str(q.businessName),
-    vendorName: str(q.vendorName),
-    quoteAmount: typeof q.quoteAmount === "number" ? q.quoteAmount : null,
-    vendorNote: str(q.vendorNote),
-    createdAt: typeof q.createdAt === "string" ? q.createdAt : null,
-  };
-}
 
 function normalizePrintOrder(raw: unknown): PrintOrder | null {
   const o = asRecord(raw);
@@ -2456,43 +2552,60 @@ function normalizePrintOrder(raw: unknown): PrintOrder | null {
     paidAt: typeof o.paidAt === "string" ? o.paidAt : null,
     createdAt: typeof o.createdAt === "string" ? o.createdAt : null,
     updatedAt: typeof o.updatedAt === "string" ? o.updatedAt : null,
-    ...(Array.isArray(o.quotes)
-      ? {
-          quotes: o.quotes
-            .map(normalizePrintQuote)
-            .filter((q): q is PrintQuote => q !== null),
-        }
-      : {}),
-    ...(o.myQuote !== undefined
-      ? {
-          myQuote:
-            o.myQuote && typeof o.myQuote === "object"
-              ? {
-                  quoteAmount:
-                    typeof asRecord(o.myQuote).quoteAmount === "number"
-                      ? (asRecord(o.myQuote).quoteAmount as number)
-                      : null,
-                  vendorNote:
-                    typeof asRecord(o.myQuote).vendorNote === "string"
-                      ? (asRecord(o.myQuote).vendorNote as string)
-                      : "",
-                  createdAt:
-                    typeof asRecord(o.myQuote).createdAt === "string"
-                      ? (asRecord(o.myQuote).createdAt as string)
-                      : null,
-                }
-              : null,
-        }
-      : {}),
-    ...(typeof o.quoteCount === "number" ? { quoteCount: o.quoteCount } : {}),
   };
 }
 
-export type CreatePrintOrderInput = {
-  categoryId: string;
-  quantity: number;
+// ── Direct-pricing: available shops for a category ──
+export type PrintShop = {
+  businessId: string;
+  vendorId: string;
+  name: string;
+  thumbnailUrl: string;
   city: string;
-  title?: string;
+  acceptingOrders: boolean;
+  pricingModel: PrintPricingModel;
+  turnaroundDays: number;
+  minQuantity: number;
+  fromPrice: number;
+  pricing: CategoryPricing;
+};
+
+function normalizePrintShop(raw: unknown): PrintShop | null {
+  const s = asRecord(raw);
+  const businessId = typeof s.businessId === "string" ? s.businessId : "";
+  if (!businessId) return null;
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : 0);
+  return {
+    businessId,
+    vendorId: str(s.vendorId),
+    name: str(s.name) || "Print shop",
+    thumbnailUrl: str(s.thumbnailUrl),
+    city: str(s.city),
+    acceptingOrders: s.acceptingOrders !== false,
+    pricingModel: s.pricingModel === "per_page" ? "per_page" : "per_unit",
+    turnaroundDays: num(s.turnaroundDays),
+    minQuantity: Math.max(1, num(s.minQuantity) || 1),
+    fromPrice: num(s.fromPrice),
+    pricing: normalizeCategoryPricing(s.pricing),
+  };
+}
+
+export async function listPrintShops(categoryId: string, city: string): Promise<PrintShop[]> {
+  const qs = new URLSearchParams({ category: categoryId, city: city.trim() }).toString();
+  const data = await authedApi(`pod/shops?${qs}`);
+  const list = asRecord(data).shops;
+  return Array.isArray(list)
+    ? list.map(normalizePrintShop).filter((s): s is PrintShop => s !== null)
+    : [];
+}
+
+// Direct fixed-price order: customer picks a specific shop + configuration.
+export type CreatePrintOrderInput = {
+  businessId: string;
+  categoryId: string;
+  selection: PrintOrderSelection;
+  city: string;
   pincode?: string;
   notes?: string;
   attributes?: PrintOrderAttributes;
@@ -2537,36 +2650,23 @@ export async function cancelPrintOrder(id: string): Promise<void> {
   await postAuthed(`pod/orders/${encodeURIComponent(id)}/cancel`, {});
 }
 
-export async function selectPrintQuote(id: string, vendorId: string): Promise<PrintOrder> {
-  const data = await postAuthed(`pod/orders/${encodeURIComponent(id)}/select`, { vendorId });
-  const order = normalizePrintOrder(asRecord(data).order);
-  if (!order) throw new Error("Could not choose that vendor.");
-  return order;
-}
-
 // ── Vendor ──
 export type VendorPrintOrders = {
-  open: PrintOrder[];
   assigned: PrintOrder[];
-  eligible: { categories: string[]; hasPrintBusiness: boolean };
+  eligible: { hasPrintBusiness: boolean };
 };
 
 export async function listVendorPrintOrders(): Promise<VendorPrintOrders> {
   try {
     const data = await authedApi("pod/vendor/orders");
     const root = asRecord(data);
-    const mapOrders = (v: unknown) =>
-      Array.isArray(v)
-        ? v.map(normalizePrintOrder).filter((o): o is PrintOrder => o !== null)
-        : [];
+    const assigned = Array.isArray(root.assigned)
+      ? root.assigned.map(normalizePrintOrder).filter((o): o is PrintOrder => o !== null)
+      : [];
     const eligible = asRecord(root.eligible);
     return {
-      open: mapOrders(root.open),
-      assigned: mapOrders(root.assigned),
-      eligible: {
-        categories: strArray(eligible.categories),
-        hasPrintBusiness: eligible.hasPrintBusiness === true,
-      },
+      assigned,
+      eligible: { hasPrintBusiness: eligible.hasPrintBusiness === true },
     };
   } catch (err) {
     return mapKycError(err);
@@ -2577,16 +2677,6 @@ export async function getVendorPrintOrder(id: string): Promise<PrintOrder> {
   const data = await authedApi(`pod/vendor/orders/${encodeURIComponent(id)}`);
   const order = normalizePrintOrder(asRecord(data).order);
   if (!order) throw new Error("Order not found.");
-  return order;
-}
-
-export async function submitPrintQuote(
-  id: string,
-  body: { quoteAmount: number; vendorNote?: string },
-): Promise<PrintOrder> {
-  const data = await postAuthed(`pod/vendor/orders/${encodeURIComponent(id)}/quote`, body);
-  const order = normalizePrintOrder(asRecord(data).order);
-  if (!order) throw new Error("Could not submit quote.");
   return order;
 }
 

@@ -10,6 +10,7 @@ export type SetupStepId =
   | "staff"
   | "services"
   | "print-profile"
+  | "print-pricing"
   | "review";
 
 const PRINT_TYPE_IDS = [
@@ -307,6 +308,11 @@ const PRINT_FLOW: SetupFlow = {
       id: "print-profile",
       label: "Products & area",
       intro: "Pick the print categories you offer and the cities you serve.",
+    },
+    {
+      id: "print-pricing",
+      label: "Pricing",
+      intro: "Set your prices for each product. Customers see these and pay directly.",
     },
     { id: "review", label: "Review", intro: "Go live to start receiving print orders." },
   ],
