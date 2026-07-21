@@ -254,7 +254,11 @@ export default function ManageBusinessEventPage() {
             <Stat label="Registered" value={String(event.confirmedCount)} />
             <Stat
               label={event.capacity != null ? "Capacity" : "Spots"}
-              value={event.capacity != null ? String(event.capacity) : "∞"}
+              value={
+                event.capacity != null
+                  ? `${event.minCapacity ? `${event.minCapacity}–` : ""}${event.capacity}`
+                  : "∞"
+              }
             />
             <Stat label="Entry fee" value={event.entryFee > 0 ? `₹${event.entryFee.toLocaleString("en-IN")}` : "Free"} />
             <Stat

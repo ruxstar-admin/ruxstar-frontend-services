@@ -47,6 +47,7 @@ export default function VendorPaymentsPage() {
   const { data: businesses = [] } = useVendorBusinesses(kycVerified);
   const [filter, setFilter] = useState<Filter>("paid");
   const [businessId, setBusinessId] = useState<string>("all");
+  const [nowMs] = useState(() => Date.now());
 
   const bookings = useMemo(() => data ?? [], [data]);
   const metrics = useMemo(() => computeVendorMetrics(bookings), [bookings]);
@@ -62,7 +63,6 @@ export default function VendorPaymentsPage() {
       : "all";
 
   const rows = useMemo(() => {
-    const now = Date.now();
     let list = bookings;
     if (activeBusinessId !== "all") list = list.filter((b) => b.businessId === activeBusinessId);
     list = list.filter((b) => {
@@ -70,7 +70,7 @@ export default function VendorPaymentsPage() {
         case "paid":
           return isPaid(b);
         case "upcoming":
-          return isPaid(b) && new Date(b.startAt).getTime() > now;
+          return isPaid(b) && new Date(b.startAt).getTime() > nowMs;
         case "refunded":
           return b.status === "cancelled";
         case "all":
@@ -80,7 +80,7 @@ export default function VendorPaymentsPage() {
     });
     // Most recent transaction first.
     return [...list].sort((a, b) => paymentTime(b) - paymentTime(a));
-  }, [bookings, filter, activeBusinessId]);
+  }, [bookings, filter, activeBusinessId, nowMs]);
 
   if (!kycVerified) {
     return (
@@ -236,6 +236,11 @@ function PaymentRow({
         <p className="mt-0.5 text-[11px] text-zinc-500">
           {txDateLabel(booking)} · {txTimeLabel(booking)}
         </p>
+        {(booking.paymentRefId || booking.refId) && (
+          <p className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-wide text-zinc-500">
+            {booking.paymentRefId ?? booking.refId}
+          </p>
+        )}
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-1">

@@ -284,7 +284,6 @@ export default function VendorKycPage() {
   const [pan, setPan] = useState("");
 
   const currentStep = nextKycStep(kyc);
-  const done = completedCount(kyc);
   const progress = cardProgress(kyc, currentStep);
   const stepsComplete = completedCardSteps(kyc, currentStep);
   const isVerified = kycVerified || currentStep === "done";

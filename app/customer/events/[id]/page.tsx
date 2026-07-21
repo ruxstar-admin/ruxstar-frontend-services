@@ -213,6 +213,7 @@ export default function CustomerEventPage() {
             {event.capacity != null && (
               <p className="mt-1 text-xs text-zinc-500">
                 {full ? "Sold out" : `${event.spotsLeft} of ${event.capacity} spots left`}
+                {event.minCapacity ? ` · runs once ${event.minCapacity} join` : ""}
               </p>
             )}
 

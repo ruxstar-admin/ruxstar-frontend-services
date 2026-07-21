@@ -264,7 +264,7 @@ const SETUP_FLOWS: SetupFlow[] = [
       {
         id: "services",
         label: "Sessions",
-        intro: "Each session type with its length, price, and coach.",
+        intro: "Each class with hourly/weekly/monthly pricing, seat limits, and batch timings.",
       },
       { id: "review", label: "Review", intro: "Open for class bookings." },
     ],

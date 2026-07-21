@@ -1,24 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { useVendorShell } from "@/components/vendor-shell";
 import {
-  setPrintAcceptingOrders,
   updatePrintOrderStatus,
-  type Business,
   type PrintOrder,
   type PrintOrderStatus,
 } from "@/lib/api";
-import {
-  invalidateVendorPrintOrders,
-  useVendorBusinesses,
-  useVendorPrintOrders,
-} from "@/lib/swr-hooks";
+import { invalidateVendorPrintOrders, useVendorPrintOrders } from "@/lib/swr-hooks";
 import { formatPrintOrderAttributes } from "@/lib/print-requirements";
 
 const money = (n: number | null | undefined) =>
   typeof n === "number" ? `₹${n.toLocaleString("en-IN")}` : "—";
+
+const orderNo = (id: string) => `#${id.replace(/-/g, "").slice(-8).toUpperCase()}`;
+
+const shortDate = (iso: string | null) =>
+  iso
+    ? new Date(iso).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        timeZone: "Asia/Kolkata",
+      })
+    : null;
+
+const STATUS_STYLES: Record<string, string> = {
+  accepted: "border-amber-400/25 bg-amber-400/10 text-amber-300",
+  pending_payment: "border-amber-400/25 bg-amber-400/10 text-amber-300",
+  confirmed: "border-emerald-400/25 bg-emerald-400/10 text-emerald-300",
+  in_production: "border-violet-400/25 bg-violet-400/10 text-violet-300",
+  ready: "border-sky-400/25 bg-sky-400/10 text-sky-300",
+  completed: "border-emerald-400/25 bg-emerald-400/10 text-emerald-300",
+  cancelled: "border-red-400/25 bg-red-400/10 text-red-300",
+  expired: "border-red-400/25 bg-red-400/10 text-red-300",
+};
 
 const STATUS_LABELS: Record<string, string> = {
   open: "Open",
@@ -101,8 +117,6 @@ export default function VendorPrintOrdersPage() {
           <StatCard label="Completed" value={stats.completed} accent="zinc" />
         </div>
 
-        <ShopAvailabilityBar enabled={kycVerified} />
-
         {error && (
           <p className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
             {error}
@@ -141,65 +155,6 @@ export default function VendorPrintOrdersPage() {
   );
 }
 
-function ShopAvailabilityBar({ enabled }: { enabled: boolean }) {
-  const { data: businesses = [], mutate } = useVendorBusinesses(enabled);
-  const [override, setOverride] = useState<Record<string, boolean>>({});
-  const [busyId, setBusyId] = useState<string | null>(null);
-
-  const printShops = businesses.filter((b) => b.module === "print");
-  if (printShops.length === 0) return null;
-
-  const isAccepting = (shop: Business) =>
-    override[shop.id] ?? (shop.setup?.printProfile?.acceptingOrders ?? true);
-
-  async function toggle(shop: Business) {
-    const next = !isAccepting(shop);
-    setOverride((o) => ({ ...o, [shop.id]: next }));
-    setBusyId(shop.id);
-    try {
-      await setPrintAcceptingOrders(shop.id, next);
-      await mutate();
-    } catch {
-      setOverride((o) => ({ ...o, [shop.id]: !next }));
-    } finally {
-      setBusyId(null);
-    }
-  }
-
-  return (
-    <div className="mt-4 flex flex-wrap items-center gap-2">
-      <span className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-        Your shops
-      </span>
-      {printShops.map((shop) => {
-        const accepting = isAccepting(shop);
-        return (
-          <button
-            key={shop.id}
-            type="button"
-            disabled={busyId === shop.id}
-            onClick={() => void toggle(shop)}
-            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition disabled:opacity-60 ${
-              accepting
-                ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20"
-                : "border-zinc-500/30 bg-white/[0.03] text-zinc-400 hover:bg-white/5"
-            }`}
-            title={accepting ? "Tap to stop accepting orders" : "Tap to start accepting orders"}
-          >
-            <span
-              className={`h-2 w-2 rounded-full ${accepting ? "bg-emerald-400" : "bg-zinc-500"}`}
-            />
-            <span className="max-w-[10rem] truncate">{shop.name}</span>
-            <span className="text-[10px] uppercase tracking-wide">
-              {busyId === shop.id ? "…" : accepting ? "Open" : "Closed"}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 const ACCENTS: Record<string, string> = {
   sky: "text-sky-300",
   amber: "text-amber-300",
@@ -233,28 +188,6 @@ function EmptyState({ text }: { text: string }) {
   );
 }
 
-function OrderCardShell({
-  href,
-  children,
-  footer,
-}: {
-  href: string;
-  children: ReactNode;
-  footer?: ReactNode;
-}) {
-  return (
-    <article className="flex flex-col rounded-2xl border border-white/8 bg-white/[0.02] p-4 transition hover:border-white/12 hover:bg-white/[0.04]">
-      <Link href={href} className="flex flex-1 items-start gap-3">
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/[0.06] text-lg">
-          🖨️
-        </span>
-        <div className="min-w-0 flex-1">{children}</div>
-      </Link>
-      {footer && <div className="mt-3 border-t border-white/8 pt-3">{footer}</div>}
-    </article>
-  );
-}
-
 function AssignedOrderCard({
   order,
   onError,
@@ -266,6 +199,11 @@ function AssignedOrderCard({
   const next = NEXT_STATUS[order.status];
   const href = `/business/print-orders/${order.id}`;
   const attrs = formatPrintOrderAttributes(order.attributes);
+  const telHref = order.customerMobile
+    ? `tel:${order.customerMobile.replace(/\s/g, "")}`
+    : null;
+  const placed = shortDate(order.createdAt);
+  const statusCls = STATUS_STYLES[order.status] ?? "border-white/10 bg-white/[0.03] text-zinc-300";
 
   async function advance() {
     if (!next) return;
@@ -282,40 +220,69 @@ function AssignedOrderCard({
   }
 
   return (
-    <OrderCardShell
-      href={href}
-      footer={
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-sm font-semibold text-emerald-300">{money(order.quoteAmount)}</span>
-          {next ? (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => void advance()}
-              className="btn-primary shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold disabled:opacity-60 sm:text-sm"
-            >
-              {busy ? "…" : next.label}
-            </button>
-          ) : (
-            <span className="text-xs text-zinc-500">{STATUS_LABELS[order.status]}</span>
-          )}
-        </div>
-      }
-    >
-      <div className="flex items-center gap-2">
-        <p className="truncate font-medium text-zinc-100">
-          {order.quantity} × {order.categoryLabel}
-        </p>
-        <span className="shrink-0 rounded-md border border-white/8 px-1.5 py-0.5 text-[10px] text-zinc-500">
+    <article className="flex flex-col rounded-2xl border border-white/8 bg-white/[0.02] p-4 transition hover:border-white/12 hover:bg-white/[0.04]">
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-mono text-xs font-medium text-zinc-400">{orderNo(order.id)}</span>
+        <span
+          className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${statusCls}`}
+        >
           {STATUS_LABELS[order.status] ?? order.status}
         </span>
       </div>
-      <p className="mt-0.5 line-clamp-2 text-xs text-zinc-500">
-        {[attrs, order.city].filter(Boolean).join(" · ")}
-      </p>
+
+      <Link href={href} className="mt-2 flex flex-1 items-start gap-3">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/[0.06] text-lg">
+          🖨️
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-medium text-zinc-100">
+            {order.quantity} × {order.categoryLabel}
+          </p>
+          <p className="mt-0.5 line-clamp-2 text-xs text-zinc-500">
+            {[attrs, order.city].filter(Boolean).join(" · ")}
+          </p>
+          {(order.customerName || placed) && (
+            <p className="mt-1.5 truncate text-xs text-zinc-400">
+              {order.customerName || "Customer"}
+              {placed ? ` · ${placed}` : ""}
+            </p>
+          )}
+          {order.paymentRefId && (
+            <p className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-wide text-zinc-500">
+              {order.paymentRefId}
+            </p>
+          )}
+        </div>
+      </Link>
+
+      {telHref && (
+        <a
+          href={telHref}
+          className="mt-2 inline-flex w-fit items-center gap-1 text-xs text-zinc-400 hover:text-zinc-200"
+        >
+          📞 {order.customerMobile}
+        </a>
+      )}
+
       {order.status === "accepted" && (
         <p className="mt-1.5 text-xs text-amber-300/80">Awaiting customer payment</p>
       )}
-    </OrderCardShell>
+
+      <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/8 pt-3">
+        <span className="text-sm font-semibold text-emerald-300">{money(order.quoteAmount)}</span>
+        {next ? (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void advance()}
+            className="btn-primary shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold disabled:opacity-60 sm:text-sm"
+          >
+            {busy ? "…" : next.label}
+          </button>
+        ) : (
+          <span className="text-xs text-zinc-500">{STATUS_LABELS[order.status]}</span>
+        )}
+      </div>
+    </article>
   );
 }

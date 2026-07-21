@@ -29,6 +29,12 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { href: "/admin", label: "Overview", icon: "◉" },
+  { href: "/admin/users", label: "Users & vendors", icon: "👤" },
+  { href: "/admin/businesses", label: "Businesses", icon: "🏪" },
+  { href: "/admin/bookings", label: "Bookings", icon: "📦" },
+  { href: "/admin/events", label: "Events", icon: "🎪" },
+  { href: "/admin/print-orders", label: "Print orders", icon: "🖨️" },
+  { href: "/admin/payments", label: "Payments", icon: "💰" },
   { href: "/admin/kyc", label: "Vendor KYC", icon: "🪪" },
   { href: "/admin/catalog", label: "Catalog", icon: "🗂", adminOnly: true },
   { href: "/admin/staff", label: "Staff", icon: "👥" },

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LogoutButton } from "@/components/logout-button";
 import { NotificationBell } from "@/components/notification-bell";
@@ -37,9 +38,10 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
   const { data: bookings = [] } = useCustomerBookings(ready);
   const { data: notifications } = useNotifications(ready);
   const unreadNotifications = notifications?.unreadCount ?? 0;
+  const [nowMs] = useState(() => Date.now());
 
   const upcomingCount = bookings.filter(
-    (b) => new Date(b.startAt).getTime() > Date.now() && b.status !== "cancelled",
+    (b) => new Date(b.startAt).getTime() > nowMs && b.status !== "cancelled",
   ).length;
 
   const initial = (profile?.name || "?").trim().charAt(0).toUpperCase();

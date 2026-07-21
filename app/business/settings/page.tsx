@@ -45,6 +45,12 @@ export default function VendorSettingsPage() {
             <dt className="text-zinc-500">Mobile</dt>
             <dd className="text-zinc-100">{user?.mobile ? `+91 ${user.mobile}` : "—"}</dd>
           </div>
+          {user?.refId && (
+            <div>
+              <dt className="text-zinc-500">Member ID</dt>
+              <dd className="font-mono text-zinc-100">{user.refId}</dd>
+            </div>
+          )}
         </dl>
       </section>
 

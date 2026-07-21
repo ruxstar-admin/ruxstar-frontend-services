@@ -1,10 +1,8 @@
 "use client";
 
 import {
-  addDays,
   canGoNextRange,
   canGoPrevRange,
-  clampRangeStart,
   formatRangeLabel,
   shiftRangeStart,
   todayLocal,

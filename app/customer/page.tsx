@@ -20,6 +20,7 @@ import {
   usePublicEvents,
 } from "@/lib/swr-hooks";
 import { formatDayLabel, formatTime12 } from "@/lib/date-utils";
+import { periodCoverageLabel } from "@/lib/coaching";
 
 const input = "field-input";
 
@@ -898,6 +899,7 @@ function BookingRow({
 }: {
   booking: {
     id: string;
+    refId?: string | null;
     businessName: string;
     resourceName: string;
     serviceLabel?: string;
@@ -906,6 +908,10 @@ function BookingRow({
     amount?: number;
     status: string;
     paymentStatus?: string | null;
+    paymentRefId?: string | null;
+    periodKind?: "exact" | "day" | "week" | "month";
+    periodKey?: string;
+    slots?: { startAt: string; endAt: string }[] | null;
   };
   cancelling?: boolean;
   onCancel?: () => void;
@@ -931,6 +937,7 @@ function BookingRow({
   const cancelled = booking.status === "cancelled";
   const pending = booking.status === "pending_payment" || booking.paymentStatus === "pending";
   const amount = typeof booking.amount === "number" ? booking.amount : booking.pricePerSlot;
+  const periodLabel = periodCoverageLabel(booking.periodKind, booking.periodKey);
 
   return (
     <li
@@ -948,10 +955,29 @@ function BookingRow({
         <p className="truncate font-medium text-zinc-100">{booking.businessName}</p>
         <p className="truncate text-sm text-zinc-500">
           {[booking.serviceLabel, booking.resourceName].filter(Boolean).join(" · ")} · {dateLabel} ·{" "}
-          {timeLabel}
+          {booking.slots && booking.slots.length > 1
+            ? `${booking.slots.length} slots from ${timeLabel}`
+            : timeLabel}
         </p>
-        <div className="mt-1.5">
+        {(booking.refId || booking.paymentRefId) && (
+          <p className="mt-1 truncate font-mono text-[10px] uppercase tracking-wide text-zinc-500">
+            {booking.refId ?? ""}
+            {booking.refId && booking.paymentRefId ? " · " : ""}
+            {booking.paymentRefId ?? ""}
+          </p>
+        )}
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
           <BookingStatusBadge status={booking.status} paymentStatus={booking.paymentStatus} />
+          {periodLabel && (
+            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-200">
+              {booking.periodKind === "month"
+                ? "Monthly"
+                : booking.periodKind === "week"
+                  ? "Weekly"
+                  : "Day pass"}{" "}
+              · covers {periodLabel}
+            </span>
+          )}
         </div>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">

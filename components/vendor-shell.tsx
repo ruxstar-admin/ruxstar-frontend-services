@@ -40,6 +40,7 @@ const NAV: NavItem[] = [
   { href: "/business", label: "Dashboard", icon: "◉" },
   { href: "/business/kyc", label: "Ruxstar Card", icon: "💳" },
   { href: "/business/businesses", label: "My businesses", icon: "🏪", requiresKyc: true },
+  { href: "/business/stores", label: "Store", icon: "🏬", requiresKyc: true },
   { href: "/business/orders", label: "Bookings", icon: "📦", requiresKyc: true },
   { href: "/business/print-orders", label: "Orders", icon: "🖨️", requiresKyc: true },
   { href: "/business/payments", label: "Payments", icon: "💰", requiresKyc: true },
@@ -103,7 +104,7 @@ function SidebarNav({
 export function VendorShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, ready } = useRequireAuth({ roles: ["vendor"] });
-  const { data: kyc, isLoading: kycLoading, mutate: mutateKyc } = useVendorKyc();
+  const { data: kyc, isLoading: kycLoading, mutate: mutateKyc } = useVendorKyc(ready);
   const { data: notifications } = useNotifications(ready);
   const unreadNotifications = notifications?.unreadCount ?? 0;
   const [menuOpen, setMenuOpen] = useState(false);

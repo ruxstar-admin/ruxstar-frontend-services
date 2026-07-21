@@ -58,6 +58,9 @@ export function VendorEventWizard({
   const [description, setDescription] = useState(initial?.description ?? "");
   const [format, setFormat] = useState<EventFormat>(initial?.format ?? "individual");
   const [teamSize, setTeamSize] = useState(initial?.teamSize ? String(initial.teamSize) : "");
+  const [minCapacity, setMinCapacity] = useState(
+    initial?.minCapacity ? String(initial.minCapacity) : "",
+  );
   const [capacity, setCapacity] = useState(initial?.capacity ? String(initial.capacity) : "");
   const [skillLevel, setSkillLevel] = useState(initial?.skillLevel ?? "");
   const [ageCategory, setAgeCategory] = useState(initial?.ageCategory ?? "");
@@ -108,6 +111,14 @@ export function VendorEventWizard({
     if (step.id === "participation" && isTeam && (!teamSize || Number(teamSize) < 1)) {
       return "Team tournaments need a team size.";
     }
+    if (
+      step.id === "participation" &&
+      minCapacity &&
+      capacity &&
+      Number(minCapacity) > Number(capacity)
+    ) {
+      return "Minimum can't be higher than the maximum capacity.";
+    }
     if (step.id === "schedule" && !startAt) return "Please set a start date and time.";
     return "";
   }
@@ -135,6 +146,7 @@ export function VendorEventWizard({
       tournamentType: tournamentType.trim(),
       format: isTournament ? format : "individual",
       teamSize: isTeam && teamSize ? Number(teamSize) : null,
+      minCapacity: minCapacity ? Number(minCapacity) : null,
       capacity: capacity ? Number(capacity) : null,
       entryFee: entryFee ? Number(entryFee) : 0,
       venue: venue.trim(),
@@ -243,20 +255,35 @@ export function VendorEventWizard({
               </div>
             )}
 
+            {isTeam && (
+              <label className="mb-4 block">
+                <span className={label}>Players per team</span>
+                <input
+                  type="number"
+                  min={1}
+                  className={field}
+                  value={teamSize}
+                  onChange={(e) => setTeamSize(e.target.value)}
+                  placeholder="e.g. 11"
+                />
+              </label>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
-              {isTeam && (
-                <label className="block">
-                  <span className={label}>Players per team</span>
-                  <input
-                    type="number"
-                    min={1}
-                    className={field}
-                    value={teamSize}
-                    onChange={(e) => setTeamSize(e.target.value)}
-                    placeholder="e.g. 11"
-                  />
-                </label>
-              )}
+              <label className="block">
+                <span className={label}>
+                  Minimum to run
+                  <span className="ml-1 text-zinc-600">(optional)</span>
+                </span>
+                <input
+                  type="number"
+                  min={1}
+                  className={field}
+                  value={minCapacity}
+                  onChange={(e) => setMinCapacity(e.target.value)}
+                  placeholder={isTeam ? "e.g. 4 teams" : "e.g. 90"}
+                />
+              </label>
               <label className="block">
                 <span className={label}>
                   {isTournament ? (isTeam ? "Max teams" : "Max participants") : "Max attendees"}
@@ -271,6 +298,10 @@ export function VendorEventWizard({
                 />
               </label>
             </div>
+            <p className="mt-1.5 text-xs text-zinc-500">
+              Minimum is how many you need for the event to run. Maximum is the hard cap on
+              registrations.
+            </p>
 
             {isTournament && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -382,7 +413,7 @@ export function VendorEventWizard({
               )}
               <ReviewRow
                 label="Capacity"
-                value={capacity ? capacity : "Unlimited"}
+                value={`${minCapacity ? `min ${minCapacity} · ` : ""}${capacity ? `max ${capacity}` : "Unlimited"}`}
               />
               <ReviewRow label="When" value={startAt ? new Date(startAt).toLocaleString("en-IN") : "—"} />
               {venue && <ReviewRow label="Venue" value={venue} />}

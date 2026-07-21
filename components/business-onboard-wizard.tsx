@@ -15,7 +15,7 @@ import {
   type BookingMode,
 } from "@/lib/business-setup";
 import { compressImageForUpload } from "@/lib/compress-image";
-import { INDIAN_STATES, reverseGeocode } from "@/lib/india-locations";
+import { INDIAN_STATES, reverseGeocode, dedupeAddressParts } from "@/lib/india-locations";
 import { citiesForState } from "@/lib/india-cities";
 
 const CITY_OTHER = "__other__";
@@ -27,12 +27,32 @@ const emptyBusinessForm = {
   phone: "",
   state: "",
   city: "",
-  area: "",
+  doorNo: "",
+  building: "",
+  street: "",
+  locality: "",
+  pincode: "",
   description: "",
 };
 
-function composeAddress(form: { area: string; city: string; state: string }): string {
-  return [form.area.trim(), form.city.trim(), form.state.trim()].filter(Boolean).join(", ");
+function composeAddress(form: {
+  doorNo: string;
+  building: string;
+  street: string;
+  locality: string;
+  city: string;
+  state: string;
+  pincode?: string;
+}): string {
+  return dedupeAddressParts(
+    form.doorNo,
+    form.building,
+    form.street,
+    form.locality,
+    form.city,
+    form.state,
+    form.pincode,
+  );
 }
 
 export type BusinessOnboardResult = {
@@ -178,15 +198,20 @@ export function BusinessOnboardWizard({ onClose, onComplete, saving = false }: P
       const position = await new Promise<GeolocationPosition>((resolve, reject) =>
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           enableHighAccuracy: true,
-          timeout: 10000,
+          timeout: 15000,
+          maximumAge: 0,
         }),
       );
       const loc = await reverseGeocode(position.coords.latitude, position.coords.longitude);
       setForm((f) => ({
         ...f,
-        state: loc.state || f.state,
-        city: loc.city || f.city,
-        area: loc.area || f.area,
+        state: loc.state ?? f.state,
+        city: loc.city ?? f.city,
+        doorNo: loc.doorNo ?? "",
+        building: loc.building ?? "",
+        street: loc.street ?? "",
+        locality: loc.locality ?? loc.addressLine ?? "",
+        pincode: loc.pincode ?? "",
       }));
     } catch {
       setError("Could not detect your location — please enter it manually.");
@@ -586,21 +611,66 @@ export function BusinessOnboardWizard({ onClose, onComplete, saving = false }: P
                           />
                         </label>
                       )}
+                      <label className="block">
+                        <span className="text-xs text-zinc-500">Door / flat / shop no.</span>
+                        <input
+                          className={`${input} mt-1`}
+                          placeholder="e.g. 12, Shop 4, Flat 302"
+                          value={form.doorNo}
+                          onChange={(e) => setForm((f) => ({ ...f, doorNo: e.target.value }))}
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-xs text-zinc-500">Building / apartment</span>
+                        <input
+                          className={`${input} mt-1`}
+                          placeholder="e.g. Sunshine Towers, ABC Complex"
+                          value={form.building}
+                          onChange={(e) => setForm((f) => ({ ...f, building: e.target.value }))}
+                        />
+                      </label>
+                      <label className="block sm:col-span-2">
+                        <span className="text-xs text-zinc-500">Street / road</span>
+                        <input
+                          className={`${input} mt-1`}
+                          placeholder="e.g. 12th Main Road, MG Road"
+                          value={form.street}
+                          onChange={(e) => setForm((f) => ({ ...f, street: e.target.value }))}
+                        />
+                      </label>
                       <label className="block sm:col-span-2">
                         <span className="text-xs text-zinc-500">
-                          Area / landmark{" "}
-                          <span className="text-zinc-600">(optional)</span>
+                          Area / colony / ward
                         </span>
                         <input
                           className={`${input} mt-1`}
-                          placeholder="Street, shop no., landmark"
-                          value={form.area}
-                          onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))}
+                          placeholder="e.g. HITEC City, Ward 107 Madhapur, Koramangala"
+                          value={form.locality}
+                          onChange={(e) => setForm((f) => ({ ...f, locality: e.target.value }))}
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-xs text-zinc-500">
+                          Pincode <span className="text-zinc-600">(optional)</span>
+                        </span>
+                        <input
+                          className={`${input} mt-1`}
+                          inputMode="numeric"
+                          placeholder="6-digit PIN"
+                          maxLength={6}
+                          value={form.pincode}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              pincode: e.target.value.replace(/\D/g, "").slice(0, 6),
+                            }))
+                          }
                         />
                       </label>
                     </div>
-                    {(form.state || form.city || form.area) && (
-                      <p className="mt-2 truncate text-xs text-zinc-600">
+                    {(form.state || form.city || form.locality || form.street || form.pincode) && (
+                      <p className="mt-2 text-xs leading-relaxed text-emerald-400">
+                        <span className="font-medium">Full address: </span>
                         {composeAddress(form)}
                       </p>
                     )}

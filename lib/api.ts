@@ -3,6 +3,8 @@ import { normalizeFaceImagePayload } from "@/lib/face-image";
 export type AuthUser = {
   id?: string;
   _id?: string;
+  /** Stable human-readable member id, e.g. "RUX-9F3K-Q2M7". */
+  refId?: string;
   role?: string;
   roles?: string[];
   name?: string;
@@ -140,9 +142,13 @@ export function normalizeVendorKycStatus(raw: unknown): VendorKycStatus {
     rejectReason:
       typeof nested.rejectReason === "string"
         ? nested.rejectReason
-        : typeof data.rejectReason === "string"
-          ? data.rejectReason
-          : undefined,
+        : typeof nested.rejectionReason === "string"
+          ? nested.rejectionReason
+          : typeof data.rejectReason === "string"
+            ? data.rejectReason
+            : typeof data.rejectionReason === "string"
+              ? data.rejectionReason
+              : undefined,
     reason:
       typeof nested.reason === "string"
         ? nested.reason
@@ -348,10 +354,10 @@ export function nextKycStep(kyc: VendorKycStatus | null | undefined) {
   if (!kyc) return "aadhaar" as const;
   if (kyc.status === "verified") return "done" as const;
   if (kyc.status === "pending_review") return "review" as const;
+  if (kyc.status === "rejected") return "face" as const;
   if (!stepDone(kyc.aadhaar)) return "aadhaar" as const;
   if (!stepDone(kyc.pan)) return "pan" as const;
   if (!stepDone(kyc.face)) return "face" as const;
-  if (kyc.status === "rejected") return "face" as const;
   return "review" as const;
 }
 
@@ -616,6 +622,30 @@ export type BusinessStaff = {
   role?: string;
 };
 
+export type ClassTiming = {
+  day: DayKey;
+  startTime: string;
+  endTime?: string;
+  batchLabel?: string;
+};
+
+export type PricingModel = "per_session" | "hourly" | "daily" | "weekly" | "monthly";
+export type EnrollmentType = "open" | "limited" | "batch" | "monthly";
+export type PeriodKind = "exact" | "day" | "week" | "month";
+/** How the customer selects when booking a payment option: a specific time,
+ * a whole day, a week pass, or a month pass. */
+export type SelectionKind = "time" | "day" | "week" | "month";
+
+/** One payment option for a class — a class can offer several at once
+ * (e.g. hourly, daily, weekly, monthly), each with its own vendor-set price. */
+export type PriceOption = {
+  pricingModel: PricingModel;
+  price: number;
+  /** Daily only: when true the customer picks a specific time slot that day;
+   * otherwise "daily" is booked as a whole day. */
+  pickTime?: boolean;
+};
+
 export type BusinessService = {
   id: string;
   name: string;
@@ -623,6 +653,13 @@ export type BusinessService = {
   price: number;
   staffIds: string[];
   description?: string;
+  pricingModel?: PricingModel;
+  enrollmentType?: EnrollmentType;
+  maxParticipants?: number;
+  classTimings?: ClassTiming[];
+  /** All payment options for this class. Falls back to `price`/`pricingModel`
+   * above (as a single-option list) when a vendor hasn't set multiple. */
+  priceOptions?: PriceOption[];
 };
 
 export type BusinessSetup = {
@@ -962,10 +999,70 @@ function normalizeStaffList(raw: unknown): BusinessStaff[] {
     .filter((s): s is BusinessStaff => s !== null);
 }
 
+function normalizePricingModel(raw: unknown): PricingModel {
+  const v = typeof raw === "string" ? raw : "per_session";
+  return v === "hourly" || v === "daily" || v === "weekly" || v === "monthly" ? v : "per_session";
+}
+
+function normalizeEnrollmentType(raw: unknown): EnrollmentType {
+  const v = typeof raw === "string" ? raw : "open";
+  return v === "limited" || v === "batch" || v === "monthly" ? v : "open";
+}
+
+function normalizePriceOptions(raw: unknown, fallback: { price: number; pricingModel?: PricingModel }): PriceOption[] {
+  const seen = new Map<PricingModel, PriceOption>();
+  if (Array.isArray(raw)) {
+    for (const item of raw) {
+      const r = asRecord(item);
+      const pricingModel = normalizePricingModel(r.pricingModel);
+      const price = typeof r.price === "number" && r.price >= 0 ? Math.round(r.price) : NaN;
+      if (!Number.isFinite(price) || seen.has(pricingModel)) continue;
+      seen.set(pricingModel, {
+        pricingModel,
+        price,
+        ...(pricingModel === "daily" && r.pickTime === true ? { pickTime: true } : {}),
+      });
+    }
+  }
+  if (!seen.size) {
+    const pricingModel = normalizePricingModel(fallback.pricingModel);
+    seen.set(pricingModel, { pricingModel, price: Math.round(fallback.price) || 0 });
+  }
+  return [...seen.values()];
+}
+
+function normalizeClassTimings(raw: unknown): ClassTiming[] {
+  if (!Array.isArray(raw)) return [];
+  const days: DayKey[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+  return raw
+    .map((item) => {
+      const row = asRecord(item);
+      const day = typeof row.day === "string" ? row.day : "";
+      if (!days.includes(day as DayKey)) return null;
+      const startTime = typeof row.startTime === "string" ? row.startTime : "";
+      if (!/^\d{2}:\d{2}$/.test(startTime)) return null;
+      const endTime =
+        typeof row.endTime === "string" && /^\d{2}:\d{2}$/.test(row.endTime)
+          ? row.endTime
+          : undefined;
+      const batchLabel =
+        typeof row.batchLabel === "string" && row.batchLabel.trim()
+          ? row.batchLabel.trim()
+          : undefined;
+      return {
+        day: day as DayKey,
+        startTime,
+        ...(endTime ? { endTime } : {}),
+        ...(batchLabel ? { batchLabel } : {}),
+      };
+    })
+    .filter((t): t is ClassTiming => t !== null);
+}
+
 function normalizeServiceList(raw: unknown): BusinessService[] {
   if (!Array.isArray(raw)) return [];
   return raw
-    .map((r) => {
+    .map((r): BusinessService | null => {
       const sv = asRecord(r);
       const id = typeof sv.id === "string" ? sv.id : "";
       const name = typeof sv.name === "string" ? sv.name : "";
@@ -982,7 +1079,33 @@ function normalizeServiceList(raw: unknown): BusinessService[] {
         typeof sv.description === "string" && sv.description.trim()
           ? sv.description.trim()
           : undefined;
-      return { id, name, durationMinutes, price, staffIds, ...(description ? { description } : {}) };
+      const pricingModel = normalizePricingModel(sv.pricingModel);
+      const enrollmentType = normalizeEnrollmentType(sv.enrollmentType);
+      const maxParticipants =
+        typeof sv.maxParticipants === "number" && sv.maxParticipants > 0
+          ? Math.round(sv.maxParticipants)
+          : undefined;
+      const classTimings = normalizeClassTimings(sv.classTimings);
+      // Keep the raw options only when they add information beyond the legacy
+      // single price/pricingModel — i.e. multiple options, or a daily option
+      // that carries the whole-day/pick-a-time flag.
+      const rawOptions = Array.isArray(sv.priceOptions) ? sv.priceOptions : [];
+      const priceOptions = normalizePriceOptions(rawOptions, { price, pricingModel });
+      const keepOptions =
+        priceOptions.length > 1 || priceOptions.some((o) => o.pricingModel === "daily" && o.pickTime);
+      return {
+        id,
+        name,
+        durationMinutes,
+        price,
+        staffIds,
+        ...(description ? { description } : {}),
+        ...(pricingModel !== "per_session" ? { pricingModel } : {}),
+        ...(enrollmentType !== "open" ? { enrollmentType } : {}),
+        ...(maxParticipants && maxParticipants > 1 ? { maxParticipants } : {}),
+        ...(classTimings.length ? { classTimings } : {}),
+        ...(keepOptions ? { priceOptions } : {}),
+      };
     })
     .filter((s): s is BusinessService => s !== null);
 }
@@ -991,7 +1114,7 @@ function normalizeBusiness(raw: unknown): Business {
   const b = asRecord(raw);
   const str = (v: unknown) => (typeof v === "string" ? v : "");
   const id = str(b._id) || str(b.id);
-  const module = BUSINESS_MODULES.includes(b.module as BusinessModule)
+  const businessModule = BUSINESS_MODULES.includes(b.module as BusinessModule)
     ? (b.module as BusinessModule)
     : "commerce";
   const setup = normalizeSetup(b.setup, id);
@@ -1008,7 +1131,7 @@ function normalizeBusiness(raw: unknown): Business {
     categoryId: str(b.categoryId),
     typeLabel: str(b.typeLabel),
     categoryLabel: str(b.categoryLabel),
-    module,
+    module: businessModule,
     phone: str(b.phone),
     address: str(b.address),
     description: str(b.description),
@@ -1183,6 +1306,11 @@ export type BusinessSlot = {
   staffId?: string;
   staffName?: string;
   durationMinutes?: number;
+  pricingLabel?: string;
+  batchLabel?: string;
+  seatsLeft?: number;
+  maxParticipants?: number;
+  enrolledCount?: number;
   date: string;
   startTime: string;
   endTime: string;
@@ -1191,6 +1319,11 @@ export type BusinessSlot = {
   pricePerSlot: number;
   basePricePerSlot?: number;
   status: SlotStatus;
+  /** Whole-day (daily) booking — the slot covers the full open window. */
+  wholeDay?: boolean;
+  /** Set on week/month period entries so the customer flow can label them. */
+  periodKind?: PeriodKind;
+  periodKey?: string;
   booking?: {
     customerName?: string;
     customerMobile?: string;
@@ -1211,7 +1344,16 @@ export type BusinessSlotsResponse = {
   bufferMinutes?: number;
   selectedServiceIds?: string[];
   durationMinutes?: number;
+  pricingLabel?: string;
+  /** The payment option these slots/prices were resolved against. */
+  pricingModel?: PricingModel;
+  /** All payment options available for the (single) selected service. */
+  priceOptions?: PriceOption[];
+  /** How the customer selects for the resolved option (time/day/week/month). */
+  selectionKind?: SelectionKind;
   slots: BusinessSlot[];
+  /** Present for week/month passes: the selectable periods (as slot entries). */
+  periods?: BusinessSlot[];
 };
 
 function normalizeSlot(raw: unknown): BusinessSlot | null {
@@ -1238,6 +1380,13 @@ function normalizeSlot(raw: unknown): BusinessSlot | null {
     staffName: typeof s.staffName === "string" ? s.staffName : undefined,
     durationMinutes:
       typeof s.durationMinutes === "number" ? Math.round(s.durationMinutes) : undefined,
+    pricingLabel: typeof s.pricingLabel === "string" ? s.pricingLabel : undefined,
+    batchLabel: typeof s.batchLabel === "string" ? s.batchLabel : undefined,
+    seatsLeft: typeof s.seatsLeft === "number" ? Math.round(s.seatsLeft) : undefined,
+    maxParticipants:
+      typeof s.maxParticipants === "number" ? Math.round(s.maxParticipants) : undefined,
+    enrolledCount:
+      typeof s.enrolledCount === "number" ? Math.round(s.enrolledCount) : undefined,
     date: str(s.date),
     startTime: str(s.startTime),
     endTime: str(s.endTime),
@@ -1247,6 +1396,12 @@ function normalizeSlot(raw: unknown): BusinessSlot | null {
     basePricePerSlot:
       typeof s.basePricePerSlot === "number" ? s.basePricePerSlot : undefined,
     status,
+    wholeDay: s.wholeDay === true ? true : undefined,
+    periodKind:
+      s.periodKind === "day" || s.periodKind === "week" || s.periodKind === "month"
+        ? s.periodKind
+        : undefined,
+    periodKey: typeof s.periodKey === "string" ? s.periodKey : undefined,
     booking:
       s.booking && typeof s.booking === "object"
         ? {
@@ -1316,21 +1471,46 @@ function normalizeSlotsResponse(raw: unknown): BusinessSlotsResponse {
       : [],
     durationMinutes:
       typeof data.durationMinutes === "number" ? Math.round(data.durationMinutes) : 0,
+    pricingLabel: typeof data.pricingLabel === "string" ? data.pricingLabel : undefined,
+    pricingModel: typeof data.pricingModel === "string" ? normalizePricingModel(data.pricingModel) : undefined,
+    priceOptions:
+      Array.isArray(data.priceOptions) && data.priceOptions.length
+        ? normalizePriceOptions(data.priceOptions, { price: 0 })
+        : undefined,
+    selectionKind:
+      data.selectionKind === "day" ||
+      data.selectionKind === "week" ||
+      data.selectionKind === "month"
+        ? data.selectionKind
+        : data.selectionKind === "time"
+          ? "time"
+          : undefined,
     slots: Array.isArray(slotsRaw)
       ? slotsRaw.map(normalizeSlot).filter((s): s is BusinessSlot => s !== null)
       : [],
+    periods: Array.isArray(data.periods)
+      ? data.periods.map(normalizeSlot).filter((s): s is BusinessSlot => s !== null)
+      : undefined,
   };
 }
 
 export async function listBusinessSlots(
   businessId: string,
-  params: { from: string; to: string; resourceId?: string; serviceIds?: string[]; staffId?: string },
+  params: {
+    from: string;
+    to: string;
+    resourceId?: string;
+    serviceIds?: string[];
+    staffId?: string;
+    pricingModel?: string;
+  },
 ): Promise<BusinessSlotsResponse> {
   try {
     const qs = new URLSearchParams({ from: params.from, to: params.to });
     if (params.resourceId) qs.set("resourceId", params.resourceId);
     if (params.serviceIds?.length) qs.set("serviceIds", params.serviceIds.join(","));
     if (params.staffId) qs.set("staffId", params.staffId);
+    if (params.pricingModel) qs.set("pricingModel", params.pricingModel);
     const data = await authedApi(`vendor/businesses/${businessId}/slots?${qs}`);
     return normalizeSlotsResponse(data);
   } catch (err) {
@@ -1435,7 +1615,7 @@ function normalizePublicBusinessSummary(raw: unknown): PublicBusinessSummary | n
     typeof v === "number" && Number.isFinite(v) ? v : fallback;
   const id = str(b._id) || str(b.id);
   if (!id) return null;
-  const module = BUSINESS_MODULES.includes(b.module as BusinessModule)
+  const businessModule = BUSINESS_MODULES.includes(b.module as BusinessModule)
     ? (b.module as BusinessModule)
     : "appointments";
   const pricePerSlot = num(b.pricePerSlot, 0);
@@ -1456,7 +1636,7 @@ function normalizePublicBusinessSummary(raw: unknown): PublicBusinessSummary | n
     vendorName: str(b.vendorName),
     typeLabel: str(b.typeLabel),
     categoryLabel: str(b.categoryLabel),
-    module,
+    module: businessModule,
     address: str(b.address),
     description: str(b.description),
     pricePerSlot,
@@ -1496,6 +1676,7 @@ export async function listPublicBusinesses(): Promise<PublicBusinessSummary[]> {
 
 export type CustomerBooking = {
   id: string;
+  refId?: string | null;
   businessId: string;
   businessName: string;
   typeLabel: string;
@@ -1513,9 +1694,20 @@ export type CustomerBooking = {
   customerMobile: string;
   status: string;
   paymentStatus?: string | null;
+  paymentRef?: string | null;
+  paymentRefId?: string | null;
   expiresAt?: string | null;
   paidAt?: string | null;
   createdAt?: string;
+  groupClass?: boolean;
+  maxParticipants?: number;
+  pricingModel?: PricingModel;
+  /** Set for weekly/monthly enrollments — this booking pays once and covers
+   * every session in `periodKey` (a week's Monday date, or "YYYY-MM"). */
+  periodKind?: PeriodKind;
+  periodKey?: string;
+  /** Present when several slots were booked together (e.g. a turf 6–9). */
+  slots?: { resourceId: string; startAt: string; endAt: string; pricePerSlot?: number }[];
 };
 
 export type InitiateBookingPayment = {
@@ -1569,6 +1761,7 @@ function normalizeCustomerBooking(raw: unknown): CustomerBooking | null {
   if (!id) return null;
   return {
     id,
+    refId: typeof b.refId === "string" ? b.refId : null,
     businessId: str(b.businessId),
     businessName: str(b.businessName),
     typeLabel: str(b.typeLabel),
@@ -1593,9 +1786,30 @@ function normalizeCustomerBooking(raw: unknown): CustomerBooking | null {
     customerMobile: str(b.customerMobile),
     status: str(b.status) || "confirmed",
     paymentStatus: typeof b.paymentStatus === "string" ? b.paymentStatus : null,
+    paymentRef: typeof b.paymentRef === "string" ? b.paymentRef : null,
+    paymentRefId: typeof b.paymentRefId === "string" ? b.paymentRefId : null,
     expiresAt: typeof b.expiresAt === "string" ? b.expiresAt : null,
     paidAt: typeof b.paidAt === "string" ? b.paidAt : null,
     createdAt: str(b.createdAt) || undefined,
+    groupClass: b.groupClass === true,
+    maxParticipants: typeof b.maxParticipants === "number" ? b.maxParticipants : undefined,
+    pricingModel: typeof b.pricingModel === "string" ? normalizePricingModel(b.pricingModel) : undefined,
+    periodKind:
+      b.periodKind === "day" || b.periodKind === "week" || b.periodKind === "month"
+        ? b.periodKind
+        : undefined,
+    periodKey: typeof b.periodKey === "string" ? b.periodKey : undefined,
+    slots: Array.isArray(b.slots)
+      ? b.slots.map((sv) => {
+          const r = asRecord(sv);
+          return {
+            resourceId: str(r.resourceId),
+            startAt: str(r.startAt),
+            endAt: str(r.endAt),
+            pricePerSlot: typeof r.pricePerSlot === "number" ? r.pricePerSlot : undefined,
+          };
+        })
+      : undefined,
   };
 }
 
@@ -1622,12 +1836,20 @@ export async function getPublicBusiness(businessId: string): Promise<PublicBusin
 
 export async function listPublicBusinessSlots(
   businessId: string,
-  params: { from: string; to: string; resourceId?: string; serviceIds?: string[]; staffId?: string },
+  params: {
+    from: string;
+    to: string;
+    resourceId?: string;
+    serviceIds?: string[];
+    staffId?: string;
+    pricingModel?: string;
+  },
 ): Promise<BusinessSlotsResponse> {
   const qs = new URLSearchParams({ from: params.from, to: params.to });
   if (params.resourceId) qs.set("resourceId", params.resourceId);
   if (params.serviceIds?.length) qs.set("serviceIds", params.serviceIds.join(","));
   if (params.staffId) qs.set("staffId", params.staffId);
+  if (params.pricingModel) qs.set("pricingModel", params.pricingModel);
   const data = await api(`public/businesses/${businessId}/slots?${qs}`);
   return normalizeSlotsResponse(data);
 }
@@ -1643,9 +1865,13 @@ export async function listCustomerBookings(): Promise<CustomerBooking[]> {
 export type BookingRequest = {
   businessId: string;
   startAt: string;
+  /** Multiple slot starts booked together on one resource in a single order. */
+  startAts?: string[];
   resourceId?: string;
   serviceIds?: string[];
   staffId?: string;
+  /** Which payment option to book under (hourly/daily/weekly/monthly). */
+  pricingModel?: string;
 };
 
 export async function createCustomerBooking(body: BookingRequest): Promise<CustomerBooking> {
@@ -1693,6 +1919,7 @@ export type RuxEvent = {
   tournamentType: string;
   format: EventFormat;
   teamSize: number | null;
+  minCapacity: number | null;
   capacity: number | null;
   reservedCount: number;
   confirmedCount: number;
@@ -1715,6 +1942,7 @@ export type RuxEvent = {
 
 export type EventRegistration = {
   id: string;
+  refId?: string | null;
   eventId: string;
   eventTitle: string;
   businessId: string;
@@ -1730,6 +1958,8 @@ export type EventRegistration = {
   status: string;
   paymentStatus?: string | null;
   paymentSessionId?: string | null;
+  paymentRef?: string | null;
+  paymentRefId?: string | null;
   startAt: string | null;
   venue: string;
   expiresAt?: string | null;
@@ -1745,6 +1975,7 @@ export type EventInput = {
   tournamentType?: string;
   format?: EventFormat;
   teamSize?: number | null;
+  minCapacity?: number | null;
   capacity?: number | null;
   entryFee?: number;
   venue?: string;
@@ -1778,6 +2009,7 @@ function normalizeEvent(raw: unknown): RuxEvent | null {
     tournamentType: str(e.tournamentType),
     format: e.format === "team" ? "team" : "individual",
     teamSize: numOrNull(e.teamSize),
+    minCapacity: numOrNull(e.minCapacity),
     capacity: numOrNull(e.capacity),
     reservedCount: typeof e.reservedCount === "number" ? e.reservedCount : 0,
     confirmedCount: typeof e.confirmedCount === "number" ? e.confirmedCount : 0,
@@ -1815,6 +2047,7 @@ function normalizeRegistration(raw: unknown): EventRegistration | null {
     : [];
   return {
     id,
+    refId: typeof r.refId === "string" ? r.refId : null,
     eventId: str(r.eventId),
     eventTitle: str(r.eventTitle),
     businessId: str(r.businessId),
@@ -1830,6 +2063,8 @@ function normalizeRegistration(raw: unknown): EventRegistration | null {
     status: str(r.status) || "confirmed",
     paymentStatus: typeof r.paymentStatus === "string" ? r.paymentStatus : null,
     paymentSessionId: typeof r.paymentSessionId === "string" ? r.paymentSessionId : null,
+    paymentRef: typeof r.paymentRef === "string" ? r.paymentRef : null,
+    paymentRefId: typeof r.paymentRefId === "string" ? r.paymentRefId : null,
     startAt: typeof r.startAt === "string" ? r.startAt : null,
     venue: str(r.venue),
     expiresAt: typeof r.expiresAt === "string" ? r.expiresAt : null,
@@ -2017,7 +2252,7 @@ function normalizeCatalogType(raw: unknown): CatalogBusinessType | null {
   const t = asRecord(raw);
   const id = typeof t.id === "string" ? t.id : "";
   if (!id) return null;
-  const module = BUSINESS_MODULES.includes(t.module as BusinessModule)
+  const businessModule = BUSINESS_MODULES.includes(t.module as BusinessModule)
     ? (t.module as BusinessModule)
     : "commerce";
   const str = (v: unknown) => (typeof v === "string" ? v : "");
@@ -2029,7 +2264,7 @@ function normalizeCatalogType(raw: unknown): CatalogBusinessType | null {
     examples: str(t.examples),
     namePlaceholder: str(t.namePlaceholder),
     detailHint: str(t.detailHint),
-    module,
+    module: businessModule,
     sortOrder: typeof t.sortOrder === "number" ? t.sortOrder : undefined,
   };
 }
@@ -2263,7 +2498,9 @@ export function normalizeAdminVendorKycRow(raw: Record<string, unknown>): AdminV
     rejectReason:
       typeof raw.rejectReason === "string"
         ? raw.rejectReason
-        : typeof kyc.rejectReason === "string"
+        : typeof raw.rejectionReason === "string"
+          ? raw.rejectionReason
+          : typeof kyc.rejectReason === "string"
           ? kyc.rejectReason
           : typeof kyc.reason === "string"
             ? kyc.reason
@@ -2346,6 +2583,412 @@ export async function reviewAdminVendorKyc(
     method: "PATCH",
     body: JSON.stringify(body),
   });
+}
+
+/* ------------------------------------------------------------------ */
+/* Admin super portal — dashboard, businesses, ops, payments           */
+/* ------------------------------------------------------------------ */
+
+const aStr = (v: unknown) => (typeof v === "string" ? v : "");
+const aNum = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : 0);
+const aBool = (v: unknown) => v === true;
+const aStrOrNull = (v: unknown) => (typeof v === "string" ? v : null);
+
+function toQuery(params: Record<string, string | number | boolean | undefined>) {
+  const qs = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== undefined && v !== "" && v !== null) qs.set(k, String(v));
+  }
+  const s = qs.toString();
+  return s ? `?${s}` : "";
+}
+
+export type AdminListParams = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  vendorId?: string;
+  [key: string]: string | number | boolean | undefined;
+};
+
+export type AdminPage<T> = { items: T[]; total: number; page: number; limit: number };
+
+function pageMeta(raw: Record<string, unknown>, fallbackCount: number): Omit<AdminPage<never>, "items"> {
+  return {
+    total: aNum(raw.total) || fallbackCount,
+    page: aNum(raw.page) || 1,
+    limit: aNum(raw.limit) || 20,
+  };
+}
+
+export type AdminMetrics = {
+  users: {
+    total: number;
+    customers: number;
+    vendors: number;
+    admins: number;
+    employees: number;
+    disabled: number;
+  };
+  businesses: { total: number; live: number; suspended: number };
+  bookings: { confirmed: number };
+  printOrders: { total: number };
+  events: { total: number };
+  revenue: { amount: number; count: number };
+  revenueBySource: { source: string; amount: number; count: number }[];
+};
+
+export async function getAdminMetrics(): Promise<AdminMetrics> {
+  const raw = asRecord(await authedApi("admin/metrics"));
+  const u = asRecord(raw.users);
+  const b = asRecord(raw.businesses);
+  const bk = asRecord(raw.bookings);
+  const po = asRecord(raw.printOrders);
+  const ev = asRecord(raw.events);
+  const rev = asRecord(raw.revenue);
+  return {
+    users: {
+      total: aNum(u.total),
+      customers: aNum(u.customers),
+      vendors: aNum(u.vendors),
+      admins: aNum(u.admins),
+      employees: aNum(u.employees),
+      disabled: aNum(u.disabled),
+    },
+    businesses: { total: aNum(b.total), live: aNum(b.live), suspended: aNum(b.suspended) },
+    bookings: { confirmed: aNum(bk.confirmed) },
+    printOrders: { total: aNum(po.total) },
+    events: { total: aNum(ev.total) },
+    revenue: { amount: aNum(rev.amount), count: aNum(rev.count) },
+    revenueBySource: (Array.isArray(raw.revenueBySource) ? raw.revenueBySource : []).map((r) => {
+      const o = asRecord(r);
+      return { source: aStr(o.source), amount: aNum(o.amount), count: aNum(o.count) };
+    }),
+  };
+}
+
+// ── Users ──
+export async function listAdminUsersPaged(params: AdminListParams = {}): Promise<AdminPage<AdminUser>> {
+  const raw = asRecord(await authedApi(`admin/users${toQuery(params)}`));
+  const items = asList(raw).map(normalizeAdminUser);
+  return { items, ...pageMeta(raw, items.length) };
+}
+
+export type AdminUserDetail = {
+  user: AdminUser & { refId?: string; vendorProfile?: Record<string, unknown> };
+  businesses: AdminBusiness[];
+  revenue: { amount: number; count: number };
+  recentPayments: AdminPayment[];
+};
+
+export async function getAdminUserDetail(id: string): Promise<AdminUserDetail> {
+  const raw = asRecord(await authedApi(`admin/users/${encodeURIComponent(id)}`));
+  const user = asRecord(raw.user);
+  const rev = asRecord(raw.revenue);
+  return {
+    user: {
+      ...normalizeAdminUser(user),
+      refId: aStr(user.refId) || undefined,
+      vendorProfile: asRecord(user.vendorProfile),
+    },
+    businesses: (Array.isArray(raw.businesses) ? raw.businesses : []).map((b) =>
+      normalizeAdminBusiness(asRecord(b)),
+    ),
+    revenue: { amount: aNum(rev.amount), count: aNum(rev.count) },
+    recentPayments: (Array.isArray(raw.recentPayments) ? raw.recentPayments : []).map((p) =>
+      normalizeAdminPayment(asRecord(p)),
+    ),
+  };
+}
+
+// ── Businesses ──
+export type AdminBusiness = {
+  id: string;
+  name: string;
+  module: string;
+  typeLabel: string;
+  categoryLabel: string;
+  address: string;
+  status: string;
+  setupComplete: boolean;
+  suspended: boolean;
+  suspendedReason: string | null;
+  vendorId: string | null;
+  vendorName: string | null;
+  createdAt: string | null;
+};
+
+function normalizeAdminBusiness(raw: Record<string, unknown>): AdminBusiness {
+  return {
+    id: aStr(raw._id) || aStr(raw.id),
+    name: aStr(raw.name),
+    module: aStr(raw.module),
+    typeLabel: aStr(raw.typeLabel),
+    categoryLabel: aStr(raw.categoryLabel),
+    address: aStr(raw.address),
+    status: aStr(raw.status),
+    setupComplete: aBool(raw.setupComplete),
+    suspended: aBool(raw.suspended),
+    suspendedReason: aStrOrNull(raw.suspendedReason),
+    vendorId: aStrOrNull(raw.vendorId),
+    vendorName: aStrOrNull(raw.vendorName),
+    createdAt: aStrOrNull(raw.createdAt),
+  };
+}
+
+export async function listAdminBusinesses(
+  params: AdminListParams = {},
+): Promise<AdminPage<AdminBusiness>> {
+  const raw = asRecord(await authedApi(`admin/businesses${toQuery(params)}`));
+  const list = Array.isArray(raw.businesses) ? raw.businesses : [];
+  const items = list.map((b) => normalizeAdminBusiness(asRecord(b)));
+  return { items, ...pageMeta(raw, items.length) };
+}
+
+export async function setAdminBusinessSuspended(id: string, suspended: boolean, reason?: string) {
+  return authedApi(`admin/businesses/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ suspended, reason }),
+  });
+}
+
+// ── Bookings ──
+export type AdminBooking = {
+  id: string;
+  refId: string | null;
+  businessName: string;
+  resourceName: string | null;
+  serviceLabel: string;
+  customerName: string;
+  customerMobile: string;
+  startAt: string | null;
+  endAt: string | null;
+  amount: number;
+  status: string;
+  paymentStatus: string | null;
+  paymentRefId: string | null;
+};
+
+function normalizeAdminBooking(raw: Record<string, unknown>): AdminBooking {
+  return {
+    id: aStr(raw.id) || aStr(raw._id),
+    refId: aStrOrNull(raw.refId),
+    businessName: aStr(raw.businessName),
+    resourceName: aStrOrNull(raw.resourceName),
+    serviceLabel: aStr(raw.serviceLabel),
+    customerName: aStr(raw.customerName),
+    customerMobile: aStr(raw.customerMobile),
+    startAt: aStrOrNull(raw.startAt),
+    endAt: aStrOrNull(raw.endAt),
+    amount: aNum(raw.amount) || aNum(raw.pricePerSlot),
+    status: aStr(raw.status),
+    paymentStatus: aStrOrNull(raw.paymentStatus),
+    paymentRefId: aStrOrNull(raw.paymentRefId),
+  };
+}
+
+export async function listAdminBookings(
+  params: AdminListParams = {},
+): Promise<AdminPage<AdminBooking>> {
+  const raw = asRecord(await authedApi(`admin/bookings${toQuery(params)}`));
+  const list = Array.isArray(raw.bookings) ? raw.bookings : [];
+  const items = list.map((b) => normalizeAdminBooking(asRecord(b)));
+  return { items, ...pageMeta(raw, items.length) };
+}
+
+export async function cancelAdminBooking(id: string) {
+  return authedApi(`admin/bookings/${encodeURIComponent(id)}/cancel`, { method: "PATCH" });
+}
+
+// ── Events + registrations ──
+export type AdminEvent = {
+  id: string;
+  title: string;
+  businessName: string;
+  kind: string;
+  status: string;
+  startAt: string | null;
+  entryFee: number;
+  capacity: number | null;
+  reservedCount: number;
+  confirmedCount: number;
+};
+
+function normalizeAdminEvent(raw: Record<string, unknown>): AdminEvent {
+  return {
+    id: aStr(raw.id) || aStr(raw._id),
+    title: aStr(raw.title),
+    businessName: aStr(raw.businessName),
+    kind: aStr(raw.kind),
+    status: aStr(raw.status),
+    startAt: aStrOrNull(raw.startAt),
+    entryFee: aNum(raw.entryFee),
+    capacity: typeof raw.capacity === "number" ? raw.capacity : null,
+    reservedCount: aNum(raw.reservedCount),
+    confirmedCount: aNum(raw.confirmedCount),
+  };
+}
+
+export async function listAdminEvents(params: AdminListParams = {}): Promise<AdminPage<AdminEvent>> {
+  const raw = asRecord(await authedApi(`admin/events${toQuery(params)}`));
+  const list = Array.isArray(raw.events) ? raw.events : [];
+  const items = list.map((e) => normalizeAdminEvent(asRecord(e)));
+  return { items, ...pageMeta(raw, items.length) };
+}
+
+export async function setAdminEventStatus(id: string, status: string) {
+  return authedApi(`admin/events/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+}
+
+export type AdminEventRegistration = {
+  id: string;
+  refId: string | null;
+  eventTitle: string;
+  teamName: string | null;
+  customerName: string;
+  customerMobile: string;
+  amount: number;
+  status: string;
+  createdAt: string | null;
+};
+
+function normalizeAdminRegistration(raw: Record<string, unknown>): AdminEventRegistration {
+  return {
+    id: aStr(raw.id) || aStr(raw._id),
+    refId: aStrOrNull(raw.refId),
+    eventTitle: aStr(raw.eventTitle),
+    teamName: aStrOrNull(raw.teamName),
+    customerName: aStr(raw.customerName),
+    customerMobile: aStr(raw.customerMobile),
+    amount: aNum(raw.amount),
+    status: aStr(raw.status),
+    createdAt: aStrOrNull(raw.createdAt),
+  };
+}
+
+export async function listAdminEventRegistrations(
+  params: AdminListParams = {},
+): Promise<AdminPage<AdminEventRegistration>> {
+  const raw = asRecord(await authedApi(`admin/event-registrations${toQuery(params)}`));
+  const list = Array.isArray(raw.registrations) ? raw.registrations : [];
+  const items = list.map((r) => normalizeAdminRegistration(asRecord(r)));
+  return { items, ...pageMeta(raw, items.length) };
+}
+
+// ── Print orders ──
+export type AdminPrintOrder = {
+  id: string;
+  customerName: string;
+  customerMobile: string;
+  categoryLabel: string;
+  quantity: number | null;
+  businessName: string | null;
+  status: string;
+  quoteAmount: number | null;
+  paymentRefId: string | null;
+  createdAt: string | null;
+};
+
+function normalizeAdminPrintOrder(raw: Record<string, unknown>): AdminPrintOrder {
+  return {
+    id: aStr(raw.id) || aStr(raw._id),
+    customerName: aStr(raw.customerName),
+    customerMobile: aStr(raw.customerMobile),
+    categoryLabel: aStr(raw.categoryLabel),
+    quantity: typeof raw.quantity === "number" ? raw.quantity : null,
+    businessName: aStrOrNull(raw.businessName),
+    status: aStr(raw.status),
+    quoteAmount: typeof raw.quoteAmount === "number" ? raw.quoteAmount : null,
+    paymentRefId: aStrOrNull(raw.paymentRefId),
+    createdAt: aStrOrNull(raw.createdAt),
+  };
+}
+
+export async function listAdminPrintOrders(
+  params: AdminListParams = {},
+): Promise<AdminPage<AdminPrintOrder>> {
+  const raw = asRecord(await authedApi(`admin/print-orders${toQuery(params)}`));
+  const list = Array.isArray(raw.orders) ? raw.orders : [];
+  const items = list.map((o) => normalizeAdminPrintOrder(asRecord(o)));
+  return { items, ...pageMeta(raw, items.length) };
+}
+
+export async function cancelAdminPrintOrder(id: string) {
+  return authedApi(`admin/print-orders/${encodeURIComponent(id)}/cancel`, { method: "PATCH" });
+}
+
+// ── Payments + revenue ──
+export type AdminPayment = {
+  id: string;
+  refId: string | null;
+  source: string;
+  sourceRef: string | null;
+  amount: number;
+  currency: string;
+  status: string;
+  vendorId: string | null;
+  gatewayPaymentId: string | null;
+  paidAt: string | null;
+};
+
+function normalizeAdminPayment(raw: Record<string, unknown>): AdminPayment {
+  return {
+    id: aStr(raw.id) || aStr(raw._id),
+    refId: aStrOrNull(raw.refId),
+    source: aStr(raw.source),
+    sourceRef: aStrOrNull(raw.sourceRef),
+    amount: aNum(raw.amount),
+    currency: aStr(raw.currency) || "INR",
+    status: aStr(raw.status) || "paid",
+    vendorId: aStrOrNull(raw.vendorId),
+    gatewayPaymentId: aStrOrNull(raw.gatewayPaymentId),
+    paidAt: aStrOrNull(raw.paidAt),
+  };
+}
+
+export async function listAdminPayments(
+  params: AdminListParams = {},
+): Promise<AdminPage<AdminPayment>> {
+  const raw = asRecord(await authedApi(`admin/payments${toQuery(params)}`));
+  const list = Array.isArray(raw.payments) ? raw.payments : [];
+  const items = list.map((p) => normalizeAdminPayment(asRecord(p)));
+  return { items, ...pageMeta(raw, items.length) };
+}
+
+export type AdminRevenue = {
+  totals: { amount: number; count: number };
+  bySource: { source: string; amount: number; count: number }[];
+  byVendor: { vendorId: string | null; vendorName: string; amount: number; count: number }[];
+  series: { date: string; amount: number; count: number }[];
+};
+
+export async function getAdminRevenue(days = 30): Promise<AdminRevenue> {
+  const raw = asRecord(await authedApi(`admin/revenue${toQuery({ days })}`));
+  const totals = asRecord(raw.totals);
+  return {
+    totals: { amount: aNum(totals.amount), count: aNum(totals.count) },
+    bySource: (Array.isArray(raw.bySource) ? raw.bySource : []).map((r) => {
+      const o = asRecord(r);
+      return { source: aStr(o.source), amount: aNum(o.amount), count: aNum(o.count) };
+    }),
+    byVendor: (Array.isArray(raw.byVendor) ? raw.byVendor : []).map((r) => {
+      const o = asRecord(r);
+      return {
+        vendorId: aStrOrNull(o.vendorId),
+        vendorName: aStr(o.vendorName) || "Vendor",
+        amount: aNum(o.amount),
+        count: aNum(o.count),
+      };
+    }),
+    series: (Array.isArray(raw.series) ? raw.series : []).map((r) => {
+      const o = asRecord(r);
+      return { date: aStr(o.date), amount: aNum(o.amount), count: aNum(o.count) };
+    }),
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -2500,6 +3143,8 @@ export type PrintOrder = {
   quoteAmount: number | null;
   currency: string;
   paymentStatus: string | null;
+  paymentRef: string | null;
+  paymentRefId: string | null;
   acceptedAt: string | null;
   paidAt: string | null;
   createdAt: string | null;
@@ -2548,6 +3193,8 @@ function normalizePrintOrder(raw: unknown): PrintOrder | null {
     quoteAmount: typeof o.quoteAmount === "number" ? o.quoteAmount : null,
     currency: str(o.currency) || "INR",
     paymentStatus: typeof o.paymentStatus === "string" ? o.paymentStatus : null,
+    paymentRef: typeof o.paymentRef === "string" ? o.paymentRef : null,
+    paymentRefId: typeof o.paymentRefId === "string" ? o.paymentRefId : null,
     acceptedAt: typeof o.acceptedAt === "string" ? o.acceptedAt : null,
     paidAt: typeof o.paidAt === "string" ? o.paidAt : null,
     createdAt: typeof o.createdAt === "string" ? o.createdAt : null,

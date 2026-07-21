@@ -12,6 +12,7 @@ import {
   initiateCustomerBooking,
   listPublicBusinessSlots,
   type BusinessSlot,
+  type PricingModel,
   type PublicBusiness,
 } from "@/lib/api";
 import { openCashfreeCheckout } from "@/lib/cashfree-checkout";
@@ -25,6 +26,32 @@ import {
   dateRangeFrom,
 } from "@/lib/date-utils";
 import { SlotDateNav } from "@/components/slot-date-nav";
+import { CoachingBookingGuide } from "@/components/coaching-booking-guide";
+import {
+  coachingPaymentFilters,
+  customerConfirmPaymentLine,
+  formatEnrollmentLabel,
+  formatPriceOption,
+  formatServicePriceSummary,
+  isBatchClass,
+  periodCoverageLabel,
+  pricingModelCustomerLabel,
+  selectionKindForOption,
+  serviceMatchesPaymentFilter,
+  servicePriceOptions,
+  type SelectionKind,
+} from "@/lib/coaching";
+import type { PriceOption } from "@/lib/api";
+
+/** Short line describing what a payment option gets the customer. */
+function optionCoverage(opt: PriceOption): string {
+  const kind = selectionKindForOption(opt);
+  if (kind === "month") return "Whole-month pass · all sessions";
+  if (kind === "week") return "Whole-week pass · all sessions";
+  if (kind === "day") return "Book a whole day";
+  if (opt.pricingModel === "hourly") return "Per session · billed hourly";
+  return "Single class";
+}
 
 type Props = {
   businessId: string;
@@ -151,10 +178,17 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
   const [resourceId, setResourceId] = useState("");
   const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
   const [staffId, setStaffId] = useState("");
+  const [pricingModel, setPricingModel] = useState<PricingModel | "">("");
   const [selectedSlot, setSelectedSlot] = useState<BusinessSlot | null>(null);
+  // Hourly resource bookings (e.g. a turf) can pick several time slots at once
+  // and pay for them together; other flows stay single-select via selectedSlot.
+  const [selectedSlots, setSelectedSlots] = useState<BusinessSlot[]>([]);
   const [slots, setSlots] = useState<BusinessSlot[]>([]);
+  const [periods, setPeriods] = useState<BusinessSlot[]>([]);
+  const [selectionKind, setSelectionKind] = useState<SelectionKind>("time");
   const [slotsLoading, setSlotsLoading] = useState(true);
   const [bookingId, setBookingId] = useState("");
+  const [paymentFilter, setPaymentFilter] = useState("all");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [canBook, setCanBook] = useState(isLoggedInCustomer);
@@ -179,11 +213,13 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
       setSelectedDate(range.from);
     }
     setSelectedSlot(null);
+    setSelectedSlots([]);
   }, [range.from, range.to, today]);
 
   useEffect(() => {
     setSelectedSlot(null);
-  }, [selectedDate, resourceId, staffId, selectedServiceIds]);
+    setSelectedSlots([]);
+  }, [selectedDate, resourceId, staffId, selectedServiceIds, pricingModel]);
 
   useEffect(() => {
     let cancelled = false;
@@ -207,6 +243,40 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
   }, [businessId]);
 
   const isService = business?.setup.bookingMode === "services";
+  const isCoaching = business?.typeId === "coaching";
+
+  const coachingServices = business?.setup.services ?? [];
+  const paymentTabs = useMemo(
+    () => (isCoaching ? coachingPaymentFilters(coachingServices) : []),
+    [isCoaching, coachingServices],
+  );
+  const visibleCoachingServices = useMemo(
+    () =>
+      isCoaching
+        ? coachingServices.filter((s) => serviceMatchesPaymentFilter(s, paymentFilter))
+        : coachingServices,
+    [isCoaching, coachingServices, paymentFilter],
+  );
+  const selectedService = useMemo(
+    () => business?.setup.services.find((s) => selectedServiceIds.includes(s.id)),
+    [business, selectedServiceIds],
+  );
+  const servicePayOptions = useMemo(
+    () => (selectedService ? servicePriceOptions(selectedService) : []),
+    [selectedService],
+  );
+
+  // Default to the class's primary payment option whenever the selected
+  // class changes; clear it once no class (or several) is selected.
+  useEffect(() => {
+    if (servicePayOptions.length) {
+      setPricingModel((prev) =>
+        servicePayOptions.some((o) => o.pricingModel === prev) ? prev : servicePayOptions[0].pricingModel,
+      );
+    } else {
+      setPricingModel("");
+    }
+  }, [servicePayOptions]);
 
   useEffect(() => {
     if (!business) return;
@@ -243,7 +313,9 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
     if (!serviceMode && !resourceId && (business.setup.resources.length ?? 0) > 1) return;
     setSlotsLoading(true);
     setSlots([]);
+    setPeriods([]);
     setSelectedSlot(null);
+    setSelectedSlots([]);
     try {
       const slotData = await listPublicBusinessSlots(businessId, {
         from: range.from,
@@ -251,14 +323,17 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
         resourceId: serviceMode ? undefined : resourceId || undefined,
         serviceIds: serviceMode ? selectedServiceIds : undefined,
         staffId: serviceMode && staffId ? staffId : undefined,
+        pricingModel: serviceMode && pricingModel ? pricingModel : undefined,
       });
       setSlots(slotData.slots);
+      setPeriods(slotData.periods ?? []);
+      setSelectionKind(slotData.selectionKind ?? "time");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load slots.");
     } finally {
       setSlotsLoading(false);
     }
-  }, [businessId, business, range.from, range.to, resourceId, selectedServiceIds, staffId]);
+  }, [businessId, business, range.from, range.to, resourceId, selectedServiceIds, staffId, pricingModel]);
 
   useEffect(() => {
     if (!business) return;
@@ -302,7 +377,15 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
   }, [filteredSlots]);
 
   async function confirmBooking() {
-    if (!selectedSlot || selectedSlot.status !== "available") return;
+    const multi =
+      !isService && selectionKind === "time" && business?.setup.bookingMode !== "fullDay";
+    const chosen = multi
+      ? [...selectedSlots].sort((a, b) => a.startAt.localeCompare(b.startAt))
+      : selectedSlot
+        ? [selectedSlot]
+        : [];
+    const bookable = chosen.filter((s) => s.status === "available");
+    if (!bookable.length) return;
 
     const token = getToken();
     const user = getStoredUser();
@@ -317,19 +400,23 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
       return;
     }
 
-    setBookingId(selectedSlot.id);
+    setBookingId(multi ? "multi" : bookable[0].id);
     setError("");
     setSuccess("");
     try {
       const { payment } = await initiateCustomerBooking({
         businessId,
-        startAt: selectedSlot.startAt,
+        startAt: bookable[0].startAt,
         ...(isService
           ? {
               serviceIds: selectedServiceIds,
               ...(staffId ? { staffId } : {}),
+              ...(isCoaching && pricingModel ? { pricingModel } : {}),
             }
-          : { resourceId: selectedSlot.resourceId }),
+          : {
+              resourceId: bookable[0].resourceId,
+              ...(bookable.length > 1 ? { startAts: bookable.map((s) => s.startAt) } : {}),
+            }),
       });
       await openCashfreeCheckout(
         payment.paymentSessionId,
@@ -375,6 +462,115 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
   const daySlots = slotsByDate.get(selectedDate) ?? [];
   const availableDaySlots = daySlots.filter((s) => s.status === "available");
 
+  // Coaching week/month passes are selected as period chips (not a time grid).
+  const isPeriodSelect = isCoaching && (selectionKind === "week" || selectionKind === "month");
+  // A whole-day (daily) coaching booking, or a full-day resource, is picked as
+  // one button per day rather than a time slot.
+  const wholeDayMode = isFullDay || selectionKind === "day";
+  // Hourly resource slots (turf/venue) let the customer stack several slots
+  // (e.g. 6–9) into one paid booking.
+  const multiSlotMode = !isService && selectionKind === "time" && !wholeDayMode;
+  const toggleSlot = (slot: BusinessSlot) =>
+    setSelectedSlots((prev) =>
+      prev.some((s) => s.id === slot.id)
+        ? prev.filter((s) => s.id !== slot.id)
+        : [...prev, slot],
+    );
+  const selectedSlotsSorted = [...selectedSlots].sort((a, b) => a.startAt.localeCompare(b.startAt));
+  const selectedSlotsTotal = selectedSlotsSorted.reduce((sum, s) => sum + s.pricePerSlot, 0);
+
+  // Class/service browser — rendered in the wide left column for coaching,
+  // and inside the deck for other service businesses.
+  const browserServices = isCoaching ? visibleCoachingServices : business.setup.services;
+  const classBrowser = (
+    <div className="space-y-3">
+      {isCoaching && paymentTabs.length > 2 && (
+        <div>
+          <p className="text-xs font-medium text-zinc-500">Filter by payment</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {paymentTabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setPaymentFilter(tab.id);
+                  setSelectedServiceIds([]);
+                  setSelectedSlot(null);
+                }}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                  paymentFilter === tab.id
+                    ? "bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-500/30"
+                    : "bg-white/[0.04] text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div>
+        <p className="text-xs font-medium text-zinc-500">
+          {isCoaching ? "Step 1 · Choose a class" : "Choose service(s)"}
+        </p>
+        <div className={isCoaching ? "mt-2 grid gap-2 sm:grid-cols-2" : "mt-2 space-y-1.5"}>
+          {browserServices.length === 0 && (
+            <p className="text-sm text-zinc-600">
+              {isCoaching && paymentFilter !== "all"
+                ? "No classes with this payment type."
+                : "No services available yet."}
+            </p>
+          )}
+          {browserServices.map((svc) => {
+            const on = selectedServiceIds.includes(svc.id);
+            const options = servicePriceOptions(svc);
+            const priceText = formatServicePriceSummary(svc);
+            const enrollLabel = formatEnrollmentLabel(svc.enrollmentType, svc.maxParticipants);
+            return (
+              <button
+                key={svc.id}
+                type="button"
+                onClick={() =>
+                  setSelectedServiceIds((prev) => {
+                    if (isCoaching) return prev.includes(svc.id) ? [] : [svc.id];
+                    return prev.includes(svc.id)
+                      ? prev.filter((x) => x !== svc.id)
+                      : [...prev, svc.id];
+                  })
+                }
+                className={`flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left text-sm transition ${
+                  on
+                    ? "border-emerald-400/50 bg-emerald-500/15 text-emerald-100"
+                    : "border-white/10 bg-white/[0.03] text-zinc-200 hover:border-emerald-500/30"
+                }`}
+              >
+                <span className="min-w-0">
+                  <span className="block truncate font-medium">{svc.name}</span>
+                  <span className="block text-[11px] text-zinc-500">
+                    {isCoaching && (
+                      <span className="text-emerald-400/80">
+                        {options.length > 1
+                          ? `${options.length} payment options`
+                          : pricingModelCustomerLabel(options[0].pricingModel)}
+                        {" · "}
+                      </span>
+                    )}
+                    {svc.durationMinutes} min
+                    {enrollLabel ? ` · ${enrollLabel}` : ""}
+                  </span>
+                </span>
+                <span className="shrink-0 text-right text-xs font-semibold leading-tight">
+                  {priceText}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex flex-col px-5 pt-2 sm:px-8">
       <div>
@@ -389,7 +585,7 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
         </Link>
       </div>
 
-      <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_24rem]">
+      <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_28rem]">
         {/* —— Left: gallery + about —— */}
         <div className="min-w-0">
           <PhotoCarousel urls={photos} label={business.name} />
@@ -401,11 +597,13 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
             <h1 className="mt-2 text-2xl font-semibold text-zinc-100 sm:text-3xl">{business.name}</h1>
             {business.address && <p className="mt-1 text-sm text-zinc-400">{business.address}</p>}
             <p className="mt-2 text-xs text-zinc-500">
-              {isService
-                ? `${business.setup.services.length} service${business.setup.services.length === 1 ? "" : "s"} · ${business.setup.staff.length} staff`
-                : isFullDay
-                  ? "Full-day booking"
-                  : `${business.setup.slotMinutes}-min slots`}
+              {isCoaching
+                ? `${business.setup.services.length} class${business.setup.services.length === 1 ? "" : "es"} · Hourly, daily, weekly & monthly options`
+                : isService
+                  ? `${business.setup.services.length} service${business.setup.services.length === 1 ? "" : "s"} · ${business.setup.staff.length} staff`
+                  : isFullDay
+                    ? "Full-day booking"
+                    : `${business.setup.slotMinutes}-min slots`}
               {!isService && isVenue && business.setup.maxGuests
                 ? ` · up to ${business.setup.maxGuests} guests`
                 : ""}
@@ -424,6 +622,19 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
               <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
                 {business.setup.venueRules.trim()}
               </p>
+            </div>
+          )}
+
+          {/* Coaching class browser fills the wide left column */}
+          {isCoaching && (
+            <div className="glass mt-5 rounded-2xl p-4 sm:p-5">
+              <p className="text-xs font-medium uppercase tracking-widest text-emerald-400/80">
+                Classes on offer
+              </p>
+              <p className="mt-0.5 mb-3 text-sm text-zinc-400">
+                Pick a class, then set it up on the right.
+              </p>
+              {classBrowser}
             </div>
           )}
         </div>
@@ -462,56 +673,100 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
           <div className="glass overflow-hidden rounded-2xl">
             <div className="border-b border-white/8 bg-white/[0.02] px-4 py-3 sm:px-5">
               <p className="text-xs font-medium uppercase tracking-widest text-emerald-400/80">
-                Book your slot
+                {isCoaching ? "Enroll in a class" : "Book your slot"}
               </p>
               <p className="mt-0.5 text-sm text-zinc-400">
-                {isFullDay ? "Pick a day, pay, then you're booked." : "Pick a day & time, pay, then you're booked."}
+                {isCoaching
+                  ? "Choose class → pick time → pay (hourly, daily, weekly, or monthly)."
+                  : isFullDay
+                    ? "Pick a day, pay, then you're booked."
+                    : "Pick a day & time, pay, then you're booked."}
               </p>
+              {isCoaching && (
+                <div className="mt-2.5 flex flex-wrap gap-1.5 text-[10px] text-zinc-500">
+                  <span className="rounded-md bg-white/[0.04] px-2 py-0.5">1 · Class</span>
+                  <span>→</span>
+                  {servicePayOptions.length > 1 && (
+                    <>
+                      <span className="rounded-md bg-white/[0.04] px-2 py-0.5">2 · Payment</span>
+                      <span>→</span>
+                    </>
+                  )}
+                  <span className="rounded-md bg-white/[0.04] px-2 py-0.5">
+                    {servicePayOptions.length > 1 ? "3" : "2"} · Time
+                  </span>
+                  <span>→</span>
+                  <span className="rounded-md bg-white/[0.04] px-2 py-0.5">
+                    {servicePayOptions.length > 1 ? "4" : "3"} · Pay
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="p-4">
             {/* Service-first picker — services then staff */}
             {isService && (
               <div className="space-y-3">
-                <div>
-                  <p className="text-xs font-medium text-zinc-500">Choose service(s)</p>
-                  <div className="mt-2 space-y-1.5">
-                    {business.setup.services.length === 0 && (
-                      <p className="text-sm text-zinc-600">No services available yet.</p>
-                    )}
-                    {business.setup.services.map((svc) => {
-                      const on = selectedServiceIds.includes(svc.id);
-                      return (
-                        <button
-                          key={svc.id}
-                          type="button"
-                          onClick={() =>
-                            setSelectedServiceIds((prev) =>
-                              prev.includes(svc.id)
-                                ? prev.filter((x) => x !== svc.id)
-                                : [...prev, svc.id],
-                            )
-                          }
-                          className={`flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left text-sm transition ${
-                            on
-                              ? "border-emerald-400/50 bg-emerald-500/15 text-emerald-100"
-                              : "border-white/10 bg-white/[0.03] text-zinc-200 hover:border-emerald-500/30"
-                          }`}
-                        >
-                          <span className="min-w-0">
-                            <span className="block truncate font-medium">{svc.name}</span>
-                            <span className="block text-[11px] text-zinc-500">
-                              {svc.durationMinutes} min
-                            </span>
-                          </span>
-                          <span className="shrink-0 font-semibold">
-                            ₹{svc.price.toLocaleString("en-IN")}
-                          </span>
-                        </button>
-                      );
-                    })}
+                {!isCoaching && classBrowser}
+
+                {isCoaching && !selectedService && (
+                  <p className="rounded-lg border border-dashed border-white/10 px-4 py-6 text-center text-sm text-zinc-500">
+                    ← Pick a class from <span className="text-zinc-300">Classes on offer</span> to
+                    choose payment &amp; time.
+                  </p>
+                )}
+
+                {isCoaching && selectedService && (
+                  <div className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-3 py-2">
+                    <p className="text-[11px] uppercase tracking-wide text-emerald-400/80">
+                      Selected class
+                    </p>
+                    <p className="text-sm font-semibold text-emerald-100">{selectedService.name}</p>
                   </div>
-                </div>
+                )}
+
+                {isCoaching && selectedService && servicePayOptions.length > 1 && (
+                  <div>
+                    <p className="text-xs font-medium text-zinc-500">Step 2 · Choose payment type</p>
+                    <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {servicePayOptions.map((opt) => {
+                        const on = pricingModel === opt.pricingModel;
+                        return (
+                          <button
+                            key={opt.pricingModel}
+                            type="button"
+                            onClick={() => setPricingModel(opt.pricingModel)}
+                            className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left transition ${
+                              on
+                                ? "border-emerald-400/60 bg-emerald-500/15 text-emerald-100 ring-1 ring-emerald-500/30"
+                                : "border-white/10 bg-white/[0.03] text-zinc-200 hover:border-emerald-500/40"
+                            }`}
+                          >
+                            <span className="min-w-0">
+                              <span className="block text-sm font-semibold">
+                                {pricingModelCustomerLabel(opt.pricingModel)}
+                              </span>
+                              <span className="mt-0.5 block text-[11px] text-zinc-500">
+                                {optionCoverage(opt)}
+                              </span>
+                            </span>
+                            <span className="shrink-0 text-right text-sm font-semibold text-emerald-300">
+                              {formatPriceOption(opt, selectedService.durationMinutes)}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {isCoaching && selectedService && (
+                  <CoachingBookingGuide
+                    service={selectedService}
+                    selectedDate={selectedDate}
+                    selectedModel={pricingModel || undefined}
+                  />
+                )}
 
                 {selectedServiceIds.length > 0 && (
                   <label className="flex items-center gap-2">
@@ -559,11 +814,82 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
 
             {isService && selectedServiceIds.length === 0 ? (
               <p className="mt-3 rounded-lg border border-dashed border-white/10 px-4 py-6 text-center text-sm text-zinc-600">
-                Pick a service to see available times.
+                {isCoaching
+                  ? "Pick a class from the left to see times and payment details."
+                  : "Pick a service to see available times."}
               </p>
             ) : (
             <>
+            {isPeriodSelect ? (
+              <div className="mt-3">
+                {isCoaching && selectedService && (
+                  <p className="mb-2 text-xs font-medium text-zinc-500">
+                    Step {servicePayOptions.length > 1 ? 3 : 2} ·{" "}
+                    {selectionKind === "month" ? "Pick a month" : "Pick a week"}
+                  </p>
+                )}
+                {slotsLoading ? (
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="h-16 animate-pulse rounded-lg bg-white/5" />
+                    ))}
+                  </div>
+                ) : periods.length === 0 ? (
+                  <p className="text-sm text-zinc-600">
+                    No upcoming {selectionKind === "month" ? "months" : "weeks"} available to enroll.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {periods.map((p) => {
+                      const available = p.status === "available";
+                      const picked = selectedSlot?.id === p.id;
+                      const label =
+                        periodCoverageLabel(p.periodKind, p.periodKey) || formatDayLabel(p.date);
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          disabled={!available || Boolean(bookingId)}
+                          onClick={() => available && setSelectedSlot(p)}
+                          className={`rounded-lg border px-3 py-2.5 text-left transition disabled:cursor-default ${
+                            picked
+                              ? "border-emerald-400/60 bg-emerald-500/15 text-emerald-100"
+                              : available
+                                ? "border-white/10 bg-white/[0.03] text-zinc-200 hover:border-emerald-500/40 hover:bg-emerald-500/5"
+                                : "border-white/5 bg-white/[0.01] text-zinc-600"
+                          }`}
+                        >
+                          <span className="block text-sm font-semibold capitalize leading-tight">
+                            {label}
+                          </span>
+                          <span className="mt-0.5 block text-[11px] text-zinc-500">
+                            {available
+                              ? `₹${p.pricePerSlot.toLocaleString("en-IN")}${
+                                  p.seatsLeft != null && p.maxParticipants
+                                    ? ` · ${p.seatsLeft} seat${p.seatsLeft === 1 ? "" : "s"} left`
+                                    : ""
+                                }`
+                              : "Full"}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ) : (
+            <>
             <div className={isService || business.setup.resources.length > 1 ? "mt-3" : ""}>
+              {isCoaching && selectedService && (
+                <p className="mb-2 text-xs font-medium text-zinc-500">
+                  Step {servicePayOptions.length > 1 ? 3 : 2} ·{" "}
+                  {selectionKind === "day"
+                    ? "Pick a day"
+                    : isBatchClass(selectedService)
+                      ? "Pick your batch date & time"
+                      : "Pick date & time"}
+                </p>
+              )}
               <SlotDateNav
                 rangeStart={range.from}
                 rangeEnd={range.to}
@@ -616,6 +942,11 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                       : "None open"}
                 </span>
               </div>
+              {multiSlotMode && !slotsLoading && availableDaySlots.length > 0 && (
+                <p className="mt-1 text-xs text-emerald-300/80">
+                  Tap multiple slots to book them together (e.g. 6–9) and pay once.
+                </p>
+              )}
 
               {slotsLoading ? (
                 <div className="mt-3 grid grid-cols-3 gap-2">
@@ -624,8 +955,12 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                   ))}
                 </div>
               ) : daySlots.length === 0 ? (
-                <p className="mt-3 text-sm text-zinc-600">No slots on this day. Try another date.</p>
-              ) : isFullDay ? (
+                <p className="mt-3 text-sm text-zinc-600">
+                  {isCoaching && selectedService && isBatchClass(selectedService)
+                    ? "No batch sessions on this day — try a day that matches the class schedule."
+                    : "No slots on this day. Try another date."}
+                </p>
+              ) : wholeDayMode ? (
                 <div className="mt-3 space-y-2 max-h-[15rem] overflow-y-auto pr-1 [scrollbar-width:thin]">
                   {daySlots.map((slot) => {
                     const available = slot.status === "available";
@@ -644,7 +979,12 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                               : "border-white/5 bg-white/[0.01] opacity-50"
                         }`}
                       >
-                        <span className="font-medium text-zinc-100">Full day</span>
+                        <span className="font-medium text-zinc-100">
+                          {selectionKind === "day" ? "Whole day" : "Full day"}
+                          {available && slot.seatsLeft != null && slot.maxParticipants
+                            ? ` · ${slot.seatsLeft} seat${slot.seatsLeft === 1 ? "" : "s"} left`
+                            : ""}
+                        </span>
                         <span className="font-semibold text-zinc-200">
                           {available ? `₹${slot.pricePerSlot.toLocaleString("en-IN")}` : "Taken"}
                         </span>
@@ -656,14 +996,19 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                 <div className="mt-3 grid max-h-[15rem] grid-cols-3 gap-2 overflow-y-auto pr-1 [scrollbar-width:thin]">
                   {daySlots.map((slot) => {
                     const available = slot.status === "available";
-                    const picked = selectedSlot?.id === slot.id;
+                    const picked = multiSlotMode
+                      ? selectedSlots.some((s) => s.id === slot.id)
+                      : selectedSlot?.id === slot.id;
+                    const full = !available && slot.seatsLeft === 0;
                     return (
                       <button
                         key={slot.id}
                         type="button"
                         disabled={!available || Boolean(bookingId)}
-                        onClick={() => available && setSelectedSlot(slot)}
-                        title={`${formatTime12(slot.startTime)} – ${formatTime12(slot.endTime)} · ₹${slot.pricePerSlot.toLocaleString("en-IN")}`}
+                        onClick={() =>
+                          available && (multiSlotMode ? toggleSlot(slot) : setSelectedSlot(slot))
+                        }
+                        title={`${formatTime12(slot.startTime)} – ${formatTime12(slot.endTime)} · ₹${slot.pricePerSlot.toLocaleString("en-IN")}${slot.pricingLabel ?? ""}`}
                         className={`rounded-lg border px-1 py-2 text-center transition disabled:cursor-default ${
                           picked
                             ? "border-emerald-400/60 bg-emerald-500/15 text-emerald-100"
@@ -675,8 +1020,19 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                         <span className="block text-xs font-semibold leading-tight">
                           {formatTime12(slot.startTime)}
                         </span>
+                        {slot.batchLabel && (
+                          <span className="mt-0.5 block truncate text-[9px] text-zinc-500">
+                            {slot.batchLabel}
+                          </span>
+                        )}
                         <span className="mt-0.5 block text-[10px] text-zinc-500">
-                          ₹{slot.pricePerSlot.toLocaleString("en-IN")}
+                          {available
+                            ? slot.seatsLeft != null && slot.maxParticipants
+                              ? `${slot.seatsLeft} seat${slot.seatsLeft === 1 ? "" : "s"} · ₹${slot.pricePerSlot.toLocaleString("en-IN")}`
+                              : `₹${slot.pricePerSlot.toLocaleString("en-IN")}`
+                            : full
+                              ? "Full"
+                              : "Booked"}
                         </span>
                       </button>
                     );
@@ -686,17 +1042,66 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
             </div>
             </>
             )}
+            </>
+            )}
           </div>
 
-          {/* Sticky confirm bar inside booking deck */}
-          {selectedSlot && selectedSlot.status === "available" && (
+          {/* Multi-slot confirm bar (hourly resource bookings) */}
+          {multiSlotMode && selectedSlotsSorted.length > 0 && (
             <div className="border-t border-white/8 bg-[#0c0c0e] px-4 py-4 sm:px-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs text-zinc-500">Your selection</p>
+                  <p className="text-xs text-zinc-500">
+                    {selectedSlotsSorted.length} slot{selectedSlotsSorted.length === 1 ? "" : "s"} selected
+                  </p>
+                  <p className="truncate text-sm font-medium text-zinc-100">
+                    {formatDayLabel(selectedSlotsSorted[0].date)}
+                    {selectedResource ? ` · ${selectedResource.name}` : ""}
+                  </p>
+                  <p className="truncate text-xs text-zinc-500">
+                    {selectedSlotsSorted
+                      .map((s) => `${formatTime12(s.startTime)}–${formatTime12(s.endTime)}`)
+                      .join(", ")}
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold text-emerald-300">
+                    ₹{selectedSlotsTotal.toLocaleString("en-IN")}
+                    <span className="ml-1 text-xs font-normal text-zinc-500">total</span>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSlots([])}
+                    className="rounded-full border border-white/10 px-4 py-2.5 text-sm text-zinc-400 hover:bg-white/5"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!canBook || Boolean(bookingId)}
+                    onClick={() => void confirmBooking()}
+                    className="btn-primary rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-60"
+                  >
+                    {bookingId ? "Redirecting to pay…" : "Pay & book"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sticky confirm bar inside booking deck */}
+          {!multiSlotMode && selectedSlot && selectedSlot.status === "available" && (
+            <div className="border-t border-white/8 bg-[#0c0c0e] px-4 py-4 sm:px-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs text-zinc-500">
+                    {isCoaching
+                      ? `Step ${servicePayOptions.length > 1 ? 4 : 3} · Confirm & pay`
+                      : "Your selection"}
+                  </p>
                   <p className="truncate text-sm font-medium text-zinc-100">
                     {formatDayLabel(selectedSlot.date)}
-                    {!isFullDay && ` · ${formatTime12(selectedSlot.startTime)}`}
+                    {selectionKind === "time" && !isFullDay && ` · ${formatTime12(selectedSlot.startTime)}`}
                     {isService
                       ? selectedSlot.staffName
                         ? ` · ${selectedSlot.staffName}`
@@ -711,11 +1116,40 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                         .filter((s) => selectedServiceIds.includes(s.id))
                         .map((s) => s.name)
                         .join(", ")}
+                      {isCoaching && isPeriodSelect && selectedSlot.periodKey
+                        ? ` · ${periodCoverageLabel(selectedSlot.periodKind, selectedSlot.periodKey)}`
+                        : ""}
                     </p>
                   )}
-                  <p className="text-sm font-semibold text-emerald-300">
-                    ₹{selectedSlot.pricePerSlot.toLocaleString("en-IN")}
-                  </p>
+                  {isCoaching && selectedService ? (
+                    <>
+                      <p className="text-sm font-semibold text-emerald-300">
+                        {customerConfirmPaymentLine(
+                          selectedSlot.pricePerSlot,
+                          pricingModel || undefined,
+                          selectedSlot.date,
+                        ).title}
+                      </p>
+                      <p className="mt-0.5 text-xs text-zinc-500">
+                        {customerConfirmPaymentLine(
+                          selectedSlot.pricePerSlot,
+                          pricingModel || undefined,
+                          selectedSlot.date,
+                        ).detail}
+                        {selectedSlot.seatsLeft != null && selectedSlot.maxParticipants
+                          ? ` · ${selectedSlot.seatsLeft} seat${selectedSlot.seatsLeft === 1 ? "" : "s"} left`
+                          : ""}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm font-semibold text-emerald-300">
+                      ₹{selectedSlot.pricePerSlot.toLocaleString("en-IN")}
+                      {selectedSlot.pricingLabel ?? ""}
+                      {selectedSlot.seatsLeft != null && selectedSlot.maxParticipants
+                        ? ` · ${selectedSlot.seatsLeft} seat${selectedSlot.seatsLeft === 1 ? "" : "s"} left`
+                        : ""}
+                    </p>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -731,7 +1165,11 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
                     onClick={() => void confirmBooking()}
                     className="btn-primary rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-60"
                   >
-                    {bookingId === selectedSlot.id ? "Redirecting to pay…" : "Pay & book"}
+                    {bookingId === selectedSlot.id
+                      ? "Redirecting to pay…"
+                      : isCoaching && (pricingModel === "monthly" || pricingModel === "weekly")
+                        ? "Pay & enroll"
+                        : "Pay & book"}
                   </button>
                 </div>
               </div>

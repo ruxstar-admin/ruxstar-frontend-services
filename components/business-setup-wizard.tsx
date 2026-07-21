@@ -27,6 +27,8 @@ import { SetupStepReview } from "@/components/business-setup/setup-step-review";
 import { SetupStepRules } from "@/components/business-setup/setup-step-rules";
 import { SetupStepStaff } from "@/components/business-setup/setup-step-staff";
 import { SetupStepServices } from "@/components/business-setup/setup-step-services";
+import { SetupStepCoachingServices } from "@/components/business-setup/setup-step-coaching-services";
+import { formatServicePriceSummary } from "@/lib/coaching";
 import { SetupStepPrintProfile } from "@/components/business-setup/setup-step-print-profile";
 import { SetupStepPrintPricing } from "@/components/business-setup/setup-step-print-pricing";
 import {
@@ -66,6 +68,7 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   );
   const isFullDay = bookingMode === "fullDay";
   const isService = bookingMode === "services";
+  const isCoaching = business.typeId === "coaching";
   const isPrint = business.module === "print" || isPrintType(business.typeId);
 
   const [stepIndex, setStepIndex] = useState(0);
@@ -223,10 +226,36 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
     );
   }
 
-  function addService(svc: { name: string; durationMinutes: number; price: number }) {
+  function addService(svc: {
+    name: string;
+    durationMinutes: number;
+    price: number;
+    pricingModel?: BusinessService["pricingModel"];
+    enrollmentType?: BusinessService["enrollmentType"];
+    maxParticipants?: number;
+    classTimings?: BusinessService["classTimings"];
+    priceOptions?: BusinessService["priceOptions"];
+  }) {
     setServices((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), ...svc, staffIds: staff.map((s) => s.id) },
+      {
+        id: crypto.randomUUID(),
+        name: svc.name,
+        durationMinutes: svc.durationMinutes,
+        price: svc.price,
+        staffIds: staff.map((s) => s.id),
+        ...(svc.pricingModel && svc.pricingModel !== "per_session"
+          ? { pricingModel: svc.pricingModel }
+          : {}),
+        ...(svc.enrollmentType && svc.enrollmentType !== "open"
+          ? { enrollmentType: svc.enrollmentType }
+          : {}),
+        ...(svc.maxParticipants && svc.maxParticipants > 1
+          ? { maxParticipants: svc.maxParticipants }
+          : {}),
+        ...(svc.classTimings?.length ? { classTimings: svc.classTimings } : {}),
+        ...(svc.priceOptions && svc.priceOptions.length ? { priceOptions: svc.priceOptions } : {}),
+      },
     ]);
     setError("");
   }
@@ -725,13 +754,23 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
 
         {step === "services" && (
           <div className="space-y-5">
-            <SetupStepServices
-              services={services}
-              staff={staff}
-              onAdd={addService}
-              onRemove={removeService}
-              onToggleStaff={toggleServiceStaff}
-            />
+            {isCoaching ? (
+              <SetupStepCoachingServices
+                services={services}
+                staff={staff}
+                onAdd={addService}
+                onRemove={removeService}
+                onToggleStaff={toggleServiceStaff}
+              />
+            ) : (
+              <SetupStepServices
+                services={services}
+                staff={staff}
+                onAdd={addService}
+                onRemove={removeService}
+                onToggleStaff={toggleServiceStaff}
+              />
+            )}
             <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
               <label className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-zinc-300">Gap between appointments</span>
@@ -892,10 +931,12 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
               </p>
               <ul className="mt-2 space-y-1.5">
                 {services.map((svc) => (
-                  <li key={svc.id} className="flex items-center justify-between text-sm">
-                    <span className="text-zinc-200">{svc.name}</span>
-                    <span className="text-zinc-500">
-                      {svc.durationMinutes} min · ₹{svc.price.toLocaleString("en-IN")}
+                  <li key={svc.id} className="flex items-center justify-between gap-3 text-sm">
+                    <span className="min-w-0 truncate text-zinc-200">{svc.name}</span>
+                    <span className="shrink-0 text-right text-zinc-500">
+                      {isCoaching
+                        ? formatServicePriceSummary(svc)
+                        : `${svc.durationMinutes} min · ₹${svc.price.toLocaleString("en-IN")}`}
                     </span>
                   </li>
                 ))}

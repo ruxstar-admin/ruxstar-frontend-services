@@ -125,9 +125,20 @@ export default function CustomerOrdersPage() {
   );
 }
 
+function shortId(id: string) {
+  return `#${id.replace(/-/g, "").slice(-8).toUpperCase()}`;
+}
+
 function OrderRow({ order, onOpen }: { order: PrintOrder; onOpen: () => void }) {
   const attrs = formatPrintOrderAttributes(order.attributes);
   const needsPay = order.status === "accepted" || order.status === "pending_payment";
+  const placed = order.createdAt
+    ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        timeZone: "Asia/Kolkata",
+      })
+    : null;
   return (
     <li>
       <button
@@ -151,6 +162,10 @@ function OrderRow({ order, onOpen }: { order: PrintOrder; onOpen: () => void }) 
         </div>
         <p className="mt-1 line-clamp-2 text-xs text-zinc-500">
           {[attrs, order.city].filter(Boolean).join(" · ")}
+        </p>
+        <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-zinc-600">
+          {shortId(order.id)}
+          {placed ? ` · ${placed}` : ""}
         </p>
         <div className="mt-auto flex items-center justify-between pt-3">
           <StatusBadge status={order.status} />

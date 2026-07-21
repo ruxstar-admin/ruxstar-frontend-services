@@ -1,5 +1,3 @@
-import { proxyBackend } from "@/lib/proxy";
-
 export const dynamic = "force-dynamic";
 
 type RouteContext = {

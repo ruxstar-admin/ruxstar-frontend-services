@@ -25,7 +25,7 @@ npm run dev
 ```
 app/
   page.tsx                 # Landing page
-  login/                   # Login (TODO)
+  login/                   # Login (password + OTP)
   signup/                  # Signup flow
   customer/                # Customer dashboard (placeholder)
   business/                # Vendor dashboard (placeholder)

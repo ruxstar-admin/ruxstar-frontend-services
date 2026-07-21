@@ -56,6 +56,8 @@ export default function VendorOrdersPage() {
   const { data: businesses = [] } = useVendorBusinesses(kycVerified);
   const [tab, setTab] = useState<Tab>("all");
   const [businessId, setBusinessId] = useState<string>("all");
+  const [query, setQuery] = useState("");
+  const [nowMs] = useState(() => Date.now());
 
   const bookings = useMemo(() => data ?? [], [data]);
 
@@ -73,19 +75,33 @@ export default function VendorOrdersPage() {
 
   const stats = useMemo(() => {
     const confirmed = bookings.filter((b) => b.status === "confirmed");
-    const now = Date.now();
     const revenue = confirmed.reduce((sum, b) => sum + (b.amount ?? b.pricePerSlot ?? 0), 0);
-    const upcomingCount = confirmed.filter((b) => new Date(b.startAt).getTime() > now).length;
+    const upcomingCount = confirmed.filter((b) => new Date(b.startAt).getTime() > nowMs).length;
     return { total: confirmed.length, revenue, upcomingCount, cancelled: bookings.length - confirmed.length };
-  }, [bookings]);
+  }, [bookings, nowMs]);
 
   const visible = useMemo(() => {
-    const now = Date.now();
     const todayKey = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+    const q = query.trim().toLowerCase();
     let rows = bookings;
     if (activeBusinessId !== "all") rows = rows.filter((b) => b.businessId === activeBusinessId);
+    if (q) {
+      rows = rows.filter((b) =>
+        [
+          b.refId,
+          b.paymentRefId,
+          b.customerName,
+          b.customerMobile,
+          b.businessName,
+          b.resourceName,
+          b.serviceLabel,
+        ]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(q)),
+      );
+    }
     rows = rows.filter((b) => {
-      const started = new Date(b.startAt).getTime() <= now;
+      const started = new Date(b.startAt).getTime() <= nowMs;
       switch (tab) {
         case "upcoming":
           return b.status === "confirmed" && !started;
@@ -102,7 +118,7 @@ export default function VendorOrdersPage() {
     });
     const dir = tab === "upcoming" || tab === "today" ? 1 : -1;
     return [...rows].sort((a, b) => dir * (+new Date(a.startAt) - +new Date(b.startAt)));
-  }, [bookings, tab, activeBusinessId]);
+  }, [bookings, tab, activeBusinessId, nowMs, query]);
 
   // Group visible bookings by IST day for a clean, scannable layout.
   const grouped = useMemo(() => {
@@ -154,10 +170,32 @@ export default function VendorOrdersPage() {
         </div>
 
         <div className="mt-6 flex flex-col gap-3 border-b border-white/5 pb-4 sm:flex-row sm:items-center">
+          <div className="relative w-full sm:flex-1">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
+              ⌕
+            </span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search ref id, customer or phone…"
+              className="field-input h-9 w-full py-0 pl-8 text-sm text-zinc-100"
+              aria-label="Search bookings"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1.5 text-sm text-zinc-500 hover:text-zinc-200"
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </div>
           <select
             value={tab}
             onChange={(e) => setTab(e.target.value as Tab)}
-            className="field-input h-9 w-full py-0 text-sm text-zinc-100 sm:w-44"
+            className="field-input h-9 w-full py-0 text-sm text-zinc-100 sm:w-40"
             aria-label="Filter bookings"
           >
             {TABS.map((t) => (
@@ -197,13 +235,15 @@ export default function VendorOrdersPage() {
           </div>
         ) : visible.length === 0 ? (
           <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
-            <p className="text-3xl">📭</p>
+            <p className="text-3xl">{query ? "🔍" : "📭"}</p>
             <p className="mt-3 text-sm text-zinc-300">
-              {tab === "cancelled"
-                ? "No cancelled bookings."
-                : tab === "past"
-                  ? "No past bookings yet."
-                  : "No bookings here yet."}
+              {query
+                ? `No bookings match “${query}”.`
+                : tab === "cancelled"
+                  ? "No cancelled bookings."
+                  : tab === "past"
+                    ? "No past bookings yet."
+                    : "No bookings here yet."}
             </p>
           </div>
         ) : (
@@ -247,6 +287,11 @@ function OrderRow({ booking, showBusiness }: { booking: VendorBooking; showBusin
   const cancelled = booking.status === "cancelled";
   const amount = booking.amount ?? booking.pricePerSlot ?? 0;
   const telHref = booking.customerMobile ? `tel:${booking.customerMobile.replace(/\s/g, "")}` : null;
+  const slotCount = booking.slots?.length ?? 0;
+  const timeLabel =
+    slotCount > 1
+      ? `${slotCount} slots · ${istTimeLabel(booking.startAt)}–${istTimeLabel(booking.endAt)}`
+      : istTimeLabel(booking.startAt);
 
   return (
     <li
@@ -270,7 +315,7 @@ function OrderRow({ booking, showBusiness }: { booking: VendorBooking; showBusin
           )}
         </div>
         <p className="truncate text-sm text-zinc-300">
-          {istTimeLabel(booking.startAt)}
+          {timeLabel}
           {booking.serviceLabel ? ` · ${booking.serviceLabel}` : ""}
           {booking.resourceName ? ` · ${booking.resourceName}` : ""}
         </p>
@@ -287,6 +332,25 @@ function OrderRow({ booking, showBusiness }: { booking: VendorBooking; showBusin
             </a>
           )}
         </p>
+        {slotCount > 1 && booking.slots && (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {booking.slots.map((s) => (
+              <span
+                key={s.startAt}
+                className="rounded border border-white/8 bg-white/[0.03] px-1.5 py-0.5 text-[10px] text-zinc-300"
+              >
+                {istTimeLabel(s.startAt)}
+              </span>
+            ))}
+          </div>
+        )}
+        {(booking.refId || booking.paymentRefId) && (
+          <p className="mt-1 truncate font-mono text-[10px] uppercase tracking-wide text-zinc-500">
+            {booking.refId ?? ""}
+            {booking.refId && booking.paymentRefId ? " · " : ""}
+            {booking.paymentRefId ?? ""}
+          </p>
+        )}
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-1">

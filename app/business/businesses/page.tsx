@@ -62,7 +62,7 @@ function businessAction(biz: Business, events: RuxEvent[]) {
   if (biz.setupComplete && supportsAppointmentSetup(biz.module)) {
     return {
       href: `/business/businesses/${biz.id}/calendar`,
-      label: "View calendar",
+      label: biz.typeId === "coaching" ? "View classes" : "View calendar",
       disabled: false,
     };
   }

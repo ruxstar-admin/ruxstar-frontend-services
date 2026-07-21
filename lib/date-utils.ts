@@ -40,6 +40,16 @@ export function formatTime12(time24: string) {
 /** Days shown per calendar page (customer + vendor). */
 export const SLOT_VIEW_DAYS = 7;
 
+const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
+export type WeekDayKey = (typeof DAY_KEYS)[number];
+
+/** Weekday key in Asia/Kolkata, aligned with backend slot engine. */
+export function dayKeyForDate(dateStr: string): WeekDayKey {
+  const utc = Date.parse(`${dateStr}T12:00:00+05:30`);
+  if (Number.isNaN(utc)) return "mon";
+  return DAY_KEYS[new Date(utc).getUTCDay()];
+}
+
 /** How far ahead customers can book from today. */
 export const MAX_BOOK_AHEAD_DAYS = 90;
 

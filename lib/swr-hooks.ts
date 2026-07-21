@@ -9,6 +9,16 @@ import {
   listAdminCategories,
   listAdminTypes,
   listAdminUsers,
+  listAdminUsersPaged,
+  getAdminUserDetail,
+  getAdminMetrics,
+  getAdminRevenue,
+  listAdminBusinesses,
+  listAdminBookings,
+  listAdminEvents,
+  listAdminEventRegistrations,
+  listAdminPrintOrders,
+  listAdminPayments,
   listBusinesses,
   listCustomerBookings,
   listMyEventRegistrations,
@@ -24,6 +34,17 @@ import {
   type AdminCatalogType,
   type AdminUser,
   type AdminVendorKycRow,
+  type AdminListParams,
+  type AdminPage,
+  type AdminMetrics,
+  type AdminUserDetail,
+  type AdminBusiness,
+  type AdminBooking,
+  type AdminEvent,
+  type AdminEventRegistration,
+  type AdminPrintOrder,
+  type AdminPayment,
+  type AdminRevenue,
   type AppNotification,
   type Business,
   type BusinessCatalog,
@@ -84,6 +105,16 @@ export const swrKeys = {
   adminKyc: "swr/admin/kyc",
   adminStaff: "swr/admin/staff",
   adminCatalog: "swr/admin/catalog",
+  adminMetrics: "swr/admin/metrics",
+  adminRevenue: "swr/admin/revenue",
+  adminUsers: "swr/admin/users",
+  adminUserDetail: "swr/admin/user",
+  adminBusinesses: "swr/admin/businesses",
+  adminBookings: "swr/admin/bookings",
+  adminEvents: "swr/admin/events",
+  adminRegistrations: "swr/admin/registrations",
+  adminPrintOrders: "swr/admin/print-orders",
+  adminPayments: "swr/admin/payments",
   printCatalog: "swr/catalog/print",
   myPrintOrders: "swr/pod/orders",
   vendorPrintOrders: "swr/pod/vendor/orders",
@@ -116,8 +147,8 @@ export function useVendorBusinesses(enabled = true) {
   return useSWR<Business[]>(enabled ? swrKeys.businesses : null, listBusinesses);
 }
 
-export function useVendorKyc() {
-  return useSWR<VendorKycStatus>(swrKeys.kyc, getVendorKycStatus);
+export function useVendorKyc(enabled = true) {
+  return useSWR<VendorKycStatus>(enabled ? swrKeys.kyc : null, getVendorKycStatus);
 }
 
 export function useRuxstarCard(enabled = true) {
@@ -228,6 +259,111 @@ export function useAdminCatalog(enabled = true) {
 
 export function invalidateAdminCatalog() {
   return globalMutate(swrKeys.adminCatalog);
+}
+
+/* ----------------------- Admin super portal (data) ---------------------- */
+
+// Revalidate every SWR key that starts with the given prefix (all param variants).
+function invalidatePrefix(prefix: string) {
+  return globalMutate(
+    (key) =>
+      key === prefix ||
+      (Array.isArray(key) && typeof key[0] === "string" && key[0].startsWith(prefix)),
+    undefined,
+    { revalidate: true },
+  );
+}
+
+export function useAdminMetrics(enabled = true) {
+  return useSWR<AdminMetrics>(enabled ? swrKeys.adminMetrics : null, getAdminMetrics, pollOpts(60_000));
+}
+
+export function useAdminRevenue(days = 30, enabled = true) {
+  return useSWR<AdminRevenue>(
+    enabled ? [swrKeys.adminRevenue, days] : null,
+    () => getAdminRevenue(days),
+    pollOpts(60_000),
+  );
+}
+
+export function useAdminUsersList(params: AdminListParams, enabled = true) {
+  return useSWR<AdminPage<AdminUser>>(
+    enabled ? [swrKeys.adminUsers, JSON.stringify(params)] : null,
+    () => listAdminUsersPaged(params),
+    { keepPreviousData: true },
+  );
+}
+
+export function useAdminUserDetail(id: string | null, enabled = true) {
+  return useSWR<AdminUserDetail>(
+    enabled && id ? [swrKeys.adminUserDetail, id] : null,
+    () => getAdminUserDetail(id as string),
+    { keepPreviousData: true },
+  );
+}
+
+export function useAdminBusinesses(params: AdminListParams, enabled = true) {
+  return useSWR<AdminPage<AdminBusiness>>(
+    enabled ? [swrKeys.adminBusinesses, JSON.stringify(params)] : null,
+    () => listAdminBusinesses(params),
+    { keepPreviousData: true },
+  );
+}
+
+export function useAdminBookings(params: AdminListParams, enabled = true) {
+  return useSWR<AdminPage<AdminBooking>>(
+    enabled ? [swrKeys.adminBookings, JSON.stringify(params)] : null,
+    () => listAdminBookings(params),
+    { keepPreviousData: true },
+  );
+}
+
+export function useAdminEvents(params: AdminListParams, enabled = true) {
+  return useSWR<AdminPage<AdminEvent>>(
+    enabled ? [swrKeys.adminEvents, JSON.stringify(params)] : null,
+    () => listAdminEvents(params),
+    { keepPreviousData: true },
+  );
+}
+
+export function useAdminEventRegistrations(params: AdminListParams, enabled = true) {
+  return useSWR<AdminPage<AdminEventRegistration>>(
+    enabled ? [swrKeys.adminRegistrations, JSON.stringify(params)] : null,
+    () => listAdminEventRegistrations(params),
+    { keepPreviousData: true },
+  );
+}
+
+export function useAdminPrintOrders(params: AdminListParams, enabled = true) {
+  return useSWR<AdminPage<AdminPrintOrder>>(
+    enabled ? [swrKeys.adminPrintOrders, JSON.stringify(params)] : null,
+    () => listAdminPrintOrders(params),
+    { keepPreviousData: true },
+  );
+}
+
+export function useAdminPayments(params: AdminListParams, enabled = true) {
+  return useSWR<AdminPage<AdminPayment>>(
+    enabled ? [swrKeys.adminPayments, JSON.stringify(params)] : null,
+    () => listAdminPayments(params),
+    { keepPreviousData: true },
+  );
+}
+
+export function invalidateAdminUsers() {
+  return Promise.all([invalidatePrefix(swrKeys.adminUsers), invalidatePrefix(swrKeys.adminUserDetail)]);
+}
+export function invalidateAdminBusinesses() {
+  return invalidatePrefix(swrKeys.adminBusinesses);
+}
+export function invalidateAdminBookings() {
+  return invalidatePrefix(swrKeys.adminBookings);
+}
+export function invalidateAdminEvents() {
+  return invalidatePrefix(swrKeys.adminEvents);
+}
+export function invalidateAdminPrintOrders() {
+  return invalidatePrefix(swrKeys.adminPrintOrders);
 }
 
 /* --------------------------- Print on demand --------------------------- */
