@@ -174,5 +174,124 @@ export function Toolbar({ children }: { children: ReactNode }) {
   );
 }
 
+/** Pill-style filter chips for dashboards. */
+export function FilterChips<T extends string | number>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: string }[];
+}) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {options.map((o) => (
+        <button
+          key={String(o.value)}
+          type="button"
+          onClick={() => onChange(o.value)}
+          className={`rounded-lg px-3 py-1.5 text-xs transition ${
+            value === o.value
+              ? "bg-white/10 text-zinc-100"
+              : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300"
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const BAR_COLORS: Record<string, string> = {
+  emerald: "bg-emerald-400/70",
+  sky: "bg-sky-400/70",
+  violet: "bg-violet-400/70",
+  amber: "bg-amber-400/70",
+  zinc: "bg-zinc-400/50",
+};
+
+/** Horizontal bar with label + numeric value — always readable. */
+export function HBar({
+  label,
+  value,
+  display,
+  max,
+  color = "emerald",
+}: {
+  label: string;
+  value: number;
+  display?: string;
+  max: number;
+  color?: keyof typeof BAR_COLORS;
+}) {
+  const pct = max > 0 ? Math.max(4, Math.round((value / max) * 100)) : 0;
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between gap-2 text-xs">
+        <span className="truncate text-zinc-400">{label}</span>
+        <span className="shrink-0 tabular-nums text-zinc-200">{display ?? value.toLocaleString("en-IN")}</span>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
+        <div
+          className={`h-full rounded-full transition-all ${BAR_COLORS[color] ?? BAR_COLORS.emerald}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Vertical bar chart row with date labels and amounts. */
+export function VBarChart({
+  rows,
+  formatValue,
+}: {
+  rows: { key: string; label: string; value: number }[];
+  formatValue?: (n: number) => string;
+}) {
+  const max = Math.max(1, ...rows.map((r) => r.value));
+  const fmt = formatValue ?? ((n: number) => n.toLocaleString("en-IN"));
+  if (rows.length === 0) {
+    return <p className="py-8 text-center text-xs text-zinc-500">No data for this period.</p>;
+  }
+  return (
+    <div className="flex h-44 items-end gap-1 border-b border-white/5 pb-6 pt-2">
+      {rows.map((r) => (
+        <div key={r.key} className="group flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
+          <span className="hidden text-[10px] tabular-nums text-emerald-300/90 sm:block">{fmt(r.value)}</span>
+          <div
+            className="w-full min-h-[4px] rounded-t bg-emerald-400/50 transition group-hover:bg-emerald-400/80"
+            style={{ height: `${Math.max(4, (r.value / max) * 100)}%` }}
+            title={`${r.label}: ${fmt(r.value)}`}
+          />
+          <span className="max-w-full truncate text-[9px] text-zinc-500">{r.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function Panel({
+  title,
+  action,
+  children,
+}: {
+  title: string;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-4 sm:p-5">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <p className="text-xs text-zinc-500">{title}</p>
+        {action}
+      </div>
+      {children}
+    </div>
+  );
+}
+
 // Small debounce hook shared by list pages so typing doesn't hammer the API.
 export { default as useDebounced } from "@/hooks/use-debounced";

@@ -1696,6 +1696,8 @@ export type CustomerBooking = {
   paymentStatus?: string | null;
   paymentRef?: string | null;
   paymentRefId?: string | null;
+  refundStatus?: string | null;
+  refundedAt?: string | null;
   expiresAt?: string | null;
   paidAt?: string | null;
   createdAt?: string;
@@ -1788,6 +1790,8 @@ function normalizeCustomerBooking(raw: unknown): CustomerBooking | null {
     paymentStatus: typeof b.paymentStatus === "string" ? b.paymentStatus : null,
     paymentRef: typeof b.paymentRef === "string" ? b.paymentRef : null,
     paymentRefId: typeof b.paymentRefId === "string" ? b.paymentRefId : null,
+    refundStatus: typeof b.refundStatus === "string" ? b.refundStatus : null,
+    refundedAt: typeof b.refundedAt === "string" ? b.refundedAt : null,
     expiresAt: typeof b.expiresAt === "string" ? b.expiresAt : null,
     paidAt: typeof b.paidAt === "string" ? b.paidAt : null,
     createdAt: str(b.createdAt) || undefined,
@@ -1897,8 +1901,20 @@ export async function getCustomerBookingStatus(bookingId: string): Promise<Custo
   return booking;
 }
 
-export async function cancelCustomerBooking(bookingId: string): Promise<void> {
-  await authedApi(`user/bookings/${bookingId}`, { method: "DELETE" });
+export type RefundOutcome = { refunded: boolean; reason: string; amount?: number };
+
+function normalizeRefund(raw: unknown): RefundOutcome {
+  const r = asRecord(raw);
+  return {
+    refunded: r.refunded === true,
+    reason: aStr(r.reason) || "not_paid",
+    amount: typeof r.amount === "number" ? r.amount : undefined,
+  };
+}
+
+export async function cancelCustomerBooking(bookingId: string): Promise<RefundOutcome> {
+  const data = asRecord(await authedApi(`user/bookings/${bookingId}`, { method: "DELETE" }));
+  return normalizeRefund(data.refund);
 }
 
 /* ------------------------------------------------------------------ */
@@ -2933,6 +2949,13 @@ export type AdminPayment = {
   vendorId: string | null;
   gatewayPaymentId: string | null;
   paidAt: string | null;
+  refundStatus: string | null;
+  refundedAt: string | null;
+  payoutRef: string | null;
+  paidOutAt: string | null;
+  withdrawalStatus: string | null;
+  refundable: boolean;
+  matured: boolean;
 };
 
 function normalizeAdminPayment(raw: Record<string, unknown>): AdminPayment {
@@ -2947,6 +2970,13 @@ function normalizeAdminPayment(raw: Record<string, unknown>): AdminPayment {
     vendorId: aStrOrNull(raw.vendorId),
     gatewayPaymentId: aStrOrNull(raw.gatewayPaymentId),
     paidAt: aStrOrNull(raw.paidAt),
+    refundStatus: aStrOrNull(raw.refundStatus),
+    refundedAt: aStrOrNull(raw.refundedAt),
+    payoutRef: aStrOrNull(raw.payoutRef),
+    paidOutAt: aStrOrNull(raw.paidOutAt),
+    withdrawalStatus: aStrOrNull(raw.withdrawalStatus),
+    refundable: raw.refundable === true,
+    matured: raw.matured === true,
   };
 }
 
@@ -2989,6 +3019,452 @@ export async function getAdminRevenue(days = 30): Promise<AdminRevenue> {
       return { date: aStr(o.date), amount: aNum(o.amount), count: aNum(o.count) };
     }),
   };
+}
+
+// ── Vendor withdrawals (admin approval queue) ──
+export async function listAdminWithdrawals(params?: {
+  status?: string;
+  vendorId?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ items: Withdrawal[]; total: number }> {
+  const raw = asRecord(await authedApi(`admin/withdrawals${toQuery(params || {})}`));
+  const list = Array.isArray(raw.withdrawals) ? raw.withdrawals : [];
+  return { items: list.map(normalizeWithdrawal), total: aNum(raw.total) };
+}
+
+export async function approveAdminWithdrawal(id: string): Promise<Withdrawal> {
+  const raw = asRecord(await postAuthed(`admin/withdrawals/${encodeURIComponent(id)}/approve`, {}));
+  return normalizeWithdrawal(raw.withdrawal);
+}
+
+export async function rejectAdminWithdrawal(id: string, reason?: string): Promise<Withdrawal> {
+  const raw = asRecord(
+    await postAuthed(`admin/withdrawals/${encodeURIComponent(id)}/reject`, { reason }),
+  );
+  return normalizeWithdrawal(raw.withdrawal);
+}
+
+export async function refreshAdminWithdrawal(id: string): Promise<Withdrawal> {
+  const raw = asRecord(await postAuthed(`admin/withdrawals/${encodeURIComponent(id)}/refresh`, {}));
+  return normalizeWithdrawal(raw.withdrawal);
+}
+
+export type VendorPayoutPreview = {
+  vendorId: string;
+  amount: number;
+  count: number;
+  hasPayoutMethod: boolean;
+  activeWithdrawal: Withdrawal | null;
+};
+
+export async function previewAdminVendorPayout(vendorId: string): Promise<VendorPayoutPreview> {
+  const raw = asRecord(await authedApi(`admin/withdrawals/preview${toQuery({ vendorId })}`));
+  return {
+    vendorId: aStr(raw.vendorId),
+    amount: aNum(raw.amount),
+    count: aNum(raw.count),
+    hasPayoutMethod: raw.hasPayoutMethod === true,
+    activeWithdrawal: raw.activeWithdrawal ? normalizeWithdrawal(raw.activeWithdrawal) : null,
+  };
+}
+
+export async function adminPayoutVendor(vendorId: string): Promise<Withdrawal> {
+  const raw = asRecord(await postAuthed("admin/withdrawals/payout", { vendorId }));
+  return normalizeWithdrawal(raw.withdrawal);
+}
+
+// ── Refunds (admin, issued against a customer's payment reference) ──
+export type RefundResult = {
+  refunded: boolean;
+  reason: string;
+  amount?: number;
+  message?: string;
+};
+
+export async function issueAdminRefund(
+  paymentRefId: string,
+  note?: string,
+): Promise<RefundResult> {
+  const raw = asRecord(await postAuthed("admin/refunds", { paymentRefId, note }));
+  return {
+    refunded: raw.refunded === true,
+    reason: aStr(raw.reason),
+    amount: typeof raw.amount === "number" ? raw.amount : undefined,
+    message: aStrOrNull(raw.message) || undefined,
+  };
+}
+
+// ── Customer module visibility (admin) ──
+export type AdminUserActivity = {
+  bookings: CustomerBooking[];
+  printOrders: PrintOrder[];
+  payments: AdminPayment[];
+};
+
+export async function getAdminUserActivity(id: string): Promise<AdminUserActivity> {
+  const raw = asRecord(await authedApi(`admin/users/${encodeURIComponent(id)}/activity`));
+  const bookings = (Array.isArray(raw.bookings) ? raw.bookings : [])
+    .map((b) => normalizeCustomerBooking(b))
+    .filter((b): b is CustomerBooking => b !== null);
+  const printOrders = (Array.isArray(raw.printOrders) ? raw.printOrders : [])
+    .map((o) => normalizePrintOrder(asRecord(o)))
+    .filter((o): o is PrintOrder => o !== null);
+  const payments = (Array.isArray(raw.payments) ? raw.payments : []).map((p) =>
+    normalizeAdminPayment(asRecord(p)),
+  );
+  return { bookings, printOrders, payments };
+}
+
+/* ------------------------------------------------------------------ */
+/* Support tickets — customer, vendor and admin                        */
+/* ------------------------------------------------------------------ */
+
+export type SupportRole = "customer" | "vendor";
+
+export type SupportMessage = {
+  authorRole: "user" | "admin";
+  authorName: string | null;
+  body: string;
+  createdAt: string | null;
+};
+
+export type SupportTicket = {
+  id: string;
+  ticketRef: string;
+  raisedByUserId: string | null;
+  raisedByRole: string;
+  raisedByName: string | null;
+  subject: string;
+  category: string;
+  status: string;
+  relatedType: string | null;
+  relatedId: string | null;
+  messages: SupportMessage[];
+  lastMessageAt: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+};
+
+function normalizeSupportMessage(raw: unknown): SupportMessage {
+  const m = asRecord(raw);
+  return {
+    authorRole: aStr(m.authorRole) === "admin" ? "admin" : "user",
+    authorName: aStrOrNull(m.authorName),
+    body: aStr(m.body),
+    createdAt: aStrOrNull(m.createdAt),
+  };
+}
+
+function normalizeSupportTicket(raw: unknown): SupportTicket {
+  const t = asRecord(raw);
+  return {
+    id: aStr(t.id) || aStr(t._id),
+    ticketRef: aStr(t.ticketRef),
+    raisedByUserId: aStrOrNull(t.raisedByUserId),
+    raisedByRole: aStr(t.raisedByRole) || "customer",
+    raisedByName: aStrOrNull(t.raisedByName),
+    subject: aStr(t.subject),
+    category: aStr(t.category) || "other",
+    status: aStr(t.status) || "open",
+    relatedType: aStrOrNull(t.relatedType),
+    relatedId: aStrOrNull(t.relatedId),
+    messages: Array.isArray(t.messages) ? t.messages.map(normalizeSupportMessage) : [],
+    lastMessageAt: aStrOrNull(t.lastMessageAt),
+    createdAt: aStrOrNull(t.createdAt),
+    updatedAt: aStrOrNull(t.updatedAt),
+  };
+}
+
+export type NewTicketInput = {
+  subject: string;
+  category: string;
+  message: string;
+  relatedType?: string;
+  relatedId?: string;
+};
+
+export type RefundOption = {
+  id: string;
+  refId: string;
+  source: string;
+  sourceRef: string | null;
+  amount: number;
+  currency: string;
+  status: string;
+  paidAt: string | null;
+  refundable: boolean;
+  matured: boolean;
+  paidOut: boolean;
+};
+
+const supportBase = (role: SupportRole) => (role === "vendor" ? "vendor" : "user");
+
+export async function listCustomerRefundOptions(): Promise<RefundOption[]> {
+  const raw = asRecord(await authedApi("user/support/refund-options"));
+  return (Array.isArray(raw.payments) ? raw.payments : []).map((value) => {
+    const p = asRecord(value);
+    return {
+      id: aStr(p.id) || aStr(p._id),
+      refId: aStr(p.refId),
+      source: aStr(p.source),
+      sourceRef: aStrOrNull(p.sourceRef),
+      amount: aNum(p.amount),
+      currency: aStr(p.currency) || "INR",
+      status: aStr(p.status) || "paid",
+      paidAt: aStrOrNull(p.paidAt),
+      refundable: p.refundable === true,
+      matured: p.matured === true,
+      paidOut: p.paidOut === true,
+    };
+  });
+}
+
+export async function listMyTickets(role: SupportRole): Promise<SupportTicket[]> {
+  const raw = asRecord(await authedApi(`${supportBase(role)}/support/tickets`));
+  const list = Array.isArray(raw.tickets) ? raw.tickets : [];
+  return list.map(normalizeSupportTicket);
+}
+
+export async function createTicket(role: SupportRole, input: NewTicketInput): Promise<SupportTicket> {
+  const raw = asRecord(await postAuthed(`${supportBase(role)}/support/tickets`, input));
+  return normalizeSupportTicket(raw.ticket);
+}
+
+export async function getTicket(role: SupportRole, id: string): Promise<SupportTicket> {
+  const raw = asRecord(await authedApi(`${supportBase(role)}/support/tickets/${encodeURIComponent(id)}`));
+  return normalizeSupportTicket(raw.ticket);
+}
+
+export async function replyToTicket(role: SupportRole, id: string, body: string): Promise<SupportTicket> {
+  const raw = asRecord(
+    await postAuthed(`${supportBase(role)}/support/tickets/${encodeURIComponent(id)}/reply`, { body }),
+  );
+  return normalizeSupportTicket(raw.ticket);
+}
+
+// ── Admin support ──
+export async function listAdminTickets(
+  params: AdminListParams = {},
+): Promise<AdminPage<SupportTicket>> {
+  const raw = asRecord(await authedApi(`admin/support/tickets${toQuery(params)}`));
+  const list = Array.isArray(raw.tickets) ? raw.tickets : [];
+  const items = list.map(normalizeSupportTicket);
+  return { items, ...pageMeta(raw, items.length) };
+}
+
+export async function getAdminTicket(id: string): Promise<SupportTicket> {
+  const raw = asRecord(await authedApi(`admin/support/tickets/${encodeURIComponent(id)}`));
+  return normalizeSupportTicket(raw.ticket);
+}
+
+export async function replyAdminTicket(id: string, body: string): Promise<SupportTicket> {
+  const raw = asRecord(
+    await postAuthed(`admin/support/tickets/${encodeURIComponent(id)}/reply`, { body }),
+  );
+  return normalizeSupportTicket(raw.ticket);
+}
+
+export async function setAdminTicketStatus(id: string, status: string): Promise<SupportTicket> {
+  const raw = asRecord(
+    await authedApi(`admin/support/tickets/${encodeURIComponent(id)}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }),
+  );
+  return normalizeSupportTicket(raw.ticket);
+}
+
+/* ------------------------------------------------------------------ */
+/* Vendor earnings ledger + vendor-initiated withdrawals               */
+/* ------------------------------------------------------------------ */
+
+export type VendorPayment = {
+  id: string;
+  refId: string | null;
+  source: string;
+  sourceRef: string | null;
+  amount: number;
+  currency: string;
+  status: string;
+  paidAt: string | null;
+  refundStatus: string | null;
+  payoutRef: string | null;
+  paidOutAt: string | null;
+  withdrawalRef: string | null;
+  withdrawalStatus: string | null;
+  refundable: boolean;
+  matured: boolean;
+};
+
+export type WithdrawalStatus =
+  | "pending"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "rejected";
+
+export type PayoutMethod = {
+  type: "bank" | "vpa";
+  accountName: string | null;
+  accountNumberMasked: string | null;
+  ifsc: string | null;
+  vpa: string | null;
+};
+
+export type Withdrawal = {
+  id: string;
+  withdrawalRef: string;
+  vendorId: string | null;
+  vendorName: string | null;
+  amount: number;
+  currency: string;
+  count: number;
+  status: WithdrawalStatus;
+  payoutMethod: PayoutMethod | null;
+  cfTransferId: string | null;
+  transferStatus: string | null;
+  failureReason: string | null;
+  periodStart: string | null;
+  periodEnd: string | null;
+  note: string | null;
+  requestedAt: string | null;
+  decidedAt: string | null;
+  completedAt: string | null;
+  createdAt: string | null;
+};
+
+export type VendorEarnings = {
+  totals: {
+    earned: number;
+    withdrawable: number;
+    holding: number;
+    inProcess: number;
+    withdrawn: number;
+  };
+  canWithdraw: boolean;
+  hasPayoutMethod: boolean;
+  payoutMethod: PayoutMethod | null;
+  activeWithdrawal: Withdrawal | null;
+  withdrawals: Withdrawal[];
+};
+
+export type VendorLedger = { payments: VendorPayment[]; summary: VendorEarnings };
+
+function normalizePayoutMethod(raw: unknown): PayoutMethod | null {
+  if (!raw || typeof raw !== "object") return null;
+  const o = asRecord(raw);
+  const type = aStr(o.type) === "vpa" ? "vpa" : "bank";
+  return {
+    type,
+    accountName: aStrOrNull(o.accountName),
+    accountNumberMasked: aStrOrNull(o.accountNumberMasked),
+    ifsc: aStrOrNull(o.ifsc),
+    vpa: aStrOrNull(o.vpa),
+  };
+}
+
+export function normalizeWithdrawal(raw: unknown): Withdrawal {
+  const o = asRecord(raw);
+  const status = aStr(o.status) as WithdrawalStatus;
+  return {
+    id: aStr(o.id) || aStr(o._id),
+    withdrawalRef: aStr(o.withdrawalRef),
+    vendorId: aStrOrNull(o.vendorId),
+    vendorName: aStrOrNull(o.vendorName),
+    amount: aNum(o.amount),
+    currency: aStr(o.currency) || "INR",
+    count: aNum(o.count),
+    status: status || "pending",
+    payoutMethod: normalizePayoutMethod(o.payoutMethod),
+    cfTransferId: aStrOrNull(o.cfTransferId),
+    transferStatus: aStrOrNull(o.transferStatus),
+    failureReason: aStrOrNull(o.failureReason),
+    periodStart: aStrOrNull(o.periodStart),
+    periodEnd: aStrOrNull(o.periodEnd),
+    note: aStrOrNull(o.note),
+    requestedAt: aStrOrNull(o.requestedAt),
+    decidedAt: aStrOrNull(o.decidedAt),
+    completedAt: aStrOrNull(o.completedAt),
+    createdAt: aStrOrNull(o.createdAt),
+  };
+}
+
+function normalizeVendorPayment(raw: unknown): VendorPayment {
+  const o = asRecord(raw);
+  return {
+    id: aStr(o.id) || aStr(o._id),
+    refId: aStrOrNull(o.refId),
+    source: aStr(o.source),
+    sourceRef: aStrOrNull(o.sourceRef),
+    amount: aNum(o.amount),
+    currency: aStr(o.currency) || "INR",
+    status: aStr(o.status) || "paid",
+    paidAt: aStrOrNull(o.paidAt),
+    refundStatus: aStrOrNull(o.refundStatus),
+    payoutRef: aStrOrNull(o.payoutRef),
+    paidOutAt: aStrOrNull(o.paidOutAt),
+    withdrawalRef: aStrOrNull(o.withdrawalRef),
+    withdrawalStatus: aStrOrNull(o.withdrawalStatus),
+    refundable: o.refundable === true,
+    matured: o.matured === true,
+  };
+}
+
+function normalizeVendorEarnings(raw: unknown): VendorEarnings {
+  const o = asRecord(raw);
+  const t = asRecord(o.totals);
+  const withdrawals = (Array.isArray(o.withdrawals) ? o.withdrawals : []).map(
+    normalizeWithdrawal,
+  );
+  return {
+    totals: {
+      earned: aNum(t.earned),
+      withdrawable: aNum(t.withdrawable),
+      holding: aNum(t.holding),
+      inProcess: aNum(t.inProcess),
+      withdrawn: aNum(t.withdrawn),
+    },
+    canWithdraw: o.canWithdraw === true,
+    hasPayoutMethod: o.hasPayoutMethod === true,
+    payoutMethod: normalizePayoutMethod(o.payoutMethod),
+    activeWithdrawal: o.activeWithdrawal
+      ? normalizeWithdrawal(o.activeWithdrawal)
+      : null,
+    withdrawals,
+  };
+}
+
+export async function getVendorLedger(): Promise<VendorLedger> {
+  const raw = asRecord(await authedApi("vendor/payments"));
+  const payments = (Array.isArray(raw.payments) ? raw.payments : []).map(
+    normalizeVendorPayment,
+  );
+  return { payments, summary: normalizeVendorEarnings(raw.summary) };
+}
+
+export type PayoutMethodInput = {
+  type: "bank" | "vpa";
+  accountName?: string;
+  accountNumber?: string;
+  ifsc?: string;
+  vpa?: string;
+};
+
+export async function updateVendorPayoutMethod(input: PayoutMethodInput) {
+  return postAuthedMethod("vendor/payout-method", "PATCH", input);
+}
+
+export async function requestVendorWithdrawal(): Promise<Withdrawal> {
+  const raw = asRecord(await postAuthed("vendor/withdrawals", {}));
+  return normalizeWithdrawal(raw.withdrawal);
+}
+
+export async function listVendorWithdrawals(): Promise<Withdrawal[]> {
+  const raw = asRecord(await authedApi("vendor/withdrawals"));
+  return (Array.isArray(raw.withdrawals) ? raw.withdrawals : []).map(
+    normalizeWithdrawal,
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -3145,6 +3621,8 @@ export type PrintOrder = {
   paymentStatus: string | null;
   paymentRef: string | null;
   paymentRefId: string | null;
+  refundStatus: string | null;
+  refundedAt: string | null;
   acceptedAt: string | null;
   paidAt: string | null;
   createdAt: string | null;
@@ -3195,6 +3673,8 @@ function normalizePrintOrder(raw: unknown): PrintOrder | null {
     paymentStatus: typeof o.paymentStatus === "string" ? o.paymentStatus : null,
     paymentRef: typeof o.paymentRef === "string" ? o.paymentRef : null,
     paymentRefId: typeof o.paymentRefId === "string" ? o.paymentRefId : null,
+    refundStatus: typeof o.refundStatus === "string" ? o.refundStatus : null,
+    refundedAt: typeof o.refundedAt === "string" ? o.refundedAt : null,
     acceptedAt: typeof o.acceptedAt === "string" ? o.acceptedAt : null,
     paidAt: typeof o.paidAt === "string" ? o.paidAt : null,
     createdAt: typeof o.createdAt === "string" ? o.createdAt : null,
@@ -3293,8 +3773,9 @@ export async function payPrintOrder(
   return { order, payment };
 }
 
-export async function cancelPrintOrder(id: string): Promise<void> {
-  await postAuthed(`pod/orders/${encodeURIComponent(id)}/cancel`, {});
+export async function cancelPrintOrder(id: string): Promise<RefundOutcome> {
+  const data = asRecord(await postAuthed(`pod/orders/${encodeURIComponent(id)}/cancel`, {}));
+  return normalizeRefund(data.refund);
 }
 
 // ── Vendor ──

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useAdminShell } from "@/components/admin-shell";
 import { EmptyState, LoadingRows, Pill } from "@/components/admin-ui";
 import { setAdminUserStatus } from "@/lib/api";
-import { invalidateAdminUsers, useAdminUserDetail } from "@/lib/swr-hooks";
+import { invalidateAdminUsers, useAdminUserActivity, useAdminUserDetail } from "@/lib/swr-hooks";
 
 const money = (n: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
 
@@ -135,7 +135,7 @@ export default function AdminUserDetailPage() {
 
       {recentPayments.length > 0 && (
         <div className="mt-6">
-          <p className="text-xs uppercase tracking-widest text-zinc-500">Recent payments</p>
+          <p className="text-xs uppercase tracking-widest text-zinc-500">Recent payments (as vendor)</p>
           <ul className="mt-3 space-y-2">
             {recentPayments.map((p) => (
               <li
@@ -150,6 +150,152 @@ export default function AdminUserDetailPage() {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      <CustomerActivity id={id} />
+    </div>
+  );
+}
+
+const dt = (iso: string | null) =>
+  iso
+    ? new Date(iso).toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Kolkata",
+      })
+    : "—";
+
+function CustomerActivity({ id }: { id: string }) {
+  const { data, isLoading } = useAdminUserActivity(id);
+  if (isLoading && !data) {
+    return (
+      <div className="mt-8">
+        <LoadingRows count={3} />
+      </div>
+    );
+  }
+  if (!data) return null;
+  const { bookings, printOrders, payments } = data;
+  const nothing = bookings.length === 0 && printOrders.length === 0 && payments.length === 0;
+
+  return (
+    <div className="mt-8 border-t border-white/5 pt-6">
+      <h2 className="text-sm font-semibold text-zinc-200">Customer activity</h2>
+      <p className="mt-0.5 text-xs text-zinc-500">
+        Bookings, print orders and payments this user made as a customer.
+      </p>
+
+      {nothing ? (
+        <div className="mt-4">
+          <EmptyState text="No customer activity yet." icon="🧾" />
+        </div>
+      ) : (
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          {bookings.length > 0 && (
+            <div>
+              <p className="text-xs uppercase tracking-widest text-zinc-500">Bookings</p>
+              <ul className="mt-2 space-y-2">
+                {bookings.map((b) => (
+                  <li
+                    key={b.id}
+                    className="rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate text-sm text-zinc-100">{b.businessName}</span>
+                      <span className="shrink-0 text-sm font-medium text-emerald-300">
+                        {money(b.amount ?? b.pricePerSlot)}
+                      </span>
+                    </div>
+                    <div className="mt-0.5 flex flex-wrap items-center gap-2">
+                      <span className="text-xs text-zinc-500">{dt(b.startAt)}</span>
+                      <Pill label={b.status} tone={b.status === "cancelled" ? "red" : "green"} />
+                      {b.refundStatus === "refunded" && <Pill label="Refunded" tone="sky" />}
+                    </div>
+                    {b.paymentRefId && (
+                      <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-zinc-600">
+                        {b.paymentRefId}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {printOrders.length > 0 && (
+            <div>
+              <p className="text-xs uppercase tracking-widest text-zinc-500">Print orders</p>
+              <ul className="mt-2 space-y-2">
+                {printOrders.map((o) => (
+                  <li
+                    key={o.id}
+                    className="rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate text-sm text-zinc-100">
+                        {o.quantity ? `${o.quantity} × ` : ""}
+                        {o.categoryLabel}
+                      </span>
+                      {o.quoteAmount != null && (
+                        <span className="shrink-0 text-sm font-medium text-emerald-300">
+                          {money(o.quoteAmount)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-0.5 flex flex-wrap items-center gap-2">
+                      <span className="text-xs text-zinc-500">{dt(o.createdAt)}</span>
+                      <Pill label={o.status} tone={o.status === "cancelled" ? "red" : "zinc"} />
+                      {o.refundStatus === "refunded" && <Pill label="Refunded" tone="sky" />}
+                    </div>
+                    {o.paymentRefId && (
+                      <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-zinc-600">
+                        {o.paymentRefId}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {payments.length > 0 && (
+            <div className="lg:col-span-2">
+              <p className="text-xs uppercase tracking-widest text-zinc-500">Payments</p>
+              <ul className="mt-2 space-y-2">
+                {payments.map((p) => (
+                  <li
+                    key={p.id}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="truncate font-mono text-xs text-zinc-400">{p.refId}</span>
+                        {p.refundStatus === "refunded" ? (
+                          <Pill label="Refunded" tone="red" />
+                        ) : p.payoutRef ? (
+                          <Pill label="Paid out" tone="sky" />
+                        ) : null}
+                      </div>
+                      <p className="text-xs capitalize text-zinc-500">
+                        {[p.source, dt(p.paidAt)].filter(Boolean).join(" · ")}
+                      </p>
+                    </div>
+                    <span
+                      className={`shrink-0 text-sm font-medium ${
+                        p.refundStatus === "refunded" ? "text-zinc-500 line-through" : "text-emerald-300"
+                      }`}
+                    >
+                      {money(p.amount)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>

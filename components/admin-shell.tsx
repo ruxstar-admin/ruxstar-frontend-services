@@ -35,6 +35,7 @@ const NAV: NavItem[] = [
   { href: "/admin/events", label: "Events", icon: "🎪" },
   { href: "/admin/print-orders", label: "Print orders", icon: "🖨️" },
   { href: "/admin/payments", label: "Payments", icon: "💰" },
+  { href: "/admin/support", label: "Support", icon: "💬" },
   { href: "/admin/kyc", label: "Vendor KYC", icon: "🪪" },
   { href: "/admin/catalog", label: "Catalog", icon: "🗂", adminOnly: true },
   { href: "/admin/staff", label: "Staff", icon: "👥" },

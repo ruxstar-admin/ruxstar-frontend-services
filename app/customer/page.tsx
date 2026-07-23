@@ -251,9 +251,13 @@ export default function CustomerPage() {
     setCancellingId(id);
     setError("");
     try {
-      await cancelCustomerBooking(id);
+      const refund = await cancelCustomerBooking(id);
       await invalidateCustomerBookings();
-      setNotice("Booking cancelled.");
+      setNotice(
+        refund.reason === "via_support"
+          ? "Booking cancelled. To request a refund, raise a support ticket — refunds are available within 7 days of payment."
+          : "Booking cancelled.",
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not cancel booking.");
     } finally {

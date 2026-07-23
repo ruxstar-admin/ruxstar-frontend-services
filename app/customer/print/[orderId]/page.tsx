@@ -52,6 +52,7 @@ export default function CustomerPrintOrderPage({
   const [paying, setPaying] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [actionError, setActionError] = useState("");
+  const [cancelNotice, setCancelNotice] = useState("");
 
   async function onPay() {
     if (!data) return;
@@ -72,8 +73,13 @@ export default function CustomerPrintOrderPage({
     setCancelling(true);
     setActionError("");
     try {
-      await cancelPrintOrder(data.id);
+      const refund = await cancelPrintOrder(data.id);
       await Promise.all([mutate(), invalidateMyPrintOrders()]);
+      if (refund.reason === "via_support") {
+        setCancelNotice(
+          "Order cancelled. To request a refund, raise a support ticket — refunds are available within 7 days of payment.",
+        );
+      }
     } catch (err) {
       setActionError(err instanceof Error ? err.message : "Could not cancel order.");
     } finally {
@@ -151,6 +157,12 @@ export default function CustomerPrintOrderPage({
         {actionError && (
           <p className="mt-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
             {actionError}
+          </p>
+        )}
+
+        {cancelNotice && (
+          <p className="mt-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+            {cancelNotice}
           </p>
         )}
 

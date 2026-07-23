@@ -7,19 +7,21 @@ import { LogoutButton } from "@/components/logout-button";
 import { NotificationBell } from "@/components/notification-bell";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 import { useCustomerBookings, useCustomerProfile, useNotifications } from "@/lib/swr-hooks";
-export type CustomerView = "discover" | "print" | "orders" | "bookings" | "account";
+export type CustomerView = "discover" | "print" | "orders" | "bookings" | "support" | "account";
 
 const NAV: { id: CustomerView; label: string; icon: string; href: string }[] = [
   { id: "discover", label: "Discover", icon: "🔎", href: "/customer" },
   { id: "print", label: "Print", icon: "🖨️", href: "/customer/print" },
   { id: "orders", label: "My orders", icon: "📦", href: "/customer/orders" },
   { id: "bookings", label: "My bookings", icon: "🎟️", href: "/customer?view=bookings" },
+  { id: "support", label: "Support", icon: "💬", href: "/customer/support" },
   { id: "account", label: "Account", icon: "⚙", href: "/customer?view=account" },
 ];
 
 function activeView(pathname: string, viewParam: string | null): CustomerView {
   if (pathname.startsWith("/customer/orders")) return "orders";
   if (pathname.startsWith("/customer/print")) return "print";
+  if (pathname.startsWith("/customer/support")) return "support";
   if (pathname.startsWith("/customer/book")) return "discover";
   if (viewParam === "bookings") return "bookings";
   if (viewParam === "account") return "account";
@@ -56,7 +58,8 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
   const isCustomerHub = pathname === "/customer";
   const isPrintFlow =
     pathname.startsWith("/customer/print") || pathname.startsWith("/customer/orders");
-  const isFixedViewport = isCustomerHub || isPrintFlow;
+  const isSupport = pathname.startsWith("/customer/support");
+  const isFixedViewport = isCustomerHub || isPrintFlow || isSupport;
 
   if (!ready) {
     return (

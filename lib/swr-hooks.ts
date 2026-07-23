@@ -19,6 +19,11 @@ import {
   listAdminEventRegistrations,
   listAdminPrintOrders,
   listAdminPayments,
+  listAdminWithdrawals,
+  listAdminTickets,
+  getAdminUserActivity,
+  listMyTickets,
+  getVendorLedger,
   listBusinesses,
   listCustomerBookings,
   listMyEventRegistrations,
@@ -44,7 +49,12 @@ import {
   type AdminEventRegistration,
   type AdminPrintOrder,
   type AdminPayment,
+  type Withdrawal,
   type AdminRevenue,
+  type AdminUserActivity,
+  type SupportRole,
+  type SupportTicket,
+  type VendorLedger,
   type AppNotification,
   type Business,
   type BusinessCatalog,
@@ -115,6 +125,12 @@ export const swrKeys = {
   adminRegistrations: "swr/admin/registrations",
   adminPrintOrders: "swr/admin/print-orders",
   adminPayments: "swr/admin/payments",
+  adminWithdrawals: "swr/admin/withdrawals",
+  adminTickets: "swr/admin/support-tickets",
+  adminUserActivity: "swr/admin/user-activity",
+  customerTickets: "swr/user/support-tickets",
+  vendorTickets: "swr/vendor/support-tickets",
+  vendorLedger: "swr/vendor/ledger",
   printCatalog: "swr/catalog/print",
   myPrintOrders: "swr/pod/orders",
   vendorPrintOrders: "swr/pod/vendor/orders",
@@ -364,6 +380,69 @@ export function invalidateAdminEvents() {
 }
 export function invalidateAdminPrintOrders() {
   return invalidatePrefix(swrKeys.adminPrintOrders);
+}
+export function invalidateAdminPayments() {
+  return invalidatePrefix(swrKeys.adminPayments);
+}
+
+export function useAdminWithdrawals(
+  params?: { status?: string; vendorId?: string; page?: number; limit?: number },
+  enabled = true,
+) {
+  return useSWR<{ items: Withdrawal[]; total: number }>(
+    enabled ? [swrKeys.adminWithdrawals, JSON.stringify(params ?? {})] : null,
+    () => listAdminWithdrawals(params),
+    { keepPreviousData: true, revalidateOnFocus: true },
+  );
+}
+export function invalidateAdminWithdrawals() {
+  return invalidatePrefix(swrKeys.adminWithdrawals);
+}
+
+export function useAdminTickets(params: AdminListParams, enabled = true) {
+  return useSWR<AdminPage<SupportTicket>>(
+    enabled ? [swrKeys.adminTickets, JSON.stringify(params)] : null,
+    () => listAdminTickets(params),
+    { keepPreviousData: true, revalidateOnFocus: true },
+  );
+}
+export function invalidateAdminTickets() {
+  return invalidatePrefix(swrKeys.adminTickets);
+}
+
+export function useAdminUserActivity(id: string | null, enabled = true) {
+  return useSWR<AdminUserActivity>(
+    enabled && id ? [swrKeys.adminUserActivity, id] : null,
+    () => getAdminUserActivity(id as string),
+    { keepPreviousData: true },
+  );
+}
+
+/* ----------------------------- Support tickets -------------------------- */
+
+export function useMyTickets(role: SupportRole, enabled = true) {
+  const key = role === "vendor" ? swrKeys.vendorTickets : swrKeys.customerTickets;
+  return useSWR<SupportTicket[]>(
+    enabled ? key : null,
+    () => listMyTickets(role),
+    { revalidateOnFocus: true, keepPreviousData: true },
+  );
+}
+export function invalidateMyTickets(role: SupportRole) {
+  return globalMutate(role === "vendor" ? swrKeys.vendorTickets : swrKeys.customerTickets);
+}
+
+/* --------------------------- Vendor payment ledger ---------------------- */
+
+export function useVendorLedger(enabled = true) {
+  return useSWR<VendorLedger>(
+    enabled ? swrKeys.vendorLedger : null,
+    getVendorLedger,
+    pollOpts(45_000),
+  );
+}
+export function invalidateVendorLedger() {
+  return globalMutate(swrKeys.vendorLedger);
 }
 
 /* --------------------------- Print on demand --------------------------- */

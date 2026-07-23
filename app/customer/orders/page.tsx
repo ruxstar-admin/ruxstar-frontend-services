@@ -164,9 +164,12 @@ function OrderRow({ order, onOpen }: { order: PrintOrder; onOpen: () => void }) 
           {[attrs, order.city].filter(Boolean).join(" · ")}
         </p>
         <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-zinc-600">
-          {shortId(order.id)}
+          {order.paymentRefId ?? shortId(order.id)}
           {placed ? ` · ${placed}` : ""}
         </p>
+        {order.refundStatus === "refunded" && (
+          <p className="mt-1 text-[11px] font-medium text-emerald-300">Refund issued ↩</p>
+        )}
         <div className="mt-auto flex items-center justify-between pt-3">
           <StatusBadge status={order.status} />
           <span className={`text-xs ${needsPay ? "text-emerald-300" : "text-zinc-500"}`}>

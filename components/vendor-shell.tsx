@@ -44,6 +44,7 @@ const NAV: NavItem[] = [
   { href: "/business/orders", label: "Bookings", icon: "📦", requiresKyc: true },
   { href: "/business/print-orders", label: "Orders", icon: "🖨️", requiresKyc: true },
   { href: "/business/payments", label: "Payments", icon: "💰", requiresKyc: true },
+  { href: "/business/support", label: "Support", icon: "💬" },
   { href: "/business/settings", label: "Account", icon: "⚙" },
 ];
 
@@ -136,7 +137,9 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
   const usePageInternalScroll =
     pathname.startsWith("/business/businesses") ||
     pathname === "/business/orders" ||
-    pathname.startsWith("/business/print-orders");
+    pathname.startsWith("/business/print-orders") ||
+    pathname.startsWith("/business/payments") ||
+    pathname.startsWith("/business/support");
 
   return (
     <VendorCtx.Provider value={ctx}>
