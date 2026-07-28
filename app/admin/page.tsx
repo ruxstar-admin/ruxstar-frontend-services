@@ -19,6 +19,7 @@ export default function AdminOverviewPage() {
       { label: "Staff (admin + employee)", value: metrics.users.admins + metrics.users.employees, color: "violet" as const },
       { label: "Disabled accounts", value: metrics.users.disabled, color: "amber" as const },
       { label: "Live businesses", value: metrics.businesses.live, color: "emerald" as const },
+      { label: "Draft businesses", value: metrics.businesses.draft, color: "zinc" as const },
       { label: "Suspended businesses", value: metrics.businesses.suspended, color: "amber" as const },
       { label: "Confirmed bookings", value: metrics.bookings.confirmed, color: "sky" as const },
       { label: "Print orders", value: metrics.printOrders.total, color: "violet" as const },

@@ -3,16 +3,24 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { useVendorShell } from "@/components/vendor-shell";
-import { useVendorBookings } from "@/lib/swr-hooks";
+import { useVendorBookings, useVendorBusinesses } from "@/lib/swr-hooks";
 import { computeVendorMetrics, formatINR, type DayBucket } from "@/lib/vendor-metrics";
+import type { Business } from "@/lib/api";
 
 export default function VendorDashboardPage() {
   const { user, kyc, kycVerified, loading } = useVendorShell();
   const { data: bookings, isLoading: bookingsLoading } = useVendorBookings(kycVerified);
+  const { data: businesses = [], isLoading: businessesLoading } = useVendorBusinesses(kycVerified);
 
   const kycStatus = kyc?.status ?? "pending";
 
   const metrics = useMemo(() => computeVendorMetrics(bookings ?? []), [bookings]);
+
+  // Anything the vendor still has to do before a business is publicly bookable.
+  const notLive = useMemo(
+    () => businesses.filter((b) => !(b.setupComplete && b.status === "live")),
+    [businesses],
+  );
 
   if (loading) {
     return <p className="text-sm text-zinc-500">Loading dashboard…</p>;
@@ -71,6 +79,8 @@ export default function VendorDashboardPage() {
               loading={bookingsLoading}
             />
           </div>
+
+          <GoLiveChecklist businesses={notLive} total={businesses.length} loading={businessesLoading} />
         </>
       ) : (
         <>
@@ -89,7 +99,7 @@ export default function VendorDashboardPage() {
             </div>
             <div className="glass rounded-2xl p-5">
               <p className="text-xs uppercase tracking-widest text-zinc-500">Businesses</p>
-              <p className="mt-2 text-3xl font-semibold">0</p>
+              <p className="mt-2 text-3xl font-semibold">{businesses.length}</p>
               <p className="mt-1 text-xs text-zinc-500">Unlocks with your card</p>
             </div>
           </div>
@@ -121,6 +131,94 @@ export default function VendorDashboardPage() {
           </section>
         </>
       )}
+    </div>
+  );
+}
+
+function GoLiveChecklist({
+  businesses,
+  total,
+  loading,
+}: {
+  businesses: Business[];
+  total: number;
+  loading?: boolean;
+}) {
+  if (loading) {
+    return <div className="mt-4 h-28 animate-pulse rounded-2xl bg-white/5" />;
+  }
+  if (total === 0) {
+    return (
+      <div className="glass mt-4 rounded-2xl p-5">
+        <p className="text-xs uppercase tracking-widest text-zinc-500">Go live</p>
+        <p className="mt-2 text-sm text-zinc-400">
+          You haven&apos;t added a business yet.{" "}
+          <Link href="/business/businesses" className="text-amber-200 hover:underline">
+            Add your first one →
+          </Link>
+        </p>
+      </div>
+    );
+  }
+  if (businesses.length === 0) {
+    return (
+      <div className="glass mt-4 rounded-2xl p-5">
+        <p className="text-xs uppercase tracking-widest text-zinc-500">Go live</p>
+        <p className="mt-2 text-sm text-emerald-300">
+          All {total} business{total === 1 ? " is" : "es are"} live and bookable.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="glass mt-4 rounded-2xl p-5">
+      <div className="flex items-baseline justify-between">
+        <p className="text-xs uppercase tracking-widest text-zinc-500">What&apos;s left to go live</p>
+        <p className="text-xs text-zinc-500">
+          {total - businesses.length} of {total} live
+        </p>
+      </div>
+
+      <ul className="mt-4 space-y-4">
+        {businesses.map((biz) => {
+          const issues = biz.readiness?.issues ?? [];
+          return (
+            <li key={biz.id} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-medium text-zinc-100">{biz.name}</p>
+                <Link
+                  href={`/business/businesses/${biz.id}/setup`}
+                  className="text-xs font-medium text-amber-200 hover:underline"
+                >
+                  {biz.setupComplete ? "Review setup" : "Finish setup"} →
+                </Link>
+              </div>
+              {issues.length > 0 ? (
+                <ul className="mt-2 space-y-1">
+                  {issues.slice(0, 4).map((issue, i) => (
+                    <li key={`${issue.field}-${i}`} className="flex gap-2 text-xs text-zinc-400">
+                      <span className="text-amber-300">•</span>
+                      {issue.message}
+                    </li>
+                  ))}
+                  {issues.length > 4 && (
+                    <li className="text-xs text-zinc-500">
+                      +{issues.length - 4} more to fix
+                    </li>
+                  )}
+                </ul>
+              ) : (
+                <p className="mt-2 text-xs text-zinc-400">
+                  {biz.setupComplete
+                    ? "Setup is done — publish it to make it bookable."
+                    : "Complete the setup steps to go live."}
+                </p>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

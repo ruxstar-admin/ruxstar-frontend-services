@@ -22,6 +22,41 @@ export class AuthError extends Error {
   }
 }
 
+/** A single unmet requirement returned by a validation endpoint. */
+export type ValidationIssue = {
+  step: string;
+  field: string;
+  message: string;
+};
+
+/** Thrown when the API rejects a request with a structured list of problems. */
+export class ValidationError extends Error {
+  readonly issues: ValidationIssue[];
+
+  constructor(message: string, issues: ValidationIssue[]) {
+    super(message);
+    this.name = "ValidationError";
+    this.issues = issues;
+  }
+}
+
+function readIssues(raw: unknown): ValidationIssue[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const row = item as Record<string, unknown>;
+    const message = typeof row.message === "string" ? row.message : "";
+    if (!message) return [];
+    return [
+      {
+        step: typeof row.step === "string" ? row.step : "",
+        field: typeof row.field === "string" ? row.field : "",
+        message,
+      },
+    ];
+  });
+}
+
 export type KycOverallStatus =
   | "pending"
   | "in_progress"
@@ -197,6 +232,10 @@ async function api(path: string, init?: RequestInit) {
     }
     if (res.status === 404) {
       throw new Error((detail as string | undefined) ?? "No account with that number — sign up first?");
+    }
+    const issues = readIssues(data.issues);
+    if (issues.length) {
+      throw new ValidationError((detail as string | undefined) ?? issues[0].message, issues);
     }
     throw new Error((detail as string | undefined) ?? `Request failed (${res.status})`);
   }
@@ -675,6 +714,8 @@ export type BusinessSetup = {
   maxGuests?: number | null;
   venueRules?: string;
   printProfile?: PrintProfile;
+  commerceProfile?: CommerceProfile;
+  creatorProfile?: CreatorProfile;
 };
 
 const BUSINESS_MODULES: BusinessModule[] = [
@@ -721,6 +762,166 @@ export type PrintProfile = {
   pricing: Record<string, CategoryPricing>;
 };
 
+export type CommerceProfile = {
+  notes: string;
+  minOrderValue: number;
+  acceptingOrders: boolean;
+  activeProductCount: number;
+};
+
+export function defaultCommerceProfile(): CommerceProfile {
+  return {
+    notes: "",
+    minOrderValue: 0,
+    acceptingOrders: true,
+    activeProductCount: 0,
+  };
+}
+
+export type CreatorSocialLinks = {
+  instagram: string;
+  youtube: string;
+  other: string;
+};
+
+export type CreatorProfile = {
+  bio: string;
+  niche: string;
+  socialLinks: CreatorSocialLinks;
+  acceptingBookings: boolean;
+};
+
+export function defaultCreatorProfile(): CreatorProfile {
+  return {
+    bio: "",
+    niche: "",
+    socialLinks: { instagram: "", youtube: "", other: "" },
+    acceptingBookings: true,
+  };
+}
+
+export type CreatorOfferKind = "shoutout" | "collab" | "appearance";
+
+export type CreatorOffer = {
+  id: string;
+  businessId: string;
+  businessName: string;
+  vendorId: string;
+  title: string;
+  description: string;
+  kind: CreatorOfferKind;
+  platforms: string[];
+  price: number;
+  currency: string;
+  turnaroundDays: number | null;
+  capacity: number | null;
+  reservedCount?: number;
+  confirmedCount?: number;
+  spotsLeft: number | null;
+  coverUrl: string | null;
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CreatorBooking = {
+  id: string;
+  refId: string | null;
+  offerId: string;
+  offerTitle: string;
+  offerKind: CreatorOfferKind | string;
+  businessId: string;
+  businessName: string;
+  brief: string;
+  customerName: string;
+  customerMobile: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentStatus: string | null;
+  paymentSessionId: string | null;
+  paymentRef: string | null;
+  paymentRefId: string | null;
+  turnaroundDays: number | null;
+  expiresAt: string | null;
+  paidAt: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CreatorOfferInput = {
+  businessId: string;
+  title: string;
+  description?: string;
+  kind?: CreatorOfferKind;
+  platforms?: string[];
+  price: number;
+  turnaroundDays?: number | null;
+  capacity?: number | null;
+};
+
+export type BookCreatorOfferResult = {
+  booking: CreatorBooking;
+  payment: InitiateBookingPayment | null;
+};
+
+export type CommerceProduct = {
+  id: string;
+  businessId: string;
+  vendorId: string;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  active: boolean;
+  photos: { id: string; url: string | null }[];
+  coverUrl: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CommerceOrderItem = {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  coverUrl: string | null;
+};
+
+export type CommerceOrder = {
+  id: string;
+  customerName: string;
+  customerMobile: string;
+  vendorId: string | null;
+  businessId: string | null;
+  businessName: string;
+  vendorName: string;
+  vendorMobile: string | null;
+  items: CommerceOrderItem[];
+  notes: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentStatus: string | null;
+  paymentRefId: string | null;
+  paidAt: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+};
+
+export type CommerceShop = {
+  id: string;
+  name: string;
+  address: string;
+  description: string;
+  thumbnailUrl: string;
+  notes: string;
+  minOrderValue: number;
+  productCount?: number;
+  inStockCount?: number;
+  acceptingOrders: boolean;
+};
+
 export function defaultPrintProfile(): PrintProfile {
   return {
     serviceCategories: [],
@@ -751,15 +952,44 @@ export type Business = {
   module: BusinessModule;
   phone: string;
   address: string;
+  /** Structured address; absent on rows created before the migration. */
+  addressParts?: BusinessAddressParts;
   description: string;
   thumbnailUrl?: string;
   thumbnailPhotoId?: string;
   status: "draft" | "live";
   setupComplete: boolean;
   setup?: BusinessSetup;
+  /** What still blocks this business from going live (setup modules only). */
+  readiness?: BusinessReadiness;
   createdAt: string;
   updatedAt?: string;
 };
+
+export type BusinessReadiness = {
+  ready: boolean;
+  issues: ValidationIssue[];
+};
+
+export type BusinessAddressParts = {
+  doorNo: string;
+  building: string;
+  street: string;
+  locality: string;
+  city: string;
+  state: string;
+  pincode: string;
+};
+
+export const emptyAddressParts = (): BusinessAddressParts => ({
+  doorNo: "",
+  building: "",
+  street: "",
+  locality: "",
+  city: "",
+  state: "",
+  pincode: "",
+});
 
 export function businessPhotoUrl(businessId: string, photoId: string): string {
   return `/api/public/businesses/${businessId}/photos/${photoId}`;
@@ -796,6 +1026,8 @@ export type BusinessInput = {
   typeId: string;
   phone?: string;
   address?: string;
+  addressParts?: BusinessAddressParts;
+  geo?: { lat: number; lng: number };
   description: string;
   thumbnail: string;
   bookingMode?: "slots" | "fullDay" | "services";
@@ -900,6 +1132,35 @@ function normalizeSetup(raw: unknown, businessId?: string): BusinessSetup | unde
     maxGuests,
     venueRules: typeof s.venueRules === "string" ? s.venueRules : "",
     printProfile: normalizePrintProfile(s.printProfile),
+    commerceProfile: normalizeCommerceProfile(s.commerceProfile),
+    creatorProfile: normalizeCreatorProfile(s.creatorProfile),
+  };
+}
+
+function normalizeCreatorProfile(raw: unknown): CreatorProfile {
+  const p = asRecord(raw);
+  const links = asRecord(p.socialLinks);
+  return {
+    bio: typeof p.bio === "string" ? p.bio : "",
+    niche: typeof p.niche === "string" ? p.niche : "",
+    socialLinks: {
+      instagram: typeof links.instagram === "string" ? links.instagram : "",
+      youtube: typeof links.youtube === "string" ? links.youtube : "",
+      other: typeof links.other === "string" ? links.other : "",
+    },
+    acceptingBookings: p.acceptingBookings !== false,
+  };
+}
+
+function normalizeCommerceProfile(raw: unknown): CommerceProfile {
+  const p = asRecord(raw);
+  const num = (v: unknown, fallback: number) =>
+    typeof v === "number" && Number.isFinite(v) ? Math.round(v) : fallback;
+  return {
+    notes: typeof p.notes === "string" ? p.notes : "",
+    minOrderValue: num(p.minOrderValue, 0),
+    acceptingOrders: p.acceptingOrders !== false,
+    activeProductCount: num(p.activeProductCount, 0),
   };
 }
 
@@ -1134,15 +1395,40 @@ function normalizeBusiness(raw: unknown): Business {
     module: businessModule,
     phone: str(b.phone),
     address: str(b.address),
+    addressParts: normalizeAddressParts(b.addressParts),
     description: str(b.description),
     thumbnailUrl: thumbnailUrl || undefined,
     thumbnailPhotoId: thumbnailPhotoId || undefined,
     status: b.status === "live" ? "live" : "draft",
     setupComplete: b.setupComplete === true,
     setup,
+    readiness: normalizeReadiness(b.readiness),
     createdAt: str(b.createdAt) || new Date().toISOString(),
     updatedAt: str(b.updatedAt) || undefined,
   };
+}
+
+function normalizeAddressParts(raw: unknown): BusinessAddressParts | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const row = raw as Record<string, unknown>;
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const parts: BusinessAddressParts = {
+    doorNo: str(row.doorNo),
+    building: str(row.building),
+    street: str(row.street),
+    locality: str(row.locality),
+    city: str(row.city),
+    state: str(row.state),
+    pincode: str(row.pincode),
+  };
+  return Object.values(parts).some(Boolean) ? parts : undefined;
+}
+
+function normalizeReadiness(raw: unknown): BusinessReadiness | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const row = raw as Record<string, unknown>;
+  const issues = readIssues(row.issues);
+  return { ready: row.ready === true, issues };
 }
 
 function mapKycError(err: unknown): never {
@@ -1222,6 +1508,8 @@ export type BusinessSetupInput = {
   maxGuests?: number | null;
   venueRules?: string;
   printProfile?: PrintProfile;
+  commerceProfile?: CommerceProfile;
+  creatorProfile?: CreatorProfile;
 };
 
 export async function getBusinessSetup(id: string): Promise<Business> {
@@ -1254,29 +1542,19 @@ export async function syncBusinessSetupPhotos(
   }
 }
 
-export async function addBusinessSetupPhoto(id: string, image: string): Promise<Business> {
-  try {
-    const data = await postAuthed(`vendor/businesses/${id}/setup/photos`, { image });
-    return normalizeBusiness(asRecord(data).business);
-  } catch (err) {
-    return mapKycError(err);
-  }
-}
-
-export async function removeBusinessSetupPhoto(id: string, photoId: string): Promise<Business> {
-  try {
-    const data = await authedApi(`vendor/businesses/${id}/setup/photos/${photoId}`, {
-      method: "DELETE",
-    });
-    return normalizeBusiness(asRecord(data).business);
-  } catch (err) {
-    return mapKycError(err);
-  }
-}
-
 export async function completeBusinessSetup(id: string): Promise<Business> {
   try {
     const data = await postAuthed(`vendor/businesses/${id}/setup/complete`, {});
+    return normalizeBusiness(asRecord(data).business);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+/** Put a completed business back on public discovery. */
+export async function publishBusiness(id: string): Promise<Business> {
+  try {
+    const data = await postAuthed(`vendor/businesses/${id}/publish`, {});
     return normalizeBusiness(asRecord(data).business);
   } catch (err) {
     return mapKycError(err);
@@ -1520,7 +1798,9 @@ export async function listBusinessSlots(
 
 export async function blockBusinessSlot(
   businessId: string,
-  body: { resourceId: string; startAt: string },
+  // `endAt` is only used by service businesses, where a block is a staff time
+  // window rather than a fixed grid slot.
+  body: { resourceId: string; startAt: string; endAt?: string },
 ): Promise<void> {
   try {
     await postAuthed(`vendor/businesses/${businessId}/slots/block`, body);
@@ -1535,6 +1815,42 @@ export async function unblockBusinessSlot(
 ): Promise<void> {
   try {
     await postAuthed(`vendor/businesses/${businessId}/slots/unblock`, body);
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+/** A window a staff member is unavailable in (service businesses only). */
+export type StaffBlock = {
+  staffId: string;
+  staffName: string;
+  startAt: string;
+  endAt: string;
+};
+
+export async function listStaffBlocks(
+  businessId: string,
+  range?: { from?: string; to?: string },
+): Promise<{ blocks: StaffBlock[]; staff: BusinessStaff[] }> {
+  const qs = new URLSearchParams();
+  if (range?.from) qs.set("from", range.from);
+  if (range?.to) qs.set("to", range.to);
+  const suffix = qs.toString() ? `?${qs.toString()}` : "";
+  try {
+    const data = asRecord(await authedApi(`vendor/businesses/${businessId}/slots/blocks${suffix}`));
+    const blocks = Array.isArray(data.blocks)
+      ? data.blocks.map((raw) => {
+          const row = asRecord(raw);
+          const str = (v: unknown) => (typeof v === "string" ? v : "");
+          return {
+            staffId: str(row.staffId),
+            staffName: str(row.staffName),
+            startAt: str(row.startAt),
+            endAt: str(row.endAt),
+          };
+        })
+      : [];
+    return { blocks, staff: normalizeStaffList(data.staff) };
   } catch (err) {
     return mapKycError(err);
   }
@@ -1575,6 +1891,8 @@ export type PublicBusiness = {
   phone: string;
   address: string;
   description: string;
+  /** False when the vendor took the listing offline. */
+  open: boolean;
   setup: {
     photos: BusinessPhoto[];
     slotMinutes: number;
@@ -1606,6 +1924,8 @@ export type PublicBusinessSummary = {
   priceFrom: number;
   priceTo: number;
   coverUrl?: string;
+  /** False when the vendor took the listing offline. */
+  open: boolean;
 };
 
 function normalizePublicBusinessSummary(raw: unknown): PublicBusinessSummary | null {
@@ -1649,6 +1969,7 @@ function normalizePublicBusinessSummary(raw: unknown): PublicBusinessSummary | n
     priceFrom: num(b.priceFrom, pricePerSlot),
     priceTo: num(b.priceTo, pricePerSlot),
     coverUrl: coverUrl || undefined,
+    open: b.open !== false,
   };
 }
 
@@ -1741,6 +2062,7 @@ function normalizePublicBusiness(raw: unknown): PublicBusiness {
     phone: str(b.phone),
     address: str(b.address),
     description: str(b.description),
+    open: b.open !== false,
     setup: {
       photos: setup?.photos ?? [],
       slotMinutes: setup?.slotMinutes ?? 60,
@@ -2131,6 +2453,231 @@ export async function getEventRegistrationStatus(id: string): Promise<EventRegis
   const reg = normalizeRegistration(asRecord(data).registration);
   if (!reg) throw new Error("Registration not found.");
   return reg;
+}
+
+// ── Creator collab offers ──
+
+function normalizeCreatorOffer(raw: unknown): CreatorOffer | null {
+  const o = asRecord(raw);
+  const id = typeof o.id === "string" ? o.id : "";
+  if (!id) return null;
+  const kindRaw = typeof o.kind === "string" ? o.kind : "collab";
+  const kind: CreatorOfferKind =
+    kindRaw === "shoutout" || kindRaw === "appearance" ? kindRaw : "collab";
+  const platforms = Array.isArray(o.platforms)
+    ? o.platforms.filter((x): x is string => typeof x === "string")
+    : [];
+  return {
+    id,
+    businessId: typeof o.businessId === "string" ? o.businessId : "",
+    businessName: typeof o.businessName === "string" ? o.businessName : "",
+    vendorId: typeof o.vendorId === "string" ? o.vendorId : "",
+    title: typeof o.title === "string" ? o.title : "",
+    description: typeof o.description === "string" ? o.description : "",
+    kind,
+    platforms,
+    price: typeof o.price === "number" ? o.price : 0,
+    currency: typeof o.currency === "string" ? o.currency : "INR",
+    turnaroundDays: typeof o.turnaroundDays === "number" ? o.turnaroundDays : null,
+    capacity: typeof o.capacity === "number" ? o.capacity : null,
+    reservedCount: typeof o.reservedCount === "number" ? o.reservedCount : undefined,
+    confirmedCount: typeof o.confirmedCount === "number" ? o.confirmedCount : undefined,
+    spotsLeft: typeof o.spotsLeft === "number" ? o.spotsLeft : o.spotsLeft === null ? null : null,
+    coverUrl: typeof o.coverUrl === "string" ? o.coverUrl : null,
+    status: typeof o.status === "string" ? o.status : "",
+    createdAt: typeof o.createdAt === "string" ? o.createdAt : undefined,
+    updatedAt: typeof o.updatedAt === "string" ? o.updatedAt : undefined,
+  };
+}
+
+function normalizeCreatorBooking(raw: unknown): CreatorBooking | null {
+  const b = asRecord(raw);
+  const id = typeof b.id === "string" ? b.id : "";
+  if (!id) return null;
+  const kindRaw = typeof b.offerKind === "string" ? b.offerKind : "collab";
+  const offerKind: CreatorOfferKind =
+    kindRaw === "shoutout" || kindRaw === "appearance" ? kindRaw : "collab";
+  return {
+    id,
+    refId: typeof b.refId === "string" ? b.refId : null,
+    offerId: typeof b.offerId === "string" ? b.offerId : "",
+    offerTitle: typeof b.offerTitle === "string" ? b.offerTitle : "",
+    offerKind,
+    businessId: typeof b.businessId === "string" ? b.businessId : "",
+    businessName: typeof b.businessName === "string" ? b.businessName : "",
+    brief: typeof b.brief === "string" ? b.brief : "",
+    customerName: typeof b.customerName === "string" ? b.customerName : "",
+    customerMobile: typeof b.customerMobile === "string" ? b.customerMobile : "",
+    amount: typeof b.amount === "number" ? b.amount : 0,
+    currency: typeof b.currency === "string" ? b.currency : "INR",
+    status: typeof b.status === "string" ? b.status : "",
+    paymentStatus: typeof b.paymentStatus === "string" ? b.paymentStatus : null,
+    paymentSessionId: typeof b.paymentSessionId === "string" ? b.paymentSessionId : null,
+    paymentRef: typeof b.paymentRef === "string" ? b.paymentRef : null,
+    paymentRefId: typeof b.paymentRefId === "string" ? b.paymentRefId : null,
+    turnaroundDays: typeof b.turnaroundDays === "number" ? b.turnaroundDays : null,
+    expiresAt: typeof b.expiresAt === "string" ? b.expiresAt : null,
+    paidAt: typeof b.paidAt === "string" ? b.paidAt : null,
+    createdAt: typeof b.createdAt === "string" ? b.createdAt : undefined,
+    updatedAt: typeof b.updatedAt === "string" ? b.updatedAt : undefined,
+  };
+}
+
+export async function listPublicCreatorOffers(): Promise<CreatorOffer[]> {
+  const data = await api("public/creator-offers");
+  const list = asRecord(data).offers;
+  return Array.isArray(list)
+    ? list.map(normalizeCreatorOffer).filter((o): o is CreatorOffer => o !== null)
+    : [];
+}
+
+export async function getPublicCreatorOffer(offerId: string): Promise<CreatorOffer> {
+  const data = await api(`public/creator-offers/${encodeURIComponent(offerId)}`);
+  const offer = normalizeCreatorOffer(asRecord(data).offer);
+  if (!offer) throw new Error("Offer not found.");
+  return offer;
+}
+
+export async function bookCreatorOffer(
+  offerId: string,
+  body: { brief: string },
+): Promise<BookCreatorOfferResult> {
+  const data = await postAuthed(`user/creator-offers/${encodeURIComponent(offerId)}/book`, body);
+  const root = asRecord(data);
+  const booking = normalizeCreatorBooking(root.booking);
+  if (!booking) throw new Error("Could not create booking.");
+  const payment = root.payment ? normalizeInitiatePayment(root.payment) : null;
+  return { booking, payment };
+}
+
+export async function listMyCreatorBookings(): Promise<CreatorBooking[]> {
+  const data = await authedApi("user/creator-bookings");
+  const list = asRecord(data).bookings;
+  return Array.isArray(list)
+    ? list.map(normalizeCreatorBooking).filter((b): b is CreatorBooking => b !== null)
+    : [];
+}
+
+export async function getCreatorBookingStatus(id: string): Promise<CreatorBooking> {
+  const data = await authedApi(`user/creator-bookings/${encodeURIComponent(id)}`);
+  const booking = normalizeCreatorBooking(asRecord(data).booking);
+  if (!booking) throw new Error("Booking not found.");
+  return booking;
+}
+
+export async function cancelCreatorBooking(id: string): Promise<CreatorBooking> {
+  const data = await postAuthed(`user/creator-bookings/${encodeURIComponent(id)}/cancel`, {});
+  const booking = normalizeCreatorBooking(asRecord(data).booking);
+  if (!booking) throw new Error("Could not cancel booking.");
+  return booking;
+}
+
+export async function listVendorCreatorOffers(businessId?: string): Promise<CreatorOffer[]> {
+  try {
+    const qs = businessId ? `?businessId=${encodeURIComponent(businessId)}` : "";
+    const data = await authedApi(`vendor/creator/offers${qs}`);
+    const list = asRecord(data).offers;
+    return Array.isArray(list)
+      ? list.map(normalizeCreatorOffer).filter((o): o is CreatorOffer => o !== null)
+      : [];
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function createVendorCreatorOffer(body: CreatorOfferInput): Promise<CreatorOffer> {
+  try {
+    const data = await postAuthed("vendor/creator/offers", body);
+    const offer = normalizeCreatorOffer(asRecord(data).offer);
+    if (!offer) throw new Error("Could not create offer.");
+    return offer;
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function updateVendorCreatorOffer(
+  offerId: string,
+  body: Partial<CreatorOfferInput>,
+): Promise<CreatorOffer> {
+  try {
+    const data = await postAuthedMethod(
+      `vendor/creator/offers/${encodeURIComponent(offerId)}`,
+      "PATCH",
+      body,
+    );
+    const offer = normalizeCreatorOffer(asRecord(data).offer);
+    if (!offer) throw new Error("Could not update offer.");
+    return offer;
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function publishCreatorOffer(offerId: string): Promise<CreatorOffer> {
+  try {
+    const data = await postAuthed(`vendor/creator/offers/${encodeURIComponent(offerId)}/publish`, {});
+    const offer = normalizeCreatorOffer(asRecord(data).offer);
+    if (!offer) throw new Error("Could not publish offer.");
+    return offer;
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function unpublishCreatorOffer(offerId: string): Promise<CreatorOffer> {
+  try {
+    const data = await postAuthed(
+      `vendor/creator/offers/${encodeURIComponent(offerId)}/unpublish`,
+      {},
+    );
+    const offer = normalizeCreatorOffer(asRecord(data).offer);
+    if (!offer) throw new Error("Could not unpublish offer.");
+    return offer;
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function cancelCreatorOffer(offerId: string): Promise<CreatorOffer> {
+  try {
+    const data = await postAuthed(`vendor/creator/offers/${encodeURIComponent(offerId)}/cancel`, {});
+    const offer = normalizeCreatorOffer(asRecord(data).offer);
+    if (!offer) throw new Error("Could not cancel offer.");
+    return offer;
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function listVendorCreatorBookings(businessId?: string): Promise<CreatorBooking[]> {
+  try {
+    const qs = businessId ? `?businessId=${encodeURIComponent(businessId)}` : "";
+    const data = await authedApi(`vendor/creator/bookings${qs}`);
+    const list = asRecord(data).bookings;
+    return Array.isArray(list)
+      ? list.map(normalizeCreatorBooking).filter((b): b is CreatorBooking => b !== null)
+      : [];
+  } catch (err) {
+    return mapKycError(err);
+  }
+}
+
+export async function updateVendorCreatorBookingStatus(
+  bookingId: string,
+  status: "in_progress" | "completed",
+): Promise<CreatorBooking> {
+  try {
+    const data = await postAuthed(
+      `vendor/creator/bookings/${encodeURIComponent(bookingId)}/status`,
+      { status },
+    );
+    const booking = normalizeCreatorBooking(asRecord(data).booking);
+    if (!booking) throw new Error("Could not update booking.");
+    return booking;
+  } catch (err) {
+    return mapKycError(err);
+  }
 }
 
 // ── Vendor authoring ──
@@ -2647,7 +3194,7 @@ export type AdminMetrics = {
     employees: number;
     disabled: number;
   };
-  businesses: { total: number; live: number; suspended: number };
+  businesses: { total: number; live: number; draft: number; suspended: number };
   bookings: { confirmed: number };
   printOrders: { total: number };
   events: { total: number };
@@ -2672,7 +3219,12 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
       employees: aNum(u.employees),
       disabled: aNum(u.disabled),
     },
-    businesses: { total: aNum(b.total), live: aNum(b.live), suspended: aNum(b.suspended) },
+    businesses: {
+      total: aNum(b.total),
+      live: aNum(b.live),
+      draft: aNum(b.draft),
+      suspended: aNum(b.suspended),
+    },
     bookings: { confirmed: aNum(bk.confirmed) },
     printOrders: { total: aNum(po.total) },
     events: { total: aNum(ev.total) },
@@ -3868,4 +4420,264 @@ export async function markNotificationRead(id: string): Promise<void> {
 
 export async function markAllNotificationsRead(): Promise<void> {
   await postAuthed("notifications/read-all", {});
+}
+
+// ── Commerce ───────────────────────────────────────────────────────────────
+
+function normalizeCommerceProduct(raw: unknown): CommerceProduct | null {
+  const p = asRecord(raw);
+  const id = typeof p.id === "string" ? p.id : "";
+  if (!id) return null;
+  const photos = Array.isArray(p.photos)
+    ? p.photos
+        .map((ph) => {
+          const row = asRecord(ph);
+          const pid = typeof row.id === "string" ? row.id : "";
+          if (!pid) return null;
+          return { id: pid, url: typeof row.url === "string" ? row.url : null };
+        })
+        .filter((x): x is { id: string; url: string | null } => x !== null)
+    : [];
+  return {
+    id,
+    businessId: typeof p.businessId === "string" ? p.businessId : "",
+    vendorId: typeof p.vendorId === "string" ? p.vendorId : "",
+    name: typeof p.name === "string" ? p.name : "",
+    description: typeof p.description === "string" ? p.description : "",
+    price: typeof p.price === "number" ? p.price : 0,
+    stock: typeof p.stock === "number" ? p.stock : 0,
+    active: p.active !== false,
+    photos,
+    coverUrl: typeof p.coverUrl === "string" ? p.coverUrl : photos[0]?.url || null,
+    createdAt: typeof p.createdAt === "string" ? p.createdAt : undefined,
+    updatedAt: typeof p.updatedAt === "string" ? p.updatedAt : undefined,
+  };
+}
+
+function normalizeCommerceOrder(raw: unknown): CommerceOrder | null {
+  const o = asRecord(raw);
+  const id = typeof o.id === "string" ? o.id : "";
+  if (!id) return null;
+  const items = Array.isArray(o.items)
+    ? o.items.map((it) => {
+        const row = asRecord(it);
+        return {
+          productId: typeof row.productId === "string" ? row.productId : "",
+          name: typeof row.name === "string" ? row.name : "",
+          price: typeof row.price === "number" ? row.price : 0,
+          quantity: typeof row.quantity === "number" ? row.quantity : 0,
+          coverUrl: typeof row.coverUrl === "string" ? row.coverUrl : null,
+        };
+      })
+    : [];
+  return {
+    id,
+    customerName: typeof o.customerName === "string" ? o.customerName : "",
+    customerMobile: typeof o.customerMobile === "string" ? o.customerMobile : "",
+    vendorId: typeof o.vendorId === "string" ? o.vendorId : null,
+    businessId: typeof o.businessId === "string" ? o.businessId : null,
+    businessName: typeof o.businessName === "string" ? o.businessName : "",
+    vendorName: typeof o.vendorName === "string" ? o.vendorName : "",
+    vendorMobile: typeof o.vendorMobile === "string" ? o.vendorMobile : null,
+    items,
+    notes: typeof o.notes === "string" ? o.notes : "",
+    amount: typeof o.amount === "number" ? o.amount : 0,
+    currency: typeof o.currency === "string" ? o.currency : "INR",
+    status: typeof o.status === "string" ? o.status : "",
+    paymentStatus: typeof o.paymentStatus === "string" ? o.paymentStatus : null,
+    paymentRefId: typeof o.paymentRefId === "string" ? o.paymentRefId : null,
+    paidAt: typeof o.paidAt === "string" ? o.paidAt : null,
+    createdAt: typeof o.createdAt === "string" ? o.createdAt : null,
+    updatedAt: typeof o.updatedAt === "string" ? o.updatedAt : null,
+  };
+}
+
+function normalizeCommerceShop(raw: unknown): CommerceShop | null {
+  const s = asRecord(raw);
+  const id = typeof s.id === "string" ? s.id : "";
+  if (!id) return null;
+  return {
+    id,
+    name: typeof s.name === "string" ? s.name : "",
+    address: typeof s.address === "string" ? s.address : "",
+    description: typeof s.description === "string" ? s.description : "",
+    thumbnailUrl: typeof s.thumbnailUrl === "string" ? s.thumbnailUrl : "",
+    notes: typeof s.notes === "string" ? s.notes : "",
+    minOrderValue: typeof s.minOrderValue === "number" ? s.minOrderValue : 0,
+    productCount: typeof s.productCount === "number" ? s.productCount : undefined,
+    inStockCount: typeof s.inStockCount === "number" ? s.inStockCount : undefined,
+    acceptingOrders: s.acceptingOrders !== false,
+  };
+}
+
+export async function listVendorCommerceProducts(businessId: string): Promise<CommerceProduct[]> {
+  const data = await authedApi(`commerce/vendor/businesses/${businessId}/products`);
+  const list = asRecord(data).products;
+  return Array.isArray(list)
+    ? list.map(normalizeCommerceProduct).filter((p): p is CommerceProduct => p !== null)
+    : [];
+}
+
+export async function createCommerceProduct(
+  businessId: string,
+  body: {
+    name: string;
+    description?: string;
+    price: number;
+    stock: number;
+    active?: boolean;
+    images?: string[];
+  },
+): Promise<CommerceProduct> {
+  const data = await postAuthed(`commerce/vendor/businesses/${businessId}/products`, body);
+  const product = normalizeCommerceProduct(asRecord(data).product);
+  if (!product) throw new Error("invalid product response");
+  return product;
+}
+
+export async function updateCommerceProduct(
+  businessId: string,
+  productId: string,
+  body: {
+    name?: string;
+    description?: string;
+    price?: number;
+    stock?: number;
+    active?: boolean;
+    images?: string[];
+  },
+): Promise<CommerceProduct> {
+  const data = await postAuthedMethod(
+    `commerce/vendor/businesses/${businessId}/products/${productId}`,
+    "PATCH",
+    body,
+  );
+  const product = normalizeCommerceProduct(asRecord(data).product);
+  if (!product) throw new Error("invalid product response");
+  return product;
+}
+
+export async function deleteCommerceProduct(businessId: string, productId: string): Promise<void> {
+  await authedApi(`commerce/vendor/businesses/${businessId}/products/${productId}`, {
+    method: "DELETE",
+  });
+}
+
+export async function listCommerceShops(): Promise<CommerceShop[]> {
+  const data = await authedApi("commerce/shops");
+  const list = asRecord(data).shops;
+  return Array.isArray(list)
+    ? list.map(normalizeCommerceShop).filter((s): s is CommerceShop => s !== null)
+    : [];
+}
+
+export async function getCommerceShop(businessId: string): Promise<{
+  shop: CommerceShop;
+  products: CommerceProduct[];
+}> {
+  const data = await authedApi(`commerce/shops/${businessId}`);
+  const root = asRecord(data);
+  const shop = normalizeCommerceShop(root.shop);
+  if (!shop) throw new Error("shop not found");
+  const products = Array.isArray(root.products)
+    ? root.products.map(normalizeCommerceProduct).filter((p): p is CommerceProduct => p !== null)
+    : [];
+  return { shop, products };
+}
+
+export async function createCommerceOrder(body: {
+  businessId: string;
+  items: { productId: string; quantity: number }[];
+  notes?: string;
+}): Promise<CommerceOrder> {
+  const data = await postAuthed("commerce/orders", body);
+  const order = normalizeCommerceOrder(asRecord(data).order);
+  if (!order) throw new Error("invalid order response");
+  return order;
+}
+
+export async function listMyCommerceOrders(): Promise<CommerceOrder[]> {
+  const data = await authedApi("commerce/orders");
+  const list = asRecord(data).orders;
+  return Array.isArray(list)
+    ? list.map(normalizeCommerceOrder).filter((o): o is CommerceOrder => o !== null)
+    : [];
+}
+
+export async function getMyCommerceOrder(id: string): Promise<CommerceOrder> {
+  const data = await authedApi(`commerce/orders/${id}`);
+  const order = normalizeCommerceOrder(asRecord(data).order);
+  if (!order) throw new Error("order not found");
+  return order;
+}
+
+export async function payCommerceOrder(id: string): Promise<{
+  order: CommerceOrder;
+  payment: {
+    orderId: string;
+    cashfreeOrderId: string;
+    paymentSessionId: string;
+    amount: number;
+    currency: string;
+    mode: string;
+  };
+}> {
+  const data = await postAuthed(`commerce/orders/${id}/pay`, {});
+  const root = asRecord(data);
+  const order = normalizeCommerceOrder(root.order);
+  if (!order) throw new Error("invalid order response");
+  const payment = asRecord(root.payment);
+  return {
+    order,
+    payment: {
+      orderId: typeof payment.orderId === "string" ? payment.orderId : id,
+      cashfreeOrderId: typeof payment.cashfreeOrderId === "string" ? payment.cashfreeOrderId : id,
+      paymentSessionId: typeof payment.paymentSessionId === "string" ? payment.paymentSessionId : "",
+      amount: typeof payment.amount === "number" ? payment.amount : order.amount,
+      currency: typeof payment.currency === "string" ? payment.currency : "INR",
+      mode: typeof payment.mode === "string" ? payment.mode : "sandbox",
+    },
+  };
+}
+
+export async function cancelCommerceOrder(id: string): Promise<CommerceOrder> {
+  const data = await postAuthed(`commerce/orders/${id}/cancel`, {});
+  const order = normalizeCommerceOrder(asRecord(data).order);
+  if (!order) throw new Error("order not found");
+  return order;
+}
+
+export async function listVendorCommerceOrders(): Promise<CommerceOrder[]> {
+  const data = await authedApi("commerce/vendor/orders");
+  const list = asRecord(data).orders;
+  return Array.isArray(list)
+    ? list.map(normalizeCommerceOrder).filter((o): o is CommerceOrder => o !== null)
+    : [];
+}
+
+export async function getVendorCommerceOrder(id: string): Promise<CommerceOrder> {
+  const data = await authedApi(`commerce/vendor/orders/${id}`);
+  const order = normalizeCommerceOrder(asRecord(data).order);
+  if (!order) throw new Error("order not found");
+  return order;
+}
+
+export async function updateVendorCommerceOrderStatus(
+  id: string,
+  status: string,
+): Promise<CommerceOrder> {
+  const data = await postAuthed(`commerce/vendor/orders/${id}/status`, { status });
+  const order = normalizeCommerceOrder(asRecord(data).order);
+  if (!order) throw new Error("order not found");
+  return order;
+}
+
+export async function setCommerceAcceptingOrders(
+  businessId: string,
+  acceptingOrders: boolean,
+): Promise<Business> {
+  const data = await postAuthed(`commerce/vendor/businesses/${businessId}/accepting`, {
+    acceptingOrders,
+  });
+  return normalizeBusiness(asRecord(data).business);
 }

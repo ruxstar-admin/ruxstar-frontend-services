@@ -106,21 +106,43 @@ export function VendorEventWizard({
 
   const step = steps[stepIndex];
 
-  function validateStep(): string {
-    if (step.id === "basics" && !title.trim()) return "Please add a title.";
-    if (step.id === "participation" && isTeam && (!teamSize || Number(teamSize) < 1)) {
-      return "Team tournaments need a team size.";
+  // Every rule the event must satisfy, keyed by the step that owns it, so the
+  // review step can re-check the earlier steps instead of trusting that the
+  // vendor never went back and cleared a field.
+  function issueForStep(id: string): string {
+    if (id === "basics" && !title.trim()) return "Please add a title.";
+    if (id === "participation") {
+      if (isTeam && (!teamSize || Number(teamSize) < 1)) {
+        return "Team tournaments need a team size.";
+      }
+      if (minCapacity && capacity && Number(minCapacity) > Number(capacity)) {
+        return "Minimum can't be higher than the maximum capacity.";
+      }
     }
-    if (
-      step.id === "participation" &&
-      minCapacity &&
-      capacity &&
-      Number(minCapacity) > Number(capacity)
-    ) {
-      return "Minimum can't be higher than the maximum capacity.";
+    if (id === "schedule") {
+      if (!startAt) return "Please set a start date and time.";
+      if (!venue.trim()) return "Please add the venue or location.";
+      if (endAt && fromLocalInput(endAt)! <= fromLocalInput(startAt)!) {
+        return "The end time must be after the start time.";
+      }
+      if (deadline && fromLocalInput(deadline)! > fromLocalInput(startAt)!) {
+        return "Registration must close before the event starts.";
+      }
     }
-    if (step.id === "schedule" && !startAt) return "Please set a start date and time.";
     return "";
+  }
+
+  function validateStep(): string {
+    return issueForStep(step.id);
+  }
+
+  /** First unmet requirement across every step, plus the step that owns it. */
+  function firstIssue(): { stepIndex: number; message: string } | null {
+    for (let i = 0; i < steps.length; i += 1) {
+      const message = issueForStep(steps[i].id);
+      if (message) return { stepIndex: i, message };
+    }
+    return null;
   }
 
   function goNext() {
@@ -161,6 +183,12 @@ export function VendorEventWizard({
   }
 
   async function onFinish() {
+    const issue = firstIssue();
+    if (issue) {
+      setError(issue.message);
+      setStepIndex(issue.stepIndex);
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -367,13 +395,14 @@ export function VendorEventWizard({
               />
             </label>
             <label className="block">
-              <span className={label}>Venue</span>
+              <span className={label}>Venue *</span>
               <input
                 className={field}
                 value={venue}
                 onChange={(e) => setVenue(e.target.value)}
                 placeholder="Address or location"
               />
+              <span className={hint}>Attendees need to know where to show up.</span>
             </label>
           </div>
         )}
@@ -416,7 +445,7 @@ export function VendorEventWizard({
                 value={`${minCapacity ? `min ${minCapacity} · ` : ""}${capacity ? `max ${capacity}` : "Unlimited"}`}
               />
               <ReviewRow label="When" value={startAt ? new Date(startAt).toLocaleString("en-IN") : "—"} />
-              {venue && <ReviewRow label="Venue" value={venue} />}
+              <ReviewRow label="Venue" value={venue || "—"} />
               <ReviewRow label="Entry fee" value={entryFee && Number(entryFee) > 0 ? `₹${Number(entryFee).toLocaleString("en-IN")}` : "Free"} />
             </div>
             <p className="text-xs text-zinc-500">

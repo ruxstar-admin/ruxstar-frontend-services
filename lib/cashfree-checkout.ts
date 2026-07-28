@@ -38,7 +38,9 @@ function loadCashfreeSdk(): Promise<void> {
 /** Opens Cashfree hosted checkout (redirects away from our page on pay). */
 export async function openCashfreeCheckout(
   paymentSessionId: string,
-  mode: CashfreeMode = "sandbox",
+  // The API reports the gateway mode as a plain string; anything other than
+  // "production" falls back to sandbox below.
+  mode: string = "sandbox",
 ): Promise<void> {
   if (!paymentSessionId) throw new Error("Missing payment session.");
   await loadCashfreeSdk();

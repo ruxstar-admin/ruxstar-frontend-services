@@ -156,6 +156,7 @@ export function BusinessSlotCalendar({ businessId, businessName }: Props) {
         await blockBusinessSlot(businessId, {
           resourceId: slot.resourceId,
           startAt: slot.startAt,
+          endAt: slot.endAt,
         });
       }
       patchSlot(slot, { status: nextStatus });

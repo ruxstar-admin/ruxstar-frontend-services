@@ -19,12 +19,24 @@ export function SetupStepServices({ services, staff, onAdd, onRemove, onToggleSt
   const [name, setName] = useState("");
   const [duration, setDuration] = useState(30);
   const [price, setPrice] = useState("");
+  const [addError, setAddError] = useState("");
 
   function add() {
     const trimmed = name.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      setAddError("Enter a service name.");
+      return;
+    }
     const p = price.trim() ? Math.round(Number(price)) : NaN;
-    if (!Number.isFinite(p) || p < 0) return;
+    if (!Number.isFinite(p) || p <= 0) {
+      setAddError("Enter a price above ₹0.");
+      return;
+    }
+    if (services.some((s) => s.name.trim().toLowerCase() === trimmed.toLowerCase())) {
+      setAddError(`"${trimmed}" is already on the list.`);
+      return;
+    }
+    setAddError("");
     onAdd({ name: trimmed, durationMinutes: duration, price: p });
     setName("");
     setPrice("");
@@ -80,6 +92,7 @@ export function SetupStepServices({ services, staff, onAdd, onRemove, onToggleSt
             />
           </div>
         </div>
+        {addError && <p className="text-xs text-red-300">{addError}</p>}
         <button
           type="button"
           onClick={add}

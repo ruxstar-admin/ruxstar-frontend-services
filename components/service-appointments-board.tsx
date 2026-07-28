@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { listVendorBookings, type VendorBooking } from "@/lib/api";
 import { formatDayLabel, formatTime12, todayLocal } from "@/lib/date-utils";
+import { StaffTimeOffPanel } from "@/components/staff-time-off-panel";
 
 type Props = {
   businessId: string;
@@ -80,6 +81,10 @@ export function ServiceAppointmentsBoard({ businessId }: Props) {
             {error}
           </p>
         )}
+
+        <div className="mb-4">
+          <StaffTimeOffPanel businessId={businessId} />
+        </div>
 
         {grouped.length === 0 ? (
           <p className="rounded-xl border border-dashed border-white/10 px-4 py-10 text-center text-sm text-zinc-600">

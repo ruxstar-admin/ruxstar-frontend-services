@@ -5,11 +5,21 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { BusinessSetupWizard } from "@/components/business-setup-wizard";
 import { useVendorShell } from "@/components/vendor-shell";
-import { businessThumbnailUrl, type Business, getBusinessSetup } from "@/lib/api";
 import {
+  businessThumbnailUrl,
+  type Business,
+  getBusinessSetup,
+  updateBusinessSetup,
+} from "@/lib/api";
+import {
+  bookingModeLabel,
+  needsBookingModeOnCreate,
+  supportsCommerceSetup,
+  supportsCreatorSetup,
   supportsEvents,
   supportsPrintSetup,
   supportsSetup,
+  type BookingMode,
 } from "@/lib/business-setup";
 
 export default function BusinessSetupPage() {
@@ -21,6 +31,8 @@ export default function BusinessSetupPage() {
   const [business, setBusiness] = useState<Business | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [modeBusy, setModeBusy] = useState(false);
+  const [modeError, setModeError] = useState("");
 
   const load = useCallback(async () => {
     if (!businessId) return;
@@ -77,10 +89,60 @@ export default function BusinessSetupPage() {
     return <div className="glass h-full w-full animate-pulse rounded-2xl" />;
   }
 
+  async function onChangeBookingMode(mode: BookingMode) {
+    if (!business || business.setup?.bookingMode === mode) return;
+    setModeBusy(true);
+    setModeError("");
+    try {
+      setBusiness(await updateBusinessSetup(business.id, { bookingMode: mode }));
+    } catch (err) {
+      setModeError(err instanceof Error ? err.message : "Could not change booking style.");
+    } finally {
+      setModeBusy(false);
+    }
+  }
+
   const isPrint = supportsPrintSetup(business.module, business.typeId);
+  const isCommerce = supportsCommerceSetup(business.module);
+  const isCreator = supportsCreatorSetup(business.module);
+  const canSwitchBookingMode = needsBookingModeOnCreate(business.typeId);
+  const currentMode: BookingMode = business.setup?.bookingMode === "fullDay" ? "fullDay" : "slots";
+
+  const bookingModeSwitcher = canSwitchBookingMode ? (
+    <div className="mt-3 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <span className="text-xs uppercase tracking-wide text-zinc-500">Booking style</span>
+        {(["slots", "fullDay"] as BookingMode[]).map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => onChangeBookingMode(mode)}
+            disabled={modeBusy}
+            className={`rounded-full border px-3.5 py-1 text-xs font-medium transition disabled:opacity-50 ${
+              currentMode === mode
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                : "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"
+            }`}
+          >
+            {bookingModeLabel(mode)}
+          </button>
+        ))}
+        {modeBusy && <span className="text-xs text-zinc-500">Saving…</span>}
+      </div>
+      <p className="mt-1.5 text-xs text-zinc-500">
+        Only changeable while you have no upcoming bookings. Review your hours and pricing after
+        switching.
+      </p>
+      {modeError && <p className="mt-1.5 text-xs text-red-300">{modeError}</p>}
+    </div>
+  ) : null;
   const doneHref = isPrint
     ? "/business/print-orders"
-    : `/business/businesses/${business.id}/calendar`;
+    : isCommerce
+      ? "/business/commerce-orders"
+      : isCreator
+        ? `/business/businesses/${business.id}/offers`
+        : `/business/businesses/${business.id}/calendar`;
 
   if (!supportsSetup(business.module, business.typeId)) {
     const thumbUrl = businessThumbnailUrl(business);
@@ -119,15 +181,20 @@ export default function BusinessSetupPage() {
       <div className="flex h-full min-h-0 w-full flex-col">
         <div className="shrink-0">
           <Link href={doneHref} className="text-sm text-zinc-500 hover:text-zinc-300">
-            {isPrint ? "← Orders" : "← Slot calendar"}
+            {isPrint || isCommerce || isCreator ? "← Back" : "← Slot calendar"}
           </Link>
           <p className="mt-2 text-sm text-zinc-500">
             {isPrint
               ? "Update your print categories, service area, and pricing."
-              : business.setup?.bookingMode === "fullDay"
-                ? "Update rules, photos, open days, halls, and daily price."
-                : "Update photos, hours, resources, and pricing."}
+              : isCommerce
+                ? "Update your shop details, products, prices, and stock."
+                : isCreator
+                  ? "Update your creator profile and photos."
+                  : business.setup?.bookingMode === "fullDay"
+                  ? "Update rules, photos, open days, halls, and daily price."
+                  : "Update photos, hours, resources, and pricing."}
           </p>
+          {bookingModeSwitcher}
         </div>
         <div className="mt-4 flex min-h-0 flex-1 flex-col">
           <BusinessSetupWizard
@@ -160,8 +227,13 @@ export default function BusinessSetupPage() {
         <p className="mt-2 text-sm text-zinc-500">
           {isPrint
             ? "Profile saved. Complete setup below to start receiving print orders."
-            : "Profile saved. Complete setup below to open bookings."}
+            : isCommerce
+              ? "Profile saved. Add your products below to open your shop."
+              : isCreator
+                ? "Profile saved. Complete setup, then publish collab offers."
+                : "Profile saved. Complete setup below to open bookings."}
         </p>
+        {bookingModeSwitcher}
       </div>
       <div className="mt-4 flex min-h-0 flex-1 flex-col">
         <BusinessSetupWizard

@@ -8,13 +8,16 @@ import {
   type BusinessOnboardResult,
 } from "@/components/business-onboard-wizard";
 import { VendorOnboardPrompt } from "@/components/vendor-onboard-prompt";
+import { BusinessProfileDialog } from "@/components/business-profile-dialog";
 import { moduleLabel } from "@/lib/business-types";
 import { useVendorShell } from "@/components/vendor-shell";
 import {
   businessThumbnailUrl,
   createBusiness,
   deleteBusiness,
+  publishBusiness,
   uploadBusinessThumbnail,
+  ValidationError,
   type Business,
   type BusinessModule,
   type RuxEvent,
@@ -29,6 +32,8 @@ import {
   supportsAppointmentSetup,
   supportsEvents,
   supportsPrintSetup,
+  supportsCommerceSetup,
+  supportsCreatorSetup,
   supportsSetup,
 } from "@/lib/business-setup";
 import { BusinessThumbnail } from "@/components/business-thumbnail";
@@ -43,14 +48,25 @@ const MODULE_STYLES: Record<BusinessModule, string> = {
   print: "border-orange-500/25 bg-orange-500/10 text-orange-200",
 };
 
-type StatusFilter = "all" | "live" | "setup" | "soon";
+type StatusFilter = "all" | "live" | "offline" | "setup" | "soon";
 
-function businessStatusKey(biz: Business): Exclude<StatusFilter, "all"> {
-  if (biz.setupComplete) return "live";
-  if (supportsEvents(biz.module)) return "live";
+// An events business has nothing public until it publishes an event, so its
+// status comes from its events rather than from `setupComplete`.
+function businessStatusKey(biz: Business, events: RuxEvent[]): Exclude<StatusFilter, "all"> {
+  if (supportsEvents(biz.module)) {
+    return events.some((e) => e.status === "published") ? "live" : "setup";
+  }
+  if (biz.setupComplete) return biz.status === "live" ? "live" : "offline";
   if (supportsSetup(biz.module, biz.typeId)) return "setup";
   return "soon";
 }
+
+const STATUS_BADGES: Record<Exclude<StatusFilter, "all">, { label: string; className: string }> = {
+  live: { label: "Live", className: "border-emerald-500/25 bg-emerald-500/10 text-emerald-200" },
+  offline: { label: "Offline", className: "border-zinc-500/30 bg-zinc-500/10 text-zinc-300" },
+  setup: { label: "Needs setup", className: "border-amber-500/25 bg-amber-500/10 text-amber-200" },
+  soon: { label: "Coming soon", className: "border-white/15 bg-white/5 text-zinc-300" },
+};
 
 const filterSelect = "field-input h-10 w-full py-0 text-sm";
 const toolbarBtn =
@@ -69,6 +85,26 @@ function businessAction(biz: Business, events: RuxEvent[]) {
   if (supportsPrintSetup(biz.module, biz.typeId)) {
     if (biz.setupComplete) {
       return { href: "/business/print-orders", label: "Orders", disabled: false };
+    }
+    return {
+      href: `/business/businesses/${biz.id}/setup`,
+      label: "Finish setup",
+      disabled: false,
+    };
+  }
+  if (supportsCommerceSetup(biz.module)) {
+    if (biz.setupComplete) {
+      return { href: "/business/commerce-orders", label: "Orders", disabled: false };
+    }
+    return {
+      href: `/business/businesses/${biz.id}/setup`,
+      label: "Finish setup",
+      disabled: false,
+    };
+  }
+  if (supportsCreatorSetup(biz.module)) {
+    if (biz.setupComplete) {
+      return { href: `/business/businesses/${biz.id}/offers`, label: "Offers", disabled: false };
     }
     return {
       href: `/business/businesses/${biz.id}/setup`,
@@ -129,6 +165,8 @@ export default function VendorBusinessesPage() {
   const [noticeLeaving, setNoticeLeaving] = useState(false);
   const [error, setError] = useState("");
   const [removingId, setRemovingId] = useState("");
+  const [publishingId, setPublishingId] = useState("");
+  const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
   const [thumbUploadId, setThumbUploadId] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -154,10 +192,15 @@ export default function VendorBusinessesPage() {
   const filteredBusinesses = useMemo(() => {
     return businesses.filter((biz) => {
       if (categoryFilter !== "all" && biz.categoryId !== categoryFilter) return false;
-      if (statusFilter !== "all" && businessStatusKey(biz) !== statusFilter) return false;
+      if (
+        statusFilter !== "all" &&
+        businessStatusKey(biz, eventsByBusiness.get(biz.id) ?? []) !== statusFilter
+      ) {
+        return false;
+      }
       return true;
     });
-  }, [businesses, categoryFilter, statusFilter]);
+  }, [businesses, categoryFilter, statusFilter, eventsByBusiness]);
 
   const filtersActive = categoryFilter !== "all" || statusFilter !== "all";
 
@@ -220,6 +263,8 @@ export default function VendorBusinessesPage() {
         typeId: data.typeId,
         phone: data.phone,
         address: data.address,
+        addressParts: data.addressParts,
+        ...(data.geo ? { geo: data.geo } : {}),
         description: data.description,
         thumbnail: data.thumbnail,
         ...(data.bookingMode ? { bookingMode: data.bookingMode } : {}),
@@ -263,6 +308,28 @@ export default function VendorBusinessesPage() {
       setError(err instanceof Error ? err.message : "Could not upload cover photo.");
     } finally {
       setThumbUploadId("");
+    }
+  }
+
+  async function onPublish(biz: Business) {
+    setPublishingId(biz.id);
+    setError("");
+    try {
+      const updated = await publishBusiness(biz.id);
+      await mutateBusinesses(
+        businesses.map((b) => (b.id === updated.id ? updated : b)),
+        { revalidate: false },
+      );
+      invalidateBusinesses();
+      setNotice(`"${updated.name}" is live again.`);
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        setError(`Cannot publish: ${err.issues.map((i) => i.message).join("; ")}`);
+      } else {
+        setError(err instanceof Error ? err.message : "Could not update visibility.");
+      }
+    } finally {
+      setPublishingId("");
     }
   }
 
@@ -327,6 +394,7 @@ export default function VendorBusinessesPage() {
               >
                 <option value="all">All status</option>
                 <option value="live">Live</option>
+                <option value="offline">Offline</option>
                 <option value="setup">Needs setup</option>
                 <option value="soon">Coming soon</option>
               </select>
@@ -388,7 +456,9 @@ export default function VendorBusinessesPage() {
           ) : (
           <div className="grid gap-4 pb-2 sm:grid-cols-2 lg:grid-cols-3">
           {filteredBusinesses.map((biz) => {
-            const action = businessAction(biz, eventsByBusiness.get(biz.id) ?? []);
+            const bizEvents = eventsByBusiness.get(biz.id) ?? [];
+            const action = businessAction(biz, bizEvents);
+            const badge = STATUS_BADGES[businessStatusKey(biz, bizEvents)];
             const thumbInputId = `thumb-${biz.id}`;
             const hasThumbnail = Boolean(businessThumbnailUrl(biz));
             return (
@@ -424,11 +494,18 @@ export default function VendorBusinessesPage() {
                       if (file) void onUploadThumbnail(biz, file);
                     }}
                   />
-                  <span
-                    className={`absolute right-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm ${MODULE_STYLES[biz.module]}`}
-                  >
-                    {moduleLabel(biz.module, moduleLabels)}
-                  </span>
+                  <div className="absolute right-3 top-3 flex items-center gap-1.5">
+                    <span
+                      className={`rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm ${badge.className}`}
+                    >
+                      {badge.label}
+                    </span>
+                    <span
+                      className={`rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm ${MODULE_STYLES[biz.module]}`}
+                    >
+                      {moduleLabel(biz.module, moduleLabels)}
+                    </span>
+                  </div>
                 </div>
 
                 {action.disabled || !action.href ? (
@@ -471,14 +548,40 @@ export default function VendorBusinessesPage() {
                       <span className="ml-1">→</span>
                     </Link>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => onRemove(biz.id)}
-                    disabled={removingId === biz.id}
-                    className={removeBtnClass}
-                  >
-                    {removingId === biz.id ? "Removing…" : "Remove"}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditingBusiness(biz)}
+                      className={removeBtnClass}
+                    >
+                      Edit details
+                    </button>
+                    {biz.setupComplete && supportsCreatorSetup(biz.module) && (
+                      <Link href={`/business/businesses/${biz.id}/offers`} className={removeBtnClass}>
+                        Offers
+                      </Link>
+                    )}
+                    {/* Only a recovery action: a listing can go offline when an
+                        edit breaks its go-live requirements. */}
+                    {biz.setupComplete && biz.status !== "live" && (
+                      <button
+                        type="button"
+                        onClick={() => onPublish(biz)}
+                        disabled={publishingId === biz.id}
+                        className={removeBtnClass}
+                      >
+                        {publishingId === biz.id ? "Saving…" : "Publish"}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => onRemove(biz.id)}
+                      disabled={removingId === biz.id}
+                      className={removeBtnClass}
+                    >
+                      {removingId === biz.id ? "Removing…" : "Remove"}
+                    </button>
+                  </div>
                 </div>
               </article>
             );
@@ -486,6 +589,22 @@ export default function VendorBusinessesPage() {
           </div>
           )}
         </div>
+      )}
+
+      {editingBusiness && (
+        <BusinessProfileDialog
+          business={editingBusiness}
+          onClose={() => setEditingBusiness(null)}
+          onSaved={async (updated) => {
+            setEditingBusiness(null);
+            await mutateBusinesses(
+              businesses.map((b) => (b.id === updated.id ? updated : b)),
+              { revalidate: false },
+            );
+            invalidateBusinesses();
+            setNotice(`"${updated.name}" updated.`);
+          }}
+        />
       )}
 
       {showWizard && (

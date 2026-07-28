@@ -15,6 +15,7 @@ import {
   type BookingMode,
 } from "@/lib/business-setup";
 import { compressImageForUpload } from "@/lib/compress-image";
+import type { BusinessAddressParts } from "@/lib/api";
 import { INDIAN_STATES, reverseGeocode, dedupeAddressParts } from "@/lib/india-locations";
 import { citiesForState } from "@/lib/india-cities";
 
@@ -60,6 +61,8 @@ export type BusinessOnboardResult = {
   name: string;
   phone: string;
   address: string;
+  addressParts: BusinessAddressParts;
+  geo?: { lat: number; lng: number };
   description: string;
   thumbnail: string;
   bookingMode?: BookingMode;
@@ -106,6 +109,9 @@ export function BusinessOnboardWizard({ onClose, onComplete, saving = false }: P
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [thumbnailBusy, setThumbnailBusy] = useState(false);
   const [locating, setLocating] = useState(false);
+  // Captured only when the vendor uses "detect my location" — powers distance
+  // search later, and is never guessed from a typed address.
+  const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(null);
   const [error, setError] = useState("");
   const [canDismiss, setCanDismiss] = useState(false);
   const thumbInputRef = useRef<HTMLInputElement>(null);
@@ -203,6 +209,7 @@ export function BusinessOnboardWizard({ onClose, onComplete, saving = false }: P
         }),
       );
       const loc = await reverseGeocode(position.coords.latitude, position.coords.longitude);
+      setGeo({ lat: position.coords.latitude, lng: position.coords.longitude });
       setForm((f) => ({
         ...f,
         state: loc.state ?? f.state,
@@ -249,6 +256,16 @@ export function BusinessOnboardWizard({ onClose, onComplete, saving = false }: P
       name: form.name.trim(),
       phone: form.phone.trim(),
       address: composeAddress(form),
+      addressParts: {
+        doorNo: form.doorNo.trim(),
+        building: form.building.trim(),
+        street: form.street.trim(),
+        locality: form.locality.trim(),
+        city: form.city.trim(),
+        state: form.state.trim(),
+        pincode: form.pincode.trim(),
+      },
+      ...(geo ? { geo } : {}),
       description: form.description.trim(),
       thumbnail: thumbnail!,
       ...(bookingMode ? { bookingMode } : {}),
@@ -380,6 +397,11 @@ export function BusinessOnboardWizard({ onClose, onComplete, saving = false }: P
                             <div className="min-w-0">
                               <p className="text-sm font-medium text-zinc-100">{t.label}</p>
                               <p className="mt-0.5 line-clamp-1 text-xs text-zinc-500">{t.description}</p>
+                              {t.examples && (
+                                <p className="mt-1 line-clamp-1 text-[11px] text-zinc-600">
+                                  e.g. {t.examples}
+                                </p>
+                              )}
                             </div>
                             <span className="shrink-0 rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-zinc-400">
                               {moduleLabel(t.module, moduleLabels)}
@@ -448,6 +470,11 @@ export function BusinessOnboardWizard({ onClose, onComplete, saving = false }: P
                       </>
                     )}
                   </p>
+                  {businessType.detailHint && (
+                    <p className="-mt-2 text-xs leading-relaxed text-zinc-500">
+                      {businessType.detailHint}
+                    </p>
+                  )}
 
                   {/* Cover photo */}
                   <div>
@@ -688,7 +715,10 @@ export function BusinessOnboardWizard({ onClose, onComplete, saving = false }: P
                     </div>
                     <textarea
                       className={`${input} mt-1.5 min-h-[4.5rem] resize-none`}
-                      placeholder="What you offer — keep it short and clear for customers"
+                      placeholder={
+                        businessType.detailHint ||
+                        "What you offer — keep it short and clear for customers"
+                      }
                       maxLength={500}
                       value={form.description}
                       onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}

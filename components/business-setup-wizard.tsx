@@ -8,9 +8,12 @@ import type {
   BusinessSetupInput,
   BusinessStaff,
   PrintProfile,
+  CommerceProfile,
+  CreatorProfile,
+  ValidationIssue,
   WeeklyHours,
 } from "@/lib/api";
-import { defaultPrintProfile } from "@/lib/api";
+import { defaultPrintProfile, defaultCommerceProfile, defaultCreatorProfile, ValidationError } from "@/lib/api";
 import {
   completeBusinessSetup,
   getBusinessSetup,
@@ -31,6 +34,9 @@ import { SetupStepCoachingServices } from "@/components/business-setup/setup-ste
 import { formatServicePriceSummary } from "@/lib/coaching";
 import { SetupStepPrintProfile } from "@/components/business-setup/setup-step-print-profile";
 import { SetupStepPrintPricing } from "@/components/business-setup/setup-step-print-pricing";
+import { SetupStepCommerceProfile } from "@/components/business-setup/setup-step-commerce-profile";
+import { SetupStepCreatorProfile } from "@/components/business-setup/setup-step-creator-profile";
+import { SetupStepProducts } from "@/components/business-setup/setup-step-products";
 import {
   applyFullDayHours,
   bookingModeLabel,
@@ -70,6 +76,8 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   const isService = bookingMode === "services";
   const isCoaching = business.typeId === "coaching";
   const isPrint = business.module === "print" || isPrintType(business.typeId);
+  const isCommerce = business.module === "commerce";
+  const isCreator = business.module === "creator";
 
   const [stepIndex, setStepIndex] = useState(0);
   const currentStep: SetupStepConfig = flow.steps[stepIndex] ?? flow.steps[0];
@@ -91,6 +99,15 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   const [services, setServices] = useState<BusinessService[]>(() => setup.services ?? []);
   const [printProfile, setPrintProfile] = useState<PrintProfile>(
     () => setup.printProfile ?? defaultPrintProfile(),
+  );
+  const [commerceProfile, setCommerceProfile] = useState<CommerceProfile>(
+    () => setup.commerceProfile ?? defaultCommerceProfile(),
+  );
+  const [creatorProfile, setCreatorProfile] = useState<CreatorProfile>(
+    () => setup.creatorProfile ?? defaultCreatorProfile(),
+  );
+  const [productCount, setProductCount] = useState(
+    () => setup.commerceProfile?.activeProductCount ?? 0,
   );
   const { data: printCatalog = [] } = usePrintCatalog(isPrint);
   const printCategoryLabels = useMemo(() => {
@@ -120,6 +137,7 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   const [resourceDescription, setResourceDescription] = useState("");
   const [bufferMinutes, setBufferMinutes] = useState(setup.bufferMinutes ?? 0);
   const [error, setError] = useState("");
+  const [blockers, setBlockers] = useState<ValidationIssue[]>([]);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -182,7 +200,7 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
       resources.length > 0 &&
       resources.every((r) => {
         const p = Number(r.pricePerSlot);
-        return Number.isFinite(p) && p >= 0;
+        return Number.isFinite(p) && p > 0;
       })
     );
   }
@@ -190,6 +208,12 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   function buildSetupPatch(): BusinessSetupInput {
     if (isPrint) {
       return { printProfile };
+    }
+    if (isCommerce) {
+      return { commerceProfile };
+    }
+    if (isCreator) {
+      return { creatorProfile };
     }
     if (isService) {
       return {
@@ -364,6 +388,10 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
   }
 
   async function saveHourlySlotsAndContinue() {
+    if (openDays.length === 0) {
+      setError("Select at least one open day.");
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -463,6 +491,41 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
     }
   }
 
+  async function saveCommerceProfileAndContinue() {
+    setBusy(true);
+    setError("");
+    try {
+      await updateBusinessSetup(business.id, { commerceProfile });
+      goNext();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not save shop details.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveCreatorProfileAndContinue() {
+    setBusy(true);
+    setError("");
+    try {
+      await updateBusinessSetup(business.id, { creatorProfile });
+      goNext();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not save creator profile.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveProductsAndContinue() {
+    if (productCount < 1) {
+      setError("Add at least one product before continuing.");
+      return;
+    }
+    setError("");
+    goNext();
+  }
+
   async function saveResourcesAndContinue() {
     if (!resources.length) {
       setError("Add at least one before continuing.");
@@ -489,9 +552,48 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
     await updateBusinessSetup(business.id, buildSetupPatch());
   }
 
+  // Maps a go-live issue reported by the backend to the wizard step that fixes
+  // it. `profile` issues (address, phone, description) live outside the wizard.
+  function stepForIssue(issue: ValidationIssue): SetupStepId | null {
+    switch (issue.step) {
+      case "photos":
+        return "photos";
+      case "printProfile":
+        return "print-profile";
+      case "printPricing":
+        return "print-pricing";
+      case "products":
+        return "products";
+      case "commerceProfile":
+        return "commerce-profile";
+      case "creator-profile":
+        return "creator-profile";
+      case "staff":
+        return "staff";
+      case "services":
+        return "services";
+      case "resources":
+        return "resources";
+      case "hours":
+        return isFullDay ? "full-day-days" : "hourly-slots";
+      default:
+        return null;
+    }
+  }
+
+  function jumpToIssue(issue: ValidationIssue) {
+    const target = stepForIssue(issue);
+    if (!target) return;
+    if (!flow.steps.some((s) => s.id === target)) return;
+    setBlockers([]);
+    setError("");
+    goToStep(target);
+  }
+
   async function onFinish() {
     setBusy(true);
     setError("");
+    setBlockers([]);
     try {
       if (isPrint) {
         if (!printProfile.serviceCategories.length) {
@@ -508,6 +610,23 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
         if (pricingErr) {
           setError(pricingErr);
           goToStep("print-pricing");
+          return;
+        }
+      } else if (isCommerce) {
+        if (productCount < 1) {
+          setError("Add at least one product before going live.");
+          goToStep("products");
+          return;
+        }
+      } else if (isCreator) {
+        if (!creatorProfile.bio.trim()) {
+          setError("Add a bio before going live.");
+          goToStep("creator-profile");
+          return;
+        }
+        if (!creatorProfile.niche.trim()) {
+          setError("Add your niche before going live.");
+          goToStep("creator-profile");
           return;
         }
       } else if (isService) {
@@ -556,6 +675,13 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
         const fresh = await getBusinessSetup(business.id);
         invalidateBusinesses();
         invalidatePublicBusinesses();
+        // The backend takes a live listing offline when an edit breaks the
+        // go-live gate — keep the wizard open so the vendor can fix it.
+        if (business.status === "live" && fresh.status === "draft") {
+          setBlockers(fresh.readiness?.issues ?? []);
+          setError("Your changes were saved, but the listing is offline until these are fixed.");
+          return;
+        }
         onComplete(fresh);
         return;
       }
@@ -565,7 +691,12 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
       invalidatePublicBusinesses();
       onComplete(updated);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save setup.");
+      if (err instanceof ValidationError) {
+        setBlockers(err.issues);
+        setError("A few things are still missing before you can go live.");
+      } else {
+        setError(err instanceof Error ? err.message : "Could not save setup.");
+      }
     } finally {
       setBusy(false);
     }
@@ -575,8 +706,8 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
     const name = resourceName.trim();
     if (!name) return;
     const price = resourcePrice.trim() ? Math.round(Number(resourcePrice)) : NaN;
-    if (!Number.isFinite(price) || price < 0) {
-      setError(`Enter a valid ${priceLabel(bookingMode).toLowerCase()}.`);
+    if (!Number.isFinite(price) || price <= 0) {
+      setError(`Enter a ${priceLabel(bookingMode).toLowerCase()} above ₹0.`);
       return;
     }
     const capacity = resourceCapacity.trim() ? Math.round(Number(resourceCapacity)) : undefined;
@@ -650,6 +781,15 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
       case "print-pricing":
         await savePrintPricingAndContinue();
         break;
+      case "commerce-profile":
+        await saveCommerceProfileAndContinue();
+        break;
+      case "creator-profile":
+        await saveCreatorProfileAndContinue();
+        break;
+      case "products":
+        await saveProductsAndContinue();
+        break;
       case "review":
         await onFinish();
         break;
@@ -675,6 +815,12 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
                 ? "Products & service area"
                 : step === "print-pricing"
                 ? "Product pricing"
+                : step === "commerce-profile"
+                  ? "Shop details"
+                  : step === "creator-profile"
+                    ? "Creator profile"
+                  : step === "products"
+                    ? "Products"
                 : step === "review"
                   ? editMode
                     ? "Review changes"
@@ -706,6 +852,36 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
           <p className="mb-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-100">
             {error}
           </p>
+        )}
+
+        {blockers.length > 0 && (
+          <ul className="mb-3 space-y-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+            {blockers.map((issue) => {
+              const target = stepForIssue(issue);
+              const canJump = Boolean(target) && flow.steps.some((s) => s.id === target);
+              return (
+                <li key={`${issue.step}:${issue.field}`} className="flex items-start gap-2">
+                  <span aria-hidden className="mt-0.5">•</span>
+                  {canJump ? (
+                    <button
+                      type="button"
+                      onClick={() => jumpToIssue(issue)}
+                      className="text-left underline underline-offset-2 hover:text-amber-50"
+                    >
+                      {issue.message}
+                    </button>
+                  ) : (
+                    <span>{issue.message}</span>
+                  )}
+                </li>
+              );
+            })}
+            {blockers.some((i) => i.step === "profile") && (
+              <li className="pt-1 text-xs text-amber-200/80">
+                Profile details are edited from My businesses → Edit details.
+              </li>
+            )}
+          </ul>
         )}
 
         {step === "rules" && (
@@ -807,6 +983,24 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
           />
         )}
 
+        {step === "commerce-profile" && (
+          <SetupStepCommerceProfile
+            value={commerceProfile}
+            onChange={(patch) => setCommerceProfile((prev) => ({ ...prev, ...patch }))}
+          />
+        )}
+
+        {step === "creator-profile" && (
+          <SetupStepCreatorProfile
+            value={creatorProfile}
+            onChange={(patch) => setCreatorProfile((prev) => ({ ...prev, ...patch }))}
+          />
+        )}
+
+        {step === "products" && (
+          <SetupStepProducts businessId={business.id} onCountChange={setProductCount} />
+        )}
+
         {step === "full-day-days" && (
           <SetupStepFullDayDays
             intro=""
@@ -837,6 +1031,43 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
               setResources((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)))
             }
           />
+        )}
+
+        {step === "review" && isCreator && (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Profile</p>
+              <p className="mt-1 text-sm text-zinc-200">{creatorProfile.niche || "—"}</p>
+              <p className="mt-2 line-clamp-4 text-sm text-zinc-400">
+                {creatorProfile.bio.trim() || "No bio yet"}
+              </p>
+            </div>
+            <p className="text-sm text-zinc-500">
+              After going live, publish collab offers from your business card → Offers.
+            </p>
+          </div>
+        )}
+
+        {step === "review" && isCommerce && (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Products</p>
+              <p className="mt-1 text-sm text-zinc-200">
+                {productCount} product{productCount === 1 ? "" : "s"} listed
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Pickup</p>
+              <p className="mt-1 text-sm text-zinc-200">
+                {commerceProfile.notes.trim() || "No pickup notes"}
+              </p>
+              {commerceProfile.minOrderValue > 0 && (
+                <p className="mt-1 text-xs text-zinc-500">
+                  Min order ₹{commerceProfile.minOrderValue.toLocaleString("en-IN")}
+                </p>
+              )}
+            </div>
+          </div>
         )}
 
         {step === "review" && isPrint && (
@@ -893,7 +1124,7 @@ export function BusinessSetupWizard({ business, editMode = false, onComplete }: 
           </div>
         )}
 
-        {step === "review" && !isService && !isPrint && (
+        {step === "review" && !isService && !isPrint && !isCommerce && !isCreator && (
           <SetupStepReview
             isFullDay={isFullDay}
             slotMinutes={slotMinutes}

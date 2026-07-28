@@ -9,14 +9,18 @@ import {
   cancelCustomerBooking,
   updateCustomerProfile,
   type PublicBusinessSummary,
+  type CreatorOffer,
+  type CreatorBooking,
   type RuxEvent,
 } from "@/lib/api";
 import {
   invalidateCustomerBookings,
   useCustomerBookings,
   useCustomerProfile,
+  useMyCreatorBookings,
   useMyEventRegistrations,
   usePublicBusinesses,
+  usePublicCreatorOffers,
   usePublicEvents,
 } from "@/lib/swr-hooks";
 import { formatDayLabel, formatTime12 } from "@/lib/date-utils";
@@ -51,6 +55,7 @@ function modeLabel(biz: PublicBusinessSummary) {
 }
 
 const EVENTS_CATEGORY = "Events and tournaments";
+const CREATOR_CATEGORY = "Creators & influencers";
 
 function eventTypeLabel(ev: RuxEvent) {
   return ev.tournamentType?.trim() || (ev.kind === "tournament" ? "Tournament" : "Event");
@@ -77,7 +82,20 @@ function businessSearchText(biz: PublicBusinessSummary) {
 
 type DiscoverItem =
   | { kind: "business"; biz: PublicBusinessSummary }
-  | { kind: "event"; ev: RuxEvent };
+  | { kind: "event"; ev: RuxEvent }
+  | { kind: "creatorOffer"; offer: CreatorOffer };
+
+function offerKindLabel(offer: CreatorOffer) {
+  if (offer.kind === "shoutout") return "Shoutout";
+  if (offer.kind === "appearance") return "Appearance";
+  return "Collab";
+}
+
+function creatorOfferSearchText(offer: CreatorOffer) {
+  return [offer.title, offer.businessName, offer.description, offer.kind, ...offer.platforms]
+    .join(" ")
+    .toLowerCase();
+}
 
 function BusinessCoverImage({ biz }: { biz: PublicBusinessSummary }) {
   const [failed, setFailed] = useState(false);
@@ -124,7 +142,9 @@ export default function CustomerPage() {
     mutate: mutatePublicBusinesses,
   } = usePublicBusinesses(true);
   const { data: events = [], isLoading: eventsLoading } = usePublicEvents(true);
+  const { data: creatorOffers = [], isLoading: creatorOffersLoading } = usePublicCreatorOffers(true);
   const { data: myRegistrations = [] } = useMyEventRegistrations(true);
+  const { data: myCreatorBookings = [] } = useMyCreatorBookings(true);
 
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(false);
@@ -162,8 +182,9 @@ export default function CustomerPage() {
       if (b.categoryLabel.trim()) labels.add(b.categoryLabel.trim());
     }
     if (events.length > 0) labels.add(EVENTS_CATEGORY);
+    if (creatorOffers.length > 0) labels.add(CREATOR_CATEGORY);
     return [...labels].sort((a, b) => a.localeCompare(b));
-  }, [businesses, events]);
+  }, [businesses, events, creatorOffers]);
 
   const typeOptions = useMemo(() => {
     const labels = new Set<string>();
@@ -174,23 +195,34 @@ export default function CustomerPage() {
       }
       return [...labels].sort((a, b) => a.localeCompare(b));
     }
+    if (categoryFilter === CREATOR_CATEGORY) {
+      for (const o of creatorOffers) {
+        labels.add(offerKindLabel(o));
+      }
+      return [...labels].sort((a, b) => a.localeCompare(b));
+    }
     for (const b of businesses) {
       if (categoryFilter !== "all" && b.categoryLabel !== categoryFilter) continue;
       if (b.typeLabel.trim()) labels.add(b.typeLabel.trim());
     }
     return [...labels].sort((a, b) => a.localeCompare(b));
-  }, [businesses, events, categoryFilter]);
+  }, [businesses, events, creatorOffers, categoryFilter]);
 
-  const totalDiscoverCount = businesses.length + events.length;
+  const totalDiscoverCount = businesses.length + events.length + creatorOffers.length;
 
   const discoverItems = useMemo(() => {
     const q = query.trim().toLowerCase();
     const items: DiscoverItem[] = [];
-    const showBusinesses = categoryFilter === "all" || categoryFilter !== EVENTS_CATEGORY;
+    const showBusinesses =
+      categoryFilter === "all" ||
+      (categoryFilter !== EVENTS_CATEGORY && categoryFilter !== CREATOR_CATEGORY);
     const showEvents = categoryFilter === "all" || categoryFilter === EVENTS_CATEGORY;
+    const showCreatorOffers = categoryFilter === "all" || categoryFilter === CREATOR_CATEGORY;
 
     if (showBusinesses) {
       for (const b of businesses) {
+        if (categoryFilter !== "all" && categoryFilter !== CREATOR_CATEGORY && categoryFilter !== EVENTS_CATEGORY && b.categoryLabel !== categoryFilter) continue;
+        if (categoryFilter === CREATOR_CATEGORY || categoryFilter === EVENTS_CATEGORY) continue;
         if (categoryFilter !== "all" && b.categoryLabel !== categoryFilter) continue;
         if (typeFilter !== "all" && b.typeLabel !== typeFilter) continue;
         if (q && !businessSearchText(b).includes(q)) continue;
@@ -206,8 +238,16 @@ export default function CustomerPage() {
       }
     }
 
+    if (showCreatorOffers) {
+      for (const o of creatorOffers) {
+        if (typeFilter !== "all" && offerKindLabel(o) !== typeFilter) continue;
+        if (q && !creatorOfferSearchText(o).includes(q)) continue;
+        items.push({ kind: "creatorOffer", offer: o });
+      }
+    }
+
     return items;
-  }, [businesses, events, query, categoryFilter, typeFilter]);
+  }, [businesses, events, creatorOffers, query, categoryFilter, typeFilter]);
 
   const hasActiveFilters =
     query.trim().length > 0 || categoryFilter !== "all" || typeFilter !== "all";
@@ -310,19 +350,19 @@ export default function CustomerPage() {
                       Discover <span className="text-gradient">places & events</span>
                     </h1>
                     <p className="mt-1 text-sm text-zinc-500">
-                      {businessesLoading || eventsLoading
+                      {businessesLoading || eventsLoading || creatorOffersLoading
                         ? "Loading…"
                         : `${totalDiscoverCount} ${totalDiscoverCount === 1 ? "listing" : "listings"} live right now`}
                     </p>
                   </div>
 
-                  {!businessesLoading && !eventsLoading && totalDiscoverCount > 0 && (
+                  {!businessesLoading && !eventsLoading && !creatorOffersLoading && totalDiscoverCount > 0 && (
                     <div className="mt-5 space-y-3 border-b border-white/5 pb-4">
                     <div className="relative">
                       <input
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search turfs, salons, venues, events, tournaments…"
+                        placeholder="Search turfs, salons, venues, events, creators…"
                         className={`${input} w-full`}
                       />
                       {query && (
@@ -401,7 +441,7 @@ export default function CustomerPage() {
                 </div>
 
                 <div className="scroll-pane min-h-0 flex-1 pt-4">
-                {businessesLoading || eventsLoading ? (
+                {businessesLoading || eventsLoading || creatorOffersLoading ? (
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {[0, 1, 2].map((i) => (
                       <div key={i} className="h-56 animate-pulse rounded-2xl bg-white/5" />
@@ -450,13 +490,22 @@ export default function CustomerPage() {
                         <li key={`biz-${item.biz.id}`}>
                           <Link
                             href={`/customer/book/${item.biz.id}`}
-                            className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] transition hover:border-white/20 hover:bg-white/[0.04]"
+                            className={`group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border transition ${
+                              item.biz.open
+                                ? "border-white/8 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                                : "border-white/8 bg-white/[0.01] opacity-55"
+                            }`}
                           >
                             <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-emerald-500/15 via-white/5 to-transparent">
                               <BusinessCoverImage biz={item.biz} />
                               <span className="absolute left-3 top-3 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-200 backdrop-blur">
                                 {item.biz.typeLabel || item.biz.categoryLabel}
                               </span>
+                              {!item.biz.open && (
+                                <span className="absolute right-3 top-3 rounded-full border border-zinc-500/40 bg-black/50 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-300 backdrop-blur">
+                                  Closed
+                                </span>
+                              )}
                             </div>
 
                             <div className="flex flex-1 flex-col p-4">
@@ -496,14 +545,20 @@ export default function CustomerPage() {
                                 <span className="text-sm font-semibold text-emerald-300">
                                   {priceTag(item.biz)}
                                 </span>
-                                <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition group-hover:bg-emerald-500/20 group-hover:text-emerald-200">
-                                  Book →
+                                <span
+                                  className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+                                    item.biz.open
+                                      ? "bg-white/10 text-zinc-200 transition group-hover:bg-emerald-500/20 group-hover:text-emerald-200"
+                                      : "bg-white/5 text-zinc-500"
+                                  }`}
+                                >
+                                  {item.biz.open ? "Book →" : "Closed"}
                                 </span>
                               </div>
                             </div>
                           </Link>
                         </li>
-                      ) : (
+                      ) : item.kind === "event" ? (
                         <li key={`ev-${item.ev.id}`}>
                           <button
                             type="button"
@@ -563,6 +618,54 @@ export default function CustomerPage() {
                             </div>
                           </button>
                         </li>
+                      ) : (
+                        <li key={`creator-${item.offer.id}`}>
+                          <button
+                            type="button"
+                            onClick={() => router.push(`/customer/creator/${item.offer.id}`)}
+                            className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] text-left transition hover:border-white/20 hover:bg-white/[0.04]"
+                          >
+                            <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-pink-500/20 via-white/5 to-transparent">
+                              {item.offer.coverUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={item.offer.coverUrl}
+                                  alt={item.offer.title}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="grid h-full w-full place-items-center text-4xl opacity-80">
+                                  ✨
+                                </div>
+                              )}
+                              <span className="absolute left-3 top-3 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-200 backdrop-blur">
+                                {offerKindLabel(item.offer)}
+                              </span>
+                              {item.offer.spotsLeft === 0 && (
+                                <span className="absolute right-3 top-3 rounded-full bg-red-500/80 px-2 py-1 text-[10px] font-semibold text-white">
+                                  Full
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex flex-1 flex-col p-4">
+                              <h3 className="text-base font-semibold text-zinc-100">{item.offer.title}</h3>
+                              <p className="mt-0.5 text-xs text-zinc-500">{item.offer.businessName}</p>
+                              {item.offer.description && (
+                                <p className="mt-2 line-clamp-2 text-xs text-zinc-500">
+                                  {item.offer.description}
+                                </p>
+                              )}
+                              <div className="mt-auto flex items-center justify-between pt-4">
+                                <span className="text-sm font-semibold text-emerald-300">
+                                  ₹{item.offer.price.toLocaleString("en-IN")}
+                                </span>
+                                <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition group-hover:bg-pink-500/20 group-hover:text-pink-200">
+                                  Book collab →
+                                </span>
+                              </div>
+                            </div>
+                          </button>
+                        </li>
                       ),
                     )}
                   </ul>
@@ -587,7 +690,7 @@ export default function CustomerPage() {
 
                   <h1 className="text-2xl font-semibold sm:text-3xl">My bookings</h1>
                   <p className="mt-1 text-sm text-zinc-500">
-                    Your slot bookings and event registrations.
+                    Your slot bookings, event registrations, and creator collabs.
                   </p>
                 </div>
 
@@ -598,7 +701,7 @@ export default function CustomerPage() {
                       <div key={i} className="h-16 animate-pulse rounded-xl bg-white/5" />
                     ))}
                   </div>
-                ) : bookings.length === 0 && myRegistrations.length === 0 ? (
+                ) : bookings.length === 0 && myRegistrations.length === 0 && myCreatorBookings.length === 0 ? (
                   <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
                     <p className="text-3xl">🎟️</p>
                     <p className="mt-3 text-sm text-zinc-400">No bookings yet.</p>
@@ -644,6 +747,10 @@ export default function CustomerPage() {
                     <MyEventsSection
                       registrations={myRegistrations}
                       onOpen={(id) => router.push(`/customer/events/${id}`)}
+                    />
+                    <MyCreatorBookingsSection
+                      bookings={myCreatorBookings}
+                      onOpen={(offerId) => router.push(`/customer/creator/${offerId}`)}
                     />
                   </div>
                 )}
@@ -860,6 +967,62 @@ function MyEventsSection({
                 <button
                   type="button"
                   onClick={() => onOpen(r.eventId)}
+                  className="text-xs text-zinc-500 hover:text-zinc-300"
+                >
+                  View
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function MyCreatorBookingsSection({
+  bookings,
+  onOpen,
+}: {
+  bookings: CreatorBooking[];
+  onOpen: (offerId: string) => void;
+}) {
+  if (bookings.length === 0) return null;
+  return (
+    <div className="mt-10">
+      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-pink-300/80">
+        Creator collabs
+      </p>
+      <ul className="space-y-2">
+        {bookings.map((b) => {
+          const pending = b.status === "pending_payment";
+          return (
+            <li
+              key={b.id}
+              className={`flex items-center gap-4 rounded-xl border px-4 py-3 ${
+                pending ? "border-amber-400/20 bg-amber-400/[0.03]" : "border-white/5 bg-white/[0.02]"
+              }`}
+            >
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-white/5 text-xl">
+                ✨
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-zinc-100">{b.offerTitle}</p>
+                <p className="truncate text-sm text-zinc-500">
+                  {b.businessName}
+                  {b.brief ? ` · ${b.brief}` : ""}
+                </p>
+                <div className="mt-1.5">
+                  <BookingStatusBadge status={b.status} paymentStatus={b.paymentStatus} />
+                </div>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span className="text-sm text-zinc-300">
+                  {b.amount > 0 ? `₹${b.amount.toLocaleString("en-IN")}` : "Free"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onOpen(b.offerId)}
                   className="text-xs text-zinc-500 hover:text-zinc-300"
                 >
                   View

@@ -12,7 +12,10 @@ export default function VendorStorePage() {
   const [override, setOverride] = useState<Record<string, boolean>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  const shops = businesses.filter((b) => b.module === "print");
+  const printBusinesses = businesses.filter((b) => b.module === "print");
+  // Availability only means something once the shop can actually take orders.
+  const shops = printBusinesses.filter((b) => b.setupComplete);
+  const pendingSetupCount = printBusinesses.length - shops.length;
 
   const isAccepting = (shop: Business) =>
     override[shop.id] ?? (shop.setup?.printProfile?.acceptingOrders ?? true);
@@ -63,6 +66,15 @@ export default function VendorStorePage() {
           Open or close each shop for new orders. Closed shops stay visible to customers but can&apos;t
           take new orders.
         </p>
+        {pendingSetupCount > 0 && (
+          <p className="mt-2 text-xs text-amber-200/80">
+            {pendingSetupCount} print {pendingSetupCount === 1 ? "shop is" : "shops are"} still in
+            setup and won&apos;t appear here until finished.{" "}
+            <Link href="/business/businesses" className="underline hover:text-amber-100">
+              Finish setup
+            </Link>
+          </p>
+        )}
       </div>
 
       <div className="scroll-pane mt-6 min-h-0 flex-1">
@@ -76,7 +88,9 @@ export default function VendorStorePage() {
           <div className="flex h-full min-h-[16rem] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 py-14 text-center">
             <p className="text-3xl">🏬</p>
             <p className="mt-3 max-w-sm text-sm text-zinc-400">
-              No shops yet. Set up a live business to manage its availability here.
+              {pendingSetupCount > 0
+                ? "No shops are ready yet. Finish print setup to manage availability here."
+                : "No shops yet. Set up a live business to manage its availability here."}
             </p>
             <Link
               href="/business/businesses"

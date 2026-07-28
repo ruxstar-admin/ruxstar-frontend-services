@@ -3,18 +3,18 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { getCustomerBookingStatus, getEventRegistrationStatus, getPrintOrder } from "@/lib/api";
+import { getCustomerBookingStatus, getEventRegistrationStatus, getPrintOrder, getMyCommerceOrder, getCreatorBookingStatus } from "@/lib/api";
 import {
   invalidateCustomerBookings,
   invalidateMyEventRegistrations,
   invalidateMyPrintOrders,
+  invalidateMyCreatorBookings,
 } from "@/lib/swr-hooks";
 
-// The Cashfree return URL carries the order id (a booking id, an event
-// registration id, OR a print order id). Probe booking first; if it 404s, try
-// event registration, then print order. All expose { status, paymentStatus }.
+// The Cashfree return URL carries the order id (booking / event / creator / print /
+// commerce). Probe each until one matches.
 type StatusEntity = {
-  kind: "booking" | "event" | "print";
+  kind: "booking" | "event" | "creator" | "print" | "commerce";
   title: string;
   status: string;
   paymentStatus?: string | null;
@@ -30,15 +30,35 @@ async function fetchStatus(id: string): Promise<StatusEntity | null> {
       return { kind: "event", title: r.eventTitle, status: r.status, paymentStatus: r.paymentStatus };
     } catch {
       try {
-        const o = await getPrintOrder(id);
+        const c = await getCreatorBookingStatus(id);
         return {
-          kind: "print",
-          title: o.categoryLabel || o.title,
-          status: o.status,
-          paymentStatus: o.paymentStatus,
+          kind: "creator",
+          title: c.offerTitle,
+          status: c.status,
+          paymentStatus: c.paymentStatus,
         };
       } catch {
-        return null;
+        try {
+          const o = await getPrintOrder(id);
+          return {
+            kind: "print",
+            title: o.categoryLabel || o.title,
+            status: o.status,
+            paymentStatus: o.paymentStatus,
+          };
+        } catch {
+          try {
+            const commerce = await getMyCommerceOrder(id);
+            return {
+              kind: "commerce",
+              title: commerce.businessName,
+              status: commerce.status,
+              paymentStatus: commerce.paymentStatus,
+            };
+          } catch {
+            return null;
+          }
+        }
       }
     }
   }
@@ -52,7 +72,7 @@ function PaymentStatusContent() {
   const [status, setStatus] = useState<"loading" | "confirmed" | "failed" | "pending">("loading");
   const [message, setMessage] = useState("Checking your payment…");
   const [businessName, setBusinessName] = useState("");
-  const [kind, setKind] = useState<"booking" | "event" | "print">("booking");
+  const [kind, setKind] = useState<"booking" | "event" | "creator" | "print" | "commerce">("booking");
 
   useEffect(() => {
     if (!bookingId) {
@@ -74,18 +94,25 @@ function PaymentStatusContent() {
         setBusinessName(entity.title);
         setKind(entity.kind);
         const isEvent = entity.kind === "event";
+        const isCreator = entity.kind === "creator";
         const isPrint = entity.kind === "print";
+        const isCommerce = entity.kind === "commerce";
 
         if (entity.status === "confirmed" && entity.paymentStatus === "paid") {
           setStatus("confirmed");
           setMessage(
-            isPrint
+            isCommerce
+              ? "Payment received — your order is confirmed. Pick up from the shop."
+              : isPrint
               ? "Payment received — your print order is confirmed."
+              : isCreator
+                ? "Payment received — your collab booking is confirmed."
               : isEvent
                 ? "Payment received — you're registered."
                 : "Payment received — your slot is booked.",
           );
-          if (isPrint) invalidateMyPrintOrders();
+          if (isPrint || isCommerce) invalidateMyPrintOrders();
+          else if (isCreator) invalidateMyCreatorBookings();
           else if (isEvent) invalidateMyEventRegistrations();
           else invalidateCustomerBookings();
           return;
@@ -144,7 +171,9 @@ function PaymentStatusContent() {
           {status === "confirmed"
             ? kind === "event"
               ? "Registration confirmed"
-              : kind === "print"
+              : kind === "creator"
+                ? "Collab booked"
+              : kind === "print" || kind === "commerce"
                 ? "Order confirmed"
                 : "Booking confirmed"
             : status === "failed"
@@ -161,10 +190,14 @@ function PaymentStatusContent() {
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           {status === "confirmed" && (
             <Link
-              href={kind === "print" ? "/customer/print" : "/customer?view=bookings"}
+              href={
+                kind === "print" || kind === "commerce"
+                  ? "/customer/orders"
+                  : "/customer?view=bookings"
+              }
               className="btn-primary rounded-full px-6 py-2.5 text-sm font-semibold"
             >
-              {kind === "print" ? "View my orders" : "View my bookings"}
+              {kind === "print" || kind === "commerce" ? "View my orders" : "View my bookings"}
             </Link>
           )}
           {(status === "failed" || status === "pending") && (

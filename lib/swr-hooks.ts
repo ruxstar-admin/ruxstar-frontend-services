@@ -32,6 +32,10 @@ import {
   listNotifications,
   listPublicBusinesses,
   listPublicEvents,
+  listPublicCreatorOffers,
+  listMyCreatorBookings,
+  listVendorCreatorBookings,
+  listVendorCreatorOffers,
   listVendorBookings,
   listVendorEvents,
   listVendorPrintOrders,
@@ -67,6 +71,8 @@ import {
   type PrintShop,
   type PublicBusinessSummary,
   type RuxEvent,
+  type CreatorOffer,
+  type CreatorBooking,
   type RuxstarCardData,
   type VendorBooking,
   type VendorKycStatus,
@@ -110,6 +116,7 @@ export const swrKeys = {
   publicBusinesses: "swr/public/businesses",
   vendorBookings: "swr/vendor/bookings",
   publicEvents: "swr/public/events",
+  publicCreatorOffers: "swr/public/creator-offers",
   vendorEvents: "swr/vendor/events",
   myEventRegistrations: "swr/user/event-registrations",
   adminKyc: "swr/admin/kyc",
@@ -220,6 +227,58 @@ export function invalidateVendorEvents() {
 
 export function invalidateMyEventRegistrations() {
   return globalMutate(swrKeys.myEventRegistrations);
+}
+
+export function usePublicCreatorOffers(enabled = true) {
+  return useSWR<CreatorOffer[]>(
+    enabled ? swrKeys.publicCreatorOffers : null,
+    listPublicCreatorOffers,
+  );
+}
+
+export function useMyCreatorBookings(enabled = true) {
+  return useSWR<CreatorBooking[]>(
+    enabled ? "swr/my/creator-bookings" : null,
+    listMyCreatorBookings,
+  );
+}
+
+export function invalidateMyCreatorBookings() {
+  return globalMutate("swr/my/creator-bookings");
+}
+
+export function useVendorCreatorBookings(enabled = true, businessId?: string) {
+  const key = businessId
+    ? `swr/vendor/creator-bookings/${businessId}`
+    : "swr/vendor/creator-bookings";
+  return useSWR<CreatorBooking[]>(
+    enabled ? key : null,
+    () => listVendorCreatorBookings(businessId),
+    pollOpts(45_000),
+  );
+}
+
+export function invalidateVendorCreatorBookings() {
+  return globalMutate(
+    (k) => typeof k === "string" && k.startsWith("swr/vendor/creator-bookings"),
+    undefined,
+    { revalidate: true },
+  );
+}
+
+export function useVendorCreatorOffers(enabled = true, businessId?: string) {
+  const key = businessId
+    ? `swr/vendor/creator-offers/${businessId}`
+    : "swr/vendor/creator-offers";
+  return useSWR<CreatorOffer[]>(enabled ? key : null, () => listVendorCreatorOffers(businessId));
+}
+
+export function invalidateVendorCreatorOffers() {
+  return globalMutate(
+    (k) => typeof k === "string" && k.startsWith("swr/vendor/creator-offers"),
+    undefined,
+    { revalidate: true },
+  );
 }
 
 /* --------------------------------- Admin --------------------------------- */

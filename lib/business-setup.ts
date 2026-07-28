@@ -158,9 +158,22 @@ export function supportsPrintSetup(module: string, typeId?: string) {
   return module === "print" || isPrintType(typeId);
 }
 
+export function supportsCommerceSetup(module: string) {
+  return module === "commerce";
+}
+
+export function supportsCreatorSetup(module: string) {
+  return module === "creator";
+}
+
 /** Any module that uses the post-create setup wizard. */
 export function supportsSetup(module: string, typeId?: string) {
-  return supportsAppointmentSetup(module) || supportsPrintSetup(module, typeId);
+  return (
+    supportsAppointmentSetup(module) ||
+    supportsPrintSetup(module, typeId) ||
+    supportsCommerceSetup(module) ||
+    supportsCreatorSetup(module)
+  );
 }
 
 export function supportsEvents(module: string) {

@@ -11,6 +11,9 @@ export type SetupStepId =
   | "services"
   | "print-profile"
   | "print-pricing"
+  | "commerce-profile"
+  | "products"
+  | "creator-profile"
   | "review";
 
 const PRINT_TYPE_IDS = [
@@ -318,8 +321,58 @@ const PRINT_FLOW: SetupFlow = {
   ],
 };
 
+const COMMERCE_TYPE_IDS = ["retail", "online_store"];
+const CREATOR_TYPE_IDS = ["creator"];
+
+const CREATOR_FLOW: SetupFlow = {
+  id: "creator-collab",
+  typeId: "_creator",
+  bookingMode: "slots",
+  title: "Creator / influencer",
+  steps: [
+    {
+      id: "photos",
+      label: "Photos",
+      intro: "Add profile or brand photos (your cover is already set). Up to 3 total.",
+    },
+    {
+      id: "creator-profile",
+      label: "Creator profile",
+      intro: "Tell customers who you are, your niche, and where to find you online.",
+    },
+    { id: "review", label: "Review", intro: "Go live, then publish collab offers from your business." },
+  ],
+};
+
+const COMMERCE_FLOW: SetupFlow = {
+  id: "commerce-shop",
+  typeId: "_commerce",
+  bookingMode: "slots",
+  title: "Commerce shop",
+  steps: [
+    {
+      id: "photos",
+      label: "Photos",
+      intro: "Add shop photos (your cover is already set). Up to 3 total.",
+    },
+    {
+      id: "commerce-profile",
+      label: "Shop details",
+      intro: "Pickup notes and optional minimum order value.",
+    },
+    {
+      id: "products",
+      label: "Products",
+      intro: "Add what you sell — name, price, stock, and photos.",
+    },
+    { id: "review", label: "Review", intro: "Go live so customers can order from your shop." },
+  ],
+};
+
 export function resolveSetupFlow(typeId: string, bookingMode: BookingMode): SetupFlow {
   if (PRINT_TYPE_IDS.includes(typeId)) return { ...PRINT_FLOW, typeId };
+  if (COMMERCE_TYPE_IDS.includes(typeId)) return { ...COMMERCE_FLOW, typeId };
+  if (CREATOR_TYPE_IDS.includes(typeId)) return { ...CREATOR_FLOW, typeId };
 
   const mode: BookingMode =
     bookingMode === "fullDay" ? "fullDay" : bookingMode === "services" ? "services" : "slots";

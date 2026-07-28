@@ -453,6 +453,34 @@ export function CustomerBookFlow({ businessId, isLoggedInCustomer = false }: Pro
     );
   }
 
+  const shopOpen = business.open !== false;
+
+  if (!shopOpen) {
+    return (
+      <div className="space-y-4 px-5 pt-2 opacity-70 sm:px-8">
+        <Link href="/customer" className="text-xs text-zinc-500 hover:text-zinc-300">
+          ← Discover
+        </Link>
+        <div className="glass rounded-2xl p-8 text-center">
+          <span className="inline-flex rounded-full border border-zinc-500/40 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-zinc-300">
+            Closed
+          </span>
+          <h1 className="mt-4 text-xl font-semibold text-zinc-100">{business.name}</h1>
+          {business.address && <p className="mt-1 text-sm text-zinc-500">{business.address}</p>}
+          <p className="mt-4 text-sm text-zinc-400">
+            This business is temporarily offline and not accepting new bookings.
+          </p>
+          <Link
+            href="/customer"
+            className="btn-primary mt-6 inline-block rounded-full px-5 py-2.5 text-sm font-semibold"
+          >
+            Browse other listings
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const photos = galleryUrls(business);
   const isFullDay = business.setup.bookingMode === "fullDay";
   const isVenue = isPartyVenueSetup(business.typeId);
