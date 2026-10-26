@@ -1,3 +1,5 @@
+import { Countdown } from "./countdown";
+
 export default function ComingSoon() {
   return (
     <main className="page">
@@ -15,6 +17,7 @@ export default function ComingSoon() {
           <br />
           <span className="date">30 November</span>
         </h1>
+        <Countdown />
         <p className="lede">
           Print, events, coaching, and stays, with the people around you. All in one place.
         </p>

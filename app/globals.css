@@ -4,6 +4,8 @@
   --ink-2: #5e5d66;
   --ink-3: #94929b;
   --gold: #b8892e;
+  --surface: #ffffff;
+  --line: #e6e2d9;
   --font: Inter, "SF Pro Text", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -14,6 +16,8 @@
     --ink-2: #aaa8b1;
     --ink-3: #75737d;
     --gold: #d8b25c;
+    --surface: #16161b;
+    --line: #2a2a31;
   }
 }
 
@@ -81,6 +85,46 @@ h1 {
 }
 
 .date {
+  color: var(--gold);
+}
+
+.countdown {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 104px));
+  gap: clamp(8px, 2.5vw, 16px);
+  margin: 8px 0;
+}
+
+.unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: clamp(12px, 2.5vw, 18px) 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.value {
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-size: clamp(10px, 2.8vw, 12px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.live {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
   color: var(--gold);
 }
 
