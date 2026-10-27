@@ -1,0 +1,81 @@
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.label {
+  font: 600 14px/20px var(--font);
+  color: var(--ink);
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  transition: border-color var(--dur-quick) var(--ease-out);
+}
+
+.box:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.box[data-invalid] {
+  border-color: var(--danger);
+}
+
+.box[data-invalid]:focus-within {
+  box-shadow: 0 0 0 1px var(--danger);
+}
+
+/* 17 px keeps iOS Safari from zooming in on focus. */
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: 400 17px/1 var(--font);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--ink-3);
+}
+
+/* Browsers paint autofilled fields their own blue-grey. The inset fill hides it under the field colour. */
+.input:autofill,
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+  box-shadow: 0 0 0 1000px var(--surface) inset;
+  transition: background-color 600000s 0s;
+}
+
+.affix {
+  color: var(--ink-2);
+  font: 500 17px/1 var(--font);
+  font-variant-numeric: tabular-nums;
+}
+
+.hint,
+.error {
+  font: 400 14px/20px var(--font);
+}
+
+.hint {
+  color: var(--ink-2);
+}
+
+.error {
+  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+}

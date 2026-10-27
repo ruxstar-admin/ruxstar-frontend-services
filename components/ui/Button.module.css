@@ -1,0 +1,141 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 0 var(--space-6);
+  border: 1px solid transparent;
+  border-radius: var(--radius-button);
+  font: 600 15px/1 var(--font);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    opacity var(--dur-quick) var(--ease-out);
+}
+
+.button:active:not(:disabled) {
+  transform: scale(var(--press-scale));
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.md {
+  min-height: var(--size-touch);
+}
+
+.lg {
+  min-height: var(--size-primary-button);
+  padding: 0 var(--space-7);
+  font-size: 16px;
+}
+
+.block {
+  display: flex;
+  width: 100%;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.label[data-hidden] {
+  opacity: 0;
+}
+
+/* Hover fill: a circle that grows from the centre. Transform only, so it stays on the compositor. */
+.button::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 50% auto auto 50%;
+  width: 240%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .button:hover:not(:disabled)::before {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.primary {
+  background: var(--ink);
+  color: var(--on-primary);
+}
+
+.primary::before {
+  background: color-mix(in srgb, var(--on-primary) 12%, transparent);
+}
+
+.secondary {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.secondary::before {
+  background: var(--sunk);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--ink);
+}
+
+.ghost::before {
+  background: var(--sunk);
+}
+
+.danger {
+  background: var(--danger);
+  color: var(--on-primary);
+}
+
+.danger::before {
+  background: color-mix(in srgb, var(--on-primary) 12%, transparent);
+}
+
+.spinner {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button::before {
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity var(--dur-quick) var(--ease-out);
+  }
+
+  .button:hover:not(:disabled)::before {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}

@@ -1,0 +1,48 @@
+/* Separated from the page by a tone step, never a border or a shadow. */
+.card {
+  display: block;
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  color: inherit;
+  text-decoration: none;
+}
+
+.sunk {
+  background: var(--sunk);
+}
+
+.none {
+  padding: 0;
+  overflow: hidden;
+}
+
+.md {
+  padding: var(--space-5);
+}
+
+.lg {
+  padding: var(--space-6);
+}
+
+.interactive {
+  cursor: pointer;
+  transition: transform var(--dur-quick) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .interactive:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.interactive:active {
+  transform: scale(0.985);
+  transition-duration: var(--dur-press);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interactive:hover,
+  .interactive:active {
+    transform: none;
+  }
+}

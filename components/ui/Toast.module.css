@@ -1,0 +1,79 @@
+.region {
+  position: fixed;
+  z-index: 100;
+  inset: auto 0 max(16px, env(safe-area-inset-bottom)) 0;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(420px, 100%);
+  min-height: 48px;
+  padding: 0 6px 0 var(--space-4);
+  border-radius: var(--radius-button);
+  background: var(--ink);
+  color: var(--on-primary);
+  font: 500 15px/20px var(--font);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  pointer-events: auto;
+  animation: enter var(--dur-base) var(--ease-spring) both;
+}
+
+.toast[data-leaving] {
+  animation: leave var(--dur-base) var(--ease-out) both;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-left: var(--space-1);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.close:hover {
+  opacity: 1;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+}
+
+@keyframes leave {
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast,
+  .toast[data-leaving] {
+    animation-name: fade;
+  }
+
+  .toast[data-leaving] {
+    animation-direction: reverse;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

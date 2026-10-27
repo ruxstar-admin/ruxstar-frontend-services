@@ -1,0 +1,98 @@
+.page {
+  --margin: clamp(20px, 5vw, 64px);
+  min-height: 100dvh;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px var(--margin) 64px;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.main {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 640px;
+  margin: 0 auto;
+  padding-top: clamp(32px, 6vh, 72px);
+}
+
+.title {
+  font: 600 32px/36px var(--display);
+  letter-spacing: var(--type-headline-tracking);
+  margin-bottom: var(--space-3);
+}
+
+/* Tone-step surface, no border. */
+.section {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-7);
+  background: var(--surface);
+  border-radius: var(--radius-card);
+}
+
+.sectionHead {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.sectionTitle {
+  font: var(--type-title);
+  letter-spacing: var(--type-title-tracking);
+}
+
+.muted {
+  font: var(--type-small);
+  color: var(--ink-2);
+}
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.formError {
+  font: var(--type-small);
+  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+}
+
+.devices {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.device {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 64px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--sunk);
+  border-radius: var(--radius-control);
+}
+
+.deviceName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .section {
+    padding: var(--space-6) var(--space-5);
+  }
+}

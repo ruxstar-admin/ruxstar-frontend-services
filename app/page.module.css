@@ -1,0 +1,196 @@
+.page {
+  --margin: clamp(20px, 5vw, 64px);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px var(--margin);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+}
+
+.hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 96px);
+  padding: 48px 0;
+}
+
+.copy {
+  display: grid;
+  gap: 36px;
+}
+
+.title {
+  font-family: var(--display);
+  font-size: clamp(42px, 7.4vw, 104px);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+/* Each line rises from behind its own mask, 90 ms apart. */
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+
+.line > span {
+  display: block;
+  animation: rise var(--dur-hero) var(--ease-out) both;
+}
+
+.line + .line > span {
+  animation-delay: 90ms;
+}
+
+.lede {
+  max-width: 30ch;
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.45;
+  color: var(--ink);
+  animation: fade-up var(--dur-slow) var(--ease-out) 240ms both;
+}
+
+.countdown {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 112px));
+  gap: clamp(8px, 2vw, 14px);
+}
+
+.unit {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  min-width: 0;
+  padding: clamp(14px, 2.4vw, 20px) clamp(12px, 2vw, 18px);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  animation: fade-up var(--dur-slow) var(--ease-out) both;
+  animation-delay: calc(360ms + var(--i) * 70ms);
+}
+
+.value {
+  display: block;
+  overflow: hidden;
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 750;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.digit {
+  display: block;
+  animation: tick var(--dur-quick) var(--ease-out) both;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.live {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
+}
+
+.stage {
+  position: relative;
+  justify-self: end;
+  width: min(100%, 440px);
+}
+
+/* The star sits in its own pool of violet light. */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: -22%;
+  background: radial-gradient(closest-side, var(--glow), transparent);
+  pointer-events: none;
+  animation: fade var(--dur-hero) var(--ease-out) 400ms both;
+}
+
+.mark {
+  position: relative;
+  width: 100%;
+}
+
+.foot {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes tick {
+  from {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    grid-template-columns: 1fr;
+    align-content: center;
+    gap: 36px;
+    padding: 32px 0;
+  }
+
+  .stage {
+    order: -1;
+    justify-self: start;
+    width: clamp(120px, 34vw, 220px);
+  }
+
+  .copy {
+    gap: 28px;
+  }
+
+  .countdown {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .lede {
+    max-width: 34ch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line > span {
+    animation-name: fade;
+  }
+
+  .lede,
+  .unit,
+  .digit {
+    animation-name: fade;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

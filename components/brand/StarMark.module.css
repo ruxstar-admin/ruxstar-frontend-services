@@ -1,0 +1,84 @@
+.mark {
+  display: block;
+  width: 100%;
+  height: auto;
+  animation: drift 7s var(--ease-in-out) 1.4s infinite alternate;
+}
+
+/* Ink tile in light mode, a raised surface in dark mode, so the tile always reads against the page. */
+.tile {
+  fill: var(--ink);
+  transform-box: view-box;
+  transform-origin: 512px 512px;
+  animation: tile-in var(--dur-slow) var(--ease-out) both;
+}
+
+:root[data-theme="dark"] .tile {
+  fill: var(--surface);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tile {
+    fill: var(--surface);
+  }
+}
+
+.half {
+  transform-box: view-box;
+  transform-origin: 512px 512px;
+}
+
+.yellow {
+  fill: var(--logo-yellow);
+  animation: from-top-left var(--dur-hero) var(--ease-spring) 250ms both;
+}
+
+.blue {
+  fill: var(--logo-blue);
+  animation: from-bottom-right var(--dur-hero) var(--ease-spring) 250ms both;
+}
+
+@keyframes tile-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes from-top-left {
+  from {
+    opacity: 0;
+    transform: translate(-140px, -140px) rotate(-8deg);
+  }
+}
+
+@keyframes from-bottom-right {
+  from {
+    opacity: 0;
+    transform: translate(140px, 140px) rotate(-8deg);
+  }
+}
+
+@keyframes drift {
+  to {
+    transform: translateY(-10px) rotate(-1.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark {
+    animation: none;
+  }
+
+  .tile,
+  .yellow,
+  .blue {
+    animation-name: fade;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

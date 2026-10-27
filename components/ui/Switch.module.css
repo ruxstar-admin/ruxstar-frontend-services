@@ -1,0 +1,68 @@
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: var(--size-touch);
+  padding: var(--space-2) 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.text {
+  display: grid;
+  gap: 2px;
+}
+
+.label {
+  font: 500 17px/24px var(--font);
+}
+
+.description {
+  font: 400 14px/20px var(--font);
+  color: var(--ink-2);
+}
+
+.track {
+  position: relative;
+  flex: none;
+  width: 48px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  background: var(--ink-3);
+  transition: background-color var(--dur-quick) var(--ease-out);
+}
+
+.knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform var(--dur-base) var(--ease-spring);
+}
+
+.row[aria-checked="true"] .track {
+  background: var(--ink);
+}
+
+.row[aria-checked="true"] .knob {
+  transform: translateX(20px);
+  background: var(--on-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .knob {
+    transition: background-color var(--dur-quick) var(--ease-out);
+  }
+}

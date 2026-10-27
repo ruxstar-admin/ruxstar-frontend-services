@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from "./page.module.css";
 
 const LAUNCH_AT = Date.parse("2026-11-30T00:00:00+05:30");
 
 const UNITS = [
-  { label: "Days", ms: 86_400_000, mod: Infinity },
-  { label: "Hours", ms: 3_600_000, mod: 24 },
-  { label: "Minutes", ms: 60_000, mod: 60 },
-  { label: "Seconds", ms: 1_000, mod: 60 },
+  { one: "day", many: "days", ms: 86_400_000, mod: Infinity },
+  { one: "hour", many: "hours", ms: 3_600_000, mod: 24 },
+  { one: "minute", many: "minutes", ms: 60_000, mod: 60 },
+  { one: "second", many: "seconds", ms: 1_000, mod: 60 },
 ];
 
 export function Countdown() {
@@ -23,17 +24,22 @@ export function Countdown() {
   const left = now === null ? null : Math.max(0, LAUNCH_AT - now);
 
   if (left === 0) {
-    return <p className="live">We are live.</p>;
+    return <p className={styles.live}>We are live.</p>;
   }
 
   return (
-    <div className="countdown" role="timer" aria-label="Time until launch">
-      {UNITS.map((u) => {
+    <div className={styles.countdown} role="timer" aria-label="Time until launch">
+      {UNITS.map((u, i) => {
         const value = left === null ? null : Math.floor(left / u.ms) % u.mod;
         return (
-          <div key={u.label} className="unit">
-            <span className="value">{value === null ? "--" : String(value).padStart(2, "0")}</span>
-            <span className="label">{u.label}</span>
+          <div key={u.many} className={styles.unit} style={{ "--i": i } as React.CSSProperties}>
+            <span className={styles.value}>
+              {/* Re-keyed so each new number rises in. */}
+              <span key={value ?? "-"} className={styles.digit}>
+                {value === null ? "–" : value}
+              </span>
+            </span>
+            <span className={styles.label}>{value === 1 ? u.one : u.many}</span>
           </div>
         );
       })}

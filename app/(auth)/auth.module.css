@@ -1,0 +1,167 @@
+.page {
+  --margin: clamp(20px, 5vw, 64px);
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px var(--margin);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+}
+
+.main {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: clamp(32px, 8vh, 96px) 0 48px;
+}
+
+/* Each step rises in when it replaces the one before. */
+.step {
+  display: grid;
+  gap: var(--space-7);
+  animation: rise var(--dur-base) var(--ease-out) both;
+}
+
+.head {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* App-screen title: 32 px, 24 px on phones. The 52 px display size stays on marketing pages. */
+.title {
+  font: 600 32px/36px var(--display);
+  letter-spacing: var(--type-headline-tracking);
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 24px;
+    line-height: 30px;
+  }
+}
+
+.lede {
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.actions {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.formError {
+  font: var(--type-small);
+  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+}
+
+.foot {
+  font: var(--type-small);
+  color: var(--ink-2);
+  text-align: center;
+}
+
+.foot a,
+.inline a {
+  color: var(--ink);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font: var(--type-small);
+  color: var(--ink-2);
+}
+
+.textButton {
+  min-height: var(--size-touch);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 14px/20px var(--font);
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.textButton:disabled {
+  color: var(--ink-3);
+  text-decoration: none;
+  cursor: default;
+}
+
+.reveal {
+  min-width: var(--size-touch);
+  min-height: 36px;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  font: 600 14px/20px var(--font);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.reveal:hover {
+  color: var(--ink);
+}
+
+.code input {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.4em;
+  font-size: 22px;
+}
+
+.consent {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  align-items: start;
+  font: var(--type-small);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.consent input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--ink);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step {
+    animation-name: fade;
+  }
+}
