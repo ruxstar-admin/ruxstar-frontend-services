@@ -23,11 +23,14 @@ export const signOut = async () => unwrap(api.POST("/v1/account/logout", { body:
 
 let refreshing: Promise<boolean> | null = null;
 
-/** One refresh at a time, shared by every call that saw a 401. */
+/** One refresh at a time, shared by every call that saw a 401. False only when the session is really over. */
 export function refreshSession(): Promise<boolean> {
   refreshing ??= unwrap(api.POST("/v1/account/refresh", { body: {} }))
     .then(() => true)
-    .catch(() => false)
+    .catch((err: unknown) => {
+      if (err instanceof ApiError && err.status === 401) return false;
+      throw err;
+    })
     .finally(() => {
       refreshing = null;
     });
@@ -50,6 +53,12 @@ export const getMe = async () => (await signedIn(() => unwrap(api.GET("/v1/accou
 export const updateMe = async (body: { name?: string; username?: string; city?: string | null }) =>
   (await signedIn(() => unwrap(api.PATCH("/v1/account/me", { body })))).data;
 
+export const checkUsername = async (check?: string) =>
+  (await signedIn(() => unwrap(api.GET("/v1/account/usernames", { params: { query: check ? { check } : {} } })))).data;
+
+export const cityAt = async (lat: number, lng: number) =>
+  (await signedIn(() => unwrap(api.GET("/v1/account/city", { params: { query: { lat, lng } } })))).data;
+
 export const listSessions = async () => (await signedIn(() => unwrap(api.GET("/v1/account/sessions")))).data;
 
 export const endSession = async (id: string) =>
@@ -59,7 +68,10 @@ export const endSession = async (id: string) =>
 export function nextPath(fallback = "/account"): string {
   if (typeof window === "undefined") return fallback;
   const next = new URLSearchParams(window.location.search).get("next");
-  return next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : fallback;
+  if (!next?.startsWith("/")) return fallback;
+  // Parse rather than prefix-check: browsers strip tabs and newlines, so "/\t/evil.com" becomes "//evil.com".
+  const url = new URL(next, window.location.origin);
+  return url.origin === window.location.origin ? url.pathname + url.search + url.hash : fallback;
 }
 
 /** Message for a form, plus the field it belongs to when the API names one. */

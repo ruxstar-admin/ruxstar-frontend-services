@@ -110,7 +110,7 @@
 
 .reveal {
   min-width: var(--size-touch);
-  min-height: 36px;
+  min-height: var(--size-touch);
   padding: 0 var(--space-2);
   border: 0;
   border-radius: var(--radius-pill);

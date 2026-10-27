@@ -38,6 +38,8 @@ export function SignInForm() {
       </div>
       <form className={styles.form} onSubmit={submit} noValidate>
         <PhoneField
+          name="username"
+          autoComplete="username"
           value={phone}
           onValueChange={setPhone}
           autoFocus
@@ -49,7 +51,7 @@ export function SignInForm() {
           autoComplete="current-password"
           error={error?.field === "password" ? error.message : undefined}
         />
-        {error && !error.field && (
+        {error && error.field !== "phone" && error.field !== "password" && (
           <p className={styles.formError} role="alert">
             {error.message}
           </p>

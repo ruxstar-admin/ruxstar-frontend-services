@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "rea
 import { Button } from "@/components/ui";
 import { formError, requestCode, verifyCode, type Purpose } from "@/lib/api/account";
 import styles from "@/app/(auth)/auth.module.css";
-import { CodeField, PhoneField, validPhone } from "./fields";
+import { CodeField, PhoneField, prettyPhone, validPhone } from "./fields";
 
 interface Props {
   purpose: Purpose;
@@ -14,8 +14,6 @@ interface Props {
   foot?: ReactNode;
   onVerified: (verificationToken: string, phone: string) => void;
 }
-
-const pretty = (phone: string) => `+91 ${phone.slice(0, 5)} ${phone.slice(5)}`;
 
 /** Number, then the texted code. Hands back a verification token for signup or reset. */
 export function VerifyPhone({ purpose, title, lede, foot, onVerified }: Props) {
@@ -29,10 +27,14 @@ export function VerifyPhone({ purpose, title, lede, foot, onVerified }: Props) {
   const codeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (step !== "code") return;
-    const timer = setInterval(() => setNow(Date.now()), 1000);
+    if (step !== "code" || Date.now() >= resendAt) return;
+    const timer = setInterval(() => {
+      const t = Date.now();
+      setNow(t);
+      if (t >= resendAt) clearInterval(timer);
+    }, 1000);
     return () => clearInterval(timer);
-  }, [step]);
+  }, [step, resendAt]);
 
   async function send() {
     setBusy(true);
@@ -58,9 +60,20 @@ export function VerifyPhone({ purpose, title, lede, foot, onVerified }: Props) {
       const { verificationToken } = await verifyCode(phone, purpose, value);
       onVerified(verificationToken, phone);
     } catch (err) {
-      setError(formError(err));
+      const problem = formError(err);
+      setError(problem);
       setBusy(false);
+      if (problem.code === "OTP_INVALID") {
+        setCode("");
+        requestAnimationFrame(() => codeRef.current?.focus());
+      }
     }
+  }
+
+  function changeNumber() {
+    setError(null);
+    setCode("");
+    setStep("phone");
   }
 
   function submitPhone(e: FormEvent) {
@@ -116,7 +129,7 @@ export function VerifyPhone({ purpose, title, lede, foot, onVerified }: Props) {
     <div className={styles.step} key="code">
       <div className={styles.head}>
         <h1 className={styles.title}>Enter the code</h1>
-        <p className={styles.lede}>We sent a 6-digit code to {pretty(phone)}. It works for 5 minutes.</p>
+        <p className={styles.lede}>We sent a 6-digit code to {prettyPhone(phone)}. It works for 5 minutes.</p>
       </div>
       <form className={styles.form} onSubmit={submitCode} noValidate>
         <CodeField
@@ -134,7 +147,7 @@ export function VerifyPhone({ purpose, title, lede, foot, onVerified }: Props) {
           </p>
         )}
         <div className={styles.row}>
-          <button type="button" className={styles.textButton} onClick={() => setStep("phone")}>
+          <button type="button" className={styles.textButton} onClick={changeNumber}>
             Change number
           </button>
           <button type="button" className={styles.textButton} disabled={wait > 0 || busy} onClick={() => void send()}>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { PasswordField, passwordProblem } from "@/components/auth/fields";
+import { AccountUsername, PasswordField, passwordProblem } from "@/components/auth/fields";
 import { VerifyPhone } from "@/components/auth/VerifyPhone";
 import { Button, ButtonLink } from "@/components/ui";
 import { formError, resetPassword, signIn } from "@/lib/api/account";
@@ -76,6 +76,7 @@ export function ResetFlow() {
         <p className={styles.lede}>It cannot be one of your last three. Every other device will be signed out.</p>
       </div>
       <form className={styles.form} onSubmit={submit} noValidate>
+        <AccountUsername phone={verified.phone} />
         <PasswordField
           label="New password"
           value={password}

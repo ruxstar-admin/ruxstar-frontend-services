@@ -1,7 +1,7 @@
 .page {
   --margin: clamp(20px, 5vw, 64px);
   min-height: 100dvh;
-  max-width: 1280px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 28px var(--margin) 64px;
 }
@@ -14,35 +14,38 @@
 
 .main {
   display: grid;
-  gap: var(--space-6);
-  max-width: 640px;
-  margin: 0 auto;
-  padding-top: clamp(32px, 6vh, 72px);
+  gap: var(--space-8);
+  padding-top: clamp(32px, 6vh, 64px);
+}
+
+.head {
+  display: grid;
+  gap: var(--space-2);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--line);
 }
 
 .title {
-  font: 600 32px/36px var(--display);
+  font: 600 28px/34px var(--display);
   letter-spacing: var(--type-headline-tracking);
-  margin-bottom: var(--space-3);
 }
 
-/* Tone-step surface, no border. */
-.section {
+/* Settings row: label column beside the panel; stacked on phone. */
+.setting {
   display: grid;
-  gap: var(--space-6);
-  padding: var(--space-7);
-  background: var(--surface);
-  border-radius: var(--radius-card);
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: start;
 }
 
-.sectionHead {
+.label {
   display: grid;
   gap: var(--space-1);
+  padding-top: var(--space-2);
 }
 
-.sectionTitle {
-  font: var(--type-title);
-  letter-spacing: var(--type-title-tracking);
+.settingTitle {
+  font: 600 17px/24px var(--font);
 }
 
 .muted {
@@ -50,9 +53,100 @@
   color: var(--ink-2);
 }
 
-.form {
+.panel {
   display: grid;
   gap: var(--space-5);
+  max-width: 640px;
+  margin: 0;
+  padding: var(--space-6);
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  list-style: none;
+}
+
+.group {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--line);
+}
+
+.avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font: 600 20px/1 var(--font);
+  color: hsl(var(--hue) 45% 30%);
+  background: hsl(var(--hue) 70% 92%);
+}
+
+.previewText {
+  min-width: 0;
+}
+
+.previewName {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.chip {
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  font: var(--type-small);
+  color: var(--ink);
+  background: var(--sunk);
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--dur-quick) var(--ease-out);
+}
+
+.chip:hover {
+  background: color-mix(in srgb, var(--ink) 10%, var(--sunk));
+}
+
+.chip:focus-visible,
+.locate:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.locate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--size-touch);
+  padding: 0 var(--space-2);
+  font: 500 14px/20px var(--font);
+  color: var(--ink);
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.locate:disabled {
+  color: var(--ink-2);
+  cursor: progress;
 }
 
 .formError {
@@ -60,11 +154,17 @@
   color: color-mix(in srgb, var(--danger) 85%, var(--ink));
 }
 
+.panelFoot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding-top: var(--space-2);
+}
+
 .devices {
-  display: grid;
-  gap: var(--space-2);
-  padding: 0;
-  list-style: none;
+  gap: 0;
+  padding-block: var(--space-2);
 }
 
 .device {
@@ -72,10 +172,12 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  min-height: 64px;
-  padding: var(--space-3) var(--space-4);
-  background: var(--sunk);
-  border-radius: var(--radius-control);
+  min-height: 72px;
+  padding-block: var(--space-3);
+}
+
+.device + .device {
+  border-top: 1px solid var(--line);
 }
 
 .deviceName {
@@ -86,13 +188,36 @@
   font-weight: 600;
 }
 
+.failed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-width: 640px;
+  padding: var(--space-5) var(--space-6);
+  background: var(--surface);
+  border-radius: var(--radius-card);
+}
+
+@media (max-width: 860px) {
+  .setting {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .label {
+    padding-top: 0;
+  }
+}
+
 @media (max-width: 640px) {
   .title {
     font-size: 24px;
     line-height: 30px;
   }
 
-  .section {
-    padding: var(--space-6) var(--space-5);
+  .panel {
+    padding: var(--space-5);
   }
 }

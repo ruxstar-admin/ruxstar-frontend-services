@@ -968,6 +968,141 @@ export interface paths {
         };
         trace?: never;
     };
+    "/v1/account/usernames": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Check a username and suggest free ones from the user's name */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description A handle to check, as typed */
+                    check?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                available: boolean | null;
+                                /** @description Free handles from the user's name, best first */
+                                suggestions: string[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/account/city": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The city at a point, for the 'use my location' button
+         * @description The point is rounded to about 1 km and not stored.
+         */
+        get: {
+            parameters: {
+                query: {
+                    lat: number;
+                    lng: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                city: string | null;
+                                /** @description Show this wherever the city is shown as looked up */
+                                attribution: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/account/sessions": {
         parameters: {
             query?: never;
@@ -1327,7 +1462,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE";
                 message: string;
                 details: ({
                     path?: string;
