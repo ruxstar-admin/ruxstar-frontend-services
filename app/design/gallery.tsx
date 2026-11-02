@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import tokens from "@/design/tokens.json";
 import { Reveal } from "@/components/motion/Reveal";
 import {
@@ -18,13 +18,6 @@ import {
 } from "@/components/ui";
 import styles from "./gallery.module.css";
 
-type Theme = "system" | "light" | "dark";
-const THEMES = [
-  { value: "system", label: "System" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-] as const;
-
 const rupees = (paise: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(paise / 100);
 
@@ -37,20 +30,10 @@ export function Gallery() {
 }
 
 function Sheet() {
-  const [theme, setTheme] = useState<Theme>("system");
   const [loading, setLoading] = useState(false);
   const [notify, setNotify] = useState(true);
   const [tab, setTab] = useState<"upcoming" | "past" | "saved">("upcoming");
   const toast = useToast();
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "system") delete root.dataset.theme;
-    else root.dataset.theme = theme;
-    return () => {
-      delete root.dataset.theme;
-    };
-  }, [theme]);
 
   return (
     <main className={styles.page}>
@@ -59,22 +42,21 @@ function Sheet() {
           <img src="/logo.svg" width={30} height={30} alt="" />
           <span>ruxstar</span>
         </div>
-        <div className={styles.theme}>
-          <Segmented label="Theme" options={THEMES} value={theme} onChange={setTheme} />
-        </div>
       </header>
 
       <section className={styles.intro}>
         <h1 className="t-display">Design system</h1>
         <p className={styles.lede}>
           Every screen on the website is built from these parts. Colours, type, spacing and motion come from{" "}
-          <code>design/tokens.json</code>, which the mobile apps read too.
+          <code>design/tokens.json</code>, copied from the app&apos;s theme.
         </p>
       </section>
 
-      <Section title="Colour" note="Monochrome. The logo is the only colour on screen.">
+      <Section title="Colour" note="Dark only, as in the app. Purple for links, checked states and focus.">
         <div className={styles.swatches}>
-          {Object.keys(tokens.color.light).map((name) => (
+          {Object.keys(tokens.color)
+            .filter((name) => name !== "about")
+            .map((name) => (
             <div key={name} className={styles.swatch}>
               <span className={styles.chip} style={{ background: `var(--${name})` }} />
               <span className={styles.swatchName}>{name}</span>
@@ -83,7 +65,7 @@ function Sheet() {
         </div>
       </Section>
 
-      <Section title="Type" note="Fraunces 600 for 34 and up. Inter for everything else.">
+      <Section title="Type" note="Plus Jakarta Sans for everything, 400 to 700.">
         <div className={styles.stack}>
           {Object.entries(tokens.type)
             .reverse()

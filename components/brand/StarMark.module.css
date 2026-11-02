@@ -5,22 +5,11 @@
   animation: drift 7s var(--ease-in-out) 1.4s infinite alternate;
 }
 
-/* Ink tile in light mode, a raised surface in dark mode, so the tile always reads against the page. */
 .tile {
-  fill: var(--ink);
+  fill: var(--surface);
   transform-box: view-box;
   transform-origin: 512px 512px;
   animation: tile-in var(--dur-slow) var(--ease-out) both;
-}
-
-:root[data-theme="dark"] .tile {
-  fill: var(--surface);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .tile {
-    fill: var(--surface);
-  }
 }
 
 .half {

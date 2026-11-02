@@ -26,7 +26,7 @@
 }
 
 .title {
-  font: 600 28px/34px var(--display);
+  font: 700 32px/38px var(--font);
   letter-spacing: var(--type-headline-tracking);
 }
 
@@ -45,7 +45,7 @@
 }
 
 .settingTitle {
-  font: 600 17px/24px var(--font);
+  font: 600 16px/24px var(--font);
 }
 
 .muted {
@@ -86,8 +86,8 @@
   height: 48px;
   border-radius: 50%;
   font: 600 20px/1 var(--font);
-  color: hsl(var(--hue) 45% 30%);
-  background: hsl(var(--hue) 70% 92%);
+  color: var(--ink);
+  background: var(--accent-deep);
 }
 
 .previewText {
@@ -113,7 +113,7 @@
   padding: 0 var(--space-3);
   font: var(--type-small);
   color: var(--ink);
-  background: var(--sunk);
+  background: var(--raised);
   border: 0;
   border-radius: var(--radius-pill);
   cursor: pointer;
@@ -121,13 +121,7 @@
 }
 
 .chip:hover {
-  background: color-mix(in srgb, var(--ink) 10%, var(--sunk));
-}
-
-.chip:focus-visible,
-.locate:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+  background: color-mix(in srgb, var(--ink) 8%, var(--raised));
 }
 
 .locate {
@@ -152,7 +146,7 @@
 
 .formError {
   font: var(--type-small);
-  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+  color: var(--danger);
 }
 
 .panelFoot {
@@ -171,8 +165,8 @@
 }
 
 .fieldLabel {
-  font: 600 14px/20px var(--font);
-  color: var(--ink);
+  font: var(--type-caption);
+  color: var(--ink-2);
 }
 
 .count {
@@ -183,17 +177,17 @@
 
 .fieldError {
   font: var(--type-small);
-  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+  color: var(--danger);
 }
 
-/* Matches the text field in components/ui/Input. 17 px keeps iOS Safari from zooming in. */
+/* Matches the text field in components/ui/Input. 16 px keeps iOS Safari from zooming in. */
 .textarea {
   width: 100%;
   min-height: 96px;
   padding: var(--space-3) var(--space-4);
-  font: 400 17px/24px var(--font);
+  font: var(--type-body);
   color: var(--ink);
-  background: var(--surface);
+  background: var(--bg);
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
   resize: vertical;
@@ -201,9 +195,12 @@
   transition: border-color var(--dur-quick) var(--ease-out);
 }
 
+.textarea::placeholder {
+  color: var(--ink-3);
+}
+
 .textarea:focus {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 1px var(--ink);
+  border-color: var(--ink-2);
 }
 
 .textarea[aria-invalid="true"] {
@@ -224,7 +221,7 @@
   background: none;
   font: 600 14px/20px var(--font);
   color: var(--ink);
-  text-decoration: underline;
+  text-decoration: underline dotted;
   text-underline-offset: 3px;
   cursor: pointer;
 }
@@ -239,7 +236,7 @@
   display: grid;
   gap: var(--space-3);
   padding: var(--space-4);
-  background: var(--sunk);
+  background: var(--raised);
   border-radius: var(--radius-control);
 }
 
@@ -256,7 +253,7 @@
 
 .dangerTitle {
   font-weight: 600;
-  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+  color: var(--danger);
 }
 
 .list {

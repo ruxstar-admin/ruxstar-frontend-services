@@ -19,7 +19,7 @@
 }
 
 .title {
-  font: 600 40px/44px var(--display);
+  font: 700 40px/46px var(--font);
   letter-spacing: var(--type-headline-tracking);
   text-wrap: balance;
 }
@@ -38,12 +38,12 @@
 
 .article h2 {
   margin-top: var(--space-8);
-  font: 650 20px/28px var(--font);
+  font: 600 20px/28px var(--font);
 }
 
 .article p,
 .article li {
-  font: 400 17px/27px var(--font);
+  font: 400 16px/26px var(--font);
   text-wrap: pretty;
 }
 
@@ -67,6 +67,7 @@
 .article a {
   color: var(--ink);
   font-weight: 600;
+  text-decoration: underline dotted;
   text-underline-offset: 3px;
 }
 
@@ -76,7 +77,7 @@
 
 @media (max-width: 640px) {
   .title {
-    font-size: 30px;
-    line-height: 36px;
+    font-size: 32px;
+    line-height: 38px;
   }
 }

@@ -34,8 +34,6 @@ type Handle =
   | { state: "invalid" | "available" | "taken" };
 
 /** A stable pale tint per person, from their id. */
-const hueOf = (id: string) => [...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
-
 function geolocate(): Promise<GeolocationPosition> {
   return new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) return reject(new Error("unsupported"));
@@ -177,13 +175,12 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
       : user.emailVerified
         ? "Verified."
         : "Not verified.";
-  const hue = hueOf(user.id);
   const shownName = form.name.trim() || "Your name";
 
   return (
     <form className={styles.panel} onSubmit={save} noValidate>
       <div className={styles.preview} aria-label="How others see you">
-        <span className={styles.avatar} style={{ "--hue": hue } as React.CSSProperties} aria-hidden>
+        <span className={styles.avatar} aria-hidden>
           {shownName.charAt(0).toUpperCase()}
         </span>
         <div className={styles.previewText}>

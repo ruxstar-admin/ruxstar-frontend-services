@@ -3,8 +3,8 @@
   display: grid;
   grid-template-columns: repeat(var(--count), minmax(0, 1fr));
   padding: 4px;
-  background: var(--sunk);
-  border-radius: var(--radius-control);
+  background: var(--raised);
+  border-radius: var(--radius-pill);
 }
 
 .group[data-invalid] {
@@ -15,26 +15,27 @@
   position: absolute;
   inset: 4px auto 4px 4px;
   width: calc((100% - 8px) / var(--count));
-  background: var(--surface);
-  border-radius: 7px;
+  background: var(--line);
+  border-radius: var(--radius-pill);
   transform: translateX(calc(var(--index) * 100%));
   transition: transform var(--dur-base) var(--ease-spring);
 }
 
 .option {
   position: relative;
-  min-height: 36px;
+  min-height: 40px;
   padding: 0 var(--space-3);
   border: 0;
-  border-radius: 7px;
+  border-radius: var(--radius-pill);
   background: transparent;
-  font: 600 14px/1 var(--font);
+  font: 400 14px/1 var(--font);
   color: var(--ink-2);
   cursor: pointer;
   transition: color var(--dur-quick) var(--ease-out);
 }
 
 .option[aria-checked="true"] {
+  font-weight: 700;
   color: var(--ink);
 }
 

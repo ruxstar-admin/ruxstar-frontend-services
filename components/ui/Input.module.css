@@ -1,40 +1,35 @@
 .field {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .label {
-  font: 600 14px/20px var(--font);
-  color: var(--ink);
+  font: var(--type-caption);
+  color: var(--ink-2);
 }
 
 .box {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 48px;
+  min-height: var(--size-field);
   padding: 0 var(--space-4);
-  background: var(--surface);
+  background: var(--bg);
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
   transition: border-color var(--dur-quick) var(--ease-out);
 }
 
 .box:focus-within {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 1px var(--ink);
+  border-color: var(--ink-2);
 }
 
 .box[data-invalid] {
   border-color: var(--danger);
 }
 
-.box[data-invalid]:focus-within {
-  box-shadow: 0 0 0 1px var(--danger);
-}
-
-/* High-contrast mode drops box-shadow, so focus needs a real outline there. */
+/* High-contrast mode keeps borders but drops their colour, so focus needs a real outline there. */
 @media (forced-colors: active) {
   .box:focus-within {
     outline: 2px solid CanvasText;
@@ -42,15 +37,15 @@
   }
 }
 
-/* 17 px keeps iOS Safari from zooming in on focus. */
+/* 16 px keeps iOS Safari from zooming in on focus. */
 .input {
   flex: 1;
   min-width: 0;
-  height: 46px;
+  height: calc(var(--size-field) - 2px);
   padding: 0;
   border: 0;
   background: transparent;
-  font: 400 17px/1 var(--font);
+  font: 400 16px/1 var(--font);
   outline: none;
 }
 
@@ -65,20 +60,20 @@
 .input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--ink);
   caret-color: var(--ink);
-  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
-  box-shadow: 0 0 0 1000px var(--surface) inset;
+  -webkit-box-shadow: 0 0 0 1000px var(--bg) inset;
+  box-shadow: 0 0 0 1000px var(--bg) inset;
   transition: background-color 600000s 0s;
 }
 
 .affix {
   color: var(--ink-2);
-  font: 500 17px/1 var(--font);
+  font: 500 16px/1 var(--font);
   font-variant-numeric: tabular-nums;
 }
 
 .hint,
 .error {
-  font: 400 14px/20px var(--font);
+  font: var(--type-caption);
 }
 
 .hint {
@@ -86,5 +81,5 @@
 }
 
 .error {
-  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+  color: var(--danger);
 }

@@ -4,7 +4,7 @@ import styles from "./page.module.css";
 
 export default function ComingSoon() {
   return (
-    <main className={`${styles.page} glow`}>
+    <main className={styles.page}>
       <header className={styles.bar}>
         <div className="brand">
           <img src="/logo.svg" width={30} height={30} alt="" />

@@ -2,5 +2,5 @@
 .skeleton {
   display: block;
   max-width: 100%;
-  background: var(--sunk);
+  background: var(--raised);
 }

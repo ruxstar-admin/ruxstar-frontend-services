@@ -11,7 +11,7 @@
   white-space: nowrap;
 }
 
-/* Status text is mixed toward ink so 12 px labels stay above 4.5:1 on their tint in both modes. */
+/* Status text is mixed toward ink so 12 px labels stay above 4.5:1 on their tint. */
 .success,
 .warning,
 .danger {
@@ -20,13 +20,13 @@
 }
 
 .neutral {
-  background: var(--sunk);
+  background: var(--raised);
   color: var(--ink-2);
 }
 
 .solid {
-  background: var(--ink);
-  color: var(--on-primary);
+  background: var(--action);
+  color: var(--on-action);
 }
 
 .success {

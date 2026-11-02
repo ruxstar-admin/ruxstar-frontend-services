@@ -28,11 +28,10 @@
 }
 
 .title {
-  font-family: var(--display);
-  font-size: clamp(42px, 7.4vw, 104px);
-  font-weight: 600;
-  line-height: 0.98;
-  letter-spacing: -0.025em;
+  font-size: clamp(40px, 7vw, 96px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
   color: var(--ink);
 }
 
@@ -82,7 +81,7 @@
   display: block;
   overflow: hidden;
   font-size: clamp(30px, 5vw, 48px);
-  font-weight: 750;
+  font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
@@ -108,16 +107,6 @@
   position: relative;
   justify-self: end;
   width: min(100%, 440px);
-}
-
-/* The star sits in its own pool of violet light. */
-.stage::before {
-  content: "";
-  position: absolute;
-  inset: -22%;
-  background: radial-gradient(closest-side, var(--glow), transparent);
-  pointer-events: none;
-  animation: fade var(--dur-hero) var(--ease-out) 400ms both;
 }
 
 .mark {

@@ -6,18 +6,17 @@ const tokens = JSON.parse(await readFile(new URL("design/tokens.json", root), "u
 const out = new URL("app/tokens.css", root);
 
 const px = (n) => (n === 0 ? "0" : `${n}px`);
-const colors = (set) =>
-  Object.entries(set)
-    .map(([name, value]) => `  --${name}: ${value};`)
-    .join("\n");
+const colors = Object.entries(tokens.color)
+  .filter(([name]) => name !== "about")
+  .map(([name, value]) => `  --${name}: ${value};`)
+  .join("\n");
 
 const fixed = [
   `  --logo-yellow: ${tokens.logo.yellow};`,
   `  --logo-blue: ${tokens.logo.blue};`,
   `  --font: var(--font-sans), ${tokens.font.body.fallback};`,
-  `  --display: var(--font-display), ${tokens.font.display.fallback};`,
   ...Object.entries(tokens.type).flatMap(([name, t]) => [
-    `  --type-${name}: ${t.weight} ${px(t.size)}/${px(t.line)} var(--${t.font === "display" ? "display" : "font"});`,
+    `  --type-${name}: ${t.weight} ${px(t.size)}/${px(t.line)} var(--font);`,
     `  --type-${name}-tracking: ${t.tracking ? `${t.tracking}em` : "0"};`,
   ]),
   ...Object.entries(tokens.space).map(([k, v]) => `  --space-${k}: ${px(v)};`),
@@ -35,21 +34,9 @@ const typeClasses = Object.keys(tokens.type)
 const css = `/* Generated from design/tokens.json by \`npm run tokens\`. Do not edit. */
 
 :root {
-  color-scheme: light;
-${colors(tokens.color.light)}
-${fixed}
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-${colors(tokens.color.dark).replace(/^ {2}/gm, "    ")}
-  }
-}
-
-:root[data-theme="dark"] {
   color-scheme: dark;
-${colors(tokens.color.dark)}
+${colors}
+${fixed}
 }
 
 ${typeClasses}

@@ -8,7 +8,7 @@
 }
 
 .sunk {
-  background: var(--sunk);
+  background: var(--raised);
 }
 
 .none {

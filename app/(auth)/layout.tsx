@@ -6,7 +6,7 @@ export const metadata: Metadata = { robots: { index: false } };
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`${styles.page} glow`}>
+    <div className={styles.page}>
       <header className={styles.bar}>
         <Link href="/" className="brand">
           <img src="/logo.svg" width={30} height={30} alt="" />

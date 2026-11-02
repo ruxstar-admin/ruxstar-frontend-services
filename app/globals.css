@@ -26,7 +26,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -51,24 +51,11 @@ textarea {
   }
 }
 
-/* Violet light from above, as on the app's launch screen. Marketing and sign-in pages only. */
-.glow::before {
-  content: "";
-  position: fixed;
-  inset: 0 0 auto;
-  height: 75vh;
-  background: radial-gradient(55% 70% at 50% -5%, var(--glow), transparent 72%);
-  pointer-events: none;
-  z-index: -1;
-}
-
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: var(--display);
-  font-size: 24px;
-  font-weight: 600;
+  font: 700 22px/1 var(--font);
   letter-spacing: -0.01em;
   color: var(--ink);
   text-decoration: none;

@@ -35,7 +35,7 @@
 .lg {
   min-height: var(--size-primary-button);
   padding: 0 var(--space-7);
-  font-size: 16px;
+  font: 700 16px/1 var(--font);
 }
 
 .block {
@@ -73,22 +73,28 @@
 }
 
 .primary {
-  background: var(--ink);
-  color: var(--on-primary);
+  background: var(--action);
+  color: var(--on-action);
 }
 
 .primary::before {
-  background: color-mix(in srgb, var(--on-primary) 12%, transparent);
+  background: color-mix(in srgb, var(--on-action) 12%, transparent);
+}
+
+.primary:disabled {
+  opacity: 1;
+  background: var(--disabled);
+  color: var(--disabled-ink);
 }
 
 .secondary {
-  background: var(--surface);
+  background: transparent;
   border-color: var(--line);
   color: var(--ink);
 }
 
 .secondary::before {
-  background: var(--sunk);
+  background: var(--raised);
 }
 
 .ghost {
@@ -97,16 +103,16 @@
 }
 
 .ghost::before {
-  background: var(--sunk);
+  background: var(--raised);
 }
 
 .danger {
   background: var(--danger);
-  color: var(--on-primary);
+  color: var(--on-action);
 }
 
 .danger::before {
-  background: color-mix(in srgb, var(--on-primary) 12%, transparent);
+  background: color-mix(in srgb, var(--on-action) 16%, transparent);
 }
 
 .spinner {
