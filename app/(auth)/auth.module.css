@@ -91,6 +91,8 @@
 }
 
 .textButton {
+  display: inline-flex;
+  align-items: center;
   min-height: var(--size-touch);
   padding: 0;
   border: 0;
@@ -147,6 +149,200 @@
   accent-color: var(--ink);
 }
 
+.consentError {
+  margin-top: calc(-1 * var(--space-3));
+  font: var(--type-small);
+  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+}
+
+.group,
+.passwords {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.passwords {
+  gap: var(--space-5);
+}
+
+.rules {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--type-small);
+  color: var(--ink-2);
+}
+
+.rules li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: color var(--dur-quick) var(--ease-out);
+}
+
+.rules li[data-state="met"] {
+  color: var(--success);
+}
+
+.rules li[data-state="unmet"] {
+  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  font: var(--type-small);
+  color: var(--ink);
+  background: var(--sunk);
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--dur-quick) var(--ease-out);
+}
+
+.chip:hover {
+  background: color-mix(in srgb, var(--ink) 10%, var(--sunk));
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.fieldLabel {
+  font: 600 14px/20px var(--font);
+  color: var(--ink);
+}
+
+.fieldError {
+  font: 400 14px/20px var(--font);
+  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+}
+
+/* Signup success: the badge pops, the check draws, then it lands with a ripple and a burst. */
+.success {
+  justify-items: center;
+  text-align: center;
+}
+
+.success .actions {
+  width: 100%;
+}
+
+.badgeStage {
+  --badge: 96px;
+  --lands: 520ms;
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: calc(-1 * var(--space-8)) 0 calc(-1 * var(--space-6));
+  display: grid;
+  place-items: center;
+}
+
+.badge {
+  position: relative;
+  width: var(--badge);
+  height: var(--badge);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--on-primary);
+  animation:
+    pop 380ms cubic-bezier(0.34, 1.8, 0.64, 1) both,
+    thump 360ms var(--ease-out) var(--lands);
+}
+
+.badge path {
+  stroke-dasharray: 56;
+  stroke-dashoffset: 56;
+  animation: draw 340ms var(--ease-in-out) 180ms forwards;
+}
+
+.ripple {
+  position: absolute;
+  width: var(--badge);
+  height: var(--badge);
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0;
+  animation: ripple 1000ms var(--ease-out) var(--lands);
+}
+
+.ripple + .ripple {
+  animation-delay: calc(var(--lands) + 250ms);
+}
+
+.spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  border-radius: 50%;
+  background: var(--ink-2);
+  opacity: 0;
+  animation: spark 640ms var(--ease-out) var(--lands);
+}
+
+.spark:nth-child(even) {
+  background: var(--logo-yellow);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@keyframes thump {
+  35% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes ripple {
+  from {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.1);
+  }
+}
+
+@keyframes spark {
+  15% {
+    opacity: 1;
+  }
+  from {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(44px) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(var(--reach)) scale(0.4);
+  }
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -163,5 +359,19 @@
 @media (prefers-reduced-motion: reduce) {
   .step {
     animation-name: fade;
+  }
+
+  .badge {
+    animation: fade var(--dur-base) var(--ease-out) both;
+  }
+
+  .badge path {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+
+  .ripple,
+  .spark {
+    display: none;
   }
 }

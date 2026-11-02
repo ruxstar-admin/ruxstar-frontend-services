@@ -1,13 +1,33 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { nameProblem } from "@/components/auth/fields";
-import { Button, Icon, Input, useToast } from "@/components/ui";
-import { checkUsername, cityAt, formError, updateMe, type FormError, type User } from "@/lib/api/account";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { CodeField, nameProblem, validEmail } from "@/components/auth/fields";
+import { Button, Icon, Input, Segmented, useToast } from "@/components/ui";
+import {
+  checkUsername,
+  cityAt,
+  formError,
+  isSignedOut,
+  sendEmailCode,
+  updateMe,
+  verifyEmail,
+  type FormError,
+  type Gender,
+  type User,
+} from "@/lib/api/account";
 import { ApiError } from "@/lib/api/client";
 import styles from "./account.module.css";
 
 const HANDLE = /^[a-z0-9_.]{3,20}$/;
+const BIO_MAX = 160;
+const GENDERS = [
+  { value: "female", label: "Female" },
+  { value: "male", label: "Male" },
+  { value: "other", label: "Other" },
+] as const satisfies readonly { value: Gender; label: string }[];
+
+/** The API takes only http and https links. */
+const validLink = (link: string) => link.length === 0 || /^https?:\/\/\S+\.\S+$/.test(link);
 
 type Handle =
   | { state: "idle" | "checking" | "mine" }
@@ -31,14 +51,26 @@ const locateMessage = (err: unknown) => {
   return "Could not get your location. Type your city instead.";
 };
 
+const formOf = (user: User) => ({
+  name: user.name,
+  username: user.username,
+  city: user.city ?? "",
+  email: user.email ?? "",
+  bio: user.bio ?? "",
+  link: user.link ?? "",
+  gender: user.gender,
+});
+
 export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSaved: (u: User) => void; onSignedOut: () => void }) {
   const toast = useToast();
-  const [form, setForm] = useState({ name: user.name, username: user.username, city: user.city ?? "" });
+  const bioId = useId();
+  const [form, setForm] = useState(() => formOf(user));
   const [handle, setHandle] = useState<Handle>({ state: "mine" });
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [locating, setLocating] = useState(false);
   const [located, setLocated] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<FormError | null>(null);
   const latest = useRef(0);
 
@@ -69,10 +101,17 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
     return () => clearTimeout(timer);
   }, [typed, user.username]);
 
+  const email = form.email.trim();
+  const bio = form.bio.trim();
+  const link = form.link.trim();
   const changes = {
     ...(form.name.trim() !== user.name ? { name: form.name.trim() } : {}),
     ...(typed !== user.username ? { username: typed } : {}),
     ...(form.city.trim() !== (user.city ?? "") ? { city: form.city.trim() || null } : {}),
+    ...(email !== (user.email ?? "") ? { email: email || null } : {}),
+    ...(bio !== (user.bio ?? "") ? { bio: bio || null } : {}),
+    ...(link !== (user.link ?? "") ? { link: link || null } : {}),
+    ...(form.gender !== user.gender && form.gender ? { gender: form.gender } : {}),
   };
   const dirty = Object.keys(changes).length > 0;
 
@@ -89,7 +128,7 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
         setLocated(found.attribution);
       }
     } catch (err) {
-      if (err instanceof ApiError && err.status === 401) return onSignedOut();
+      if (isSignedOut(err)) return onSignedOut();
       setError({ message: locateMessage(err), field: "city" });
     } finally {
       setLocating(false);
@@ -102,16 +141,19 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
     if (badName) return setError({ message: badName, field: "name" });
     if (handle.state === "invalid") return setError({ message: "Use 3 to 20 lowercase letters, numbers, dots or underscores.", field: "username" });
     if (handle.state === "taken") return setError({ message: "That username is taken. Pick one of the suggestions.", field: "username" });
+    if (!validEmail(email)) return setError({ message: "Enter a valid email address.", field: "email" });
+    if (!validLink(link)) return setError({ message: "Start the link with https://", field: "link" });
     setSaving(true);
     setError(null);
     try {
       const updated = await updateMe(changes);
       onSaved(updated);
-      setForm({ name: updated.name, username: updated.username, city: updated.city ?? "" });
+      setForm(formOf(updated));
       setLocated(null);
+      setVerifying(false);
       toast("Profile saved.", "success");
     } catch (err) {
-      if (err instanceof ApiError && err.status === 401) return onSignedOut();
+      if (isSignedOut(err)) return onSignedOut();
       setError(formError(err));
     } finally {
       setSaving(false);
@@ -127,6 +169,14 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
     invalid: "3 to 20 lowercase letters, numbers, dots or underscores.",
     taken: undefined,
   }[handle.state];
+  const emailSaved = email === (user.email ?? "");
+  const emailNote = !email
+    ? undefined
+    : !emailSaved
+      ? "Save, then verify it with a code we email you."
+      : user.emailVerified
+        ? "Verified."
+        : "Not verified.";
   const hue = hueOf(user.id);
   const shownName = form.name.trim() || "Your name";
 
@@ -182,6 +232,46 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
         )}
       </div>
 
+      <div className={styles.group}>
+        <div className={styles.fieldHead}>
+          <label htmlFor={bioId} className={styles.fieldLabel}>
+            Bio
+          </label>
+          <span className={styles.count} aria-hidden>
+            {form.bio.length}/{BIO_MAX}
+          </span>
+        </div>
+        <textarea
+          id={bioId}
+          name="bio"
+          className={styles.textarea}
+          rows={3}
+          maxLength={BIO_MAX}
+          value={form.bio}
+          onChange={(e) => setForm({ ...form, bio: e.target.value })}
+          aria-invalid={fieldError("bio") ? true : undefined}
+          aria-describedby={`${bioId}-note`}
+        />
+        <p id={`${bioId}-note`} className={fieldError("bio") ? styles.fieldError : styles.muted}>
+          {fieldError("bio") ?? `Up to ${BIO_MAX} characters.`}
+        </p>
+      </div>
+
+      <Input
+        label="Link"
+        name="url"
+        type="url"
+        inputMode="url"
+        autoComplete="url"
+        autoCapitalize="none"
+        spellCheck={false}
+        maxLength={200}
+        placeholder="https://"
+        value={form.link}
+        onChange={(e) => setForm({ ...form, link: e.target.value })}
+        error={fieldError("link") ?? (validLink(link) ? undefined : "Start the link with https://")}
+      />
+
       <Input
         label="City"
         name="city"
@@ -202,7 +292,56 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
         }
       />
 
-      {error && !["name", "username", "city"].includes(error.field ?? "") && (
+      <div className={styles.group}>
+        <Input
+          label="Email"
+          name="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          autoCapitalize="none"
+          spellCheck={false}
+          maxLength={254}
+          placeholder="you@example.com"
+          value={form.email}
+          onChange={(e) => {
+            setForm({ ...form, email: e.target.value });
+            setVerifying(false);
+          }}
+          hint={emailNote}
+          error={fieldError("email")}
+          suffix={emailSaved && user.email && user.emailVerified ? <Icon name="check" size={18} /> : undefined}
+        />
+        {emailSaved && user.email && !user.emailVerified && !verifying && (
+          <div>
+            <button type="button" className={styles.textButton} onClick={() => setVerifying(true)}>
+              Verify now
+            </button>
+          </div>
+        )}
+        {verifying && emailSaved && user.email && (
+          <EmailVerify
+            onVerified={(updated) => {
+              onSaved(updated);
+              setVerifying(false);
+              toast("Email verified.", "success");
+            }}
+            onCancel={() => setVerifying(false)}
+            onSignedOut={onSignedOut}
+          />
+        )}
+      </div>
+
+      <div className={styles.group}>
+        <span className={styles.fieldLabel} aria-hidden>
+          Gender
+        </span>
+        <Segmented label="Gender" options={GENDERS} value={form.gender} onChange={(gender) => setForm({ ...form, gender })} />
+      </div>
+
+      <p className={styles.muted}>Your email, phone and gender are never shown on your profile.</p>
+
+      {error && !["name", "username", "city", "email", "bio", "link"].includes(error.field ?? "") && (
         <p className={styles.formError} role="alert">
           {error.message}
         </p>
@@ -214,5 +353,122 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
         </Button>
       </div>
     </form>
+  );
+}
+
+/** Emails a code as soon as it opens, then checks it. Lives inside the profile form, so it uses no form of its own. */
+function EmailVerify({
+  onVerified,
+  onCancel,
+  onSignedOut,
+}: {
+  onVerified: (user: User) => void;
+  onCancel: () => void;
+  onSignedOut: () => void;
+}) {
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [code, setCode] = useState("");
+  const [sending, setSending] = useState(true);
+  const [checking, setChecking] = useState(false);
+  const [error, setError] = useState<FormError | null>(null);
+  const [resendAt, setResendAt] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
+  const codeRef = useRef<HTMLInputElement>(null);
+  const started = useRef(false);
+
+  async function send() {
+    setSending(true);
+    setError(null);
+    try {
+      const sent = await sendEmailCode();
+      setSentTo(sent.sentTo);
+      setResendAt(Date.now() + sent.resendInSeconds * 1000);
+      setNow(Date.now());
+      setCode("");
+      requestAnimationFrame(() => codeRef.current?.focus());
+    } catch (err) {
+      if (isSignedOut(err)) return onSignedOut();
+      setError(formError(err));
+    } finally {
+      setSending(false);
+    }
+  }
+
+  // Sends once when it opens; the resend button handles the rest.
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    void send();
+  });
+
+  useEffect(() => {
+    if (Date.now() >= resendAt) return;
+    const timer = setInterval(() => {
+      const t = Date.now();
+      setNow(t);
+      if (t >= resendAt) clearInterval(timer);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendAt]);
+
+  async function check(value: string) {
+    if (value.length !== 6) return setError({ message: "Enter the 6-digit code from the email.", field: "code" });
+    setChecking(true);
+    setError(null);
+    try {
+      onVerified(await verifyEmail(value));
+    } catch (err) {
+      if (isSignedOut(err)) return onSignedOut();
+      const problem = formError(err);
+      setError(problem.code === "OTP_INVALID" ? { ...problem, field: "code" } : problem);
+      setChecking(false);
+      if (problem.code === "OTP_INVALID") {
+        setCode("");
+        requestAnimationFrame(() => codeRef.current?.focus());
+      }
+    }
+  }
+
+  const wait = Math.max(0, Math.ceil((resendAt - now) / 1000));
+  return (
+    <div className={styles.verify} role="group" aria-label="Verify your email">
+      <p className={styles.muted} aria-live="polite">
+        {sending && !sentTo ? "Sending a code…" : sentTo ? `We sent a 6-digit code to ${sentTo}.` : null}
+      </p>
+      {sentTo && (
+        <CodeField
+          ref={codeRef}
+          value={code}
+          onValueChange={(value) => {
+            setCode(value);
+            if (value.length === 6 && !checking) void check(value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key !== "Enter") return;
+            e.preventDefault();
+            void check(code);
+          }}
+          error={error?.field === "code" ? error.message : undefined}
+        />
+      )}
+      {error && error.field !== "code" && (
+        <p className={styles.formError} role="alert">
+          {error.message}
+        </p>
+      )}
+      <div className={styles.verifyActions}>
+        <button type="button" className={styles.textButton} onClick={onCancel}>
+          Cancel
+        </button>
+        <button type="button" className={styles.textButton} disabled={wait > 0 || sending} onClick={() => void send()}>
+          {wait > 0 ? `Resend in ${wait}s` : "Resend code"}
+        </button>
+        {sentTo && (
+          <Button type="button" variant="secondary" loading={checking} onClick={() => void check(code)}>
+            Verify
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }

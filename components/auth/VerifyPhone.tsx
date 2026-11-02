@@ -12,13 +12,16 @@ interface Props {
   lede: string;
   /** Shown under the phone form, for example a link to sign in. */
   foot?: ReactNode;
-  onVerified: (verificationToken: string, phone: string) => void;
+  initialPhone?: string;
+  onVerified?: (verificationToken: string, phone: string) => void;
+  /** Uses the code itself instead of trading it for a verification token, as sign-in by code does. */
+  submitCode?: (phone: string, code: string) => Promise<void>;
 }
 
 /** Number, then the texted code. Hands back a verification token for signup or reset. */
-export function VerifyPhone({ purpose, title, lede, foot, onVerified }: Props) {
+export function VerifyPhone({ purpose, title, lede, foot, initialPhone = "", onVerified, submitCode: useCode }: Props) {
   const [step, setStep] = useState<"phone" | "code">("phone");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(initialPhone);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
@@ -57,8 +60,12 @@ export function VerifyPhone({ purpose, title, lede, foot, onVerified }: Props) {
     setBusy(true);
     setError(null);
     try {
-      const { verificationToken } = await verifyCode(phone, purpose, value);
-      onVerified(verificationToken, phone);
+      if (useCode) {
+        await useCode(phone, value);
+      } else {
+        const { verificationToken } = await verifyCode(phone, purpose, value);
+        onVerified?.(verificationToken, phone);
+      }
     } catch (err) {
       const problem = formError(err);
       setError(problem);

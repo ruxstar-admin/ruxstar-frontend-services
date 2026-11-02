@@ -5,8 +5,18 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { prettyPhone } from "@/components/auth/fields";
 import { Button, Skeleton, Tag, useToast } from "@/components/ui";
-import { endSession, formError, getMe, listSessions, signOut, type DeviceSession, type User } from "@/lib/api/account";
-import { ApiError } from "@/lib/api/client";
+import {
+  endSession,
+  formError,
+  getMe,
+  isSignedOut,
+  listSessions,
+  signOut,
+  type DeviceSession,
+  type User,
+} from "@/lib/api/account";
+import { DeletePanel } from "./delete";
+import { PasswordPanel } from "./password";
 import { ProfilePanel } from "./profile";
 import styles from "./account.module.css";
 
@@ -20,8 +30,6 @@ function lastSeen(iso: string, current: boolean) {
   if (minutes > -60 * 24) return `Active ${seen.format(Math.round(minutes / 60), "hour")}`;
   return `Active ${seen.format(Math.round(minutes / 1440), "day")}`;
 }
-
-const isSignedOut = (err: unknown) => err instanceof ApiError && err.status === 401;
 
 function Setting({ id, title, description, children }: { id: string; title: string; description: string; children: ReactNode }) {
   return (
@@ -183,6 +191,24 @@ export function AccountScreen() {
                     ))}
               </ul>
             </Setting>
+
+            {user && (
+              <Setting id="password" title="Password" description="Change it here, or reset it from the sign-in page.">
+                <PasswordPanel phone={user.phone.replace(/^\+91/, "")} onSignedOut={toSignIn} />
+              </Setting>
+            )}
+
+            {user && (
+              <Setting id="delete" title="Delete account" description="Permanently remove your Ruxstar account.">
+                <DeletePanel
+                  onDeleted={() => {
+                    toast("Your account is deleted.", "success");
+                    router.replace("/signin");
+                  }}
+                  onSignedOut={toSignIn}
+                />
+              </Setting>
+            )}
           </>
         )}
       </main>

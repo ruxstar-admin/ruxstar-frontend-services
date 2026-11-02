@@ -163,7 +163,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Text a 6-digit code to a number, to sign up or reset a password */
+        /** Text a 6-digit code to a number, to sign up, sign in or reset a password */
         post: {
             parameters: {
                 query?: never;
@@ -179,7 +179,7 @@ export interface paths {
                          * @example 9876543210
                          */
                         phone: string;
-                        purpose: "signup" | "reset";
+                        purpose: "signup" | "reset" | "login";
                     };
                 };
             };
@@ -254,7 +254,7 @@ export interface paths {
                          * @example 9876543210
                          */
                         phone: string;
-                        purpose: "signup" | "reset";
+                        purpose: "signup" | "reset" | "login";
                         code: string;
                     };
                 };
@@ -336,6 +336,16 @@ export interface paths {
                          * @enum {boolean}
                          */
                         acceptTerms: true;
+                        /** @description 3 to 20 lowercase letters, digits, _ or . */
+                        username?: string;
+                        /**
+                         * Format: date
+                         * @description YYYY-MM-DD. At least 13 years ago.
+                         */
+                        dob?: string;
+                        gender?: "female" | "male" | "other";
+                        /** Format: email */
+                        email?: string;
                         /** @description Apps only. Stable per install. */
                         deviceId?: string;
                         /** @description Apps only, for example "Pixel 8" */
@@ -359,6 +369,11 @@ export interface paths {
                                     phone: string;
                                     name: string;
                                     username: string;
+                                    email: string | null;
+                                    /** @description False until the code sent by POST /email/code is entered */
+                                    emailVerified: boolean;
+                                    bio: string | null;
+                                    link: string | null;
                                     dob: string | null;
                                     gender: ("female" | "male" | "other") | null;
                                     city: string | null;
@@ -468,6 +483,126 @@ export interface paths {
                                     phone: string;
                                     name: string;
                                     username: string;
+                                    email: string | null;
+                                    /** @description False until the code sent by POST /email/code is entered */
+                                    emailVerified: boolean;
+                                    bio: string | null;
+                                    link: string | null;
+                                    dob: string | null;
+                                    gender: ("female" | "male" | "other") | null;
+                                    city: string | null;
+                                    roles: {
+                                        vendor: boolean;
+                                        delivery: boolean;
+                                        ruxstarStaff: boolean;
+                                        admin: boolean;
+                                    };
+                                    kyc: {
+                                        base: string;
+                                    };
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                };
+                                tokens?: {
+                                    accessToken: string;
+                                    /** @description Seconds */
+                                    accessTokenExpiresIn: number;
+                                    /** @description Single use. Each refresh returns a new one. */
+                                    refreshToken: string;
+                                    /** Format: date-time */
+                                    refreshTokenExpiresAt: string;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/account/login/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign in with the code texted by POST /otp (purpose login)
+         * @description The code's own limits apply: five wrong codes lock that number's codes for 5 minutes.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description 10-digit Indian mobile number, without +91
+                         * @example 9876543210
+                         */
+                        phone: string;
+                        /** @description The code texted by POST /otp with purpose login */
+                        code: string;
+                        /** @description Apps only. Stable per install. */
+                        deviceId?: string;
+                        /** @description Apps only, for example "Pixel 8" */
+                        deviceName?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description E.164, for example +919876543210 */
+                                    phone: string;
+                                    name: string;
+                                    username: string;
+                                    email: string | null;
+                                    /** @description False until the code sent by POST /email/code is entered */
+                                    emailVerified: boolean;
+                                    bio: string | null;
+                                    link: string | null;
                                     dob: string | null;
                                     gender: ("female" | "male" | "other") | null;
                                     city: string | null;
@@ -844,6 +979,11 @@ export interface paths {
                                 phone: string;
                                 name: string;
                                 username: string;
+                                email: string | null;
+                                /** @description False until the code sent by POST /email/code is entered */
+                                emailVerified: boolean;
+                                bio: string | null;
+                                link: string | null;
                                 dob: string | null;
                                 gender: ("female" | "male" | "other") | null;
                                 city: string | null;
@@ -887,10 +1027,66 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete the account after checking the password. Signs out every device.
+         * @description Sign-in stops at once and the number, username and email are freed. The record is erased after 30 days.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The current password */
+                        password: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
-        /** Update name, username, date of birth, gender or city */
+        /** Update name, username, email, bio, link, date of birth, gender or city */
         patch: {
             parameters: {
                 query?: never;
@@ -904,6 +1100,9 @@ export interface paths {
                         name?: string;
                         /** @description 3 to 20 lowercase letters, digits, _ or . */
                         username?: string;
+                        email?: string | null;
+                        bio?: string | null;
+                        link?: string | null;
                         dob?: string | null;
                         gender?: ("female" | "male" | "other") | null;
                         city?: string | null;
@@ -925,6 +1124,11 @@ export interface paths {
                                 phone: string;
                                 name: string;
                                 username: string;
+                                email: string | null;
+                                /** @description False until the code sent by POST /email/code is entered */
+                                emailVerified: boolean;
+                                bio: string | null;
+                                link: string | null;
                                 dob: string | null;
                                 gender: ("female" | "male" | "other") | null;
                                 city: string | null;
@@ -968,6 +1172,167 @@ export interface paths {
         };
         trace?: never;
     };
+    "/v1/account/email/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Email a 6-digit code to the address on the profile
+         * @description The same limits as texted codes: 30 seconds between sends, three resends, five tries.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Masked, for example as***@gmail.com */
+                                sentTo: string;
+                                expiresInSeconds: number;
+                                resendInSeconds: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/account/email/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify the email with the code from POST /email/code
+         * @description A verified email belongs to one account. If another account verified it first, this answers EMAIL_TAKEN.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description E.164, for example +919876543210 */
+                                phone: string;
+                                name: string;
+                                username: string;
+                                email: string | null;
+                                /** @description False until the code sent by POST /email/code is entered */
+                                emailVerified: boolean;
+                                bio: string | null;
+                                link: string | null;
+                                dob: string | null;
+                                gender: ("female" | "male" | "other") | null;
+                                city: string | null;
+                                roles: {
+                                    vendor: boolean;
+                                    delivery: boolean;
+                                    ruxstarStaff: boolean;
+                                    admin: boolean;
+                                };
+                                kyc: {
+                                    base: string;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/account/usernames": {
         parameters: {
             query?: never;
@@ -975,12 +1340,17 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Check a username and suggest free ones from the user's name */
+        /**
+         * Check a username and suggest free ones
+         * @description Works before signup, with `name`. Signed in, your own name is used and your own username counts as free.
+         */
         get: {
             parameters: {
                 query?: {
                     /** @description A handle to check, as typed */
                     check?: string;
+                    /** @description Before signup, suggestions come from this name. Signed in, your own name is used. */
+                    name?: string;
                 };
                 header?: never;
                 path?: never;
@@ -1462,7 +1832,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE";
                 message: string;
                 details: ({
                     path?: string;

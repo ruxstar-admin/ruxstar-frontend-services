@@ -55,6 +55,7 @@
 
 .panel {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-5);
   max-width: 640px;
   margin: 0;
@@ -162,6 +163,110 @@
   padding-top: var(--space-2);
 }
 
+.fieldHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.fieldLabel {
+  font: 600 14px/20px var(--font);
+  color: var(--ink);
+}
+
+.count {
+  font: var(--type-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+
+.fieldError {
+  font: var(--type-small);
+  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+}
+
+/* Matches the text field in components/ui/Input. 17 px keeps iOS Safari from zooming in. */
+.textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-4);
+  font: 400 17px/24px var(--font);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--dur-quick) var(--ease-out);
+}
+
+.textarea:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.textarea[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+@media (forced-colors: active) {
+  .textarea:focus {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+}
+
+.textButton {
+  min-height: var(--size-touch);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 14px/20px var(--font);
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.textButton:disabled {
+  color: var(--ink-3);
+  text-decoration: none;
+  cursor: default;
+}
+
+.verify {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--sunk);
+  border-radius: var(--radius-control);
+}
+
+.verifyActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.verifyActions > :last-child:not(.textButton) {
+  margin-left: auto;
+}
+
+.dangerTitle {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--danger) 85%, var(--ink));
+}
+
+.list {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--ink-2);
+}
+
 .devices {
   gap: 0;
   padding-block: var(--space-2);
@@ -202,7 +307,7 @@
 
 @media (max-width: 860px) {
   .setting {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4);
   }
 

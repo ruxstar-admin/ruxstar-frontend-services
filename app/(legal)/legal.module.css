@@ -1,0 +1,82 @@
+.page {
+  --margin: clamp(20px, 5vw, 64px);
+  min-height: 100dvh;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px var(--margin) 96px;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+}
+
+.article {
+  max-width: 680px;
+  margin: 0 auto;
+  padding-top: clamp(40px, 8vh, 96px);
+  color: var(--ink);
+}
+
+.title {
+  font: 600 40px/44px var(--display);
+  letter-spacing: var(--type-headline-tracking);
+  text-wrap: balance;
+}
+
+.updated {
+  margin-top: var(--space-3);
+  font: var(--type-small);
+  color: var(--ink-2);
+}
+
+.lede {
+  margin-top: var(--space-6);
+  font: 400 19px/30px var(--font);
+  text-wrap: pretty;
+}
+
+.article h2 {
+  margin-top: var(--space-8);
+  font: 650 20px/28px var(--font);
+}
+
+.article p,
+.article li {
+  font: 400 17px/27px var(--font);
+  text-wrap: pretty;
+}
+
+.article h2 + p,
+.article h2 + ul {
+  margin-top: var(--space-3);
+}
+
+.article p + p,
+.article p + ul,
+.article ul + p {
+  margin-top: var(--space-4);
+}
+
+.article ul {
+  display: grid;
+  gap: var(--space-2);
+  padding-left: 1.25em;
+}
+
+.article a {
+  color: var(--ink);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.article strong {
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 30px;
+    line-height: 36px;
+  }
+}

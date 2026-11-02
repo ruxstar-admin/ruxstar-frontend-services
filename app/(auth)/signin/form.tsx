@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { PasswordField, PhoneField, validPhone } from "@/components/auth/fields";
+import { VerifyPhone } from "@/components/auth/VerifyPhone";
 import { Button } from "@/components/ui";
-import { formError, nextPath, signIn } from "@/lib/api/account";
+import { formError, nextPath, signIn, signInWithCode } from "@/lib/api/account";
 import styles from "../auth.module.css";
 
 export function SignInForm() {
   const router = useRouter();
+  const [mode, setMode] = useState<"password" | "code">("password");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -30,11 +32,43 @@ export function SignInForm() {
     }
   }
 
+  const foot = (
+    <p className={styles.foot}>
+      New to Ruxstar? <Link href="/signup">Create an account</Link>
+    </p>
+  );
+
+  if (mode === "code") {
+    return (
+      <VerifyPhone
+        key="code"
+        purpose="login"
+        title="Sign in with a code"
+        lede="We'll text a 6-digit code to your mobile number."
+        initialPhone={validPhone(phone) ? phone : ""}
+        submitCode={async (number, code) => {
+          await signInWithCode(number, code);
+          router.replace(nextPath());
+        }}
+        foot={
+          <>
+            <div className={styles.row}>
+              <button type="button" className={styles.textButton} onClick={() => setMode("password")}>
+                Use your password instead
+              </button>
+            </div>
+            {foot}
+          </>
+        }
+      />
+    );
+  }
+
   return (
-    <div className={styles.step}>
+    <div className={styles.step} key="password">
       <div className={styles.head}>
         <h1 className={styles.title}>Welcome back</h1>
-        <p className={styles.lede}>Sign in with your mobile number and password.</p>
+        <p className={styles.lede}>Sign in with your password or a one-time code.</p>
       </div>
       <form className={styles.form} onSubmit={submit} noValidate>
         <PhoneField
@@ -57,7 +91,16 @@ export function SignInForm() {
           </p>
         )}
         <div className={styles.row}>
-          <span />
+          <button
+            type="button"
+            className={styles.textButton}
+            onClick={() => {
+              setError(null);
+              setMode("code");
+            }}
+          >
+            Sign in with a code
+          </button>
           <Link href="/reset" className={styles.textButton}>
             Forgot password?
           </Link>
@@ -68,9 +111,7 @@ export function SignInForm() {
           </Button>
         </div>
       </form>
-      <p className={styles.foot}>
-        New to Ruxstar? <Link href="/signup">Create an account</Link>
-      </p>
+      {foot}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { AccountUsername, PasswordField, passwordProblem } from "@/components/auth/fields";
+import { AccountUsername, NewPasswordFields, passwordProblem } from "@/components/auth/fields";
 import { VerifyPhone } from "@/components/auth/VerifyPhone";
 import { Button, ButtonLink } from "@/components/ui";
 import { formError, resetPassword, signIn } from "@/lib/api/account";
@@ -13,6 +13,8 @@ export function ResetFlow() {
   const router = useRouter();
   const [verified, setVerified] = useState<{ token: string; phone: string } | null>(null);
   const [password, setPassword] = useState("");
+  const [confirmation, setConfirmation] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
@@ -49,8 +51,10 @@ export function ResetFlow() {
 
   async function submit(e: FormEvent) {
     e.preventDefault();
-    const weak = passwordProblem(password);
+    setSubmitted(true);
+    const weak = password ? passwordProblem(password, verified!.phone) : "Choose a password.";
     if (weak) return setError({ message: weak, field: "password" });
+    if (confirmation !== password) return setError(null);
     setBusy(true);
     setError(null);
     try {
@@ -77,13 +81,18 @@ export function ResetFlow() {
       </div>
       <form className={styles.form} onSubmit={submit} noValidate>
         <AccountUsername phone={verified.phone} />
-        <PasswordField
+        <NewPasswordFields
           label="New password"
-          value={password}
-          onValueChange={setPassword}
-          autoComplete="new-password"
+          password={password}
+          confirmation={confirmation}
+          onPasswordChange={(v) => {
+            setPassword(v);
+            if (error?.field === "password") setError(null);
+          }}
+          onConfirmationChange={setConfirmation}
+          phone={verified.phone}
+          submitted={submitted}
           autoFocus
-          hint="At least 8 characters, with a letter and a number."
           error={error?.field === "password" ? error.message : undefined}
         />
         {error && error.field !== "password" && (

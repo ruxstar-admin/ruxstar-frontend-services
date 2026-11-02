@@ -1,8 +1,12 @@
 import { ApiError, api, unwrap, type ApiErrorCode } from "./client";
+import type { paths } from "./schema";
 
-export type Purpose = "signup" | "reset";
+export type Purpose = "signup" | "reset" | "login";
 export type User = Awaited<ReturnType<typeof getMe>>;
+export type Gender = NonNullable<User["gender"]>;
 export type DeviceSession = Awaited<ReturnType<typeof listSessions>>[number];
+type SignupBody = paths["/v1/account/signup"]["post"]["requestBody"]["content"]["application/json"];
+type MePatch = paths["/v1/account/me"]["patch"]["requestBody"]["content"]["application/json"];
 
 export const requestCode = async (phone: string, purpose: Purpose) =>
   (await unwrap(api.POST("/v1/account/otp", { body: { phone, purpose } }))).data;
@@ -10,11 +14,19 @@ export const requestCode = async (phone: string, purpose: Purpose) =>
 export const verifyCode = async (phone: string, purpose: Purpose, code: string) =>
   (await unwrap(api.POST("/v1/account/otp/verify", { body: { phone, purpose, code } }))).data;
 
-export const signUp = async (body: { verificationToken: string; name: string; password: string }) =>
+export const signUp = async (body: Omit<SignupBody, "acceptTerms">) =>
   (await unwrap(api.POST("/v1/account/signup", { body: { ...body, acceptTerms: true } }))).data.user;
 
 export const signIn = async (phone: string, password: string) =>
   (await unwrap(api.POST("/v1/account/login", { body: { phone, password } }))).data.user;
+
+/** The code comes from `requestCode(phone, "login")`. */
+export const signInWithCode = async (phone: string, code: string) =>
+  (await unwrap(api.POST("/v1/account/login/code", { body: { phone, code } }))).data.user;
+
+/** Before signup: whether a handle is free, and free ones made from the name. */
+export const suggestUsernames = async (name: string, check?: string) =>
+  (await unwrap(api.GET("/v1/account/usernames", { params: { query: { name, ...(check ? { check } : {}) } } }))).data;
 
 export const resetPassword = async (verificationToken: string, password: string) =>
   unwrap(api.POST("/v1/account/password/reset", { body: { verificationToken, password } }));
@@ -37,12 +49,15 @@ export function refreshSession(): Promise<boolean> {
   return refreshing;
 }
 
+/** An ended session. A wrong password is also a 401, but with its own code. */
+export const isSignedOut = (err: unknown) => err instanceof ApiError && err.code === "UNAUTHENTICATED";
+
 /** Runs a signed-in call, refreshing the access cookie once if it has expired. */
 export async function signedIn<T>(call: () => Promise<T>): Promise<T> {
   try {
     return await call();
   } catch (err) {
-    if (!(err instanceof ApiError) || err.status !== 401) throw err;
+    if (!isSignedOut(err)) throw err;
     if (!(await refreshSession())) throw err;
     return call();
   }
@@ -50,8 +65,19 @@ export async function signedIn<T>(call: () => Promise<T>): Promise<T> {
 
 export const getMe = async () => (await signedIn(() => unwrap(api.GET("/v1/account/me")))).data;
 
-export const updateMe = async (body: { name?: string; username?: string; city?: string | null }) =>
-  (await signedIn(() => unwrap(api.PATCH("/v1/account/me", { body })))).data;
+export const updateMe = async (body: MePatch) => (await signedIn(() => unwrap(api.PATCH("/v1/account/me", { body })))).data;
+
+export const sendEmailCode = async () => (await signedIn(() => unwrap(api.POST("/v1/account/email/code")))).data;
+
+export const verifyEmail = async (code: string) =>
+  (await signedIn(() => unwrap(api.POST("/v1/account/email/verify", { body: { code } })))).data;
+
+/** Signs out every other device; this one stays signed in. */
+export const changePassword = async (currentPassword: string, newPassword: string) =>
+  signedIn(() => unwrap(api.POST("/v1/account/password", { body: { currentPassword, newPassword } })));
+
+export const deleteAccount = async (password: string) =>
+  signedIn(() => unwrap(api.DELETE("/v1/account/me", { body: { password } })));
 
 export const checkUsername = async (check?: string) =>
   (await signedIn(() => unwrap(api.GET("/v1/account/usernames", { params: { query: check ? { check } : {} } })))).data;
