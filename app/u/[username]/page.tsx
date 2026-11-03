@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { cache } from "react";
 import { Avatar } from "@/components/profile/Avatar";
-import { ButtonLink, Icon, Tag } from "@/components/ui";
+import { Icon, Tag } from "@/components/ui";
 import type { PublicProfile } from "@/lib/api/account";
 import { API_URL } from "@/lib/api/client";
+import { fetchPublicPosts } from "@/lib/api/social";
+import { compact } from "@/lib/time";
 import styles from "../profile.module.css";
+import { ProfileActions } from "./actions";
+import { ProfilePosts } from "./posts";
 
 const HANDLE = /^[a-z0-9_.]{3,20}$/;
 
@@ -25,9 +29,6 @@ const loadProfile = cache(async (username: string): Promise<PublicProfile | null
   if (!res.ok) throw new Error(`Profile lookup failed with ${res.status}`);
   return ((await res.json()) as { data: PublicProfile }).data;
 });
-
-const linkLabel = (link: string) => link.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
-const safeLink = (link: string | null) => (link && /^https?:\/\//.test(link) ? link : null);
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = await loadProfile(normalise((await params).username));
@@ -49,11 +50,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProfilePage({ params }: Props) {
   const raw = (await params).username;
-  const profile = await loadProfile(normalise(raw));
+  const username = normalise(raw);
+  // In parallel: the posts call costs nothing extra when the profile turns out not to exist.
+  const [profile, posts] = await Promise.all([loadProfile(username), HANDLE.test(username) ? fetchPublicPosts(username, "personal") : null]);
   if (!profile) notFound();
   if (raw !== profile.username) permanentRedirect(`/u/${profile.username}`);
 
-  const link = safeLink(profile.link);
   const since = new Date(profile.memberSince).toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
   const badges = [profile.badges.vendor && "Vendor", profile.badges.delivery && "Delivery partner"].filter(Boolean) as string[];
   const structured = {
@@ -68,17 +70,27 @@ export default async function ProfilePage({ params }: Props) {
       url: `https://ruxstar.com/u/${profile.username}`,
       ...(profile.bio ? { description: profile.bio } : {}),
       ...(profile.avatarUrl ? { image: profile.avatarUrl } : {}),
-      ...(link ? { sameAs: [link] } : {}),
     },
   };
 
   return (
+    <>
     <article className={styles.card}>
       <Avatar name={profile.name} url={profile.avatarUrl} size={128} />
       <div className={styles.identity}>
         <h1 className={styles.name}>{profile.name}</h1>
         <p className={styles.handle}>@{profile.username}</p>
       </div>
+      <dl className={styles.stats}>
+        <div>
+          <dt>Posts</dt>
+          <dd>{compact(profile.stats.posts)}</dd>
+        </div>
+        <div>
+          <dt>Engagements</dt>
+          <dd>{compact(profile.stats.engagements)}</dd>
+        </div>
+      </dl>
       {badges.length > 0 && (
         <div className={styles.badges}>
           {badges.map((badge) => (
@@ -94,26 +106,17 @@ export default async function ProfilePage({ params }: Props) {
             {profile.city}
           </li>
         )}
-        {link && (
-          <li>
-            <Icon name="link" size={16} />
-            <a href={link} rel="nofollow ugc noopener" target="_blank">
-              {linkLabel(link)}
-            </a>
-          </li>
-        )}
         <li>
           <Icon name="calendar" size={16} />
           Member since {since}
         </li>
       </ul>
-      <div className={styles.cta}>
-        <p>Print, events, coaching and stays from the people around you.</p>
-        <ButtonLink href="/signup" size="lg">
-          Join Ruxstar
-        </ButtonLink>
-      </div>
+      <ProfileActions ownerId={profile.id} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structured).replace(/</g, "\\u003c") }} />
     </article>
+    <div className={styles.posts}>
+      <ProfilePosts ownerId={profile.id} username={profile.username} vendor={profile.badges.vendor} initial={posts ?? { items: [], nextCursor: null }} />
+    </div>
+    </>
   );
 }

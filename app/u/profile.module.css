@@ -1,23 +1,10 @@
-.page {
-  --margin: clamp(20px, 5vw, 64px);
-  min-height: 100dvh;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 28px var(--margin) 96px;
-}
-
-.bar {
-  display: flex;
-  align-items: center;
-}
-
 .card {
   display: grid;
   justify-items: center;
   gap: var(--space-5);
   max-width: 480px;
   margin: 0 auto;
-  padding-top: clamp(40px, 8vh, 96px);
+  padding-top: clamp(16px, 4vh, 48px);
   text-align: center;
   color: var(--ink);
 }
@@ -83,6 +70,35 @@
   text-underline-offset: 3px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.stats {
+  display: flex;
+  gap: var(--space-7);
+  margin: 0;
+}
+
+.stats div {
+  display: grid;
+  gap: 2px;
+}
+
+.stats dt {
+  order: 2;
+  font: var(--type-caption);
+  color: var(--ink-2);
+}
+
+.stats dd {
+  margin: 0;
+  font: 700 20px/26px var(--font);
+  font-variant-numeric: tabular-nums;
+}
+
+.posts {
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
 }
 
 .cta {

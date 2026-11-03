@@ -1,0 +1,149 @@
+.page {
+  --margin: clamp(16px, 5vw, 64px);
+  min-height: 100dvh;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 20px var(--margin) 96px;
+}
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  min-height: 64px;
+  margin: -20px calc(-1 * var(--margin)) 0;
+  padding: 0 var(--margin);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+
+.guest {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  opacity: 0;
+  transition: opacity var(--dur-quick) var(--ease-out);
+}
+
+.nav[data-ready] {
+  opacity: 1;
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--size-touch);
+  padding: 0 var(--space-3);
+  font: 600 14px/20px var(--font);
+  color: var(--ink-2);
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  transition:
+    color var(--dur-quick) var(--ease-out),
+    background var(--dur-quick) var(--ease-out),
+    transform var(--dur-press) var(--ease-out);
+}
+
+.tab:hover {
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.tab:active {
+  transform: scale(var(--press-scale));
+}
+
+.tab[aria-current="page"] {
+  color: var(--ink);
+}
+
+.icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font: 700 11px/18px var(--font);
+  text-align: center;
+  color: var(--ink);
+  background: var(--danger);
+  border: 2px solid var(--bg);
+  border-radius: var(--radius-pill);
+  box-sizing: content-box;
+  animation: pop var(--dur-base) var(--ease-spring);
+}
+
+.main {
+  padding-top: clamp(20px, 4vh, 40px);
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.4);
+  }
+}
+
+@media (max-width: 860px) {
+  .tabLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Phones: the tabs move to a bar at the bottom, in reach of a thumb. */
+@media (max-width: 640px) {
+  /* A backdrop-filter would make the header the containing block of the fixed bar below. */
+  .bar {
+    background: var(--bg);
+    backdrop-filter: none;
+  }
+
+  .nav {
+    position: fixed;
+    inset: auto 0 0;
+    justify-content: space-around;
+    padding: var(--space-1) var(--space-2) calc(var(--space-1) + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: saturate(140%) blur(14px);
+    border-top: 1px solid var(--line);
+  }
+
+  .tab {
+    flex: 1;
+    justify-content: center;
+    min-height: 52px;
+  }
+
+  .tab:hover {
+    background: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge {
+    animation: none;
+  }
+}

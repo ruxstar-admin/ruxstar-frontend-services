@@ -21,12 +21,12 @@ export default function PrivacyPage() {
       <ul>
         <li>Your mobile number, name, username, date of birth and gender, when you sign up.</li>
         <li>Your password. We keep only a scrambled version that cannot be turned back into the password.</li>
-        <li>If you add them: your profile photo, email address, bio, link and city.</li>
+        <li>If you add them: your profile photo, email address, bio and city.</li>
       </ul>
 
       <h2>What others can see</h2>
       <p>
-        Your photo, name, username, bio, link and city are shown on your profile. Anyone can see it, including search engines.
+        Your photo, name, username, bio and city are shown on your profile. Anyone can see it, including search engines.
         Your mobile number, email, date of birth and gender are never shown to other people.
       </p>
       <p>

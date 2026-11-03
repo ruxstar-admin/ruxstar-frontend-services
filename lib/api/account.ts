@@ -109,7 +109,7 @@ export const endSession = async (id: string) =>
   signedIn(() => unwrap(api.DELETE("/v1/account/sessions/{id}", { params: { path: { id } } })));
 
 /** Only same-site paths, so `?next=` cannot send people to another site. */
-export function nextPath(fallback = "/account"): string {
+export function nextPath(fallback = "/feed"): string {
   if (typeof window === "undefined") return fallback;
   const next = new URLSearchParams(window.location.search).get("next");
   if (!next?.startsWith("/")) return fallback;

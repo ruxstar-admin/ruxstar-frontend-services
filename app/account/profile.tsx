@@ -21,14 +21,20 @@ import styles from "./account.module.css";
 
 const HANDLE = /^[a-z0-9_.]{3,20}$/;
 const BIO_MAX = 160;
+const BIO_LINES = 4;
+
+/** One empty line in a row at most, and no fifth line; the API applies the same rule. */
+function limitBio(text: string) {
+  const lines = text.replace(/\n{3,}/g, "\n\n").split("\n");
+  if (lines.length <= BIO_LINES) return lines.join("\n");
+  const rest = lines.slice(BIO_LINES - 1).filter(Boolean).join(" ");
+  return [...lines.slice(0, BIO_LINES - 1), rest].join("\n");
+}
 const GENDERS = [
   { value: "female", label: "Female" },
   { value: "male", label: "Male" },
   { value: "other", label: "Other" },
 ] as const satisfies readonly { value: Gender; label: string }[];
-
-/** The API takes only http and https links. */
-const validLink = (link: string) => link.length === 0 || /^https?:\/\/\S+\.\S+$/.test(link);
 
 type Handle =
   | { state: "idle" | "checking" | "mine" }
@@ -55,7 +61,6 @@ const formOf = (user: User) => ({
   city: user.city ?? "",
   email: user.email ?? "",
   bio: user.bio ?? "",
-  link: user.link ?? "",
   gender: user.gender,
 });
 
@@ -101,14 +106,12 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
 
   const email = form.email.trim();
   const bio = form.bio.trim();
-  const link = form.link.trim();
   const changes = {
     ...(form.name.trim() !== user.name ? { name: form.name.trim() } : {}),
     ...(typed !== user.username ? { username: typed } : {}),
     ...(form.city.trim() !== (user.city ?? "") ? { city: form.city.trim() || null } : {}),
     ...(email !== (user.email ?? "") ? { email: email || null } : {}),
     ...(bio !== (user.bio ?? "") ? { bio: bio || null } : {}),
-    ...(link !== (user.link ?? "") ? { link: link || null } : {}),
     ...(form.gender !== user.gender && form.gender ? { gender: form.gender } : {}),
   };
   const dirty = Object.keys(changes).length > 0;
@@ -140,7 +143,6 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
     if (handle.state === "invalid") return setError({ message: "Use 3 to 20 lowercase letters, numbers, dots or underscores.", field: "username" });
     if (handle.state === "taken") return setError({ message: "That username is taken. Pick one of the suggestions.", field: "username" });
     if (!validEmail(email)) return setError({ message: "Enter a valid email address.", field: "email" });
-    if (!validLink(link)) return setError({ message: "Start the link with https://", field: "link" });
     setSaving(true);
     setError(null);
     try {
@@ -242,29 +244,14 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
           rows={3}
           maxLength={BIO_MAX}
           value={form.bio}
-          onChange={(e) => setForm({ ...form, bio: e.target.value })}
+          onChange={(e) => setForm({ ...form, bio: limitBio(e.target.value) })}
           aria-invalid={fieldError("bio") ? true : undefined}
           aria-describedby={`${bioId}-note`}
         />
         <p id={`${bioId}-note`} className={fieldError("bio") ? styles.fieldError : styles.muted}>
-          {fieldError("bio") ?? `Up to ${BIO_MAX} characters.`}
+          {fieldError("bio") ?? `Up to ${BIO_MAX} characters and ${BIO_LINES} lines.`}
         </p>
       </div>
-
-      <Input
-        label="Link"
-        name="url"
-        type="url"
-        inputMode="url"
-        autoComplete="url"
-        autoCapitalize="none"
-        spellCheck={false}
-        maxLength={200}
-        placeholder="https://"
-        value={form.link}
-        onChange={(e) => setForm({ ...form, link: e.target.value })}
-        error={fieldError("link") ?? (validLink(link) ? undefined : "Start the link with https://")}
-      />
 
       <Input
         label="City"
@@ -335,7 +322,7 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
 
       <p className={styles.muted}>Your email, phone and gender are never shown on your profile.</p>
 
-      {error && !["name", "username", "city", "email", "bio", "link"].includes(error.field ?? "") && (
+      {error && !["name", "username", "city", "email", "bio"].includes(error.field ?? "") && (
         <p className={styles.formError} role="alert">
           {error.message}
         </p>

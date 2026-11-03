@@ -307,7 +307,7 @@ function Created({ name }: { name: string }) {
       <SuccessBadge />
       <div className={styles.head}>
         <h1 className={styles.title}>You&apos;re in, {first}</h1>
-        <p className={styles.lede}>Your Ruxstar account is ready. Add a bio and link any time from your profile.</p>
+        <p className={styles.lede}>Your Ruxstar account is ready. Add a bio and your city any time from your profile.</p>
       </div>
       <div className={styles.actions}>
         <ButtonLink href={nextPath("/")} replace size="lg" block>
