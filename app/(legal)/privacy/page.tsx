@@ -21,13 +21,16 @@ export default function PrivacyPage() {
       <ul>
         <li>Your mobile number, name, username, date of birth and gender, when you sign up.</li>
         <li>Your password. We keep only a scrambled version that cannot be turned back into the password.</li>
-        <li>If you add them: your email address, bio, link and city.</li>
+        <li>If you add them: your profile photo, email address, bio, link and city.</li>
       </ul>
 
       <h2>What others can see</h2>
       <p>
-        Your name, username, bio, link and city are shown on your profile. Your mobile number, email, date of birth and gender are
-        never shown to other people.
+        Your photo, name, username, bio, link and city are shown on your profile. Anyone can see it, including search engines.
+        Your mobile number, email, date of birth and gender are never shown to other people.
+      </p>
+      <p>
+        Before we save a photo, we remove the details hidden inside the file, such as where and on what phone it was taken.
       </p>
 
       <h2>What we record when you use Ruxstar</h2>
@@ -44,7 +47,7 @@ export default function PrivacyPage() {
       <p>These services handle some of your information for us, only to do the job listed:</p>
       <ul>
         <li>MSG91 sends the codes we text you.</li>
-        <li>Google sends the codes we email you, and Google Cloud runs our servers.</li>
+        <li>Google sends the codes we email you, and Google Cloud runs our servers and stores profile photos.</li>
         <li>MongoDB Atlas stores our database.</li>
         <li>OpenStreetMap turns a location into a city name, when you ask for it.</li>
       </ul>
@@ -57,7 +60,7 @@ export default function PrivacyPage() {
 
       <h2>Keeping and deleting</h2>
       <p>
-        You can change your details at any time on your profile. When you delete your account, your profile disappears straight
+        You can change your details at any time on your profile. When you delete your account, your profile and photo disappear straight
         away, every device is signed out, and your account record is erased after 30 days. Records we are required by law to
         keep, such as payment records, are kept for as long as the law requires.
       </p>

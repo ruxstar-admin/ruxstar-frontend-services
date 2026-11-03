@@ -1,0 +1,105 @@
+.page {
+  --margin: clamp(20px, 5vw, 64px);
+  min-height: 100dvh;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px var(--margin) 96px;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+}
+
+.card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  max-width: 480px;
+  margin: 0 auto;
+  padding-top: clamp(40px, 8vh, 96px);
+  text-align: center;
+  color: var(--ink);
+}
+
+.identity {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.name {
+  font: 700 32px/38px var(--font);
+  letter-spacing: var(--type-headline-tracking);
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.handle {
+  font: var(--type-body);
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.bio {
+  font: 400 17px/27px var(--font);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  white-space: pre-line;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-6);
+  padding: 0;
+  list-style: none;
+  font: var(--type-small);
+  color: var(--ink-2);
+}
+
+.facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.facts a {
+  overflow: hidden;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cta {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  margin-top: var(--space-6);
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--line);
+  font: var(--type-small);
+  color: var(--ink-2);
+}
+
+@media (max-width: 640px) {
+  .name {
+    font-size: 26px;
+    line-height: 32px;
+  }
+}

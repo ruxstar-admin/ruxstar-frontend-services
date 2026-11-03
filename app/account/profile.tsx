@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { CodeField, nameProblem, validEmail } from "@/components/auth/fields";
+import { PhotoPicker } from "@/components/profile/PhotoPicker";
 import { Button, Icon, Input, Segmented, useToast } from "@/components/ui";
 import {
   checkUsername,
@@ -33,7 +34,6 @@ type Handle =
   | { state: "idle" | "checking" | "mine" }
   | { state: "invalid" | "available" | "taken" };
 
-/** A stable pale tint per person, from their id. */
 function geolocate(): Promise<GeolocationPosition> {
   return new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) return reject(new Error("unsupported"));
@@ -179,17 +179,14 @@ export function ProfilePanel({ user, onSaved, onSignedOut }: { user: User; onSav
 
   return (
     <form className={styles.panel} onSubmit={save} noValidate>
-      <div className={styles.preview} aria-label="How others see you">
-        <span className={styles.avatar} aria-hidden>
-          {shownName.charAt(0).toUpperCase()}
-        </span>
-        <div className={styles.previewText}>
-          <p className={styles.previewName}>{shownName}</p>
-          <p className={styles.muted}>
-            @{typed || user.username}
-            {form.city.trim() && ` · ${form.city.trim()}`}
-          </p>
-        </div>
+      <div className={styles.preview}>
+        <PhotoPicker name={shownName} url={user.avatarUrl} onChange={onSaved} onSignedOut={onSignedOut} />
+        <p className={styles.muted}>
+          Your public profile:{" "}
+          <a className={styles.inlineLink} href={`/u/${user.username}`} target="_blank" rel="noopener">
+            ruxstar.com/u/{user.username}
+          </a>
+        </p>
       </div>
 
       <Input

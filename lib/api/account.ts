@@ -1,12 +1,14 @@
-import { ApiError, api, unwrap, type ApiErrorCode } from "./client";
+import { API_URL, ApiError, api, unwrap, type ApiErrorCode } from "./client";
 import type { paths } from "./schema";
 
 export type Purpose = "signup" | "reset" | "login";
 export type User = Awaited<ReturnType<typeof getMe>>;
 export type Gender = NonNullable<User["gender"]>;
 export type DeviceSession = Awaited<ReturnType<typeof listSessions>>[number];
+export type PublicProfile = paths["/v1/account/profiles/{ref}"]["get"]["responses"][200]["content"]["application/json"]["data"];
 type SignupBody = paths["/v1/account/signup"]["post"]["requestBody"]["content"]["application/json"];
 type MePatch = paths["/v1/account/me"]["patch"]["requestBody"]["content"]["application/json"];
+type PhotoResult = paths["/v1/account/me/photo"]["put"]["responses"][200]["content"]["application/json"];
 
 export const requestCode = async (phone: string, purpose: Purpose) =>
   (await unwrap(api.POST("/v1/account/otp", { body: { phone, purpose } }))).data;
@@ -66,6 +68,22 @@ export async function signedIn<T>(call: () => Promise<T>): Promise<T> {
 export const getMe = async () => (await signedIn(() => unwrap(api.GET("/v1/account/me")))).data;
 
 export const updateMe = async (body: MePatch) => (await signedIn(() => unwrap(api.PATCH("/v1/account/me", { body })))).data;
+
+/** The spec has no body for this route (it is the raw image), so it skips the typed client. */
+async function putPhoto(photo: Blob) {
+  const response = await fetch(`${API_URL}/v1/account/me/photo`, {
+    method: "PUT",
+    credentials: "include",
+    headers: { "X-Client": "web", "Content-Type": photo.type },
+    body: photo,
+  });
+  const parsed: unknown = await response.json().catch(() => undefined);
+  return response.ok ? { data: parsed as PhotoResult, response } : { error: parsed, response };
+}
+
+export const setPhoto = async (photo: Blob) => (await signedIn(() => unwrap(putPhoto(photo)))).data;
+
+export const removePhoto = async () => (await signedIn(() => unwrap(api.DELETE("/v1/account/me/photo")))).data;
 
 export const sendEmailCode = async () => (await signedIn(() => unwrap(api.POST("/v1/account/email/code")))).data;
 

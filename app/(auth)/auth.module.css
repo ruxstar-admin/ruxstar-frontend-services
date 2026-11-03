@@ -105,6 +105,10 @@
   cursor: pointer;
 }
 
+.skip {
+  justify-self: center;
+}
+
 .textButton:disabled {
   color: var(--ink-3);
   text-decoration: none;

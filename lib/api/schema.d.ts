@@ -372,6 +372,7 @@ export interface paths {
                                     email: string | null;
                                     /** @description False until the code sent by POST /email/code is entered */
                                     emailVerified: boolean;
+                                    avatarUrl: string | null;
                                     bio: string | null;
                                     link: string | null;
                                     dob: string | null;
@@ -486,6 +487,7 @@ export interface paths {
                                     email: string | null;
                                     /** @description False until the code sent by POST /email/code is entered */
                                     emailVerified: boolean;
+                                    avatarUrl: string | null;
                                     bio: string | null;
                                     link: string | null;
                                     dob: string | null;
@@ -601,6 +603,7 @@ export interface paths {
                                     email: string | null;
                                     /** @description False until the code sent by POST /email/code is entered */
                                     emailVerified: boolean;
+                                    avatarUrl: string | null;
                                     bio: string | null;
                                     link: string | null;
                                     dob: string | null;
@@ -982,6 +985,7 @@ export interface paths {
                                 email: string | null;
                                 /** @description False until the code sent by POST /email/code is entered */
                                 emailVerified: boolean;
+                                avatarUrl: string | null;
                                 bio: string | null;
                                 link: string | null;
                                 dob: string | null;
@@ -1127,6 +1131,7 @@ export interface paths {
                                 email: string | null;
                                 /** @description False until the code sent by POST /email/code is entered */
                                 emailVerified: boolean;
+                                avatarUrl: string | null;
                                 bio: string | null;
                                 link: string | null;
                                 dob: string | null;
@@ -1170,6 +1175,245 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/v1/account/me/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Add or replace the profile photo
+         * @description Send the image itself as the body with Content-Type image/jpeg, image/png or image/webp, up to 5 MB. It is cropped to a 512 x 512 square and saved as WebP without its metadata. The old photo is deleted.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description E.164, for example +919876543210 */
+                                phone: string;
+                                name: string;
+                                username: string;
+                                email: string | null;
+                                /** @description False until the code sent by POST /email/code is entered */
+                                emailVerified: boolean;
+                                avatarUrl: string | null;
+                                bio: string | null;
+                                link: string | null;
+                                dob: string | null;
+                                gender: ("female" | "male" | "other") | null;
+                                city: string | null;
+                                roles: {
+                                    vendor: boolean;
+                                    delivery: boolean;
+                                    ruxstarStaff: boolean;
+                                    admin: boolean;
+                                };
+                                kyc: {
+                                    base: string;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Remove the profile photo */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description E.164, for example +919876543210 */
+                                phone: string;
+                                name: string;
+                                username: string;
+                                email: string | null;
+                                /** @description False until the code sent by POST /email/code is entered */
+                                emailVerified: boolean;
+                                avatarUrl: string | null;
+                                bio: string | null;
+                                link: string | null;
+                                dob: string | null;
+                                gender: ("female" | "male" | "other") | null;
+                                city: string | null;
+                                roles: {
+                                    vendor: boolean;
+                                    delivery: boolean;
+                                    ruxstarStaff: boolean;
+                                    admin: boolean;
+                                };
+                                kyc: {
+                                    base: string;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/account/profiles/{ref}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Anyone's public profile, by username or id
+         * @description No sign-in needed. Deleted accounts answer NOT_FOUND.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description A username, or a user id */
+                    ref: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                username: string;
+                                avatarUrl: string | null;
+                                bio: string | null;
+                                link: string | null;
+                                city: string | null;
+                                badges: {
+                                    vendor: boolean;
+                                    delivery: boolean;
+                                };
+                                /** Format: date-time */
+                                memberSince: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/account/email/code": {
@@ -1284,6 +1528,7 @@ export interface paths {
                                 email: string | null;
                                 /** @description False until the code sent by POST /email/code is entered */
                                 emailVerified: boolean;
+                                avatarUrl: string | null;
                                 bio: string | null;
                                 link: string | null;
                                 dob: string | null;
@@ -1832,7 +2077,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE";
                 message: string;
                 details: ({
                     path?: string;

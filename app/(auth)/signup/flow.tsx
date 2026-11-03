@@ -17,6 +17,7 @@ import {
   type HandleStatus,
 } from "@/components/auth/fields";
 import { SuccessBadge } from "@/components/auth/SuccessBadge";
+import { PhotoPicker } from "@/components/profile/PhotoPicker";
 import { VerifyPhone } from "@/components/auth/VerifyPhone";
 import { Button, ButtonLink, Input, Segmented } from "@/components/ui";
 import { formError, nextPath, signUp, type FormError, type Gender } from "@/lib/api/account";
@@ -63,8 +64,11 @@ function problemsOf(form: Details, handle: HandleStatus, phone: string): Partial
 export function SignUpFlow() {
   const [verified, setVerified] = useState<{ token: string; phone: string } | null>(null);
   const [created, setCreated] = useState<string | null>(null);
+  const [photoStepDone, setPhotoStepDone] = useState(false);
 
-  if (created !== null) return <Created name={created} />;
+  if (created !== null) {
+    return photoStepDone ? <Created name={created} /> : <AddPhoto name={created} onDone={() => setPhotoStepDone(true)} />;
+  }
 
   if (!verified) {
     return (
@@ -267,6 +271,31 @@ function DetailsStep({
           </Button>
         </div>
       </form>
+    </div>
+  );
+}
+
+/** Optional, straight after the account is created. */
+function AddPhoto({ name, onDone }: { name: string; onDone: () => void }) {
+  const [url, setUrl] = useState<string | null>(null);
+  return (
+    <div className={styles.step} key="photo">
+      <div className={styles.head}>
+        <h1 className={styles.title}>Add a profile photo</h1>
+        <p className={styles.lede}>It helps people know it is you. You can change it any time.</p>
+      </div>
+      <PhotoPicker name={name} url={url} size={120} layout="stack" onChange={(user) => setUrl(user.avatarUrl)} onSignedOut={onDone} />
+      <div className={styles.actions}>
+        {url ? (
+          <Button size="lg" block onClick={onDone}>
+            Continue
+          </Button>
+        ) : (
+          <button type="button" className={`${styles.textButton} ${styles.skip}`} onClick={onDone}>
+            Skip for now
+          </button>
+        )}
+      </div>
     </div>
   );
 }

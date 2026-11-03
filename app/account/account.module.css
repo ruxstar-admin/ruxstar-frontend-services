@@ -71,34 +71,18 @@
 }
 
 .preview {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
   padding-bottom: var(--space-5);
   border-bottom: 1px solid var(--line);
 }
 
-.avatar {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  font: 600 20px/1 var(--font);
+.inlineLink {
   color: var(--ink);
-  background: var(--accent-deep);
-}
-
-.previewText {
-  min-width: 0;
-}
-
-.previewName {
-  overflow: hidden;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
 }
 
 .suggestions {
