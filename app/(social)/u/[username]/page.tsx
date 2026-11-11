@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { cache } from "react";
+import { VerifiedTick } from "@/components/kyc/VerifiedTick";
 import { Avatar } from "@/components/profile/Avatar";
 import { Icon, Tag } from "@/components/ui";
 import type { PublicProfile } from "@/lib/api/account";
@@ -96,6 +97,7 @@ export default async function ProfilePage({ params }: Props) {
         <div className={styles.about}>
           <p className={styles.name}>
             {profile.name}
+            {profile.badges.verified && <VerifiedTick />}
             {badges.map((badge) => (
               <Tag key={badge}>{badge}</Tag>
             ))}

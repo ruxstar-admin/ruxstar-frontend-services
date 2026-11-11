@@ -2,16 +2,23 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { Button, Icon } from "@/components/ui";
+import { Button, Icon, type IconName } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { formError } from "@/lib/api/account";
-import { markRead, notifications } from "@/lib/api/social";
+import { markRead, notifications, type Notification } from "@/lib/api/social";
 import { ago, exact } from "@/lib/time";
 import styles from "@/components/social/social.module.css";
 
-/** Likes and comments on your posts. Opening the page marks them read; the dots stay for this visit. */
+const ICONS: Record<Notification["type"], IconName> = {
+  "post.like": "heart",
+  "post.comment": "comment",
+  "kyc.approved": "verified",
+  "kyc.rejected": "alert",
+};
+
+/** Likes and comments on your posts, and verification decisions. Opening the page marks them read; the dots stay for this visit. */
 export function NotificationsScreen() {
   const onSignedOut = useOnSignedOut();
   const pages = usePages(notifications);
@@ -51,9 +58,9 @@ export function NotificationsScreen() {
         <ul className={styles.rows}>
           {items.map((n) => (
             <li key={n.id}>
-              <Link href={`/p/${n.link.id}`} className={styles.row}>
+              <Link href={n.link.screen === "verification" ? "/verify" : `/p/${n.link.id}`} className={styles.row}>
                 <span className={styles.rowIcon}>
-                  <Icon name={n.type === "post.like" ? "heart" : "comment"} filled={n.type === "post.like"} size={20} />
+                  <Icon name={ICONS[n.type]} filled={n.type === "post.like"} size={20} />
                 </span>
                 <span className={styles.rowText}>
                   <span className={styles.rowTitle}>{n.title}</span>

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { prettyPhone } from "@/components/auth/fields";
 import { useSetMe } from "@/components/social/session";
-import { Button, Skeleton, Tag, useToast } from "@/components/ui";
+import { Button, ButtonLink, Skeleton, Tag, useToast, type TagTone } from "@/components/ui";
 import {
   endSession,
   formError,
@@ -19,6 +19,9 @@ import { DeletePanel } from "./delete";
 import { PasswordPanel } from "./password";
 import { ProfilePanel } from "./profile";
 import styles from "./account.module.css";
+
+const KYC_LABEL: Record<string, string> = { pending: "In review", approved: "Verified", rejected: "Needs a change" };
+const KYC_TONE: Record<string, TagTone> = { pending: "warning", approved: "success", rejected: "danger" };
 
 const seen = new Intl.RelativeTimeFormat("en-IN", { numeric: "auto" });
 const since = new Intl.DateTimeFormat("en-IN", { month: "long", year: "numeric" });
@@ -159,6 +162,48 @@ export function AccountScreen() {
               </div>
             )}
           </Setting>
+
+          {user && (
+            <Setting id="verification" title="Verification" description="Your Ruxstar Card, the Verified tick, and vendor verification.">
+              <div className={`${styles.panel} ${styles.devices}`}>
+                <div className={styles.device}>
+                  <div>
+                    <p className={styles.deviceName}>
+                      Identity <Tag tone={KYC_TONE[user.kyc.base] ?? "neutral"}>{KYC_LABEL[user.kyc.base] ?? "Not verified"}</Tag>
+                    </p>
+                    <p className={styles.muted}>{user.card ? `Ruxstar Card ${user.card.id}` : "Aadhaar, PAN and a live selfie"}</p>
+                  </div>
+                  <ButtonLink href="/verify" variant="secondary">
+                    {user.kyc.base === "approved" ? "View card" : user.kyc.base === "none" ? "Get verified" : "Open"}
+                  </ButtonLink>
+                </div>
+                {user.kyc.base === "approved" && (
+                  <div className={styles.device}>
+                    <div>
+                      <p className={styles.deviceName}>
+                        Vendor <Tag tone={KYC_TONE[user.kyc.vendor] ?? "neutral"}>{KYC_LABEL[user.kyc.vendor] ?? "Not verified"}</Tag>
+                      </p>
+                      <p className={styles.muted}>Business name and address. GSTIN optional.</p>
+                    </div>
+                    <ButtonLink href="/verify#vendor" variant="secondary">
+                      {user.kyc.vendor === "approved" ? "View" : "Become a vendor"}
+                    </ButtonLink>
+                  </div>
+                )}
+                {(user.roles.admin || user.roles.ruxstarStaff) && (
+                  <div className={styles.device}>
+                    <div>
+                      <p className={styles.deviceName}>Review queue</p>
+                      <p className={styles.muted}>Approve or send back verification requests.</p>
+                    </div>
+                    <ButtonLink href="/admin/kyc" variant="secondary">
+                      Open
+                    </ButtonLink>
+                  </div>
+                )}
+              </div>
+            </Setting>
+          )}
 
           <Setting id="devices" title="Signed-in devices" description="Sign out anything you do not recognise.">
             <ul className={`${styles.panel} ${styles.devices}`}>

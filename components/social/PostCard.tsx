@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { memo, useEffect, useRef, useState, type KeyboardEvent as KeyEvent } from "react";
+import { VerifiedTick } from "@/components/kyc/VerifiedTick";
 import { Avatar } from "@/components/profile/Avatar";
 import { Button, Icon, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
@@ -295,6 +296,7 @@ export const PostCard = memo(function PostCard({ post, onChange, onRemove, eager
               <span id={`post-${post.id}`} className={styles.name}>
                 {author.name}
               </span>
+              {author.verified && <VerifiedTick size={16} />}
               {post.kind === "business" ? <Tag tone="solid">Store</Tag> : author.vendor ? <Tag>Vendor</Tag> : null}
             </span>
             <span className={styles.meta}>

@@ -1,0 +1,120 @@
+.tick {
+  display: inline-flex;
+  flex: none;
+  color: var(--logo-blue);
+  vertical-align: -3px;
+}
+
+/* Ruxstar Card: credit-card proportions, so it reads as a card at any width. */
+.card {
+  display: grid;
+  align-content: space-between;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 1.586;
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--ink);
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--accent) 45%, transparent), transparent 60%),
+    radial-gradient(90% 80% at 0% 100%, color-mix(in srgb, var(--logo-blue) 22%, transparent), transparent 60%),
+    var(--raised);
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: 22px;
+  box-shadow: 0 18px 48px rgb(0 0 0 / 35%);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cardBadges {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.cardBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font: 600 12px/16px var(--font);
+  color: var(--logo-blue);
+  background: rgb(0 0 0 / 35%);
+  border-radius: var(--radius-pill);
+}
+
+.cardBadge[data-tone="vendor"] {
+  color: var(--star);
+}
+
+.cardBody {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.cardWho {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cardName {
+  overflow: hidden;
+  font: 700 20px/26px var(--font);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardId {
+  font: 600 14px/20px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+}
+
+.cardFoot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.cardFacts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.cardFacts dt {
+  font: 600 11px/14px var(--font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.cardFacts dd {
+  margin: 0;
+  font: 600 14px/20px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.04em;
+}
+
+.qr {
+  display: block;
+  flex: none;
+  padding: 0;
+  line-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+@media (max-width: 420px) {
+  .card {
+    aspect-ratio: auto;
+    padding: var(--space-5);
+  }
+}

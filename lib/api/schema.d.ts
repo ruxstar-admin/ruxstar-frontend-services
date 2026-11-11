@@ -384,8 +384,15 @@ export interface paths {
                                         admin: boolean;
                                     };
                                     kyc: {
+                                        /** @description none, pending, approved or rejected. Details at GET /v1/kyc */
                                         base: string;
+                                        /** @description none, pending, approved or rejected */
+                                        vendor: string;
                                     };
+                                    card: {
+                                        /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
+                                        id: string;
+                                    } | null;
                                     stats: {
                                         /** @description Live posts, both tabs */
                                         posts: number;
@@ -504,8 +511,15 @@ export interface paths {
                                         admin: boolean;
                                     };
                                     kyc: {
+                                        /** @description none, pending, approved or rejected. Details at GET /v1/kyc */
                                         base: string;
+                                        /** @description none, pending, approved or rejected */
+                                        vendor: string;
                                     };
+                                    card: {
+                                        /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
+                                        id: string;
+                                    } | null;
                                     stats: {
                                         /** @description Live posts, both tabs */
                                         posts: number;
@@ -625,8 +639,15 @@ export interface paths {
                                         admin: boolean;
                                     };
                                     kyc: {
+                                        /** @description none, pending, approved or rejected. Details at GET /v1/kyc */
                                         base: string;
+                                        /** @description none, pending, approved or rejected */
+                                        vendor: string;
                                     };
+                                    card: {
+                                        /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
+                                        id: string;
+                                    } | null;
                                     stats: {
                                         /** @description Live posts, both tabs */
                                         posts: number;
@@ -1012,8 +1033,15 @@ export interface paths {
                                     admin: boolean;
                                 };
                                 kyc: {
+                                    /** @description none, pending, approved or rejected. Details at GET /v1/kyc */
                                     base: string;
+                                    /** @description none, pending, approved or rejected */
+                                    vendor: string;
                                 };
+                                card: {
+                                    /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
+                                    id: string;
+                                } | null;
                                 stats: {
                                     /** @description Live posts, both tabs */
                                     posts: number;
@@ -1162,8 +1190,15 @@ export interface paths {
                                     admin: boolean;
                                 };
                                 kyc: {
+                                    /** @description none, pending, approved or rejected. Details at GET /v1/kyc */
                                     base: string;
+                                    /** @description none, pending, approved or rejected */
+                                    vendor: string;
                                 };
+                                card: {
+                                    /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
+                                    id: string;
+                                } | null;
                                 stats: {
                                     /** @description Live posts, both tabs */
                                     posts: number;
@@ -1251,8 +1286,15 @@ export interface paths {
                                     admin: boolean;
                                 };
                                 kyc: {
+                                    /** @description none, pending, approved or rejected. Details at GET /v1/kyc */
                                     base: string;
+                                    /** @description none, pending, approved or rejected */
+                                    vendor: string;
                                 };
+                                card: {
+                                    /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
+                                    id: string;
+                                } | null;
                                 stats: {
                                     /** @description Live posts, both tabs */
                                     posts: number;
@@ -1328,8 +1370,15 @@ export interface paths {
                                     admin: boolean;
                                 };
                                 kyc: {
+                                    /** @description none, pending, approved or rejected. Details at GET /v1/kyc */
                                     base: string;
+                                    /** @description none, pending, approved or rejected */
+                                    vendor: string;
                                 };
+                                card: {
+                                    /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
+                                    id: string;
+                                } | null;
                                 stats: {
                                     /** @description Live posts, both tabs */
                                     posts: number;
@@ -1410,6 +1459,8 @@ export interface paths {
                                 bio: string | null;
                                 city: string | null;
                                 badges: {
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                     vendor: boolean;
                                     delivery: boolean;
                                 };
@@ -1496,6 +1547,8 @@ export interface paths {
                                 bio: string | null;
                                 city: string | null;
                                 badges: {
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                     vendor: boolean;
                                     delivery: boolean;
                                 };
@@ -1666,8 +1719,15 @@ export interface paths {
                                     admin: boolean;
                                 };
                                 kyc: {
+                                    /** @description none, pending, approved or rejected. Details at GET /v1/kyc */
                                     base: string;
+                                    /** @description none, pending, approved or rejected */
+                                    vendor: string;
                                 };
+                                card: {
+                                    /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
+                                    id: string;
+                                } | null;
                                 stats: {
                                     /** @description Live posts, both tabs */
                                     posts: number;
@@ -2052,6 +2112,956 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/kyc/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Where your identity and vendor verification stand */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                vendor: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    business: {
+                                        name: string;
+                                        address: {
+                                            line1: string;
+                                            line2: string | null;
+                                            city: string;
+                                            state: string;
+                                            pincode: string;
+                                        };
+                                        gstin: {
+                                            number: string;
+                                            legalName: string | null;
+                                            status: string | null;
+                                        } | null;
+                                    } | null;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/kyc/base/aadhaar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start the Aadhaar step with DigiLocker
+         * @description Returns a DigiLocker link. Open it in a browser; when the user comes back, call POST /base/aadhaar/check. Starting again clears the PAN and selfie steps, since both depend on the Aadhaar. Five tries a day.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Open this in a browser. DigiLocker sends the user back to the Ruxstar return page. */
+                                url: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/kyc/base/aadhaar/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check whether DigiLocker has shared the Aadhaar
+         * @description Safe to call repeatedly. The Aadhaar step stays `pending` until the user finishes in DigiLocker.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                vendor: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    business: {
+                                        name: string;
+                                        address: {
+                                            line1: string;
+                                            line2: string | null;
+                                            city: string;
+                                            state: string;
+                                            pincode: string;
+                                        };
+                                        gstin: {
+                                            number: string;
+                                            legalName: string | null;
+                                            status: string | null;
+                                        } | null;
+                                    } | null;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/kyc/base/pan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check your PAN against the name on your Aadhaar
+         * @description One PAN can verify only one account. Five tries a day.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description 10 characters, capitals, like ABCDE1234F */
+                        pan: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                vendor: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    business: {
+                                        name: string;
+                                        address: {
+                                            line1: string;
+                                            line2: string | null;
+                                            city: string;
+                                            state: string;
+                                            pincode: string;
+                                        };
+                                        gstin: {
+                                            number: string;
+                                            legalName: string | null;
+                                            status: string | null;
+                                        } | null;
+                                    } | null;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/kyc/base/face": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a live selfie to match against your Aadhaar photo
+         * @description Send the photo itself with Content-Type image/jpeg, image/png or image/webp, up to 5 MB. It is checked for liveness, matched to the Aadhaar photo and never stored. Five tries a day; after the fifth, start the Aadhaar step again.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                vendor: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    business: {
+                                        name: string;
+                                        address: {
+                                            line1: string;
+                                            line2: string | null;
+                                            city: string;
+                                            state: string;
+                                            pincode: string;
+                                        };
+                                        gstin: {
+                                            number: string;
+                                            legalName: string | null;
+                                            status: string | null;
+                                        } | null;
+                                    } | null;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/kyc/base/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send identity verification for review
+         * @description Needs the Aadhaar, PAN and selfie steps verified. Our team approves it, then your Ruxstar Card is issued.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                vendor: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    business: {
+                                        name: string;
+                                        address: {
+                                            line1: string;
+                                            line2: string | null;
+                                            city: string;
+                                            state: string;
+                                            pincode: string;
+                                        };
+                                        gstin: {
+                                            number: string;
+                                            legalName: string | null;
+                                            status: string | null;
+                                        } | null;
+                                    } | null;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/kyc/vendor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save your business details for vendor verification
+         * @description Needs approved identity verification. A GSTIN is optional and is checked when given.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        businessName: string;
+                        address: {
+                            line1: string;
+                            line2?: string | null;
+                            city: string;
+                            state: string;
+                            pincode: string;
+                        };
+                        gstin?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                vendor: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    business: {
+                                        name: string;
+                                        address: {
+                                            line1: string;
+                                            line2: string | null;
+                                            city: string;
+                                            state: string;
+                                            pincode: string;
+                                        };
+                                        gstin: {
+                                            number: string;
+                                            legalName: string | null;
+                                            status: string | null;
+                                        } | null;
+                                    } | null;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/kyc/vendor/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send vendor verification for review
+         * @description Once approved you are a vendor: business posts and the vendor portal open.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                vendor: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    business: {
+                                        name: string;
+                                        address: {
+                                            line1: string;
+                                            line2: string | null;
+                                            city: string;
+                                            state: string;
+                                            pincode: string;
+                                        };
+                                        gstin: {
+                                            number: string;
+                                            legalName: string | null;
+                                            status: string | null;
+                                        } | null;
+                                    } | null;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/kyc/card": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your Ruxstar Card
+         * @description Issued when identity verification is approved. Only you see the masked Aadhaar and PAN.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description For example RUX-1A2B-3C4D */
+                                id: string;
+                                /** @description As on the Aadhaar */
+                                name: string;
+                                photoUrl: string | null;
+                                /** @description Masked, for example XXXX XXXX 1234 */
+                                aadhaar: string;
+                                pan: string | null;
+                                vendor: boolean;
+                                /** Format: date-time */
+                                memberSince: string;
+                                /** @description The public profile, for the QR code */
+                                profileUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/social/feed": {
         parameters: {
             query?: never;
@@ -2089,6 +3099,8 @@ export interface paths {
                                     username: string;
                                     avatarUrl: string | null;
                                     vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                 };
                                 kind: "personal" | "business";
                                 text: string;
@@ -2193,6 +3205,8 @@ export interface paths {
                                     username: string;
                                     avatarUrl: string | null;
                                     vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                 };
                                 kind: "personal" | "business";
                                 text: string;
@@ -2290,6 +3304,8 @@ export interface paths {
                                     username: string;
                                     avatarUrl: string | null;
                                     vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                 };
                                 kind: "personal" | "business";
                                 text: string;
@@ -2390,6 +3406,8 @@ export interface paths {
                                     username: string;
                                     avatarUrl: string | null;
                                     vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                 };
                                 kind: "personal" | "business";
                                 text: string;
@@ -2531,6 +3549,8 @@ export interface paths {
                                     username: string;
                                     avatarUrl: string | null;
                                     vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                 };
                                 kind: "personal" | "business";
                                 text: string;
@@ -2705,6 +3725,8 @@ export interface paths {
                                     username: string;
                                     avatarUrl: string | null;
                                     vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                 };
                                 kind: "personal" | "business";
                                 text: string;
@@ -3031,6 +4053,8 @@ export interface paths {
                                     username: string;
                                     avatarUrl: string | null;
                                     vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                 };
                                 text: string;
                                 /** Format: date-time */
@@ -3101,6 +4125,8 @@ export interface paths {
                                     username: string;
                                     avatarUrl: string | null;
                                     vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
                                 };
                                 text: string;
                                 /** Format: date-time */
@@ -3311,15 +4337,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @enum {string} */
-                                kind: "social";
-                                type: "post.like" | "post.comment";
+                                kind: "social" | "account";
+                                type: "post.like" | "post.comment" | "kyc.approved" | "kyc.rejected";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @enum {string} */
-                                    screen: "post";
-                                    /** @description MongoDB ObjectId as hex */
+                                    /** @description `verification` opens the KYC screen; `id` is base or vendor */
+                                    screen: "post" | "verification";
                                     id: string;
                                 };
                                 read: boolean;
@@ -3458,6 +4482,465 @@ export interface paths {
                             data: {
                                 /** @enum {boolean} */
                                 done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/kyc": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Verification cases, waiting for review first by default
+         * @description Newest activity first. `status` defaults to `submitted`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                    track?: "base" | "vendor";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                track: "base" | "vendor";
+                                /** @description `locked` follows the third rejection; support reopens it. */
+                                status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                rejections: number;
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                    /** Format: date-time */
+                                    memberSince: string;
+                                };
+                                identity: {
+                                    aadhaarName: string | null;
+                                    aadhaarLast4: string | null;
+                                    panMasked: string | null;
+                                    panName: string | null;
+                                    nameMatch: string | null;
+                                    livenessScore: number | null;
+                                    faceMatchScore: number | null;
+                                } | null;
+                                business: {
+                                    name: string;
+                                    address: {
+                                        line1: string;
+                                        line2: string | null;
+                                        city: string;
+                                        state: string;
+                                        pincode: string;
+                                    };
+                                    gstin: {
+                                        number: string;
+                                        legalName: string | null;
+                                        status: string | null;
+                                    } | null;
+                                } | null;
+                                submittedAt: string | null;
+                                review: {
+                                    decision: "approved" | "rejected";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/kyc/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One verification case */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                track: "base" | "vendor";
+                                /** @description `locked` follows the third rejection; support reopens it. */
+                                status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                rejections: number;
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                    /** Format: date-time */
+                                    memberSince: string;
+                                };
+                                identity: {
+                                    aadhaarName: string | null;
+                                    aadhaarLast4: string | null;
+                                    panMasked: string | null;
+                                    panName: string | null;
+                                    nameMatch: string | null;
+                                    livenessScore: number | null;
+                                    faceMatchScore: number | null;
+                                } | null;
+                                business: {
+                                    name: string;
+                                    address: {
+                                        line1: string;
+                                        line2: string | null;
+                                        city: string;
+                                        state: string;
+                                        pincode: string;
+                                    };
+                                    gstin: {
+                                        number: string;
+                                        legalName: string | null;
+                                        status: string | null;
+                                    } | null;
+                                } | null;
+                                submittedAt: string | null;
+                                review: {
+                                    decision: "approved" | "rejected";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/kyc/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve a verification case
+         * @description Identity: issues the Ruxstar Card and the Verified tick. Vendor: makes the user a vendor.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                track: "base" | "vendor";
+                                /** @description `locked` follows the third rejection; support reopens it. */
+                                status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                rejections: number;
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                    /** Format: date-time */
+                                    memberSince: string;
+                                };
+                                identity: {
+                                    aadhaarName: string | null;
+                                    aadhaarLast4: string | null;
+                                    panMasked: string | null;
+                                    panName: string | null;
+                                    nameMatch: string | null;
+                                    livenessScore: number | null;
+                                    faceMatchScore: number | null;
+                                } | null;
+                                business: {
+                                    name: string;
+                                    address: {
+                                        line1: string;
+                                        line2: string | null;
+                                        city: string;
+                                        state: string;
+                                        pincode: string;
+                                    };
+                                    gstin: {
+                                        number: string;
+                                        legalName: string | null;
+                                        status: string | null;
+                                    } | null;
+                                } | null;
+                                submittedAt: string | null;
+                                review: {
+                                    decision: "approved" | "rejected";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/kyc/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a verification case back with what to fix
+         * @description The user sees the reason and can resubmit. Rejection number 3 locks the case for support.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Shown to the user, so say what to fix */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                track: "base" | "vendor";
+                                /** @description `locked` follows the third rejection; support reopens it. */
+                                status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                rejections: number;
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                    /** Format: date-time */
+                                    memberSince: string;
+                                };
+                                identity: {
+                                    aadhaarName: string | null;
+                                    aadhaarLast4: string | null;
+                                    panMasked: string | null;
+                                    panName: string | null;
+                                    nameMatch: string | null;
+                                    livenessScore: number | null;
+                                    faceMatchScore: number | null;
+                                } | null;
+                                business: {
+                                    name: string;
+                                    address: {
+                                        line1: string;
+                                        line2: string | null;
+                                        city: string;
+                                        state: string;
+                                        pincode: string;
+                                    };
+                                    gstin: {
+                                        number: string;
+                                        legalName: string | null;
+                                        status: string | null;
+                                    } | null;
+                                } | null;
+                                submittedAt: string | null;
+                                review: {
+                                    decision: "approved" | "rejected";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
                             };
                             meta: {
                                 requestId: string;
@@ -3647,7 +5130,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE";
                 message: string;
                 details: ({
                     path?: string;
