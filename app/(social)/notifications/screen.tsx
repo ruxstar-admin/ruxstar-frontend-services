@@ -14,11 +14,12 @@ import styles from "@/components/social/social.module.css";
 const ICONS: Record<Notification["type"], IconName> = {
   "post.like": "heart",
   "post.comment": "comment",
+  "post.removed": "flag",
   "kyc.approved": "verified",
   "kyc.rejected": "alert",
 };
 
-/** Likes and comments on your posts, and verification decisions. Opening the page marks them read; the dots stay for this visit. */
+/** Likes and comments on your posts, posts the Ruxstar team removed, and verification decisions. Opening the page marks them read; the dots stay for this visit. */
 export function NotificationsScreen() {
   const onSignedOut = useOnSignedOut();
   const pages = usePages(notifications);

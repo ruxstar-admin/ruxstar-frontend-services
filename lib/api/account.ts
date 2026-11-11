@@ -108,6 +108,10 @@ export const listSessions = async () => (await signedIn(() => unwrap(api.GET("/v
 export const endSession = async (id: string) =>
   signedIn(() => unwrap(api.DELETE("/v1/account/sessions/{id}", { params: { path: { id } } })));
 
+/** Where someone starts once signed in: the console for the Ruxstar team, the feed for everyone else. */
+export const homeFor = (user: { roles: { admin: boolean; ruxstarStaff: boolean } }) =>
+  user.roles.admin || user.roles.ruxstarStaff ? "/admin" : "/feed";
+
 /** Only same-site paths, so `?next=` cannot send people to another site. */
 export function nextPath(fallback = "/feed"): string {
   if (typeof window === "undefined") return fallback;

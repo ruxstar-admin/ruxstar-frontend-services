@@ -193,10 +193,10 @@ export function AccountScreen() {
                 {(user.roles.admin || user.roles.ruxstarStaff) && (
                   <div className={styles.device}>
                     <div>
-                      <p className={styles.deviceName}>Review queue</p>
-                      <p className={styles.muted}>Approve or send back verification requests.</p>
+                      <p className={styles.deviceName}>Ruxstar console</p>
+                      <p className={styles.muted}>Verification, reports, people, staff, modules and the audit log.</p>
                     </div>
-                    <ButtonLink href="/admin/kyc" variant="secondary">
+                    <ButtonLink href="/admin" variant="secondary">
                       Open
                     </ButtonLink>
                   </div>

@@ -4338,7 +4338,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "kyc.approved" | "kyc.rejected";
+                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected";
                                 title: string;
                                 body: string;
                                 link: {
@@ -4509,6 +4509,163 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What you may do in the Ruxstar console
+         * @description FORBIDDEN for anyone who is not an admin or active Ruxstar staff.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Admins have every permission and manage staff */
+                                admin: boolean;
+                                title: string | null;
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                /** @description Every permission staff can be given */
+                                catalog: {
+                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view";
+                                    label: string;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Counts for the console home page
+         * @description Each section needs its view permission; staff numbers are for admins.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description A section is null when you lack the permission to see it */
+                            data: {
+                                kyc: {
+                                    waiting: number;
+                                    identity: number;
+                                    vendor: number;
+                                } | null;
+                                reports: {
+                                    posts: number;
+                                    reports: number;
+                                } | null;
+                                users: {
+                                    total: number;
+                                    newThisWeek: number;
+                                    suspended: number;
+                                } | null;
+                                modules: {
+                                    module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                    live: boolean;
+                                }[] | null;
+                                staff: {
+                                    active: number;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -4968,6 +5125,1215 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reported posts, one row per post
+         * @description `open` (the default) is waiting for a decision, newest report first. `closed` is decided, newest decision first.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "open" | "closed";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                postId: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    kind: "personal" | "business";
+                                    text: string;
+                                    media: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    status: "live" | "deleted" | "removed";
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        status: "active" | "locked" | "deleted";
+                                    } | null;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                status: "open" | "closed";
+                                reports: number;
+                                reasons: {
+                                    spam: number;
+                                    fake: number;
+                                    abuse: number;
+                                    undelivered: number;
+                                    other: number;
+                                };
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                outcome: ("kept" | "removed") | null;
+                                closedAt: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/reports/{postId}/keep": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Keep a reported post up and close its reports
+         * @description Anyone who has not reported it yet can still report it later.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    postId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                postId: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    kind: "personal" | "business";
+                                    text: string;
+                                    media: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    status: "live" | "deleted" | "removed";
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        status: "active" | "locked" | "deleted";
+                                    } | null;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                status: "open" | "closed";
+                                reports: number;
+                                reasons: {
+                                    spam: number;
+                                    fake: number;
+                                    abuse: number;
+                                    undelivered: number;
+                                    other: number;
+                                };
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                outcome: ("kept" | "removed") | null;
+                                closedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/reports/{postId}/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a post down and close its reports
+         * @description The post's photos, likes, saves and comments are deleted, and the author is told why. This can't be undone.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    postId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Shown to the person, so be clear */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                postId: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    kind: "personal" | "business";
+                                    text: string;
+                                    media: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    status: "live" | "deleted" | "removed";
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        status: "active" | "locked" | "deleted";
+                                    } | null;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                status: "open" | "closed";
+                                reports: number;
+                                reasons: {
+                                    spam: number;
+                                    fake: number;
+                                    abuse: number;
+                                    undelivered: number;
+                                    other: number;
+                                };
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                outcome: ("kept" | "removed") | null;
+                                closedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Find people
+         * @description Newest first. Without `status`, deleted accounts are left out.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description Phone digits, @username, a name, a card number like RUX-1A2B-3C4D, or an id */
+                    q?: string;
+                    status?: "active" | "locked" | "deleted";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                username: string;
+                                phone: string;
+                                avatarUrl: string | null;
+                                status: "active" | "locked" | "deleted";
+                                roles: {
+                                    vendor: boolean;
+                                    delivery: boolean;
+                                    ruxstarStaff: boolean;
+                                    admin: boolean;
+                                };
+                                kyc: {
+                                    base: string;
+                                    vendor: string;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One person's account */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                username: string;
+                                phone: string;
+                                avatarUrl: string | null;
+                                status: "active" | "locked" | "deleted";
+                                roles: {
+                                    vendor: boolean;
+                                    delivery: boolean;
+                                    ruxstarStaff: boolean;
+                                    admin: boolean;
+                                };
+                                kyc: {
+                                    base: string;
+                                    vendor: string;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                                email: string | null;
+                                emailVerified: boolean;
+                                city: string | null;
+                                bio: string | null;
+                                card: string | null;
+                                signInLockedUntil: string | null;
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    } | null;
+                                } | null;
+                                stats: {
+                                    posts: number;
+                                    engagements: number;
+                                };
+                                /** @description Devices signed in now */
+                                sessions: number;
+                                /** @description Open reports on their posts */
+                                openReports: number;
+                                staff: {
+                                    title: string;
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                    status: "active" | "revoked";
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/users/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Put an account on hold and sign it out everywhere
+         * @description They can't sign in until it is unlocked; sign-in tells them to contact support. Admins can't be suspended here.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Shown to the person, so be clear */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                username: string;
+                                phone: string;
+                                avatarUrl: string | null;
+                                status: "active" | "locked" | "deleted";
+                                roles: {
+                                    vendor: boolean;
+                                    delivery: boolean;
+                                    ruxstarStaff: boolean;
+                                    admin: boolean;
+                                };
+                                kyc: {
+                                    base: string;
+                                    vendor: string;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                                email: string | null;
+                                emailVerified: boolean;
+                                city: string | null;
+                                bio: string | null;
+                                card: string | null;
+                                signInLockedUntil: string | null;
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    } | null;
+                                } | null;
+                                stats: {
+                                    posts: number;
+                                    engagements: number;
+                                };
+                                /** @description Devices signed in now */
+                                sessions: number;
+                                /** @description Open reports on their posts */
+                                openReports: number;
+                                staff: {
+                                    title: string;
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                    status: "active" | "revoked";
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/users/{id}/unlock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Lift a hold, or the lock after too many wrong passwords */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                username: string;
+                                phone: string;
+                                avatarUrl: string | null;
+                                status: "active" | "locked" | "deleted";
+                                roles: {
+                                    vendor: boolean;
+                                    delivery: boolean;
+                                    ruxstarStaff: boolean;
+                                    admin: boolean;
+                                };
+                                kyc: {
+                                    base: string;
+                                    vendor: string;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                                email: string | null;
+                                emailVerified: boolean;
+                                city: string | null;
+                                bio: string | null;
+                                card: string | null;
+                                signInLockedUntil: string | null;
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    } | null;
+                                } | null;
+                                stats: {
+                                    posts: number;
+                                    engagements: number;
+                                };
+                                /** @description Devices signed in now */
+                                sessions: number;
+                                /** @description Open reports on their posts */
+                                openReports: number;
+                                staff: {
+                                    title: string;
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                    status: "active" | "revoked";
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/users/{id}/sign-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign an account out on every device */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                username: string;
+                                phone: string;
+                                avatarUrl: string | null;
+                                status: "active" | "locked" | "deleted";
+                                roles: {
+                                    vendor: boolean;
+                                    delivery: boolean;
+                                    ruxstarStaff: boolean;
+                                    admin: boolean;
+                                };
+                                kyc: {
+                                    base: string;
+                                    vendor: string;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                                email: string | null;
+                                emailVerified: boolean;
+                                city: string | null;
+                                bio: string | null;
+                                card: string | null;
+                                signInLockedUntil: string | null;
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    } | null;
+                                } | null;
+                                stats: {
+                                    posts: number;
+                                    engagements: number;
+                                };
+                                /** @description Devices signed in now */
+                                sessions: number;
+                                /** @description Open reports on their posts */
+                                openReports: number;
+                                staff: {
+                                    title: string;
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                    status: "active" | "revoked";
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ruxstar staff, active first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                };
+                                title: string;
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                status: "active" | "revoked";
+                                /** Format: date-time */
+                                grantedAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/staff/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Make someone Ruxstar staff, or change their title and permissions
+         * @description Also brings back staff who were removed.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description For example Support lead */
+                        title: string;
+                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                };
+                                title: string;
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                status: "active" | "revoked";
+                                /** Format: date-time */
+                                grantedAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Remove someone from Ruxstar staff
+         * @description They lose console access at once. Their account stays as it is.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                };
+                                title: string;
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                status: "active" | "revoked";
+                                /** Format: date-time */
+                                grantedAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The audit log
+         * @description Filter by module, action, who did it (`actor`, a user id) or what it was done to (`target`).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    module?: string;
+                    /** @description For example kyc.approve */
+                    action?: string;
+                    /** @description MongoDB ObjectId as hex */
+                    actor?: string;
+                    /** @description The id of what was changed */
+                    target?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** Format: date-time */
+                                at: string;
+                                actor: {
+                                    id: string | null;
+                                    kind: "user" | "staff" | "admin" | "system";
+                                    name: string | null;
+                                    username: string | null;
+                                };
+                                module: string;
+                                action: string;
+                                target: {
+                                    type: string;
+                                    id: string;
+                                };
+                                diff: {
+                                    [key: string]: {
+                                        from?: unknown;
+                                        to?: unknown;
+                                    };
+                                };
+                                ip: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Avatar } from "@/components/profile/Avatar";
 import { ButtonLink, Icon, ToastProvider, type IconName } from "@/components/ui";
+import { homeFor } from "@/lib/api/account";
 import { unreadCount } from "@/lib/api/social";
 import { SessionProvider, useMe } from "./session";
 import styles from "./Shell.module.css";
@@ -15,6 +16,8 @@ const TABS: { href: string; label: string; icon: IconName }[] = [
   { href: "/saved", label: "Saved", icon: "bookmark" },
   { href: "/notifications", label: "Notifications", icon: "bell" },
 ];
+
+const CONSOLE_TAB = { href: "/admin", label: "Admin", icon: "shield" } as const;
 
 /** Pages seen in the signed-in site since it loaded. One means the visitor arrived here from outside. */
 let visits = 0;
@@ -61,9 +64,11 @@ function Nav() {
   const pathname = usePathname();
   const unread = useUnread(!!me);
   const profileHref = me ? `/u/${me.username}` : "/signin";
+  const team = !!me && (me.roles.admin || me.roles.ruxstarStaff);
+  const tabs = team ? [CONSOLE_TAB, ...TABS] : TABS;
 
-  const tab = (t: (typeof TABS)[number]) => {
-    const active = pathname === t.href;
+  const tab = (t: (typeof tabs)[number]) => {
+    const active = pathname === t.href || (t.href === CONSOLE_TAB.href && pathname.startsWith(`${t.href}/`));
     const badge = t.href === "/notifications" && unread > 0 ? (unread > 9 ? "9+" : String(unread)) : null;
     return (
       <Link key={t.href} href={t.href} className={styles.tab} aria-current={active ? "page" : undefined}>
@@ -83,7 +88,7 @@ function Nav() {
   return (
     <>
       <header className={styles.bar}>
-        <Link href={me ? "/feed" : "/"} className="brand">
+        <Link href={me ? homeFor(me) : "/"} className="brand">
           <img src="/logo.svg" width={30} height={30} alt="" />
           <span>ruxstar</span>
         </Link>
@@ -96,7 +101,7 @@ function Nav() {
           </div>
         ) : (
           <nav className={styles.nav} aria-label="Main" data-ready={me ? true : undefined}>
-            {TABS.map(tab)}
+            {tabs.map(tab)}
             <Link href={profileHref} className={styles.tab} aria-current={pathname === profileHref ? "page" : undefined}>
               <span className={styles.icon}>{me ? <Avatar name={me.name} url={me.avatarUrl} size={28} /> : <Icon name="user" />}</span>
               <span className={styles.tabLabel}>Profile</span>

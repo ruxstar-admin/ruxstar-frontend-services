@@ -1,0 +1,140 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Needs, useCan } from "@/components/admin/AdminFrame";
+import { Failed, Rows, styles } from "@/components/admin/parts";
+import { useOnSignedOut } from "@/components/social/session";
+import { Button, Card, Input, Switch, Tag, useToast } from "@/components/ui";
+import { formError } from "@/lib/api/account";
+import { listModules, updateModule, type ModulePatch, type ModuleSettings } from "@/lib/api/admin";
+import { ago } from "@/lib/time";
+import { MODULE_LABEL } from "./labels";
+
+const percentOf = (bps: number) => String(bps / 100);
+
+function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const [busy, setBusy] = useState<keyof ModulePatch | null>(null);
+  const [commission, setCommission] = useState(percentOf(m.commissionBps));
+
+  const bps = Math.round(Number(commission) * 100);
+  const commissionValid = commission.trim() !== "" && Number.isFinite(bps) && bps >= 0 && bps <= 10000;
+
+  async function save(patch: ModulePatch) {
+    setBusy(Object.keys(patch)[0] as keyof ModulePatch);
+    try {
+      const done = await updateModule(m.module, patch);
+      onSaved(done);
+      setCommission(percentOf(done.commissionBps));
+      toast(`${MODULE_LABEL[m.module]} saved.`, "success");
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const locked = !canManage || busy !== null;
+
+  return (
+    <Card as="section" padding="lg" className={styles.page}>
+      <div className={styles.groupHead}>
+        <div>
+          <h2 className={styles.subtitle}>{MODULE_LABEL[m.module]}</h2>
+          <p className={styles.muted}>Changed {ago(m.updatedAt)}</p>
+        </div>
+        <Tag tone={m.live ? "success" : "neutral"}>{m.live ? "Live" : "Off"}</Tag>
+      </div>
+      <div className={styles.group}>
+        <Switch checked={m.live} onChange={(live) => save({ live })} disabled={locked} description="Off hides it everywhere, for everyone.">
+          Live
+        </Switch>
+        <Switch
+          checked={m.signupsOpen}
+          onChange={(signupsOpen) => save({ signupsOpen })}
+          disabled={locked}
+          description="Off keeps current vendors working but stops new ones joining."
+        >
+          New vendors can join
+        </Switch>
+        <Switch
+          checked={m.deliveryEnabled}
+          onChange={(deliveryEnabled) => save({ deliveryEnabled })}
+          disabled={locked}
+          description="Orders can be sent with a Ruxstar delivery partner."
+        >
+          Delivery
+        </Switch>
+      </div>
+      <div className={styles.toolbar}>
+        <Input
+          label="Commission"
+          hint="Taken from each order, from 0 to 100"
+          inputMode="decimal"
+          suffix="%"
+          value={commission}
+          onChange={(e) => setCommission(e.target.value.replace(/[^\d.]/g, ""))}
+          disabled={!canManage}
+          error={commissionValid ? undefined : "Enter a number from 0 to 100"}
+        />
+        {canManage && (
+          <Button
+            variant="secondary"
+            disabled={!commissionValid || bps === m.commissionBps || (busy !== null && busy !== "commissionBps")}
+            loading={busy === "commissionBps"}
+            onClick={() => save({ commissionBps: bps })}
+          >
+            Save commission
+          </Button>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+export function ModulesScreen() {
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const [modules, setModules] = useState<ModuleSettings[] | null>(null);
+  const [error, setError] = useState<unknown>(null);
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    let live = true;
+    listModules().then(
+      (list) => live && setModules(list),
+      (err) => live && !onSignedOut(err) && setError(err),
+    );
+    return () => {
+      live = false;
+    };
+  }, [attempt, onSignedOut]);
+
+  return (
+    <Needs need="modules.view">
+      <div className={styles.page}>
+        <div>
+          <h1 className={styles.title}>Modules</h1>
+          <p className={styles.muted}>
+            {canManage ? "Changes apply at once and are written to the audit log." : "You can see these settings. Ask an admin to change them."}
+          </p>
+        </div>
+        {error ? (
+          <Failed
+            error={error}
+            onRetry={() => {
+              setError(null);
+              setAttempt((n) => n + 1);
+            }}
+          />
+        ) : !modules ? (
+          <Rows count={3} height={260} />
+        ) : (
+          modules.map((m) => <Module key={m.module} m={m} onSaved={(done) => setModules((list) => list?.map((x) => (x.module === done.module ? done : x)) ?? null)} />)
+        )}
+      </div>
+    </Needs>
+  );
+}

@@ -16,7 +16,7 @@ export default async function ComingSoon() {
           <img src="/logo.svg" width={30} height={30} alt="" />
           <span>ruxstar</span>
         </div>
-        <ButtonLink href="/signin?next=/feed" variant="ghost">
+        <ButtonLink href="/signin" variant="ghost">
           Sign in
         </ButtonLink>
       </header>

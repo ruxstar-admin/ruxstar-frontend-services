@@ -6,7 +6,7 @@ import { useState, type FormEvent } from "react";
 import { PasswordField, PhoneField, validPhone } from "@/components/auth/fields";
 import { VerifyPhone } from "@/components/auth/VerifyPhone";
 import { Button } from "@/components/ui";
-import { formError, nextPath, signIn, signInWithCode } from "@/lib/api/account";
+import { formError, homeFor, nextPath, signIn, signInWithCode } from "@/lib/api/account";
 import styles from "../auth.module.css";
 
 export function SignInForm() {
@@ -24,8 +24,8 @@ export function SignInForm() {
     setBusy(true);
     setError(null);
     try {
-      await signIn(phone, password);
-      router.replace(nextPath());
+      const user = await signIn(phone, password);
+      router.replace(nextPath(homeFor(user)));
     } catch (err) {
       setError(formError(err));
       setBusy(false);
@@ -47,8 +47,8 @@ export function SignInForm() {
         lede="We'll text a 6-digit code to your mobile number."
         initialPhone={validPhone(phone) ? phone : ""}
         submitCode={async (number, code) => {
-          await signInWithCode(number, code);
-          router.replace(nextPath());
+          const user = await signInWithCode(number, code);
+          router.replace(nextPath(homeFor(user)));
         }}
         foot={
           <>

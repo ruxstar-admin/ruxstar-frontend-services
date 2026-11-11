@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Needs, useCan } from "@/components/admin/AdminFrame";
 import { Avatar } from "@/components/profile/Avatar";
-import { useMe, useOnSignedOut } from "@/components/social/session";
+import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { Button, Icon, Segmented, Skeleton, Tag, useToast, type TagTone } from "@/components/ui";
 import { formError } from "@/lib/api/account";
@@ -48,6 +49,7 @@ function Fact({ label, value, warn }: { label: string; value: string; warn?: boo
 function Detail({ c, onDecided }: { c: ReviewCase; onDecided: (c: ReviewCase, verb: string) => void }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
+  const canReview = useCan("kyc.review");
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState<"approve" | "reject" | null>(null);
@@ -104,6 +106,7 @@ function Detail({ c, onDecided }: { c: ReviewCase; onDecided: (c: ReviewCase, ve
       )}
 
       {c.status === "submitted" &&
+        canReview &&
         (rejecting ? (
           <div className={styles.reject}>
             <label className={styles.label} htmlFor={`reason-${c.id}`}>
@@ -145,27 +148,17 @@ function Detail({ c, onDecided }: { c: ReviewCase; onDecided: (c: ReviewCase, ve
 }
 
 export function ReviewScreen() {
-  const me = useMe();
   const [status, setStatus] = useState<ReviewStatus>("submitted");
-
-  const allowed = me && (me.roles.admin || me.roles.ruxstarStaff);
-  if (me === null || (me && !allowed)) {
-    return (
-      <div className={styles.page}>
-        <h1 className={styles.title}>Verification review</h1>
-        <p className={styles.muted}>This page is for the Ruxstar team.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className={styles.page}>
-      <div className={styles.head}>
-        <h1 className={styles.title}>Verification review</h1>
-        <Segmented label="Show" options={TABS} value={status} onChange={setStatus} />
+    <Needs need="kyc.view">
+      <div className={styles.page}>
+        <div className={styles.head}>
+          <h1 className={styles.title}>Verification review</h1>
+          <Segmented label="Show" options={TABS} value={status} onChange={setStatus} />
+        </div>
+        <Queue key={status} status={status} />
       </div>
-      {me ? <Queue key={status} status={status} /> : <QueueSkeleton />}
-    </div>
+    </Needs>
   );
 }
 
