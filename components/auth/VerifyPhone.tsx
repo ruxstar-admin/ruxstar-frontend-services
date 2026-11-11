@@ -26,6 +26,7 @@ export function VerifyPhone({ purpose, title, lede, foot, initialPhone = "", onV
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
   const [resendAt, setResendAt] = useState(0);
+  const [validMinutes, setValidMinutes] = useState(10);
   const [now, setNow] = useState(() => Date.now());
   const codeRef = useRef<HTMLInputElement>(null);
 
@@ -45,6 +46,7 @@ export function VerifyPhone({ purpose, title, lede, foot, initialPhone = "", onV
     try {
       const sent = await requestCode(phone, purpose);
       setResendAt(Date.now() + sent.resendInSeconds * 1000);
+      setValidMinutes(Math.max(1, Math.round(sent.expiresInSeconds / 60)));
       setNow(Date.now());
       setCode("");
       setStep("code");
@@ -136,7 +138,7 @@ export function VerifyPhone({ purpose, title, lede, foot, initialPhone = "", onV
     <div className={styles.step} key="code">
       <div className={styles.head}>
         <h1 className={styles.title}>Enter the code</h1>
-        <p className={styles.lede}>We sent a 6-digit code to {prettyPhone(phone)}. It works for 5 minutes.</p>
+        <p className={styles.lede}>We sent a 6-digit code to {prettyPhone(phone)}. It works for {validMinutes} minutes.</p>
       </div>
       <form className={styles.form} onSubmit={submitCode} noValidate>
         <CodeField
