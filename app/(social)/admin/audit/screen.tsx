@@ -27,6 +27,10 @@ const ACTIONS: Record<string, string> = {
   "staff.update": "Changed staff access",
   "staff.revoke": "Removed from staff",
   "module_settings.update": "Changed module settings",
+  "business.publish": "Published a business",
+  "business.suspend": "Put a business on hold",
+  "business.restore": "Lifted a hold on a business",
+  "payout_method.set": "Set where they get paid",
 };
 
 const MODULES: { value: string; label: string }[] = [

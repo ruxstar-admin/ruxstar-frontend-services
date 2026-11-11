@@ -55,7 +55,7 @@ function Detail({ c, onDecided }: { c: ReviewCase; onDecided: (c: ReviewCase, ve
   const [busy, setBusy] = useState<"approve" | "reject" | null>(null);
   // One key per decision, so a retried click is not applied twice.
   const keys = useRef({ approve: crypto.randomUUID(), reject: crypto.randomUUID() });
-  const { identity: id, business } = c;
+  const { identity: id } = c;
 
   async function decide(kind: "approve" | "reject") {
     setBusy(kind);
@@ -74,28 +74,13 @@ function Detail({ c, onDecided }: { c: ReviewCase; onDecided: (c: ReviewCase, ve
       <dl className={styles.facts}>
         <Fact label="Phone" value={c.user.phone} />
         <Fact label="Member since" value={new Date(c.user.memberSince).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })} />
-        {id && (
-          <>
-            <Fact label="Name on Aadhaar" value={id.aadhaarName ?? "—"} warn={!!id.aadhaarName && id.aadhaarName.toLowerCase() !== c.user.name.toLowerCase()} />
-            <Fact label="Aadhaar" value={id.aadhaarLast4 ? `XXXX XXXX ${id.aadhaarLast4}` : "—"} />
-            <Fact label="PAN" value={id.panMasked ?? "—"} />
-            <Fact label="Name on PAN" value={id.panName ?? "—"} />
-            <Fact label="Name match" value={id.nameMatch ? (MATCH_COPY[id.nameMatch] ?? id.nameMatch) : "—"} warn={id.nameMatch !== "DIRECT_MATCH"} />
-            <Fact label="Liveness" value={percent(id.livenessScore)} warn={(id.livenessScore ?? 0) < 0.8} />
-            <Fact label="Face match" value={percent(id.faceMatchScore)} warn={(id.faceMatchScore ?? 0) < 0.8} />
-          </>
-        )}
-        {business && (
-          <>
-            <Fact label="Business" value={business.name} />
-            <Fact
-              label="Address"
-              value={[business.address.line1, business.address.line2, business.address.city, business.address.state, business.address.pincode].filter(Boolean).join(", ")}
-            />
-            <Fact label="GSTIN" value={business.gstin ? `${business.gstin.number}${business.gstin.status ? ` (${business.gstin.status})` : ""}` : "Not given"} />
-            {business.gstin?.legalName && <Fact label="GST legal name" value={business.gstin.legalName} />}
-          </>
-        )}
+        <Fact label="Name on Aadhaar" value={id.aadhaarName ?? "—"} warn={!!id.aadhaarName && id.aadhaarName.toLowerCase() !== c.user.name.toLowerCase()} />
+        <Fact label="Aadhaar" value={id.aadhaarLast4 ? `XXXX XXXX ${id.aadhaarLast4}` : "—"} />
+        <Fact label="PAN" value={id.panMasked ?? "—"} />
+        <Fact label="Name on PAN" value={id.panName ?? "—"} />
+        <Fact label="Name match" value={id.nameMatch ? (MATCH_COPY[id.nameMatch] ?? id.nameMatch) : "—"} warn={id.nameMatch !== "DIRECT_MATCH"} />
+        <Fact label="Liveness" value={percent(id.livenessScore)} warn={(id.livenessScore ?? 0) < 0.8} />
+        <Fact label="Face match" value={percent(id.faceMatchScore)} warn={(id.faceMatchScore ?? 0) < 0.8} />
       </dl>
 
       {c.review && (
@@ -208,9 +193,7 @@ function Queue({ status }: { status: ReviewStatus }) {
                   <Avatar name={c.user.name} url={c.user.avatarUrl} size={44} />
                   <span className={styles.who}>
                     <span className={styles.name}>{c.user.name || "No name"}</span>
-                    <span className={styles.muted}>
-                      @{c.user.username} · {c.track === "base" ? "Identity" : "Vendor"}
-                    </span>
+                    <span className={styles.muted}>@{c.user.username}</span>
                   </span>
                   <Tag tone={tone}>{label}</Tag>
                   {c.submittedAt && (

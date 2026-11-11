@@ -96,6 +96,31 @@ export const updateModule = async (module: ModuleName, patch: ModulePatch, key =
     )
   ).data;
 
+// Vendors' businesses.
+
+export type BusinessRow = Json<"/v1/ruxstar/businesses", "get">["data"][number];
+export type Business = BusinessRow["business"];
+export type BusinessCase = Json<"/v1/ruxstar/businesses/{id}", "get">["data"];
+export type BusinessFilter = Omit<Query<"/v1/ruxstar/businesses">, "cursor" | "limit">;
+export type BusinessState = NonNullable<BusinessFilter["state"]>;
+
+export const findBusinesses = async (filter: BusinessFilter, cursor?: string) =>
+  toPage(await signedIn(() => unwrap(api.GET("/v1/ruxstar/businesses", { params: { query: { ...filter, cursor } } }))));
+
+export const getBusiness = async (id: string) =>
+  (await signedIn(() => unwrap(api.GET("/v1/ruxstar/businesses/{id}", { params: { path: { id } } })))).data;
+
+/** The vendor is told the reason. */
+export const holdBusiness = async (id: string, reason: string, key = newIdempotencyKey()) =>
+  (
+    await signedIn(() =>
+      unwrap(api.POST("/v1/ruxstar/businesses/{id}/suspend", { params: { path: { id } }, body: { reason }, ...keyed(key) })),
+    )
+  ).data;
+
+export const restoreBusiness = async (id: string, key = newIdempotencyKey()) =>
+  (await signedIn(() => unwrap(api.POST("/v1/ruxstar/businesses/{id}/restore", { params: { path: { id } }, ...keyed(key) })))).data;
+
 // Audit log.
 
 export const auditLog = async (filter: AuditFilter, cursor?: string) =>

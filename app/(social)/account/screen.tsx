@@ -164,7 +164,7 @@ export function AccountScreen() {
           </Setting>
 
           {user && (
-            <Setting id="verification" title="Verification" description="Your Ruxstar Card, the Verified tick, and vendor verification.">
+            <Setting id="verification" title="Verification" description="Your Ruxstar Card, the Verified tick, and the vendor portal.">
               <div className={`${styles.panel} ${styles.devices}`}>
                 <div className={styles.device}>
                   <div>
@@ -177,19 +177,16 @@ export function AccountScreen() {
                     {user.kyc.base === "approved" ? "View card" : user.kyc.base === "none" ? "Get verified" : "Open"}
                   </ButtonLink>
                 </div>
-                {user.kyc.base === "approved" && (
-                  <div className={styles.device}>
-                    <div>
-                      <p className={styles.deviceName}>
-                        Vendor <Tag tone={KYC_TONE[user.kyc.vendor] ?? "neutral"}>{KYC_LABEL[user.kyc.vendor] ?? "Not verified"}</Tag>
-                      </p>
-                      <p className={styles.muted}>Business name and address. GSTIN optional.</p>
-                    </div>
-                    <ButtonLink href="/verify#vendor" variant="secondary">
-                      {user.kyc.vendor === "approved" ? "View" : "Become a vendor"}
-                    </ButtonLink>
+                <div className={styles.device}>
+                  <div>
+                    <p className={styles.deviceName}>
+                      Vendor portal <Tag tone={user.roles.vendor ? "success" : "neutral"}>{user.roles.vendor ? "Open" : "After verification"}</Tag>
+                    </p>
+                    <p className={styles.muted}>
+                      {user.roles.vendor ? "Add businesses and set up payments in the Ruxstar app." : "Verify your identity to open it."}
+                    </p>
                   </div>
-                )}
+                </div>
                 {(user.roles.admin || user.roles.ruxstarStaff) && (
                   <div className={styles.device}>
                     <div>

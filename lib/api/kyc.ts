@@ -10,18 +10,13 @@ type Json<P extends keyof paths, M extends keyof paths[P]> = paths[P][M] extends
 
 export type Overview = Json<"/v1/kyc/", "get">["data"];
 export type BaseCase = Overview["base"];
-export type VendorCase = Overview["vendor"];
 export type CaseStatus = BaseCase["status"];
 export type StepStatus = BaseCase["steps"]["aadhaar"]["status"];
 export type RuxstarCard = Json<"/v1/kyc/card", "get">["data"];
-export type VendorDetails = paths["/v1/kyc/vendor"]["put"]["requestBody"]["content"]["application/json"];
 export type ReviewCase = Json<"/v1/ruxstar/kyc/{id}", "get">["data"];
 export type ReviewStatus = NonNullable<NonNullable<paths["/v1/ruxstar/kyc"]["get"]["parameters"]["query"]>["status"]>;
-export type Track = ReviewCase["track"];
 
 export const PAN = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
-export const GSTIN = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
-export const PINCODE = /^[1-9][0-9]{5}$/;
 
 export const getKyc = async () => (await signedIn(() => unwrap(api.GET("/v1/kyc/")))).data;
 
@@ -48,11 +43,6 @@ async function postSelfie(photo: Blob) {
 export const sendSelfie = async (photo: Blob) => (await signedIn(() => unwrap(postSelfie(photo)))).data;
 
 export const submitIdentity = async () => (await signedIn(() => unwrap(api.POST("/v1/kyc/base/submit")))).data;
-
-export const saveVendor = async (body: VendorDetails) =>
-  (await signedIn(() => unwrap(api.PUT("/v1/kyc/vendor", { body })))).data;
-
-export const submitVendor = async () => (await signedIn(() => unwrap(api.POST("/v1/kyc/vendor/submit")))).data;
 
 export const getCard = async () => (await signedIn(() => unwrap(api.GET("/v1/kyc/card")))).data;
 

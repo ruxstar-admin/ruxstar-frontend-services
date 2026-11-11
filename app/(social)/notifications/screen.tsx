@@ -17,9 +17,15 @@ const ICONS: Record<Notification["type"], IconName> = {
   "post.removed": "flag",
   "kyc.approved": "verified",
   "kyc.rejected": "alert",
+  "business.suspended": "alert",
+  "business.restored": "store",
 };
 
-/** Likes and comments on your posts, posts the Ruxstar team removed, and verification decisions. Opening the page marks them read; the dots stay for this visit. */
+/** Businesses are run from the app's vendor portal for now, so their notices open the account page that says so. */
+const hrefOf = (link: Notification["link"]) =>
+  link.screen === "verification" ? "/verify" : link.screen === "business" ? "/account#verification" : `/p/${link.id}`;
+
+/** Likes and comments on your posts, posts the Ruxstar team removed, verification decisions and holds on your businesses. Opening the page marks them read; the dots stay for this visit. */
 export function NotificationsScreen() {
   const onSignedOut = useOnSignedOut();
   const pages = usePages(notifications);
@@ -59,7 +65,7 @@ export function NotificationsScreen() {
         <ul className={styles.rows}>
           {items.map((n) => (
             <li key={n.id}>
-              <Link href={n.link.screen === "verification" ? "/verify" : `/p/${n.link.id}`} className={styles.row}>
+              <Link href={hrefOf(n.link)} className={styles.row}>
                 <span className={styles.rowIcon}>
                   <Icon name={ICONS[n.type]} filled={n.type === "post.like"} size={20} />
                 </span>

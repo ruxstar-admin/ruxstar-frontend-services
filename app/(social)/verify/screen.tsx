@@ -14,16 +14,13 @@ import {
   sendSelfie,
   startAadhaar,
   submitIdentity,
-  submitVendor,
   type BaseCase,
   type CaseStatus,
   type Overview,
   type RuxstarCard as Card,
   type StepStatus,
-  type VendorCase,
 } from "@/lib/api/kyc";
 import { SelfieCapture } from "./selfie";
-import { VendorForm } from "./vendor";
 import styles from "./verify.module.css";
 
 const EDITABLE: CaseStatus[] = ["not_started", "in_progress", "rejected"];
@@ -54,7 +51,7 @@ function Step({ n, title, status, children, open }: { n: number; title: string; 
 }
 
 /** Where a case stands once it has left the person's hands, or come back to them. */
-function CaseNote({ c, what }: { c: BaseCase | VendorCase; what: string }) {
+function CaseNote({ c, what }: { c: BaseCase; what: string }) {
   if (c.status === "submitted") {
     return (
       <p className={styles.note} data-tone="info">
@@ -108,11 +105,10 @@ export function VerifyScreen() {
   }, [attempt, onSignedOut]);
 
   const approved = kyc?.base.status === "approved";
-  const vendorApproved = kyc?.vendor.status === "approved";
   useEffect(() => {
     if (!approved) return;
     getCard().then(setCard, () => undefined);
-  }, [approved, vendorApproved]);
+  }, [approved]);
 
   /** Runs one action. A failed check still changed the case (tries, reason), so reload it either way. */
   const run = useCallback(
@@ -156,7 +152,7 @@ export function VerifyScreen() {
     );
   }
 
-  const { base, vendor } = kyc;
+  const { base } = kyc;
   const editable = EDITABLE.includes(base.status);
   const { aadhaar, pan: panStep, face } = base.steps;
   const allDone = aadhaar.status === "verified" && panStep.status === "verified" && face.status === "verified";
@@ -173,7 +169,7 @@ export function VerifyScreen() {
     <div className={styles.page}>
       <header className={styles.head}>
         <h1 className={styles.title}>Verification</h1>
-        <p className={styles.muted}>Verify once to get your Ruxstar Card and the Verified tick. Vendors verify their business next.</p>
+        <p className={styles.muted}>Verify once to get your Ruxstar Card, the Verified tick and the vendor portal.</p>
       </header>
 
       <section className={styles.section} aria-labelledby="identity">
@@ -189,6 +185,9 @@ export function VerifyScreen() {
             <div className={styles.cardWrap}>
               <RuxstarCard card={card} />
               <p className={styles.muted}>Only you can see your masked Aadhaar and PAN. Others see the Verified tick on your profile and posts.</p>
+              <p className={styles.note} data-tone="info">
+                <Icon name="store" size={20} /> Your vendor portal is open in the Ruxstar app. Add your businesses and set up payments from your profile.
+              </p>
             </div>
           ) : (
             <Skeleton height={260} radius={22} />
@@ -290,45 +289,6 @@ export function VerifyScreen() {
                   Send for review
                 </Button>
               </div>
-            )}
-          </>
-        )}
-      </section>
-
-      <section className={styles.section} aria-labelledby="vendor">
-        <div className={styles.sectionHead}>
-          <h2 id="vendor" className={styles.sectionTitle}>
-            <Icon name="store" size={22} /> Vendor
-          </h2>
-          {vendorApproved && <Tag tone="success">Verified vendor</Tag>}
-        </div>
-        {!approved ? (
-          <p className={styles.muted}>Selling on Ruxstar? Verify your identity first, then add your business here.</p>
-        ) : vendorApproved ? (
-          <p className={styles.muted}>
-            {vendor.business?.name} is verified. You can now post as your business from the composer and switch between Personal and Business on your profile.
-          </p>
-        ) : (
-          <>
-            <CaseNote c={vendor} what="vendor verification" />
-            {EDITABLE.includes(vendor.status) ? (
-              <>
-                <p className={styles.muted}>Add your business details. GSTIN is optional; if you add it we check it with the GST network.</p>
-                <VendorForm vendor={vendor} onSaved={(o) => (setKyc(o), toast("Business details saved.", "success"))} onSignedOut={onSignedOut} />
-                <div className={styles.submit}>
-                  <p className={styles.muted}>{vendor.business ? "Ready when you are." : "Save your details to send them for review."}</p>
-                  <Button disabled={!vendor.business} loading={busy === "vendor"} onClick={() => run("vendor", submitVendor)}>
-                    Send for review
-                  </Button>
-                </div>
-              </>
-            ) : (
-              vendor.business && (
-                <p className={styles.muted}>
-                  {vendor.business.name} · {vendor.business.address.city}
-                  {vendor.business.gstin ? ` · GSTIN ${vendor.business.gstin.number}` : ""}
-                </p>
-              )
             )}
           </>
         )}

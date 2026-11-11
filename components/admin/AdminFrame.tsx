@@ -18,6 +18,7 @@ const SECTIONS: { href: string; label: string; icon: IconName; need: Need }[] = 
   { href: "/admin/reports", label: "Reports", icon: "flag", need: "reports.view" },
   { href: "/admin/users", label: "People", icon: "user", need: "users.view" },
   { href: "/admin/staff", label: "Staff", icon: "shield", need: "admin" },
+  { href: "/admin/businesses", label: "Businesses", icon: "store", need: "businesses.view" },
   { href: "/admin/modules", label: "Modules", icon: "stack", need: "modules.view" },
   { href: "/admin/audit", label: "Audit log", icon: "clock", need: "audit.view" },
 ];

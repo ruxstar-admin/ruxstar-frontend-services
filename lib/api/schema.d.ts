@@ -2119,7 +2119,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Where your identity and vendor verification stand */
+        /** Where your identity verification stands */
         get: {
             parameters: {
                 query?: never;
@@ -2162,30 +2162,6 @@ export interface paths {
                                             reason: string | null;
                                         };
                                     };
-                                };
-                                vendor: {
-                                    /** @description `locked` follows the third rejection; support reopens it. */
-                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                                    rejectionReason: string | null;
-                                    /** @description Rejections before the case locks */
-                                    rejectionsLeft: number;
-                                    submittedAt: string | null;
-                                    decidedAt: string | null;
-                                    business: {
-                                        name: string;
-                                        address: {
-                                            line1: string;
-                                            line2: string | null;
-                                            city: string;
-                                            state: string;
-                                            pincode: string;
-                                        };
-                                        gstin: {
-                                            number: string;
-                                            legalName: string | null;
-                                            status: string | null;
-                                        } | null;
-                                    } | null;
                                 };
                             };
                             meta: {
@@ -2343,30 +2319,6 @@ export interface paths {
                                         };
                                     };
                                 };
-                                vendor: {
-                                    /** @description `locked` follows the third rejection; support reopens it. */
-                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                                    rejectionReason: string | null;
-                                    /** @description Rejections before the case locks */
-                                    rejectionsLeft: number;
-                                    submittedAt: string | null;
-                                    decidedAt: string | null;
-                                    business: {
-                                        name: string;
-                                        address: {
-                                            line1: string;
-                                            line2: string | null;
-                                            city: string;
-                                            state: string;
-                                            pincode: string;
-                                        };
-                                        gstin: {
-                                            number: string;
-                                            legalName: string | null;
-                                            status: string | null;
-                                        } | null;
-                                    } | null;
-                                };
                             };
                             meta: {
                                 requestId: string;
@@ -2463,30 +2415,6 @@ export interface paths {
                                         };
                                     };
                                 };
-                                vendor: {
-                                    /** @description `locked` follows the third rejection; support reopens it. */
-                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                                    rejectionReason: string | null;
-                                    /** @description Rejections before the case locks */
-                                    rejectionsLeft: number;
-                                    submittedAt: string | null;
-                                    decidedAt: string | null;
-                                    business: {
-                                        name: string;
-                                        address: {
-                                            line1: string;
-                                            line2: string | null;
-                                            city: string;
-                                            state: string;
-                                            pincode: string;
-                                        };
-                                        gstin: {
-                                            number: string;
-                                            legalName: string | null;
-                                            status: string | null;
-                                        } | null;
-                                    } | null;
-                                };
                             };
                             meta: {
                                 requestId: string;
@@ -2576,30 +2504,6 @@ export interface paths {
                                         };
                                     };
                                 };
-                                vendor: {
-                                    /** @description `locked` follows the third rejection; support reopens it. */
-                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                                    rejectionReason: string | null;
-                                    /** @description Rejections before the case locks */
-                                    rejectionsLeft: number;
-                                    submittedAt: string | null;
-                                    decidedAt: string | null;
-                                    business: {
-                                        name: string;
-                                        address: {
-                                            line1: string;
-                                            line2: string | null;
-                                            city: string;
-                                            state: string;
-                                            pincode: string;
-                                        };
-                                        gstin: {
-                                            number: string;
-                                            legalName: string | null;
-                                            status: string | null;
-                                        } | null;
-                                    } | null;
-                                };
                             };
                             meta: {
                                 requestId: string;
@@ -2644,7 +2548,7 @@ export interface paths {
         put?: never;
         /**
          * Send identity verification for review
-         * @description Needs the Aadhaar, PAN and selfie steps verified. Our team approves it, then your Ruxstar Card is issued.
+         * @description Needs the Aadhaar, PAN and selfie steps verified. Once our team approves it your Ruxstar Card is issued and the vendor portal opens.
          */
         post: {
             parameters: {
@@ -2688,270 +2592,6 @@ export interface paths {
                                             reason: string | null;
                                         };
                                     };
-                                };
-                                vendor: {
-                                    /** @description `locked` follows the third rejection; support reopens it. */
-                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                                    rejectionReason: string | null;
-                                    /** @description Rejections before the case locks */
-                                    rejectionsLeft: number;
-                                    submittedAt: string | null;
-                                    decidedAt: string | null;
-                                    business: {
-                                        name: string;
-                                        address: {
-                                            line1: string;
-                                            line2: string | null;
-                                            city: string;
-                                            state: string;
-                                            pincode: string;
-                                        };
-                                        gstin: {
-                                            number: string;
-                                            legalName: string | null;
-                                            status: string | null;
-                                        } | null;
-                                    } | null;
-                                };
-                            };
-                            meta: {
-                                requestId: string;
-                            };
-                        };
-                    };
-                };
-                /** @description Default Response */
-                "4XX": {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Default Response */
-                "5XX": {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/kyc/vendor": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Save your business details for vendor verification
-         * @description Needs approved identity verification. A GSTIN is optional and is checked when given.
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        businessName: string;
-                        address: {
-                            line1: string;
-                            line2?: string | null;
-                            city: string;
-                            state: string;
-                            pincode: string;
-                        };
-                        gstin?: string | null;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: {
-                                base: {
-                                    /** @description `locked` follows the third rejection; support reopens it. */
-                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                                    rejectionReason: string | null;
-                                    /** @description Rejections before the case locks */
-                                    rejectionsLeft: number;
-                                    submittedAt: string | null;
-                                    decidedAt: string | null;
-                                    steps: {
-                                        aadhaar: {
-                                            status: "not_started" | "pending" | "verified" | "failed";
-                                            reason: string | null;
-                                            name: string | null;
-                                            last4: string | null;
-                                        };
-                                        pan: {
-                                            status: "not_started" | "pending" | "verified" | "failed";
-                                            reason: string | null;
-                                            masked: string | null;
-                                        };
-                                        face: {
-                                            status: "not_started" | "pending" | "verified" | "failed";
-                                            reason: string | null;
-                                        };
-                                    };
-                                };
-                                vendor: {
-                                    /** @description `locked` follows the third rejection; support reopens it. */
-                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                                    rejectionReason: string | null;
-                                    /** @description Rejections before the case locks */
-                                    rejectionsLeft: number;
-                                    submittedAt: string | null;
-                                    decidedAt: string | null;
-                                    business: {
-                                        name: string;
-                                        address: {
-                                            line1: string;
-                                            line2: string | null;
-                                            city: string;
-                                            state: string;
-                                            pincode: string;
-                                        };
-                                        gstin: {
-                                            number: string;
-                                            legalName: string | null;
-                                            status: string | null;
-                                        } | null;
-                                    } | null;
-                                };
-                            };
-                            meta: {
-                                requestId: string;
-                            };
-                        };
-                    };
-                };
-                /** @description Default Response */
-                "4XX": {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Default Response */
-                "5XX": {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/kyc/vendor/submit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Send vendor verification for review
-         * @description Once approved you are a vendor: business posts and the vendor portal open.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: {
-                                base: {
-                                    /** @description `locked` follows the third rejection; support reopens it. */
-                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                                    rejectionReason: string | null;
-                                    /** @description Rejections before the case locks */
-                                    rejectionsLeft: number;
-                                    submittedAt: string | null;
-                                    decidedAt: string | null;
-                                    steps: {
-                                        aadhaar: {
-                                            status: "not_started" | "pending" | "verified" | "failed";
-                                            reason: string | null;
-                                            name: string | null;
-                                            last4: string | null;
-                                        };
-                                        pan: {
-                                            status: "not_started" | "pending" | "verified" | "failed";
-                                            reason: string | null;
-                                            masked: string | null;
-                                        };
-                                        face: {
-                                            status: "not_started" | "pending" | "verified" | "failed";
-                                            reason: string | null;
-                                        };
-                                    };
-                                };
-                                vendor: {
-                                    /** @description `locked` follows the third rejection; support reopens it. */
-                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                                    rejectionReason: string | null;
-                                    /** @description Rejections before the case locks */
-                                    rejectionsLeft: number;
-                                    submittedAt: string | null;
-                                    decidedAt: string | null;
-                                    business: {
-                                        name: string;
-                                        address: {
-                                            line1: string;
-                                            line2: string | null;
-                                            city: string;
-                                            state: string;
-                                            pincode: string;
-                                        };
-                                        gstin: {
-                                            number: string;
-                                            legalName: string | null;
-                                            status: string | null;
-                                        } | null;
-                                    } | null;
                                 };
                             };
                             meta: {
@@ -3022,6 +2662,7 @@ export interface paths {
                                 /** @description Masked, for example XXXX XXXX 1234 */
                                 aadhaar: string;
                                 pan: string | null;
+                                /** @description Verified people are vendors and can open the vendor portal */
                                 vendor: boolean;
                                 /** Format: date-time */
                                 memberSince: string;
@@ -4338,12 +3979,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected";
+                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen; `id` is base or vendor */
-                                    screen: "post" | "verification";
+                                    /** @description `verification` opens the KYC screen and `business` one of your businesses in the vendor portal; `id` says which */
+                                    screen: "post" | "verification" | "business";
                                     id: string;
                                 };
                                 read: boolean;
@@ -4515,6 +4156,1317 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/vendor/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your balance, payout account and latest payouts
+         * @description Balances fill in once your businesses take orders.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                balance: {
+                                    /** @description Amount in paise */
+                                    available: number;
+                                    /** @description Amount in paise */
+                                    pending: number;
+                                    /** @description Amount in paise */
+                                    paidOut: number;
+                                };
+                                payoutMethod: {
+                                    kind: "bank" | "upi";
+                                    /** @description For example YES BANK ••1191, or asha@upi */
+                                    label: string;
+                                    holderName: string | null;
+                                    ifsc: string | null;
+                                    /** Format: date-time */
+                                    verifiedAt: string;
+                                } | null;
+                                /** @description The latest 20 */
+                                payouts: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "paid" | "failed";
+                                    to: string;
+                                    utr: string | null;
+                                    paidAt: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/payout-method": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Where you are paid */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                kind: "bank" | "upi";
+                                /** @description For example YES BANK ••1191, or asha@upi */
+                                label: string;
+                                holderName: string | null;
+                                ifsc: string | null;
+                                /** Format: date-time */
+                                verifiedAt: string;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set the bank account or UPI ID you are paid to
+         * @description Checked with Cashfree before it is saved, and it must be in the name on your Aadhaar. Replaces the one you had. Only the last 4 digits of a bank account are ever shown again.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind: "bank";
+                        accountNumber: string;
+                        /** @description 11 characters, like YESB0000262 */
+                        ifsc: string;
+                    } | {
+                        /** @enum {string} */
+                        kind: "upi";
+                        /** @description For example asha@okhdfc */
+                        vpa: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                kind: "bank" | "upi";
+                                /** @description For example YES BANK ••1191, or asha@upi */
+                                label: string;
+                                holderName: string | null;
+                                ifsc: string | null;
+                                /** Format: date-time */
+                                verifiedAt: string;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/modules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The modules a business can be opened in, and which are taking new businesses */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                live: boolean;
+                                /** @description Whether new businesses can be created in it */
+                                signupsOpen: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your businesses, newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: {
+                                    line1: string;
+                                    line2: string | null;
+                                    city: string;
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("description" | "phone" | "address" | "photo")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Start a business in one module
+         * @description It starts as a draft. Fill in the details and photos, then publish it. The module must be live and taking new businesses; up to 10 businesses each.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description pod is print on demand */
+                        module: "pod" | "events" | "coaching" | "stays";
+                        name: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: {
+                                    line1: string;
+                                    line2: string | null;
+                                    city: string;
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("description" | "phone" | "address" | "photo")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of your businesses */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: {
+                                    line1: string;
+                                    line2: string | null;
+                                    city: string;
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("description" | "phone" | "address" | "photo")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a draft business and its photos
+         * @description Live businesses can't be deleted; close them instead.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Change a business's details
+         * @description Send only what changes; null clears an optional field. A new GSTIN is checked with the GST network.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        description?: string | null;
+                        phone?: string | null;
+                        email?: string | null;
+                        address?: {
+                            line1: string;
+                            line2?: string | null;
+                            city: string;
+                            state: string;
+                            pincode: string;
+                        } | null;
+                        gstin?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: {
+                                    line1: string;
+                                    line2: string | null;
+                                    city: string;
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("description" | "phone" | "address" | "photo")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a photo to a business, up to 3
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. It is saved like a post photo: WebP, at most 1440 pixels on its long side, without its metadata. The first photo is the cover.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: {
+                                    line1: string;
+                                    line2: string | null;
+                                    city: string;
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("description" | "phone" | "address" | "photo")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/photos/{photoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a photo from a business
+         * @description A live business keeps at least one photo.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    photoId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: {
+                                    line1: string;
+                                    line2: string | null;
+                                    city: string;
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("description" | "phone" | "address" | "photo")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish a draft so customers can find it
+         * @description Needs a description of at least 20 characters, a phone number, an address and a photo. It opens straight away.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: {
+                                    line1: string;
+                                    line2: string | null;
+                                    city: string;
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("description" | "phone" | "address" | "photo")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start taking orders and bookings
+         * @description Only a live business opens, and only while its module is live.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: {
+                                    line1: string;
+                                    line2: string | null;
+                                    city: string;
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("description" | "phone" | "address" | "photo")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stop taking orders and bookings for now
+         * @description Customers still see it, marked closed.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: {
+                                    line1: string;
+                                    line2: string | null;
+                                    city: string;
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("description" | "phone" | "address" | "photo")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/access": {
         parameters: {
             query?: never;
@@ -4546,10 +5498,10 @@ export interface paths {
                                 /** @description Admins have every permission and manage staff */
                                 admin: boolean;
                                 title: string | null;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
                                 /** @description Every permission staff can be given */
                                 catalog: {
-                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view";
+                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view";
                                     label: string;
                                 }[];
                             };
@@ -4618,8 +5570,6 @@ export interface paths {
                             data: {
                                 kyc: {
                                     waiting: number;
-                                    identity: number;
-                                    vendor: number;
                                 } | null;
                                 reports: {
                                     posts: number;
@@ -4628,6 +5578,11 @@ export interface paths {
                                 users: {
                                     total: number;
                                     newThisWeek: number;
+                                    suspended: number;
+                                } | null;
+                                businesses: {
+                                    total: number;
+                                    live: number;
                                     suspended: number;
                                 } | null;
                                 modules: {
@@ -4680,7 +5635,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Verification cases, waiting for review first by default
+         * Identity verification cases, waiting for review first by default
          * @description Newest activity first. `status` defaults to `submitted`.
          */
         get: {
@@ -4689,7 +5644,6 @@ export interface paths {
                     cursor?: string;
                     limit?: number;
                     status?: "in_progress" | "submitted" | "approved" | "rejected" | "locked";
-                    track?: "base" | "vendor";
                 };
                 header?: never;
                 path?: never;
@@ -4707,7 +5661,6 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                track: "base" | "vendor";
                                 /** @description `locked` follows the third rejection; support reopens it. */
                                 status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
                                 rejections: number;
@@ -4729,22 +5682,7 @@ export interface paths {
                                     nameMatch: string | null;
                                     livenessScore: number | null;
                                     faceMatchScore: number | null;
-                                } | null;
-                                business: {
-                                    name: string;
-                                    address: {
-                                        line1: string;
-                                        line2: string | null;
-                                        city: string;
-                                        state: string;
-                                        pincode: string;
-                                    };
-                                    gstin: {
-                                        number: string;
-                                        legalName: string | null;
-                                        status: string | null;
-                                    } | null;
-                                } | null;
+                                };
                                 submittedAt: string | null;
                                 review: {
                                     decision: "approved" | "rejected";
@@ -4818,7 +5756,6 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                track: "base" | "vendor";
                                 /** @description `locked` follows the third rejection; support reopens it. */
                                 status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
                                 rejections: number;
@@ -4840,22 +5777,7 @@ export interface paths {
                                     nameMatch: string | null;
                                     livenessScore: number | null;
                                     faceMatchScore: number | null;
-                                } | null;
-                                business: {
-                                    name: string;
-                                    address: {
-                                        line1: string;
-                                        line2: string | null;
-                                        city: string;
-                                        state: string;
-                                        pincode: string;
-                                    };
-                                    gstin: {
-                                        number: string;
-                                        legalName: string | null;
-                                        status: string | null;
-                                    } | null;
-                                } | null;
+                                };
                                 submittedAt: string | null;
                                 review: {
                                     decision: "approved" | "rejected";
@@ -4909,7 +5831,7 @@ export interface paths {
         put?: never;
         /**
          * Approve a verification case
-         * @description Identity: issues the Ruxstar Card and the Verified tick. Vendor: makes the user a vendor.
+         * @description Issues the Ruxstar Card and the Verified tick, and makes the person a vendor so the vendor portal opens.
          */
         post: {
             parameters: {
@@ -4933,7 +5855,6 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                track: "base" | "vendor";
                                 /** @description `locked` follows the third rejection; support reopens it. */
                                 status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
                                 rejections: number;
@@ -4955,22 +5876,7 @@ export interface paths {
                                     nameMatch: string | null;
                                     livenessScore: number | null;
                                     faceMatchScore: number | null;
-                                } | null;
-                                business: {
-                                    name: string;
-                                    address: {
-                                        line1: string;
-                                        line2: string | null;
-                                        city: string;
-                                        state: string;
-                                        pincode: string;
-                                    };
-                                    gstin: {
-                                        number: string;
-                                        legalName: string | null;
-                                        status: string | null;
-                                    } | null;
-                                } | null;
+                                };
                                 submittedAt: string | null;
                                 review: {
                                     decision: "approved" | "rejected";
@@ -5053,7 +5959,6 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                track: "base" | "vendor";
                                 /** @description `locked` follows the third rejection; support reopens it. */
                                 status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
                                 rejections: number;
@@ -5075,22 +5980,7 @@ export interface paths {
                                     nameMatch: string | null;
                                     livenessScore: number | null;
                                     faceMatchScore: number | null;
-                                } | null;
-                                business: {
-                                    name: string;
-                                    address: {
-                                        line1: string;
-                                        line2: string | null;
-                                        city: string;
-                                        state: string;
-                                        pincode: string;
-                                    };
-                                    gstin: {
-                                        number: string;
-                                        legalName: string | null;
-                                        status: string | null;
-                                    } | null;
-                                } | null;
+                                };
                                 submittedAt: string | null;
                                 review: {
                                     decision: "approved" | "rejected";
@@ -5519,7 +6409,6 @@ export interface paths {
                                 };
                                 kyc: {
                                     base: string;
-                                    vendor: string;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -5602,7 +6491,6 @@ export interface paths {
                                 };
                                 kyc: {
                                     base: string;
-                                    vendor: string;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -5632,7 +6520,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -5725,7 +6613,6 @@ export interface paths {
                                 };
                                 kyc: {
                                     base: string;
-                                    vendor: string;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -5755,7 +6642,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -5836,7 +6723,6 @@ export interface paths {
                                 };
                                 kyc: {
                                     base: string;
-                                    vendor: string;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -5866,7 +6752,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -5947,7 +6833,6 @@ export interface paths {
                                 };
                                 kyc: {
                                     base: string;
-                                    vendor: string;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -5977,7 +6862,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -6047,7 +6932,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -6116,7 +7001,7 @@ export interface paths {
                     "application/json": {
                         /** @description For example Support lead */
                         title: string;
-                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
                     };
                 };
             };
@@ -6138,7 +7023,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -6205,7 +7090,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -6238,6 +7123,541 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/businesses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vendors' businesses, most recently changed first
+         * @description `state` suspended means on hold, whether draft or live; draft and live leave held ones out.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description The start of a business name word, or an id */
+                    q?: string;
+                    /** @description pod is print on demand */
+                    module?: "pod" | "events" | "coaching" | "stays";
+                    state?: "draft" | "live" | "suspended";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description pod is print on demand */
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    name: string;
+                                    description: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: {
+                                        line1: string;
+                                        line2: string | null;
+                                        city: string;
+                                        state: string;
+                                        pincode: string;
+                                    } | null;
+                                    gstin: {
+                                        number: string;
+                                        legalName: string | null;
+                                        status: string | null;
+                                    } | null;
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    status: "draft" | "live";
+                                    /** @description A live business takes orders and bookings only while open */
+                                    open: boolean;
+                                    /** @description False while the Ruxstar team has paused this module */
+                                    moduleLive: boolean;
+                                    /** @description What is still needed before it can be published */
+                                    missing: ("description" | "phone" | "address" | "photo")[];
+                                    suspension: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    publishedAt: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    /** Format: date-time */
+                                    updatedAt: string;
+                                };
+                                owner: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                    status: "active" | "locked" | "deleted";
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/businesses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One business, its vendor and where they are paid
+         * @description Bank accounts show only their last 4 digits.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description pod is print on demand */
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    name: string;
+                                    description: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: {
+                                        line1: string;
+                                        line2: string | null;
+                                        city: string;
+                                        state: string;
+                                        pincode: string;
+                                    } | null;
+                                    gstin: {
+                                        number: string;
+                                        legalName: string | null;
+                                        status: string | null;
+                                    } | null;
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    status: "draft" | "live";
+                                    /** @description A live business takes orders and bookings only while open */
+                                    open: boolean;
+                                    /** @description False while the Ruxstar team has paused this module */
+                                    moduleLive: boolean;
+                                    /** @description What is still needed before it can be published */
+                                    missing: ("description" | "phone" | "address" | "photo")[];
+                                    suspension: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    publishedAt: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    /** Format: date-time */
+                                    updatedAt: string;
+                                };
+                                owner: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                    status: "active" | "locked" | "deleted";
+                                } | null;
+                                payoutMethod: {
+                                    kind: "bank" | "upi";
+                                    /** @description For example YES BANK ••1191, or asha@upi */
+                                    label: string;
+                                    holderName: string | null;
+                                    ifsc: string | null;
+                                    /** Format: date-time */
+                                    verifiedAt: string;
+                                } | null;
+                                suspendedBy: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/businesses/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Put a business on hold
+         * @description Customers stop seeing it and its vendor can't change it until it is restored. The vendor is told why.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Shown to the person, so be clear */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description pod is print on demand */
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    name: string;
+                                    description: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: {
+                                        line1: string;
+                                        line2: string | null;
+                                        city: string;
+                                        state: string;
+                                        pincode: string;
+                                    } | null;
+                                    gstin: {
+                                        number: string;
+                                        legalName: string | null;
+                                        status: string | null;
+                                    } | null;
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    status: "draft" | "live";
+                                    /** @description A live business takes orders and bookings only while open */
+                                    open: boolean;
+                                    /** @description False while the Ruxstar team has paused this module */
+                                    moduleLive: boolean;
+                                    /** @description What is still needed before it can be published */
+                                    missing: ("description" | "phone" | "address" | "photo")[];
+                                    suspension: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    publishedAt: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    /** Format: date-time */
+                                    updatedAt: string;
+                                };
+                                owner: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                    status: "active" | "locked" | "deleted";
+                                } | null;
+                                payoutMethod: {
+                                    kind: "bank" | "upi";
+                                    /** @description For example YES BANK ••1191, or asha@upi */
+                                    label: string;
+                                    holderName: string | null;
+                                    ifsc: string | null;
+                                    /** Format: date-time */
+                                    verifiedAt: string;
+                                } | null;
+                                suspendedBy: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/businesses/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Lift a hold on a business
+         * @description It comes back as it was: a draft stays a draft, and a live business keeps its open or closed setting.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description pod is print on demand */
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    name: string;
+                                    description: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: {
+                                        line1: string;
+                                        line2: string | null;
+                                        city: string;
+                                        state: string;
+                                        pincode: string;
+                                    } | null;
+                                    gstin: {
+                                        number: string;
+                                        legalName: string | null;
+                                        status: string | null;
+                                    } | null;
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    status: "draft" | "live";
+                                    /** @description A live business takes orders and bookings only while open */
+                                    open: boolean;
+                                    /** @description False while the Ruxstar team has paused this module */
+                                    moduleLive: boolean;
+                                    /** @description What is still needed before it can be published */
+                                    missing: ("description" | "phone" | "address" | "photo")[];
+                                    suspension: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    publishedAt: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    /** Format: date-time */
+                                    updatedAt: string;
+                                };
+                                owner: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                    status: "active" | "locked" | "deleted";
+                                } | null;
+                                payoutMethod: {
+                                    kind: "bank" | "upi";
+                                    /** @description For example YES BANK ••1191, or asha@upi */
+                                    label: string;
+                                    holderName: string | null;
+                                    ifsc: string | null;
+                                    /** Format: date-time */
+                                    verifiedAt: string;
+                                } | null;
+                                suspendedBy: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -6496,7 +7916,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE";
                 message: string;
                 details: ({
                     path?: string;
