@@ -5,6 +5,7 @@ substitutions:
   _RUN_SERVICE_ACCOUNT: ruxstar-cloudrun-sa@${PROJECT_ID}.iam.gserviceaccount.com
   _BACKEND_URL: ""
   _KYC_REDIRECT_URL: https://ruxstar.com/kyc/done
+  _DESIGN_GALLERY: "on"
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -16,6 +17,8 @@ steps:
       - build
       - --build-arg
       - NEXT_PUBLIC_KYC_REDIRECT_URL=${_KYC_REDIRECT_URL}
+      - --build-arg
+      - DESIGN_GALLERY=${_DESIGN_GALLERY}
       - -t
       - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/ruxstar-frontend:$SHORT_SHA
       - -t

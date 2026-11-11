@@ -1,0 +1,241 @@
+.page {
+  --margin: clamp(20px, 5vw, 64px);
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px var(--margin);
+  overflow: hidden;
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.body {
+  position: relative;
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-5);
+  padding: 48px 0 12vh;
+  text-align: center;
+}
+
+/* "4 ★ 4": the star stands in for the zero, its two halves floating just apart. */
+.code {
+  display: flex;
+  align-items: center;
+  gap: 0.09em;
+  margin-bottom: var(--space-3);
+  font-size: clamp(112px, 22vw, 220px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  cursor: default;
+}
+
+.digit {
+  display: block;
+  overflow: hidden;
+  padding: 0.04em 0.02em;
+}
+
+.digit > span {
+  display: block;
+  animation: rise var(--dur-hero) var(--ease-out) both;
+}
+
+.late > span {
+  animation-delay: 120ms;
+}
+
+.star {
+  width: 0.82em;
+  height: 0.82em;
+  overflow: visible;
+  transition: filter var(--dur-base) var(--ease-out);
+}
+
+.gap {
+  transition: translate 700ms var(--ease-spring);
+}
+
+.gapYellow {
+  translate: -34px -34px;
+}
+
+.gapBlue {
+  translate: 34px 34px;
+}
+
+.half {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.yellow {
+  fill: var(--logo-yellow);
+  animation:
+    from-top-left var(--dur-hero) var(--ease-spring) 250ms both,
+    float-yellow 5.2s var(--ease-in-out) 1.2s infinite alternate;
+}
+
+.blue {
+  fill: var(--logo-blue);
+  animation:
+    from-bottom-right var(--dur-hero) var(--ease-spring) 250ms both,
+    float-blue 6.4s var(--ease-in-out) 1.2s infinite alternate;
+}
+
+/* Pointing at the star, or pressing it on a phone, mends it. */
+.code:hover .gap,
+.code:active .gap {
+  translate: 0 0;
+}
+
+.code:hover .star,
+.code:active .star {
+  filter: drop-shadow(0 0 36px color-mix(in srgb, var(--accent) 45%, transparent));
+}
+
+.title {
+  font: var(--type-headline);
+  letter-spacing: var(--type-headline-tracking);
+  color: var(--ink);
+  text-wrap: balance;
+  animation: fade-up var(--dur-slow) var(--ease-out) 320ms both;
+}
+
+.lede {
+  max-width: 36ch;
+  text-wrap: balance;
+  font: var(--type-body);
+  color: var(--ink-2);
+  animation: fade-up var(--dur-slow) var(--ease-out) 400ms both;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  animation: fade-up var(--dur-slow) var(--ease-out) 480ms both;
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: fade var(--dur-slow) var(--ease-out) both;
+}
+
+.dot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--ink-2);
+  opacity: 0.25;
+  animation: twinkle 4.8s var(--ease-in-out) var(--delay) infinite;
+}
+
+.dot:nth-child(3n) {
+  background: var(--logo-yellow);
+}
+
+.dot:nth-child(4n) {
+  background: var(--logo-blue);
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes from-top-left {
+  from {
+    opacity: 0;
+    transform: translate(-160px, -160px) rotate(-14deg);
+  }
+}
+
+@keyframes from-bottom-right {
+  from {
+    opacity: 0;
+    transform: translate(160px, 160px) rotate(-14deg);
+  }
+}
+
+@keyframes float-yellow {
+  to {
+    transform: translate(-10px, -14px) rotate(-4deg);
+  }
+}
+
+@keyframes float-blue {
+  to {
+    transform: translate(12px, 10px) rotate(3deg);
+  }
+}
+
+@keyframes twinkle {
+  50% {
+    opacity: 0.8;
+    transform: scale(1.6);
+  }
+}
+
+@media (max-width: 640px) {
+  .body {
+    padding-bottom: 8vh;
+  }
+
+  .actions {
+    display: grid;
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .digit > span,
+  .title,
+  .lede,
+  .actions,
+  .yellow,
+  .blue {
+    animation: fade var(--dur-base) var(--ease-out) both;
+  }
+
+  .dot {
+    animation: none;
+  }
+
+  .gap {
+    transition: none;
+  }
+}
