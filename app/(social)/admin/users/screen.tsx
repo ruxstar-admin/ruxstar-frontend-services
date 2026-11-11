@@ -82,7 +82,7 @@ export function UsersScreen() {
         <div className={styles.toolbar}>
           <Input
             label="Find someone"
-            hint="Phone number, @username, name, email, Ruxstar Card number or account id"
+            placeholder="Phone, @username, name, email, card number or id"
             type="search"
             value={text}
             onChange={(e) => setText(e.target.value)}

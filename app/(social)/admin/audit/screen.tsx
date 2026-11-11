@@ -22,6 +22,7 @@ const ACTIONS: Record<string, string> = {
   "user.password_reset": "Reset their password",
   "user.password_change": "Changed their password",
   "user.delete": "Deleted their account",
+  "admin.grant": "Made an admin",
   "staff.grant": "Added to staff",
   "staff.update": "Changed staff access",
   "staff.revoke": "Removed from staff",

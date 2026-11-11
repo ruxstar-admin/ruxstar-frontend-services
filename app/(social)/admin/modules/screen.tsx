@@ -70,8 +70,7 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
       </div>
       <div className={styles.toolbar}>
         <Input
-          label="Commission"
-          hint="Taken from each order, from 0 to 100"
+          label="Commission on each order"
           inputMode="decimal"
           suffix="%"
           value={commission}
