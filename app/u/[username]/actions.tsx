@@ -2,9 +2,8 @@
 
 import { ButtonLink } from "@/components/ui";
 import { useMe } from "@/components/social/session";
-import styles from "../profile.module.css";
 
-/** Your own profile gets an edit link; signed-out visitors get the invitation to join. */
+/** Sits beside the username: an edit link on your own profile, an invitation to join for signed-out visitors. */
 export function ProfileActions({ ownerId }: { ownerId: string }) {
   const me = useMe();
   if (me === undefined) return null;
@@ -16,12 +15,5 @@ export function ProfileActions({ ownerId }: { ownerId: string }) {
     );
   }
   if (me) return null;
-  return (
-    <div className={styles.cta}>
-      <p>Print, events, coaching and stays from the people around you.</p>
-      <ButtonLink href="/signup" size="lg">
-        Join Ruxstar
-      </ButtonLink>
-    </div>
-  );
+  return <ButtonLink href="/signup">Join Ruxstar</ButtonLink>;
 }

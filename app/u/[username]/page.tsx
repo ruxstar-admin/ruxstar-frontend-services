@@ -73,50 +73,50 @@ export default async function ProfilePage({ params }: Props) {
     },
   };
 
+  const { posts: postCount, engagements } = profile.stats;
+
   return (
-    <>
-    <article className={styles.card}>
-      <Avatar name={profile.name} url={profile.avatarUrl} size={128} />
-      <div className={styles.identity}>
-        <h1 className={styles.name}>{profile.name}</h1>
-        <p className={styles.handle}>@{profile.username}</p>
-      </div>
-      <dl className={styles.stats}>
-        <div>
-          <dt>Posts</dt>
-          <dd>{compact(profile.stats.posts)}</dd>
+    <article className={styles.page}>
+      <header className={styles.header}>
+        <div className={styles.photo}>
+          <Avatar name={profile.name} url={profile.avatarUrl} size="var(--avatar)" />
         </div>
-        <div>
-          <dt>Engagements</dt>
-          <dd>{compact(profile.stats.engagements)}</dd>
+        <div className={styles.top}>
+          <h1 className={styles.username}>{profile.username}</h1>
+          <ProfileActions ownerId={profile.id} />
         </div>
-      </dl>
-      {badges.length > 0 && (
-        <div className={styles.badges}>
-          {badges.map((badge) => (
-            <Tag key={badge}>{badge}</Tag>
-          ))}
-        </div>
-      )}
-      {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
-      <ul className={styles.facts}>
-        {profile.city && (
+        <ul className={styles.stats}>
           <li>
-            <Icon name="map-pin" size={16} />
-            {profile.city}
+            <strong>{compact(postCount)}</strong> {postCount === 1 ? "post" : "posts"}
           </li>
-        )}
-        <li>
-          <Icon name="calendar" size={16} />
-          Member since {since}
-        </li>
-      </ul>
-      <ProfileActions ownerId={profile.id} />
+          <li>
+            <strong>{compact(engagements)}</strong> {engagements === 1 ? "engagement" : "engagements"}
+          </li>
+        </ul>
+        <div className={styles.about}>
+          <p className={styles.name}>
+            {profile.name}
+            {badges.map((badge) => (
+              <Tag key={badge}>{badge}</Tag>
+            ))}
+          </p>
+          {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
+          <ul className={styles.facts}>
+            {profile.city && (
+              <li>
+                <Icon name="map-pin" size={16} />
+                {profile.city}
+              </li>
+            )}
+            <li>
+              <Icon name="calendar" size={16} />
+              Member since {since}
+            </li>
+          </ul>
+        </div>
+      </header>
+      <ProfilePosts ownerId={profile.id} username={profile.username} vendor={profile.badges.vendor} initial={posts ?? { items: [], nextCursor: null }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structured).replace(/</g, "\\u003c") }} />
     </article>
-    <div className={styles.posts}>
-      <ProfilePosts ownerId={profile.id} username={profile.username} vendor={profile.badges.vendor} initial={posts ?? { items: [], nextCursor: null }} />
-    </div>
-    </>
   );
 }

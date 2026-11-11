@@ -1,43 +1,80 @@
-.card {
-  display: grid;
-  justify-items: center;
-  gap: var(--space-5);
-  max-width: 480px;
+.page {
+  --avatar: 150px;
+  max-width: 935px;
   margin: 0 auto;
-  padding-top: clamp(16px, 4vh, 48px);
-  text-align: center;
   color: var(--ink);
 }
 
-.identity {
+/* Photo on the left; username, counts and about stacked on the right. */
+.header {
   display: grid;
-  gap: var(--space-1);
+  grid-template-columns: minmax(var(--avatar), 290px) minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas:
+    "photo top"
+    "photo stats"
+    "photo about";
+  gap: var(--space-5) var(--space-7);
+  padding: var(--space-2) 0 var(--space-8);
+}
+
+.photo {
+  grid-area: photo;
+  display: flex;
+  justify-content: center;
+  align-self: start;
+}
+
+.top {
+  grid-area: top;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
   min-width: 0;
-  max-width: 100%;
+}
+
+.username {
+  min-width: 0;
+  font: 500 22px/28px var(--font);
+  overflow-wrap: anywhere;
+}
+
+.stats {
+  grid-area: stats;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) 40px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--type-body);
+}
+
+.stats strong {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.about {
+  grid-area: about;
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 .name {
-  font: 700 32px/38px var(--font);
-  letter-spacing: var(--type-headline-tracking);
-  overflow-wrap: anywhere;
-  text-wrap: balance;
-}
-
-.handle {
-  font: var(--type-body);
-  color: var(--ink-2);
-  overflow-wrap: anywhere;
-}
-
-.badges {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  align-items: center;
   gap: var(--space-2);
+  font: 600 16px/22px var(--font);
+  overflow-wrap: anywhere;
 }
 
 .bio {
-  font: 400 17px/27px var(--font);
+  font: 400 15px/22px var(--font);
   overflow-wrap: anywhere;
   text-wrap: pretty;
   white-space: pre-line;
@@ -46,75 +83,169 @@
 .facts {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-2) var(--space-6);
+  gap: var(--space-1) var(--space-5);
+  margin: var(--space-1) 0 0;
   padding: 0;
   list-style: none;
-  font: var(--type-small);
+  font: var(--type-caption);
   color: var(--ink-2);
 }
 
 .facts li {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 6px;
   min-width: 0;
-  max-width: 100%;
-}
-
-.facts a {
-  overflow: hidden;
-  color: var(--ink);
-  font-weight: 600;
-  text-decoration: underline dotted;
-  text-underline-offset: 3px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.stats {
-  display: flex;
-  gap: var(--space-7);
-  margin: 0;
-}
-
-.stats div {
-  display: grid;
-  gap: 2px;
-}
-
-.stats dt {
-  order: 2;
-  font: var(--type-caption);
-  color: var(--ink-2);
-}
-
-.stats dd {
-  margin: 0;
-  font: 700 20px/26px var(--font);
-  font-variant-numeric: tabular-nums;
 }
 
 .posts {
-  margin-top: var(--space-8);
-  padding-top: var(--space-5);
   border-top: 1px solid var(--line);
 }
 
-.cta {
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 52px;
+  margin-top: -1px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid transparent;
+  color: var(--ink-2);
+  font: 600 12px/1 var(--font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--dur-quick) var(--ease-out);
+}
+
+.tab:hover,
+.tab[aria-selected="true"] {
+  color: var(--ink);
+}
+
+.tab[aria-selected="true"] {
+  border-top-color: var(--ink);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+@media (max-width: 640px) {
+  .page {
+    --avatar: 77px;
+  }
+
+  .header {
+    grid-template-columns: var(--avatar) minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      "photo top"
+      "about about"
+      "stats stats";
+    gap: var(--space-4) var(--space-5);
+    padding: 0;
+  }
+
+  .photo {
+    align-self: center;
+  }
+
+  .top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+  }
+
+  .username {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  /* Counts and posts run edge to edge, like the bar under them. */
+  .stats,
+  .posts {
+    margin-inline: calc(-1 * var(--margin));
+  }
+
+  .stats {
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    gap: 0;
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--line);
+    font: var(--type-caption);
+    color: var(--ink-2);
+    text-align: center;
+  }
+
+  .stats li {
+    display: grid;
+  }
+
+  .stats strong {
+    font: 700 16px/22px var(--font);
+    color: var(--ink);
+  }
+
+  .tabs {
+    gap: 0;
+  }
+
+  .tab {
+    flex: 1;
+    justify-content: center;
+    height: 44px;
+  }
+
+  .tab svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .tabLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Unknown username. */
+.missing {
   display: grid;
   justify-items: center;
-  gap: var(--space-4);
-  width: 100%;
-  margin-top: var(--space-6);
-  padding-top: var(--space-7);
-  border-top: 1px solid var(--line);
-  font: var(--type-small);
+  gap: var(--space-5);
+  max-width: 480px;
+  margin: 0 auto;
+  padding-top: clamp(16px, 4vh, 48px);
+  text-align: center;
+}
+
+.missingTitle {
+  font: 700 32px/38px var(--font);
+  letter-spacing: var(--type-headline-tracking);
+  text-wrap: balance;
+}
+
+.missingText {
+  font: var(--type-body);
   color: var(--ink-2);
 }
 
 @media (max-width: 640px) {
-  .name {
+  .missingTitle {
     font-size: 26px;
     line-height: 32px;
   }

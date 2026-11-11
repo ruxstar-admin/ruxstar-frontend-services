@@ -43,8 +43,11 @@ const id = (value: string) => ({ params: { path: { id: value } } });
 export const feed = async (cursor?: string) =>
   toPage(await signedIn(() => unwrap(api.GET("/v1/social/feed", { params: { query: { cursor } } }))));
 
+/** A multiple of three, so the profile grid fills whole rows. */
+export const PROFILE_PAGE = 24;
+
 export const userPosts = async (ref: string, kind: PostKind, cursor?: string) =>
-  toPage(await unwrap(api.GET("/v1/social/users/{ref}/posts", { params: { path: { ref }, query: { kind, cursor } } })));
+  toPage(await unwrap(api.GET("/v1/social/users/{ref}/posts", { params: { path: { ref }, query: { kind, cursor, limit: PROFILE_PAGE } } })));
 
 export const savedPosts = async (cursor?: string) =>
   toPage(await signedIn(() => unwrap(api.GET("/v1/social/saved", { params: { query: { cursor } } }))));
@@ -113,7 +116,7 @@ export async function fetchPublicPost(postId: string): Promise<Post | null> {
 
 /** For server components: the first page of one profile tab, anonymous and cached briefly. */
 export async function fetchPublicPosts(username: string, kind: PostKind): Promise<Page<Post>> {
-  const res = await fetch(`${API_URL}/v1/social/users/${encodeURIComponent(username)}/posts?kind=${kind}`, {
+  const res = await fetch(`${API_URL}/v1/social/users/${encodeURIComponent(username)}/posts?kind=${kind}&limit=${PROFILE_PAGE}`, {
     headers: { "X-Client": "web" },
     next: { revalidate: 30 },
   });
