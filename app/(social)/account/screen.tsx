@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { prettyPhone } from "@/components/auth/fields";
+import { useSetMe } from "@/components/social/session";
 import { Button, Skeleton, Tag, useToast } from "@/components/ui";
 import {
   endSession,
@@ -48,6 +48,7 @@ function Setting({ id, title, description, children }: { id: string; title: stri
 export function AccountScreen() {
   const router = useRouter();
   const toast = useToast();
+  const setMe = useSetMe();
   const [user, setUser] = useState<User | null>(null);
   const [devices, setDevices] = useState<DeviceSession[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -107,19 +108,9 @@ export function AccountScreen() {
   }
 
   return (
-    <div className={styles.page}>
-      <header className={styles.bar}>
-        <Link href="/" className="brand">
-          <img src="/logo.svg" width={30} height={30} alt="" />
-          <span>ruxstar</span>
-        </Link>
-        <Button variant="ghost" onClick={leave} loading={leaving}>
-          Sign out
-        </Button>
-      </header>
-
-      <main className={styles.main} aria-busy={!user && !loadError}>
-        <div className={styles.head}>
+    <div className={styles.main} aria-busy={!user && !loadError}>
+      <div className={styles.head}>
+        <div className={styles.headText}>
           <h1 className={styles.title}>Account</h1>
           {user ? (
             <p className={styles.muted}>
@@ -129,89 +120,99 @@ export function AccountScreen() {
             !loadError && <Skeleton width={260} height={20} />
           )}
         </div>
+        <Button variant="ghost" onClick={leave} loading={leaving}>
+          Sign out
+        </Button>
+      </div>
 
-        {loadError ? (
-          <div className={styles.failed} role="alert">
-            <p>{loadError}</p>
-            <Button variant="secondary" onClick={retry}>
-              Try again
-            </Button>
-          </div>
-        ) : (
-          <>
-            <Setting id="profile" title="Profile" description="How people and businesses see you on Ruxstar.">
-              {user ? (
-                <ProfilePanel user={user} onSaved={setUser} onSignedOut={toSignIn} />
-              ) : (
-                <div className={styles.panel}>
-                  <div className={styles.preview}>
-                    <Skeleton width={48} height={48} radius={999} />
-                    <Skeleton width={180} height={20} />
-                  </div>
-                  {[0, 1, 2].map((i) => (
-                    <div key={i} className={styles.group}>
-                      <Skeleton width={72} height={16} />
-                      <Skeleton height={48} radius={10} />
-                    </div>
-                  ))}
+      {loadError ? (
+        <div className={styles.failed} role="alert">
+          <p>{loadError}</p>
+          <Button variant="secondary" onClick={retry}>
+            Try again
+          </Button>
+        </div>
+      ) : (
+        <>
+          <Setting id="profile" title="Profile" description="How people and businesses see you on Ruxstar.">
+            {user ? (
+              <ProfilePanel
+                user={user}
+                onSaved={(saved) => {
+                  setUser(saved);
+                  setMe(saved);
+                }}
+                onSignedOut={toSignIn}
+              />
+            ) : (
+              <div className={styles.panel}>
+                <div className={styles.preview}>
+                  <Skeleton width={48} height={48} radius={999} />
+                  <Skeleton width={180} height={20} />
                 </div>
-              )}
-            </Setting>
-
-            <Setting id="devices" title="Signed-in devices" description="Sign out anything you do not recognise.">
-              <ul className={`${styles.panel} ${styles.devices}`}>
-                {devices
-                  ? devices.map((d) => (
-                      <li key={d.id} className={styles.device}>
-                        <div>
-                          <p className={styles.deviceName}>
-                            {d.label} {d.current && <Tag tone="solid">This device</Tag>}
-                          </p>
-                          <p className={styles.muted}>{lastSeen(d.lastSeenAt, d.current)}</p>
-                        </div>
-                        {!d.current && (
-                          <Button
-                            variant="secondary"
-                            onClick={() => revoke(d)}
-                            loading={ending === d.id}
-                            aria-label={`Sign out ${d.label}`}
-                          >
-                            Sign out
-                          </Button>
-                        )}
-                      </li>
-                    ))
-                  : [0, 1].map((i) => (
-                      <li key={i} className={styles.device}>
-                        <div className={styles.group}>
-                          <Skeleton width={160} height={20} />
-                          <Skeleton width={96} height={16} />
-                        </div>
-                      </li>
-                    ))}
-              </ul>
-            </Setting>
-
-            {user && (
-              <Setting id="password" title="Password" description="Change it here, or reset it from the sign-in page.">
-                <PasswordPanel phone={user.phone.replace(/^\+91/, "")} onSignedOut={toSignIn} />
-              </Setting>
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className={styles.group}>
+                    <Skeleton width={72} height={16} />
+                    <Skeleton height={48} radius={10} />
+                  </div>
+                ))}
+              </div>
             )}
+          </Setting>
 
-            {user && (
-              <Setting id="delete" title="Delete account" description="Permanently remove your Ruxstar account.">
-                <DeletePanel
-                  onDeleted={() => {
-                    toast("Your account is deleted.", "success");
-                    router.replace("/signin");
-                  }}
-                  onSignedOut={toSignIn}
-                />
-              </Setting>
-            )}
-          </>
-        )}
-      </main>
+          <Setting id="devices" title="Signed-in devices" description="Sign out anything you do not recognise.">
+            <ul className={`${styles.panel} ${styles.devices}`}>
+              {devices
+                ? devices.map((d) => (
+                    <li key={d.id} className={styles.device}>
+                      <div>
+                        <p className={styles.deviceName}>
+                          {d.label} {d.current && <Tag tone="solid">This device</Tag>}
+                        </p>
+                        <p className={styles.muted}>{lastSeen(d.lastSeenAt, d.current)}</p>
+                      </div>
+                      {!d.current && (
+                        <Button
+                          variant="secondary"
+                          onClick={() => revoke(d)}
+                          loading={ending === d.id}
+                          aria-label={`Sign out ${d.label}`}
+                        >
+                          Sign out
+                        </Button>
+                      )}
+                    </li>
+                  ))
+                : [0, 1].map((i) => (
+                    <li key={i} className={styles.device}>
+                      <div className={styles.group}>
+                        <Skeleton width={160} height={20} />
+                        <Skeleton width={96} height={16} />
+                      </div>
+                    </li>
+                  ))}
+            </ul>
+          </Setting>
+
+          {user && (
+            <Setting id="password" title="Password" description="Change it here, or reset it from the sign-in page.">
+              <PasswordPanel phone={user.phone.replace(/^\+91/, "")} onSignedOut={toSignIn} />
+            </Setting>
+          )}
+
+          {user && (
+            <Setting id="delete" title="Delete account" description="Permanently remove your Ruxstar account.">
+              <DeletePanel
+                onDeleted={() => {
+                  toast("Your account is deleted.", "success");
+                  router.replace("/signin");
+                }}
+                onSignedOut={toSignIn}
+              />
+            </Setting>
+          )}
+        </>
+      )}
     </div>
   );
 }

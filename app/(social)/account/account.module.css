@@ -1,28 +1,28 @@
-.page {
-  --margin: clamp(20px, 5vw, 64px);
-  min-height: 100dvh;
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 28px var(--margin) 64px;
-}
-
-.bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .main {
   display: grid;
   gap: var(--space-8);
-  padding-top: clamp(32px, 6vh, 64px);
 }
 
 .head {
-  display: grid;
-  gap: var(--space-2);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
   padding-bottom: var(--space-6);
   border-bottom: 1px solid var(--line);
+}
+
+.headText {
+  flex: 1;
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* The ghost button's padding would push its text in from the page edge. */
+.head > button {
+  flex: none;
+  margin-right: calc(-1 * var(--space-4));
 }
 
 .title {
@@ -93,7 +93,7 @@
 }
 
 .chip {
-  min-height: 32px;
+  min-height: var(--size-touch);
   padding: 0 var(--space-3);
   font: var(--type-small);
   color: var(--ink);

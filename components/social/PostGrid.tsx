@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Button, Icon } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import type { Post } from "@/lib/api/social";
+import { photoSrcSet, type Post } from "@/lib/api/social";
 import { compact } from "@/lib/time";
 import { useNearEnd, type usePages } from "./use-pages";
 import shared from "./social.module.css";
@@ -12,12 +12,15 @@ import styles from "./PostGrid.module.css";
 
 type Pages = ReturnType<typeof usePages<Post>>;
 
+/** Three tiles to a row, in a profile column at most 935 px wide. */
+const TILE = "(max-width: 935px) 33vw, 310px";
+
 /** Square tiles, three to a row, each opening the post. Scrolls endlessly. */
 export function PostGrid({ pages, empty }: { pages: Pages; empty: ReactNode }) {
   const { items, loading, loadingMore, hasMore, error, more, reload } = pages;
   const sentinel = useNearEnd(more, hasMore && !error);
 
-  if (loading) return <Skeleton count={6} />;
+  if (loading) return <PostGridSkeleton count={6} />;
 
   if (error && items.length === 0) {
     return (
@@ -42,7 +45,7 @@ export function PostGrid({ pages, empty }: { pages: Pages; empty: ReactNode }) {
         ))}
       </ul>
       {hasMore && <div ref={sentinel} className={shared.sentinel} aria-hidden />}
-      {loadingMore && <Skeleton count={3} />}
+      {loadingMore && <PostGridSkeleton count={3} />}
       {error !== null && items.length > 0 && (
         <div className={shared.moreFailed}>
           <Button variant="secondary" onClick={more}>
@@ -61,7 +64,16 @@ function Tile({ post, eager }: { post: Post; eager: boolean }) {
   return (
     <Link href={`/p/${post.id}`} className={styles.tile} aria-label={label}>
       {photo ? (
-        <img src={photo.url} alt="" width={photo.width} height={photo.height} loading={eager ? "eager" : "lazy"} decoding="async" />
+        <img
+          src={photo.url}
+          srcSet={photoSrcSet(photo)}
+          sizes={TILE}
+          alt=""
+          width={photo.width}
+          height={photo.height}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+        />
       ) : (
         <p className={styles.text}>{post.text}</p>
       )}
@@ -84,7 +96,7 @@ function Tile({ post, eager }: { post: Post; eager: boolean }) {
   );
 }
 
-function Skeleton({ count }: { count: number }) {
+export function PostGridSkeleton({ count }: { count: number }) {
   return (
     <ul className={styles.grid} aria-busy aria-label="Loading posts">
       {Array.from({ length: count }, (_, i) => (

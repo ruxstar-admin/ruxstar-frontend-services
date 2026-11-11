@@ -32,12 +32,18 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
+  /* Hidden, not just transparent, until the session is known, so nothing invisible takes taps. */
+  visibility: hidden;
   opacity: 0;
-  transition: opacity var(--dur-quick) var(--ease-out);
+  transition:
+    opacity var(--dur-quick) var(--ease-out),
+    visibility 0s linear var(--dur-quick);
 }
 
 .nav[data-ready] {
+  visibility: visible;
   opacity: 1;
+  transition: opacity var(--dur-quick) var(--ease-out);
 }
 
 .tab {
@@ -85,7 +91,7 @@
   font: 700 11px/18px var(--font);
   text-align: center;
   color: var(--ink);
-  background: var(--danger);
+  background: var(--danger-fill);
   border: 2px solid var(--bg);
   border-radius: var(--radius-pill);
   box-sizing: content-box;
@@ -115,6 +121,11 @@
 
 /* Phones: the tabs move to a bar at the bottom, in reach of a thumb. */
 @media (max-width: 640px) {
+  /* Toasts sit above the bar instead of covering it. */
+  :global(body):has(.nav[data-ready]) {
+    --toast-lift: 64px;
+  }
+
   /* A backdrop-filter would make the header the containing block of the fixed bar below. */
   .bar {
     background: var(--bg);

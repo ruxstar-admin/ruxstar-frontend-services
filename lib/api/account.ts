@@ -135,5 +135,7 @@ export function formError(err: unknown): FormError {
   if ((code === "OTP_LIMIT" || code === "RATE_LIMITED" || code === "ACCOUNT_LOCKED") && detail) {
     return { message: `${err.message} ${detail.message}`, code };
   }
+  if (code === "PHOTO_INVALID" && detail) return { message: detail.message, code };
+  if (code === "PHOTO_UNAVAILABLE") return { message: "Photos cannot be added right now. Try again in a few minutes.", code };
   return { message: err.message, field, code };
 }

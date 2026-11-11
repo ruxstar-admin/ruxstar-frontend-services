@@ -111,8 +111,8 @@
 .tool {
   display: inline-grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: var(--size-touch);
+  height: var(--size-touch);
   margin-right: auto;
   color: var(--accent-soft);
   background: none;
@@ -211,6 +211,13 @@
   border: 0;
   border-radius: 50%;
   cursor: pointer;
+}
+
+/* A 44 px target around the small visible circle. */
+.thumbRemove::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
 }
 
 /* People and notification rows */
@@ -439,8 +446,9 @@ a.row:hover {
   align-self: flex-start;
   display: inline-grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: var(--size-touch);
+  height: var(--size-touch);
+  margin: -6px -6px 0 0;
   color: var(--ink-3);
   background: none;
   border: 0;

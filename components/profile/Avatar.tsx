@@ -10,7 +10,7 @@ export function Avatar({ name, url, size = 48, busy = false }: { name: string; u
   return (
     <span className={styles.avatar} style={{ width: size, height: size, fontSize }} aria-busy={busy || undefined}>
       {url ? (
-        <img src={url} alt="" width={pixels} height={pixels} />
+        <img src={url} alt="" width={pixels} height={pixels} loading="lazy" decoding="async" />
       ) : (
         <span aria-hidden>{name.trim().charAt(0).toUpperCase()}</span>
       )}

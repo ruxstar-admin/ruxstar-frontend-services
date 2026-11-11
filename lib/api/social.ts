@@ -9,6 +9,7 @@ type Json<P extends keyof paths, M extends keyof paths[P]> = paths[P][M] extends
   : never;
 
 export type Post = Json<"/v1/social/posts/{id}", "get">["data"];
+export type Photo = Post["media"][number];
 export type Comment = Json<"/v1/social/posts/{id}/comments", "get">["data"][number];
 export type Notification = Json<"/v1/notifications/", "get">["data"][number];
 export type PostKind = Post["kind"];
@@ -30,8 +31,14 @@ export const REPORT_REASONS: { value: ReportReason; label: string }[] = [
   { value: "spam", label: "Spam or scam" },
   { value: "fake", label: "Fake store or listing" },
   { value: "abuse", label: "Rude or abusive" },
+  { value: "undelivered", label: "Paid, but never received it" },
   { value: "other", label: "Something else" },
 ];
+
+/** Every size of a photo for `srcSet`, so browsers fetch the smallest that looks sharp. */
+export const photoSrcSet = (photo: Photo) =>
+  // Photos from before the API made smaller copies have none.
+  [...(photo.smaller ?? []), photo].map((p) => `${p.url} ${p.width}w`).join(", ");
 
 const toPage = <T>(envelope: { data: T[]; meta: { nextCursor?: string | null } }): Page<T> => ({
   items: envelope.data,

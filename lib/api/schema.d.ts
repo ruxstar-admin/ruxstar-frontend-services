@@ -2096,6 +2096,12 @@ export interface paths {
                                     url: string;
                                     width: number;
                                     height: number;
+                                    /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                    smaller: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
                                 }[];
                                 counts: {
                                     likes: number;
@@ -2194,6 +2200,12 @@ export interface paths {
                                     url: string;
                                     width: number;
                                     height: number;
+                                    /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                    smaller: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
                                 }[];
                                 counts: {
                                     likes: number;
@@ -2285,6 +2297,12 @@ export interface paths {
                                     url: string;
                                     width: number;
                                     height: number;
+                                    /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                    smaller: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
                                 }[];
                                 counts: {
                                     likes: number;
@@ -2379,6 +2397,12 @@ export interface paths {
                                     url: string;
                                     width: number;
                                     height: number;
+                                    /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                    smaller: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
                                 }[];
                                 counts: {
                                     likes: number;
@@ -2514,6 +2538,12 @@ export interface paths {
                                     url: string;
                                     width: number;
                                     height: number;
+                                    /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                    smaller: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
                                 }[];
                                 counts: {
                                     likes: number;
@@ -2565,7 +2595,7 @@ export interface paths {
         put?: never;
         /**
          * Upload one photo for a post you are about to make
-         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. It is saved as WebP, at most 1440 pixels on its long side, without its metadata. Pass the returned id in `mediaIds` when creating the post. Photos not used in a post within a day are deleted.
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. It is saved as WebP, at most 1440 pixels on its long side, without its metadata, with copies 320 and 640 pixels wide in `smaller`. Pass the returned id in `mediaIds` when creating the post. Photos not used in a post within a day are deleted.
          */
         post: {
             parameters: {
@@ -2589,6 +2619,12 @@ export interface paths {
                                 url: string;
                                 width: number;
                                 height: number;
+                                /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                smaller: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
                             };
                             meta: {
                                 requestId: string;
@@ -2676,6 +2712,12 @@ export interface paths {
                                     url: string;
                                     width: number;
                                     height: number;
+                                    /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                    smaller: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
                                 }[];
                                 counts: {
                                     likes: number;

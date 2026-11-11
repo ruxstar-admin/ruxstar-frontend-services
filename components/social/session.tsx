@@ -8,10 +8,16 @@ import { getMe, isSignedOut, type User } from "@/lib/api/account";
 type Me = User | null | undefined;
 
 const SessionContext = createContext<Me>(undefined);
+const SetSessionContext = createContext<(user: User) => void>(() => undefined);
 
 export const useMe = () => useContext(SessionContext);
+/** For screens that change the profile, so the header shows the new name and photo at once. */
+export const useSetMe = () => useContext(SetSessionContext);
 
-/** One `/me` call per page load, shared by the header and every post on the page. */
+/**
+ * One `/me` call per visit, shared by the header and every post. It lives in the signed-in layout,
+ * so moving between its pages keeps it.
+ */
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [me, setMe] = useState<Me>(undefined);
 
@@ -25,7 +31,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  return <SessionContext.Provider value={me}>{children}</SessionContext.Provider>;
+  return (
+    <SetSessionContext.Provider value={setMe}>
+      <SessionContext.Provider value={me}>{children}</SessionContext.Provider>
+    </SetSessionContext.Provider>
+  );
 }
 
 /** Sends people to sign in and back to this page; for actions that need an account. */

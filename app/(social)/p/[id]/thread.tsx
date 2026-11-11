@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/profile/Avatar";
 import { Button, Icon, useToast } from "@/components/ui";
 import { PostCard } from "@/components/social/PostCard";
+import { useBack } from "@/components/social/Shell";
 import { useMe, useOnSignedOut } from "@/components/social/session";
 import { usePages } from "@/components/social/use-pages";
 import { formError } from "@/lib/api/account";
@@ -21,6 +22,7 @@ import styles from "@/components/social/social.module.css";
 export function PostThread({ initial }: { initial: Post }) {
   const me = useMe();
   const router = useRouter();
+  const back = useBack();
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
   const [post, setPost] = useState(initial);
@@ -69,7 +71,7 @@ export function PostThread({ initial }: { initial: Post }) {
 
   return (
     <div className={styles.column}>
-      <button type="button" className={styles.back} onClick={() => (window.history.length > 1 ? router.back() : router.push("/feed"))}>
+      <button type="button" className={styles.back} onClick={back}>
         <Icon name="arrow-left" size={18} /> Back
       </button>
       <PostCard

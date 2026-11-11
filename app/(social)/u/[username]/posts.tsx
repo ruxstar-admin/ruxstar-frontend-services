@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { ButtonLink, Icon, type IconName } from "@/components/ui";
 import { PostGrid } from "@/components/social/PostGrid";
 import { Empty } from "@/components/social/PostList";
@@ -45,9 +45,20 @@ export function ProfilePosts({ ownerId, username, vendor, initial }: { ownerId: 
   const [kind, setKind] = useState<PostKind>("personal");
   const tabs = vendor ? TABS : TABS.slice(0, 1);
 
+  // Arrow keys move between tabs and pick one, as in any tab list; Tab moves on to the posts.
+  const onKey = (event: KeyboardEvent<HTMLDivElement>) => {
+    const at = tabs.findIndex((t) => t.value === kind);
+    const go = { ArrowRight: at + 1, ArrowLeft: at - 1, Home: 0, End: tabs.length - 1 }[event.key];
+    if (go === undefined) return;
+    event.preventDefault();
+    const next = tabs[(go + tabs.length) % tabs.length]!;
+    setKind(next.value);
+    document.getElementById(`tab-${next.value}`)?.focus();
+  };
+
   return (
     <section className={styles.posts} aria-label="Posts">
-      <div className={styles.tabs} role="tablist" aria-label="Which posts">
+      <div className={styles.tabs} role="tablist" aria-label="Which posts" onKeyDown={onKey}>
         {tabs.map((tab) => (
           <button
             key={tab.value}
@@ -56,6 +67,7 @@ export function ProfilePosts({ ownerId, username, vendor, initial }: { ownerId: 
             id={`tab-${tab.value}`}
             aria-selected={kind === tab.value}
             aria-controls="profile-posts"
+            tabIndex={kind === tab.value ? 0 : -1}
             className={styles.tab}
             onClick={() => setKind(tab.value)}
           >

@@ -244,6 +244,13 @@
   color: var(--ink-2);
 }
 
+.missingActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
 @media (max-width: 640px) {
   .missingTitle {
     font-size: 26px;

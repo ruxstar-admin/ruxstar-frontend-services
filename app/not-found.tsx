@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BLUE, YELLOW } from "@/components/brand/StarMark";
 import { ButtonLink } from "@/components/ui";
 import styles from "./not-found.module.css";
+import { SearchPeopleLink } from "./search-link";
 
 export const metadata: Metadata = {
   title: "Page not found · Ruxstar",
@@ -67,9 +68,7 @@ export default function NotFound() {
         <p className={styles.lede}>The link may be broken, or the page has moved.</p>
         <div className={styles.actions}>
           <ButtonLink href="/">Go home</ButtonLink>
-          <ButtonLink href="/search" variant="secondary">
-            Search people
-          </ButtonLink>
+          <SearchPeopleLink />
         </div>
       </section>
     </main>

@@ -1,7 +1,7 @@
 .region {
   position: fixed;
   z-index: 100;
-  inset: auto 0 max(16px, env(safe-area-inset-bottom)) 0;
+  inset: auto 0 calc(max(16px, env(safe-area-inset-bottom)) + var(--toast-lift, 0px)) 0;
   display: grid;
   justify-items: center;
   gap: var(--space-2);
@@ -32,8 +32,8 @@
 .close {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: var(--size-touch);
+  height: var(--size-touch);
   margin-left: var(--space-1);
   border: 0;
   border-radius: 8px;

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Avatar } from "@/components/profile/Avatar";
 import { ButtonLink, Icon, ToastProvider, type IconName } from "@/components/ui";
 import { unreadCount } from "@/lib/api/social";
@@ -15,6 +15,25 @@ const TABS: { href: string; label: string; icon: IconName }[] = [
   { href: "/saved", label: "Saved", icon: "bookmark" },
   { href: "/notifications", label: "Notifications", icon: "bell" },
 ];
+
+/** Pages seen in the signed-in site since it loaded. One means the visitor arrived here from outside. */
+let visits = 0;
+let lastPath: string | null = null;
+
+function useCountVisits() {
+  const pathname = usePathname();
+  useEffect(() => {
+    if (pathname === lastPath) return;
+    lastPath = pathname;
+    visits++;
+  }, [pathname]);
+}
+
+/** Back within Ruxstar, or to the feed when the page was opened from a link elsewhere. */
+export function useBack() {
+  const router = useRouter();
+  return useCallback(() => (visits > 1 ? router.back() : router.push("/feed")), [router]);
+}
 
 /** Polls gently: on every page change and when the tab comes back into view. */
 function useUnread(signedIn: boolean) {
@@ -91,6 +110,7 @@ function Nav() {
 
 /** The signed-in website: header navigation (a bottom bar on phones), session and toasts. */
 export function Shell({ children }: { children: ReactNode }) {
+  useCountVisits();
   return (
     <SessionProvider>
       <ToastProvider>
