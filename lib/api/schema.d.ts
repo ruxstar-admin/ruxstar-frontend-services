@@ -6164,6 +6164,252 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/pod/shops": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Print shops customers can order from, newest first
+         * @description Live shops that are not on hold, open ones first in each page. Empty while Ruxstar has print on demand switched off.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description Shops in or delivering to this city */
+                    city?: string;
+                    product?: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                    /** @description Part of the shop name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                typeLabel: string;
+                                cover: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                    /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                    smaller: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                } | null;
+                                area: string | null;
+                                city: string;
+                                state: string;
+                                /** @description Taking orders now */
+                                open: boolean;
+                                deliversEverywhere: boolean;
+                                fromPrice: number | null;
+                                fromUnit: ("unit" | "page") | null;
+                                /** @description Usual days to get an order ready; 0 is the same day */
+                                turnaroundDays: number;
+                                products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/shops/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One print shop: photos, products and prices */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                typeLabel: string;
+                                cover: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                    /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                    smaller: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                } | null;
+                                area: string | null;
+                                city: string;
+                                state: string;
+                                /** @description Taking orders now */
+                                open: boolean;
+                                deliversEverywhere: boolean;
+                                fromPrice: number | null;
+                                fromUnit: ("unit" | "page") | null;
+                                /** @description Usual days to get an order ready; 0 is the same day */
+                                turnaroundDays: number;
+                                products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                description: string | null;
+                                /** @description The first is the cover */
+                                photos: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                    /** @description Narrower copies of the same photo, narrowest first, for grids and small screens. Empty for photos posted before they existed. */
+                                    smaller: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                }[];
+                                pincode: string | null;
+                                /** @description Where it delivers, when not everywhere */
+                                cities: string[];
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                notes: string | null;
+                                /** @description Products with a price, in catalog order */
+                                catalog: {
+                                    /** @enum {unknown} */
+                                    id: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                    label: string;
+                                    description: string;
+                                    pricing: "per_unit" | "per_page";
+                                    minQuantity: number;
+                                    /** @description This product's own time, or the shop's usual time */
+                                    turnaroundDays: number;
+                                    basePrice: number | null;
+                                    bw: number | null;
+                                    color: number | null;
+                                    extras: {
+                                        option: string;
+                                        value: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                    }[];
+                                    tiers: {
+                                        from: number;
+                                        /** @description Amount in paise */
+                                        unitPrice: number;
+                                    }[];
+                                    /** @description Every value a customer can choose, extra or not */
+                                    options: {
+                                        option: string;
+                                        values: string[];
+                                    }[];
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/access": {
         parameters: {
             query?: never;

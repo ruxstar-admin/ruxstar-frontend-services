@@ -12,6 +12,7 @@ import styles from "./Shell.module.css";
 
 const TABS: { href: string; label: string; icon: IconName }[] = [
   { href: "/feed", label: "Feed", icon: "home" },
+  { href: "/discover", label: "Discover", icon: "store" },
   { href: "/search", label: "Search", icon: "search" },
   { href: "/saved", label: "Saved", icon: "bookmark" },
   { href: "/notifications", label: "Notifications", icon: "bell" },
@@ -68,7 +69,8 @@ function Nav() {
   const tabs = team ? [CONSOLE_TAB, ...TABS] : TABS;
 
   const tab = (t: (typeof tabs)[number]) => {
-    const active = pathname === t.href || (t.href === CONSOLE_TAB.href && pathname.startsWith(`${t.href}/`));
+    const active =
+      pathname === t.href || (t.href === CONSOLE_TAB.href && pathname.startsWith(`${t.href}/`)) || (t.href === "/discover" && pathname.startsWith("/b/"));
     const badge = t.href === "/notifications" && unread > 0 ? (unread > 9 ? "9+" : String(unread)) : null;
     return (
       <Link key={t.href} href={t.href} className={styles.tab} aria-current={active ? "page" : undefined}>
