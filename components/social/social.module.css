@@ -33,6 +33,7 @@
   margin-top: var(--space-5);
   padding: var(--space-5) var(--space-6);
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
 }
 
@@ -75,6 +76,7 @@
   gap: var(--space-3);
   padding: var(--space-5);
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
 }
 
@@ -479,6 +481,7 @@ a.row:hover {
   font: var(--type-small);
   color: var(--ink-2);
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-control);
 }
 

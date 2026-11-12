@@ -1,7 +1,8 @@
-/* Separated from the page by a tone step, never a border or a shadow. */
+/* Separated from the page by a tone step and a hairline, never a shadow. */
 .card {
   display: block;
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
   color: inherit;
   text-decoration: none;

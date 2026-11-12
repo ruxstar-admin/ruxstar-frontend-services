@@ -35,7 +35,15 @@
   gap: var(--space-5);
   padding: var(--space-6);
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
+}
+
+/* Once verified, the card stands on the page by itself. */
+.section[data-bare] {
+  padding: 0;
+  background: none;
+  border: 0;
 }
 
 .sectionHead {
@@ -219,6 +227,7 @@
   gap: var(--space-4);
   padding: var(--space-5) var(--space-6);
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
 }
 

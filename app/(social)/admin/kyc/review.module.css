@@ -38,6 +38,7 @@
 
 .item {
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-control);
 }
 
@@ -171,6 +172,7 @@
   gap: var(--space-4);
   padding: var(--space-5) var(--space-6);
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
 }
 

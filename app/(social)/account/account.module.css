@@ -61,6 +61,7 @@
   margin: 0;
   padding: var(--space-6);
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
   list-style: none;
 }
@@ -283,6 +284,7 @@
   max-width: 640px;
   padding: var(--space-5) var(--space-6);
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
 }
 

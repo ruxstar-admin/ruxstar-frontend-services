@@ -172,7 +172,7 @@ export function VerifyScreen() {
         <p className={styles.muted}>Verify once to get your Ruxstar Card, the Verified tick and the vendor portal.</p>
       </header>
 
-      <section className={styles.section} aria-labelledby="identity">
+      <section className={styles.section} data-bare={approved || undefined} aria-labelledby="identity">
         <div className={styles.sectionHead}>
           <h2 id="identity" className={styles.sectionTitle}>
             <Icon name="shield" size={22} /> Identity
