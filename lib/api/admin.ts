@@ -121,6 +121,19 @@ export const holdBusiness = async (id: string, reason: string, key = newIdempote
 export const restoreBusiness = async (id: string, key = newIdempotencyKey()) =>
   (await signedIn(() => unwrap(api.POST("/v1/ruxstar/businesses/{id}/restore", { params: { path: { id } }, ...keyed(key) })))).data;
 
+/** Business types and print products by id, the same lists the app's Add a business screens use. */
+export type BusinessCatalog = Json<"/v1/vendor/catalog", "get">["data"];
+
+let catalog: Promise<BusinessCatalog> | null = null;
+export const getBusinessCatalog = () =>
+  (catalog ??= signedIn(() => unwrap(api.GET("/v1/vendor/catalog"))).then(
+    (res) => res.data,
+    (err) => {
+      catalog = null;
+      throw err;
+    },
+  ));
+
 // Audit log.
 
 export const auditLog = async (filter: AuditFilter, cursor?: string) =>

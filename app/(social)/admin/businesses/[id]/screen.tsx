@@ -7,17 +7,47 @@ import { Failed, Fact, ReasonForm, date, styles } from "@/components/admin/parts
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, ButtonLink, Card, Icon, Skeleton, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { getBusiness, holdBusiness, restoreBusiness, type BusinessCase } from "@/lib/api/admin";
+import { getBusiness, getBusinessCatalog, holdBusiness, restoreBusiness, type Business, type BusinessCase, type BusinessCatalog } from "@/lib/api/admin";
 import { ago } from "@/lib/time";
 import { MODULE_LABEL } from "../../modules/labels";
 import { BusinessTag } from "../tags";
 
-const MISSING: Record<string, string> = {
-  description: "a description",
+const MISSING: Record<Business["missing"][number], string> = {
+  photo: "a cover photo",
   phone: "a phone number",
-  address: "an address",
-  photo: "a photo",
+  location: "the state and city",
+  products: "print products",
+  area: "a service area",
+  pricing: "prices for every product",
 };
+
+const rupees = (paise: number) => `₹${(paise / 100).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+
+const placeOf = (l: NonNullable<Business["location"]>) => [l.doorNo, l.building, l.street, l.area, l.city, l.state, l.pincode].filter(Boolean).join(", ");
+
+/** What a print business makes, where, and its starting prices. */
+function PodFacts({ pod, catalog }: { pod: NonNullable<Business["pod"]>; catalog: BusinessCatalog | null }) {
+  const label = (id: string) => catalog?.podProducts.find((p) => p.id === id)?.label ?? id;
+  const from = (p: NonNullable<Business["pod"]>["prices"][number]) =>
+    p.model === "per_page"
+      ? [p.bw ? `${rupees(p.bw)}/page B&W` : null, p.color ? `${rupees(p.color)}/page colour` : null].filter(Boolean).join(", ")
+      : p.basePrice
+        ? `${rupees(p.basePrice)} each, from ${p.minQuantity}`
+        : "No price";
+  return (
+    <dl className={styles.facts}>
+      <Fact label="Prints" value={pod.products.length ? pod.products.map(label).join(", ") : "Nothing yet"} warn={!pod.products.length} />
+      <Fact label="Serves" value={pod.serveAll ? "Every city" : pod.cities.length ? pod.cities.join(", ") : "No area yet"} warn={!pod.serveAll && !pod.cities.length} />
+      <Fact label="Turnaround" value={`${pod.turnaroundDays} ${pod.turnaroundDays === 1 ? "day" : "days"}`} />
+      <Fact label="Minimum order" value={pod.minOrder ? rupees(pod.minOrder) : "None"} />
+      {pod.notes && <Fact label="Notes" value={pod.notes} />}
+      {pod.prices.map((p) => (
+        <Fact key={p.product} label={label(p.product)} value={from(p)} />
+      ))}
+      {pod.unpriced.length > 0 && <Fact label="Without a price" value={pod.unpriced.map(label).join(", ")} warn />}
+    </dl>
+  );
+}
 
 function Actions({ c, onChanged }: { c: BusinessCase; onChanged: (next: BusinessCase, message: string) => void }) {
   const toast = useToast();
@@ -79,6 +109,11 @@ export function BusinessScreen({ id }: { id: string }) {
   const [c, setCase] = useState<BusinessCase | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [attempt, setAttempt] = useState(0);
+  const [catalog, setCatalog] = useState<BusinessCatalog | null>(null);
+
+  useEffect(() => {
+    getBusinessCatalog().then(setCatalog, () => undefined);
+  }, []);
 
   useEffect(() => {
     let live = true;
@@ -117,7 +152,10 @@ export function BusinessScreen({ id }: { id: string }) {
             <div className={styles.head}>
               <div>
                 <h1 className={styles.title}>{b.name}</h1>
-                <p className={styles.muted}>{MODULE_LABEL[b.module]}</p>
+                <p className={styles.muted}>
+                  {MODULE_LABEL[b.module]}
+                  {catalog ? ` · ${catalog.categories.flatMap((cat) => cat.types).find((t) => t.id === b.type)?.label ?? b.type}` : ""}
+                </p>
               </div>
               <div className={styles.tags}>
                 <BusinessTag business={b} />
@@ -143,11 +181,7 @@ export function BusinessScreen({ id }: { id: string }) {
 
             <dl className={styles.facts}>
               <Fact label="Phone" value={b.phone ?? "—"} />
-              <Fact label="Email" value={b.email ?? "—"} />
-              <Fact
-                label="Address"
-                value={b.address ? [b.address.line1, b.address.line2, b.address.city, b.address.state, b.address.pincode].filter(Boolean).join(", ") : "—"}
-              />
+              <Fact label="Location" value={b.location ? placeOf(b.location) : "—"} />
               <Fact label="GSTIN" value={b.gstin ? `${b.gstin.number}${b.gstin.status ? ` (${b.gstin.status})` : ""}` : "Not given"} />
               {b.gstin?.legalName && <Fact label="GST legal name" value={b.gstin.legalName} />}
               {b.status === "draft" && b.missing.length > 0 && <Fact label="Missing to publish" value={b.missing.map((m) => MISSING[m] ?? m).join(", ")} warn />}
@@ -155,6 +189,8 @@ export function BusinessScreen({ id }: { id: string }) {
               <Fact label="Created" value={date(b.createdAt)} />
               <Fact label="Business id" value={b.id} />
             </dl>
+
+            {b.pod && <PodFacts pod={b.pod} catalog={catalog} />}
 
             <dl className={styles.facts}>
               <Fact

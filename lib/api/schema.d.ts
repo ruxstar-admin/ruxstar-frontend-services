@@ -4385,14 +4385,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/vendor/modules": {
+    "/v1/vendor/catalog": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** The modules a business can be opened in, and which are taking new businesses */
+        /**
+         * Categories, types, states and cities, and print products to choose from
+         * @description Each category is one module, with whether it is live and taking new businesses. The Ruxstar console reads it for labels.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -4410,15 +4413,54 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
-                                live: boolean;
-                                /** @description Whether new businesses can be created in it */
-                                signupsOpen: boolean;
-                            }[];
+                                categories: {
+                                    /** @description pod is print on demand */
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    label: string;
+                                    description: string;
+                                    live: boolean;
+                                    /** @description Whether new businesses can be created in it */
+                                    signupsOpen: boolean;
+                                    types: {
+                                        /**
+                                         * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                         * @enum {unknown}
+                                         */
+                                        id: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                        label: string;
+                                        description: string;
+                                        examples: string;
+                                        namePlaceholder: string;
+                                        detailHint: string;
+                                    }[];
+                                }[];
+                                states: {
+                                    name: string;
+                                    cities: string[];
+                                }[];
+                                podProducts: {
+                                    /** @enum {unknown} */
+                                    id: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                    label: string;
+                                    description: string;
+                                    pricing: "per_unit" | "per_page";
+                                    minQuantity: number;
+                                    options: {
+                                        option: string;
+                                        values: string[];
+                                    }[];
+                                }[];
+                                limits: {
+                                    businesses: number;
+                                    photos: number;
+                                    description: number;
+                                    cities: number;
+                                    turnaroundDays: number;
+                                    tiers: number;
+                                };
+                            };
                             meta: {
                                 requestId: string;
-                                nextCursor: string | null;
                             };
                         };
                     };
@@ -4480,35 +4522,83 @@ export interface paths {
                                 id: string;
                                 /** @description pod is print on demand */
                                 module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
-                                email: string | null;
-                                address: {
-                                    line1: string;
-                                    line2: string | null;
-                                    city: string;
+                                location: {
                                     state: string;
-                                    pincode: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 } | null;
                                 gstin: {
                                     number: string;
                                     legalName: string | null;
                                     status: string | null;
                                 } | null;
+                                /** @description The first is the cover */
                                 photos: {
                                     id: string;
                                     url: string;
                                     width: number;
                                     height: number;
                                 }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
                                 open: boolean;
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("description" | "phone" | "address" | "photo")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -4549,8 +4639,8 @@ export interface paths {
         };
         put?: never;
         /**
-         * Start a business in one module
-         * @description It starts as a draft. Fill in the details and photos, then publish it. The module must be live and taking new businesses; up to 10 businesses each.
+         * Start a business: its category (module), type and profile
+         * @description It starts as a draft. Add the cover photo next, then (for print on demand) the setup, then publish it. The type must belong to the module, and the module must be live and taking new businesses; up to 10 businesses each.
          */
         post: {
             parameters: {
@@ -4564,7 +4654,30 @@ export interface paths {
                     "application/json": {
                         /** @description pod is print on demand */
                         module: "pod" | "events" | "coaching" | "stays";
+                        /**
+                         * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                         * @enum {unknown}
+                         */
+                        type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                         name: string;
+                        /** @description 10-digit mobile number */
+                        phone: string;
+                        location: {
+                            /** @description One of the catalog's states */
+                            state: string;
+                            /** @description One of the state's cities, or any other the vendor types */
+                            city: string;
+                            doorNo?: string | null;
+                            building?: string | null;
+                            street?: string | null;
+                            area?: string | null;
+                            pincode?: string | null;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        };
+                        description?: string | null;
                     };
                 };
             };
@@ -4581,35 +4694,83 @@ export interface paths {
                                 id: string;
                                 /** @description pod is print on demand */
                                 module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
-                                email: string | null;
-                                address: {
-                                    line1: string;
-                                    line2: string | null;
-                                    city: string;
+                                location: {
                                     state: string;
-                                    pincode: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 } | null;
                                 gstin: {
                                     number: string;
                                     legalName: string | null;
                                     status: string | null;
                                 } | null;
+                                /** @description The first is the cover */
                                 photos: {
                                     id: string;
                                     url: string;
                                     width: number;
                                     height: number;
                                 }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
                                 open: boolean;
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("description" | "phone" | "address" | "photo")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -4685,35 +4846,83 @@ export interface paths {
                                 id: string;
                                 /** @description pod is print on demand */
                                 module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
-                                email: string | null;
-                                address: {
-                                    line1: string;
-                                    line2: string | null;
-                                    city: string;
+                                location: {
                                     state: string;
-                                    pincode: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 } | null;
                                 gstin: {
                                     number: string;
                                     legalName: string | null;
                                     status: string | null;
                                 } | null;
+                                /** @description The first is the cover */
                                 photos: {
                                     id: string;
                                     url: string;
                                     width: number;
                                     height: number;
                                 }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
                                 open: boolean;
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("description" | "phone" | "address" | "photo")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -4828,13 +5037,20 @@ export interface paths {
                         name?: string;
                         description?: string | null;
                         phone?: string | null;
-                        email?: string | null;
-                        address?: {
-                            line1: string;
-                            line2?: string | null;
-                            city: string;
+                        location?: {
+                            /** @description One of the catalog's states */
                             state: string;
-                            pincode: string;
+                            /** @description One of the state's cities, or any other the vendor types */
+                            city: string;
+                            doorNo?: string | null;
+                            building?: string | null;
+                            street?: string | null;
+                            area?: string | null;
+                            pincode?: string | null;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
                         } | null;
                         gstin?: string | null;
                     };
@@ -4853,35 +5069,276 @@ export interface paths {
                                 id: string;
                                 /** @description pod is print on demand */
                                 module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
-                                email: string | null;
-                                address: {
-                                    line1: string;
-                                    line2: string | null;
-                                    city: string;
+                                location: {
                                     state: string;
-                                    pincode: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 } | null;
                                 gstin: {
                                     number: string;
                                     legalName: string | null;
                                     status: string | null;
                                 } | null;
+                                /** @description The first is the cover */
                                 photos: {
                                     id: string;
                                     url: string;
                                     width: number;
                                     height: number;
                                 }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
                                 open: boolean;
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("description" | "phone" | "address" | "photo")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/pod": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change a print on demand business's setup: products, area and prices
+         * @description Send only what changes. `prices` replaces the prices of the products it names, and a product must be offered before it is priced; dropping a product drops its price. A live business must keep at least one product, an area and a price for each product.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        products?: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                        serveAll?: boolean;
+                        cities?: string[];
+                        turnaroundDays?: number;
+                        /** @description Paise */
+                        minOrder?: number;
+                        notes?: string | null;
+                        /** @description Replaces the prices of the products sent */
+                        prices?: {
+                            /** @enum {unknown} */
+                            product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                            minQuantity?: number;
+                            turnaroundDays?: number | null;
+                            basePrice?: number | null;
+                            bw?: number | null;
+                            color?: number | null;
+                            extras?: {
+                                /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                option: string;
+                                /** @description One of the product's values for that option */
+                                value: string;
+                                /** @description Extra paise per unit, or per page for documents */
+                                price: number;
+                            }[];
+                            tiers?: {
+                                /** @description Units, or pages for documents */
+                                from: number;
+                                /** @description Paise per unit (or page) from this many */
+                                unitPrice: number;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                location: {
+                                    state: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                /** @description The first is the cover */
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -4958,35 +5415,83 @@ export interface paths {
                                 id: string;
                                 /** @description pod is print on demand */
                                 module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
-                                email: string | null;
-                                address: {
-                                    line1: string;
-                                    line2: string | null;
-                                    city: string;
+                                location: {
                                     state: string;
-                                    pincode: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 } | null;
                                 gstin: {
                                     number: string;
                                     legalName: string | null;
                                     status: string | null;
                                 } | null;
+                                /** @description The first is the cover */
                                 photos: {
                                     id: string;
                                     url: string;
                                     width: number;
                                     height: number;
                                 }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
                                 open: boolean;
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("description" | "phone" | "address" | "photo")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -5069,35 +5574,83 @@ export interface paths {
                                 id: string;
                                 /** @description pod is print on demand */
                                 module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
-                                email: string | null;
-                                address: {
-                                    line1: string;
-                                    line2: string | null;
-                                    city: string;
+                                location: {
                                     state: string;
-                                    pincode: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 } | null;
                                 gstin: {
                                     number: string;
                                     legalName: string | null;
                                     status: string | null;
                                 } | null;
+                                /** @description The first is the cover */
                                 photos: {
                                     id: string;
                                     url: string;
                                     width: number;
                                     height: number;
                                 }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
                                 open: boolean;
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("description" | "phone" | "address" | "photo")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -5151,7 +5704,7 @@ export interface paths {
         put?: never;
         /**
          * Publish a draft so customers can find it
-         * @description Needs a description of at least 20 characters, a phone number, an address and a photo. It opens straight away.
+         * @description Needs a cover photo, a phone number and the state and city; print on demand also needs products, an area and a price for each product. Everything still missing comes back at once. It opens straight away.
          */
         post: {
             parameters: {
@@ -5177,35 +5730,83 @@ export interface paths {
                                 id: string;
                                 /** @description pod is print on demand */
                                 module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
-                                email: string | null;
-                                address: {
-                                    line1: string;
-                                    line2: string | null;
-                                    city: string;
+                                location: {
                                     state: string;
-                                    pincode: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 } | null;
                                 gstin: {
                                     number: string;
                                     legalName: string | null;
                                     status: string | null;
                                 } | null;
+                                /** @description The first is the cover */
                                 photos: {
                                     id: string;
                                     url: string;
                                     width: number;
                                     height: number;
                                 }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
                                 open: boolean;
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("description" | "phone" | "address" | "photo")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -5286,35 +5887,83 @@ export interface paths {
                                 id: string;
                                 /** @description pod is print on demand */
                                 module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
-                                email: string | null;
-                                address: {
-                                    line1: string;
-                                    line2: string | null;
-                                    city: string;
+                                location: {
                                     state: string;
-                                    pincode: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 } | null;
                                 gstin: {
                                     number: string;
                                     legalName: string | null;
                                     status: string | null;
                                 } | null;
+                                /** @description The first is the cover */
                                 photos: {
                                     id: string;
                                     url: string;
                                     width: number;
                                     height: number;
                                 }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
                                 open: boolean;
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("description" | "phone" | "address" | "photo")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -5395,35 +6044,83 @@ export interface paths {
                                 id: string;
                                 /** @description pod is print on demand */
                                 module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
-                                email: string | null;
-                                address: {
-                                    line1: string;
-                                    line2: string | null;
-                                    city: string;
+                                location: {
                                     state: string;
-                                    pincode: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 } | null;
                                 gstin: {
                                     number: string;
                                     legalName: string | null;
                                     status: string | null;
                                 } | null;
+                                /** @description The first is the cover */
                                 photos: {
                                     id: string;
                                     url: string;
                                     width: number;
                                     height: number;
                                 }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
                                 open: boolean;
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("description" | "phone" | "address" | "photo")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -7169,35 +7866,83 @@ export interface paths {
                                     id: string;
                                     /** @description pod is print on demand */
                                     module: "pod" | "events" | "coaching" | "stays";
+                                    /**
+                                     * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                     * @enum {unknown}
+                                     */
+                                    type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
-                                    email: string | null;
-                                    address: {
-                                        line1: string;
-                                        line2: string | null;
-                                        city: string;
+                                    location: {
                                         state: string;
-                                        pincode: string;
+                                        city: string;
+                                        doorNo: string | null;
+                                        building: string | null;
+                                        street: string | null;
+                                        area: string | null;
+                                        pincode: string | null;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
                                     } | null;
                                     gstin: {
                                         number: string;
                                         legalName: string | null;
                                         status: string | null;
                                     } | null;
+                                    /** @description The first is the cover */
                                     photos: {
                                         id: string;
                                         url: string;
                                         width: number;
                                         height: number;
                                     }[];
+                                    pod: {
+                                        products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                        /** @description Takes orders from every city */
+                                        serveAll: boolean;
+                                        /** @description Lower case */
+                                        cities: string[];
+                                        turnaroundDays: number;
+                                        /** @description Amount in paise */
+                                        minOrder: number;
+                                        notes: string | null;
+                                        prices: {
+                                            /** @enum {unknown} */
+                                            product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                            model: "per_unit" | "per_page";
+                                            minQuantity: number;
+                                            turnaroundDays: number | null;
+                                            basePrice: number | null;
+                                            bw: number | null;
+                                            color: number | null;
+                                            extras: {
+                                                /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                                option: string;
+                                                /** @description One of the product's values for that option */
+                                                value: string;
+                                                /** @description Extra paise per unit, or per page for documents */
+                                                price: number;
+                                            }[];
+                                            tiers: {
+                                                /** @description Units, or pages for documents */
+                                                from: number;
+                                                /** @description Paise per unit (or page) from this many */
+                                                unitPrice: number;
+                                            }[];
+                                        }[];
+                                        /** @description Chosen products still without a price */
+                                        unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    } | null;
                                     status: "draft" | "live";
                                     /** @description A live business takes orders and bookings only while open */
                                     open: boolean;
                                     /** @description False while the Ruxstar team has paused this module */
                                     moduleLive: boolean;
                                     /** @description What is still needed before it can be published */
-                                    missing: ("description" | "phone" | "address" | "photo")[];
+                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                     suspension: {
                                         reason: string;
                                         /** Format: date-time */
@@ -7290,35 +8035,83 @@ export interface paths {
                                     id: string;
                                     /** @description pod is print on demand */
                                     module: "pod" | "events" | "coaching" | "stays";
+                                    /**
+                                     * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                     * @enum {unknown}
+                                     */
+                                    type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
-                                    email: string | null;
-                                    address: {
-                                        line1: string;
-                                        line2: string | null;
-                                        city: string;
+                                    location: {
                                         state: string;
-                                        pincode: string;
+                                        city: string;
+                                        doorNo: string | null;
+                                        building: string | null;
+                                        street: string | null;
+                                        area: string | null;
+                                        pincode: string | null;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
                                     } | null;
                                     gstin: {
                                         number: string;
                                         legalName: string | null;
                                         status: string | null;
                                     } | null;
+                                    /** @description The first is the cover */
                                     photos: {
                                         id: string;
                                         url: string;
                                         width: number;
                                         height: number;
                                     }[];
+                                    pod: {
+                                        products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                        /** @description Takes orders from every city */
+                                        serveAll: boolean;
+                                        /** @description Lower case */
+                                        cities: string[];
+                                        turnaroundDays: number;
+                                        /** @description Amount in paise */
+                                        minOrder: number;
+                                        notes: string | null;
+                                        prices: {
+                                            /** @enum {unknown} */
+                                            product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                            model: "per_unit" | "per_page";
+                                            minQuantity: number;
+                                            turnaroundDays: number | null;
+                                            basePrice: number | null;
+                                            bw: number | null;
+                                            color: number | null;
+                                            extras: {
+                                                /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                                option: string;
+                                                /** @description One of the product's values for that option */
+                                                value: string;
+                                                /** @description Extra paise per unit, or per page for documents */
+                                                price: number;
+                                            }[];
+                                            tiers: {
+                                                /** @description Units, or pages for documents */
+                                                from: number;
+                                                /** @description Paise per unit (or page) from this many */
+                                                unitPrice: number;
+                                            }[];
+                                        }[];
+                                        /** @description Chosen products still without a price */
+                                        unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    } | null;
                                     status: "draft" | "live";
                                     /** @description A live business takes orders and bookings only while open */
                                     open: boolean;
                                     /** @description False while the Ruxstar team has paused this module */
                                     moduleLive: boolean;
                                     /** @description What is still needed before it can be published */
-                                    missing: ("description" | "phone" | "address" | "photo")[];
+                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                     suspension: {
                                         reason: string;
                                         /** Format: date-time */
@@ -7433,35 +8226,83 @@ export interface paths {
                                     id: string;
                                     /** @description pod is print on demand */
                                     module: "pod" | "events" | "coaching" | "stays";
+                                    /**
+                                     * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                     * @enum {unknown}
+                                     */
+                                    type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
-                                    email: string | null;
-                                    address: {
-                                        line1: string;
-                                        line2: string | null;
-                                        city: string;
+                                    location: {
                                         state: string;
-                                        pincode: string;
+                                        city: string;
+                                        doorNo: string | null;
+                                        building: string | null;
+                                        street: string | null;
+                                        area: string | null;
+                                        pincode: string | null;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
                                     } | null;
                                     gstin: {
                                         number: string;
                                         legalName: string | null;
                                         status: string | null;
                                     } | null;
+                                    /** @description The first is the cover */
                                     photos: {
                                         id: string;
                                         url: string;
                                         width: number;
                                         height: number;
                                     }[];
+                                    pod: {
+                                        products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                        /** @description Takes orders from every city */
+                                        serveAll: boolean;
+                                        /** @description Lower case */
+                                        cities: string[];
+                                        turnaroundDays: number;
+                                        /** @description Amount in paise */
+                                        minOrder: number;
+                                        notes: string | null;
+                                        prices: {
+                                            /** @enum {unknown} */
+                                            product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                            model: "per_unit" | "per_page";
+                                            minQuantity: number;
+                                            turnaroundDays: number | null;
+                                            basePrice: number | null;
+                                            bw: number | null;
+                                            color: number | null;
+                                            extras: {
+                                                /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                                option: string;
+                                                /** @description One of the product's values for that option */
+                                                value: string;
+                                                /** @description Extra paise per unit, or per page for documents */
+                                                price: number;
+                                            }[];
+                                            tiers: {
+                                                /** @description Units, or pages for documents */
+                                                from: number;
+                                                /** @description Paise per unit (or page) from this many */
+                                                unitPrice: number;
+                                            }[];
+                                        }[];
+                                        /** @description Chosen products still without a price */
+                                        unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    } | null;
                                     status: "draft" | "live";
                                     /** @description A live business takes orders and bookings only while open */
                                     open: boolean;
                                     /** @description False while the Ruxstar team has paused this module */
                                     moduleLive: boolean;
                                     /** @description What is still needed before it can be published */
-                                    missing: ("description" | "phone" | "address" | "photo")[];
+                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                     suspension: {
                                         reason: string;
                                         /** Format: date-time */
@@ -7567,35 +8408,83 @@ export interface paths {
                                     id: string;
                                     /** @description pod is print on demand */
                                     module: "pod" | "events" | "coaching" | "stays";
+                                    /**
+                                     * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                     * @enum {unknown}
+                                     */
+                                    type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
-                                    email: string | null;
-                                    address: {
-                                        line1: string;
-                                        line2: string | null;
-                                        city: string;
+                                    location: {
                                         state: string;
-                                        pincode: string;
+                                        city: string;
+                                        doorNo: string | null;
+                                        building: string | null;
+                                        street: string | null;
+                                        area: string | null;
+                                        pincode: string | null;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
                                     } | null;
                                     gstin: {
                                         number: string;
                                         legalName: string | null;
                                         status: string | null;
                                     } | null;
+                                    /** @description The first is the cover */
                                     photos: {
                                         id: string;
                                         url: string;
                                         width: number;
                                         height: number;
                                     }[];
+                                    pod: {
+                                        products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                        /** @description Takes orders from every city */
+                                        serveAll: boolean;
+                                        /** @description Lower case */
+                                        cities: string[];
+                                        turnaroundDays: number;
+                                        /** @description Amount in paise */
+                                        minOrder: number;
+                                        notes: string | null;
+                                        prices: {
+                                            /** @enum {unknown} */
+                                            product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                            model: "per_unit" | "per_page";
+                                            minQuantity: number;
+                                            turnaroundDays: number | null;
+                                            basePrice: number | null;
+                                            bw: number | null;
+                                            color: number | null;
+                                            extras: {
+                                                /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                                option: string;
+                                                /** @description One of the product's values for that option */
+                                                value: string;
+                                                /** @description Extra paise per unit, or per page for documents */
+                                                price: number;
+                                            }[];
+                                            tiers: {
+                                                /** @description Units, or pages for documents */
+                                                from: number;
+                                                /** @description Paise per unit (or page) from this many */
+                                                unitPrice: number;
+                                            }[];
+                                        }[];
+                                        /** @description Chosen products still without a price */
+                                        unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    } | null;
                                     status: "draft" | "live";
                                     /** @description A live business takes orders and bookings only while open */
                                     open: boolean;
                                     /** @description False while the Ruxstar team has paused this module */
                                     moduleLive: boolean;
                                     /** @description What is still needed before it can be published */
-                                    missing: ("description" | "phone" | "address" | "photo")[];
+                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
                                     suspension: {
                                         reason: string;
                                         /** Format: date-time */
