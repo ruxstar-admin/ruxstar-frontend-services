@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Icon } from "@/components/ui";
+import { Button, ButtonLink, Icon } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
@@ -102,9 +102,14 @@ export function DiscoverScreen() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.head}>
-        <h1 className={styles.title}>Discover</h1>
-        <p className={styles.subtitle}>Businesses on Ruxstar</p>
+      <div className={styles.headRow}>
+        <div className={styles.head}>
+          <h1 className={styles.title}>Discover</h1>
+          <p className={styles.subtitle}>Businesses on Ruxstar</p>
+        </div>
+        <ButtonLink href="/orders" variant="secondary">
+          Your orders
+        </ButtonLink>
       </div>
       <label className={social.searchBox}>
         <Icon name="search" size={20} />

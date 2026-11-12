@@ -11,6 +11,13 @@
   gap: 2px;
 }
 
+.headRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 .title {
   font: 700 28px/34px var(--font);
   letter-spacing: var(--type-headline-tracking);

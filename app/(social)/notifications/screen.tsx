@@ -19,11 +19,25 @@ const ICONS: Record<Notification["type"], IconName> = {
   "kyc.rejected": "alert",
   "business.suspended": "alert",
   "business.restored": "store",
+  "order.placed": "print",
+  "order.updated": "print",
 };
 
 /** Businesses are run from the app's vendor portal for now, so their notices open the account page that says so. */
-const hrefOf = (link: Notification["link"]) =>
-  link.screen === "verification" ? "/verify" : link.screen === "business" ? "/account#verification" : `/p/${link.id}`;
+function hrefOf(link: Notification["link"]) {
+  switch (link.screen) {
+    case "verification":
+      return "/verify";
+    case "business":
+      return "/account#verification";
+    case "order":
+      return `/orders/${link.id}`;
+    case "shop_order":
+      return `/sales/${link.id}`;
+    default:
+      return `/p/${link.id}`;
+  }
+}
 
 /** Likes and comments on your posts, posts the Ruxstar team removed, verification decisions and holds on your businesses. Opening the page marks them read; the dots stay for this visit. */
 export function NotificationsScreen() {

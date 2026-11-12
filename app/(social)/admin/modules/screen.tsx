@@ -11,6 +11,8 @@ import { ago } from "@/lib/time";
 import { MODULE_LABEL } from "./labels";
 
 const percentOf = (bps: number) => String(bps / 100);
+const rupeesOf = (paise: number) => String(paise / 100);
+const MAX_FEE_RUPEES = 500;
 
 function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
   const toast = useToast();
@@ -18,9 +20,12 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
   const canManage = useCan("modules.manage");
   const [busy, setBusy] = useState<keyof ModulePatch | null>(null);
   const [commission, setCommission] = useState(percentOf(m.commissionBps));
+  const [fee, setFee] = useState(rupeesOf(m.platformFee));
 
   const bps = Math.round(Number(commission) * 100);
   const commissionValid = commission.trim() !== "" && Number.isFinite(bps) && bps >= 0 && bps <= 10000;
+  const feePaise = Math.round(Number(fee) * 100);
+  const feeValid = fee.trim() !== "" && Number.isFinite(feePaise) && feePaise >= 0 && feePaise <= MAX_FEE_RUPEES * 100;
 
   async function save(patch: ModulePatch) {
     setBusy(Object.keys(patch)[0] as keyof ModulePatch);
@@ -28,6 +33,7 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
       const done = await updateModule(m.module, patch);
       onSaved(done);
       setCommission(percentOf(done.commissionBps));
+      setFee(rupeesOf(done.platformFee));
       toast(`${MODULE_LABEL[m.module]} saved.`, "success");
     } catch (err) {
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
@@ -86,6 +92,28 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
             onClick={() => save({ commissionBps: bps })}
           >
             Save commission
+          </Button>
+        )}
+      </div>
+      <div className={styles.toolbar}>
+        <Input
+          label="Platform fee the customer pays on each order"
+          inputMode="decimal"
+          prefix="₹"
+          value={fee}
+          onChange={(e) => setFee(e.target.value.replace(/[^\d.]/g, ""))}
+          disabled={!canManage}
+          hint="Added to the customer's total and kept by Ruxstar. 0 for none."
+          error={feeValid ? undefined : `Enter an amount from 0 to ${MAX_FEE_RUPEES}`}
+        />
+        {canManage && (
+          <Button
+            variant="secondary"
+            disabled={!feeValid || feePaise === m.platformFee || (busy !== null && busy !== "platformFee")}
+            loading={busy === "platformFee"}
+            onClick={() => save({ platformFee: feePaise })}
+          >
+            Save platform fee
           </Button>
         )}
       </div>

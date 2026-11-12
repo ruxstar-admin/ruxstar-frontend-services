@@ -3979,12 +3979,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored";
+                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen and `business` one of your businesses in the vendor portal; `id` says which */
-                                    screen: "post" | "verification" | "business";
+                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders and `shop_order` an order to your shop in the vendor portal; `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order";
                                     id: string;
                                 };
                                 read: boolean;
@@ -4165,7 +4165,7 @@ export interface paths {
         };
         /**
          * Your balance, payout account and latest payouts
-         * @description Balances fill in once your businesses take orders.
+         * @description Pending is your share of paid orders not delivered yet; it becomes available on delivery.
          */
         get: {
             parameters: {
@@ -4378,6 +4378,502 @@ export interface paths {
                 };
             };
         };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Orders to your shops, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description MongoDB ObjectId as hex */
+                    business?: string;
+                    /** @description `new` waits for you to accept, `active` is being made or delivered, `past` is delivered, turned down or cancelled */
+                    view?: "new" | "active" | "past";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                } | null;
+                                reason: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    commissionBps: number;
+                                    /** @description Amount in paise */
+                                    commission: number;
+                                    /** @description Amount in paise */
+                                    payout: number;
+                                };
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One order to your shop */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                } | null;
+                                reason: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    commissionBps: number;
+                                    /** @description Amount in paise */
+                                    commission: number;
+                                    /** @description Amount in paise */
+                                    payout: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/orders/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept or turn down a new order, or move it on
+         * @description A new order is accepted or turned down (with a reason; the customer is refunded in full). After that it moves through printing, ready, out for delivery and delivered; steps can be skipped. On delivery your share moves to your available balance.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        status: "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected";
+                        /** @description Required to turn an order down; the customer sees it */
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                } | null;
+                                reason: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    commissionBps: number;
+                                    /** @description Amount in paise */
+                                    commission: number;
+                                    /** @description Amount in paise */
+                                    payout: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/orders/{id}/files/{fileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A link to a file to print */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    fileId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Opens the file without signing in; works for 10 minutes */
+                                url: string;
+                                /** Format: date-time */
+                                expiresAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -6158,6 +6654,872 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload a file to print
+         * @description Send the file's bytes as the body with its Content-Type (PDF, JPEG or PNG, up to 25 MB) and its name in X-File-Name. PDF pages are counted for pricing. Files only the shop you order from can open; ones not ordered within a day are deleted.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description The file's name, URI-encoded */
+                    "x-file-name"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                bytes: number;
+                                /** @description PDF pages; 1 for a photo */
+                                pages: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * What an order would cost
+         * @description The same checks and prices as placing it, so a quote that passes can be ordered.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description MongoDB ObjectId as hex */
+                        shopId: string;
+                        /** @enum {unknown} */
+                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                        /** @description Option to value, from the shop's catalog. `size` (or `paperSize` for documents) is required. */
+                        options: {
+                            [key: string]: string;
+                        };
+                        /** @description Documents only, and required for them */
+                        colour?: "bw" | "color";
+                        /** @description Pieces, or copies of the files for documents */
+                        quantity: number;
+                        /** @description Documents are priced by their pages; none counts as 1 page */
+                        fileIds: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Pieces, or pages times copies for documents */
+                                units: number;
+                                /** @description Amount in paise */
+                                unitPrice: number;
+                                /** @description Amount in paise */
+                                extrasPerUnit: number;
+                                /** @description Amount in paise */
+                                items: number;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                /** @description Amount in paise */
+                                total: number;
+                                /** @description Pages in the files, for documents */
+                                pages: number;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                turnaroundDays: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your print orders, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                } | null;
+                                reason: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Place a print order
+         * @description Prices the order, sets it up with Cashfree and returns a checkout link. The shop sees it once it is paid. An order not paid when Cashfree's checkout expires is cancelled.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description MongoDB ObjectId as hex */
+                        shopId: string;
+                        /** @enum {unknown} */
+                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                        /** @description Option to value, from the shop's catalog. `size` (or `paperSize` for documents) is required. */
+                        options: {
+                            [key: string]: string;
+                        };
+                        /** @description Documents only, and required for them */
+                        colour?: "bw" | "color";
+                        /** @description Pieces, or copies of the files for documents */
+                        quantity: number;
+                        fileIds: string[];
+                        address: {
+                            name: string;
+                            /** @description 10 digits */
+                            phone: string;
+                            /** @description House, street and area */
+                            line: string;
+                            city: string;
+                            pincode: string;
+                        };
+                        /** @description For the shop */
+                        note?: string;
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    shop: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    /** @enum {unknown} */
+                                    product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                    productLabel: string;
+                                    pricing: "per_unit" | "per_page";
+                                    options: {
+                                        [key: string]: string;
+                                    };
+                                    colour: ("bw" | "color") | null;
+                                    quantity: number;
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                        bytes: number;
+                                        /** @description PDF pages; 1 for a photo */
+                                        pages: number;
+                                    }[];
+                                    address: {
+                                        name: string;
+                                        /** @description 10 digits */
+                                        phone: string;
+                                        /** @description House, street and area */
+                                        line: string;
+                                        city: string;
+                                        pincode: string;
+                                    };
+                                    note: string | null;
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    timeline: {
+                                        /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                        status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                        /** Format: date-time */
+                                        at: string;
+                                    }[];
+                                    paidAt: string | null;
+                                    refund: {
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        status: "pending" | "done";
+                                    } | null;
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    /** Format: date-time */
+                                    updatedAt: string;
+                                    price: {
+                                        /** @description Pieces, or pages times copies for documents */
+                                        units: number;
+                                        /** @description Amount in paise */
+                                        unitPrice: number;
+                                        /** @description Amount in paise */
+                                        extrasPerUnit: number;
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        platformFee: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    };
+                                };
+                                /** @description Open it to pay */
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/orders/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A fresh checkout link for an unpaid order */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One of your print orders
+         * @description While it waits for payment, Cashfree is asked whether it was paid.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                } | null;
+                                reason: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel an order the shop has not accepted yet
+         * @description A paid order is refunded in full.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                } | null;
+                                reason: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/orders/{id}/files/{fileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A link to one of your order's files */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    fileId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Opens the file without signing in; works for 10 minutes */
+                                url: string;
+                                /** Format: date-time */
+                                expiresAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -8925,6 +10287,8 @@ export interface paths {
                                 signupsOpen: boolean;
                                 /** @description Commission in basis points. 1000 = 10% */
                                 commissionBps: number;
+                                /** @description Paise the customer pays Ruxstar on each order */
+                                platformFee: number;
                                 deliveryEnabled: boolean;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
@@ -8978,7 +10342,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Switch a module on or off, or change its signups, commission or delivery */
+        /** Switch a module on or off, or change its signups, commission, platform fee or delivery */
         patch: {
             parameters: {
                 query?: never;
@@ -8994,6 +10358,8 @@ export interface paths {
                         live?: boolean;
                         signupsOpen?: boolean;
                         commissionBps?: number;
+                        /** @description Paise, up to ₹500 */
+                        platformFee?: number;
                         deliveryEnabled?: boolean;
                     };
                 };
@@ -9012,6 +10378,8 @@ export interface paths {
                                 signupsOpen: boolean;
                                 /** @description Commission in basis points. 1000 = 10% */
                                 commissionBps: number;
+                                /** @description Paise the customer pays Ruxstar on each order */
+                                platformFee: number;
                                 deliveryEnabled: boolean;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
@@ -9051,7 +10419,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "ORDER_STATE" | "PAYMENTS_UNAVAILABLE";
                 message: string;
                 details: ({
                     path?: string;

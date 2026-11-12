@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, ButtonLink, Icon, Tag, useToast } from "@/components/ui";
+import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useBack } from "@/components/social/Shell";
 import { useOnSignedOut } from "@/components/social/session";
@@ -60,7 +60,6 @@ function Product({ product, shopDays }: { product: ShopProduct; shopDays: number
 
 function ShopView({ shop }: { shop: Shop }) {
   const back = useBack();
-  const toast = useToast();
   const price = fromLine(shop);
   const photos = shop.photos.length ? shop.photos : [null];
   const place = [placeLine(shop), shop.pincode].filter(Boolean).join(" ");
@@ -125,13 +124,15 @@ function ShopView({ shop }: { shop: Shop }) {
           {price && <strong>{price}</strong>}
           <span className={styles.faint}>{shop.open ? readyLine(shop.turnaroundDays) : "Closed right now"}</span>
         </span>
-        <Button
-          size="lg"
-          disabled={!shop.open}
-          onClick={() => toast("Ordering is almost here. Soon you will upload your file, pick options and pay right here.")}
-        >
-          {shop.open ? "Order" : "Closed"}
-        </Button>
+        {shop.open && shop.catalog.length > 0 ? (
+          <ButtonLink size="lg" href={`/b/${shop.id}/order`}>
+            Order
+          </ButtonLink>
+        ) : (
+          <Button size="lg" disabled>
+            {shop.open ? "Order" : "Closed"}
+          </Button>
+        )}
       </div>
     </div>
   );
