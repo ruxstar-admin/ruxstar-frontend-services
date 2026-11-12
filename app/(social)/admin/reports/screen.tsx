@@ -9,7 +9,7 @@ import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { Button, Icon, Segmented, Skeleton, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { keepPost, removePost, reportQueue, type ReportCase, type ReportStatus } from "@/lib/api/admin";
+import { dismissPerson, keepPost, personQueue, removePost, reportQueue, type PersonCase, type ReportCase, type ReportStatus } from "@/lib/api/admin";
 import { ago, exact } from "@/lib/time";
 
 const TABS: { value: ReportStatus; label: string }[] = [
@@ -181,16 +181,152 @@ function Queue({ status }: { status: ReportStatus }) {
   );
 }
 
+const PERSON_REASON: Record<keyof PersonCase["reasons"], string> = {
+  spam: "Spam",
+  fake: "Fake account",
+  abuse: "Abuse",
+  scam: "Scam",
+  other: "Other",
+};
+
+const personTags = (c: PersonCase) =>
+  (Object.keys(PERSON_REASON) as (keyof PersonCase["reasons"])[]).filter((k) => c.reasons[k] > 0).map((k) => `${PERSON_REASON[k]} ${c.reasons[k]}`);
+
+function PersonDetail({ c, onDone }: { c: PersonCase; onDone: (c: PersonCase) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canAct = useCan("reports.act");
+  const canSeePeople = useCan("users.view");
+  const [busy, setBusy] = useState(false);
+  const key = useRef(crypto.randomUUID());
+
+  async function dismiss() {
+    setBusy(true);
+    try {
+      onDone(await dismissPerson(c.userId, key.current));
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className={styles.detail}>
+      <dl className={styles.facts}>
+        <Fact label="Reports" value={String(c.reports)} />
+        <Fact label="First reported" value={date(c.firstAt)} />
+        <Fact label="Last reported" value={date(c.lastAt)} />
+        {c.user && (
+          <Fact
+            label="Account"
+            value={canSeePeople ? <Link href={`/admin/users/${c.userId}`}>@{c.user.username}</Link> : `@${c.user.username}`}
+            warn={c.user.status !== "active"}
+          />
+        )}
+      </dl>
+      {c.notes.map((note, i) => (
+        <p key={i} className={styles.text}>
+          “{note}”
+        </p>
+      ))}
+      {c.status === "open" && <p className={styles.note}>Putting their account on hold from People closes these reports.</p>}
+      {c.status === "open" && canAct && (
+        <div className={styles.actions}>
+          {c.user && (
+            <Link href={`/u/${c.user.username}`} className={styles.muted} target="_blank">
+              Open their profile
+            </Link>
+          )}
+          <Button variant="secondary" onClick={dismiss} loading={busy}>
+            Dismiss reports
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PeopleQueue({ status }: { status: ReportStatus }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const [open, setOpen] = useState<string | null>(null);
+  const load = useCallback((cursor?: string) => personQueue(status, cursor), [status]);
+  const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
+  const sentinel = useNearEnd(more, hasMore && !error);
+
+  useEffect(() => {
+    if (error) onSignedOut(error);
+  }, [error, onSignedOut]);
+
+  if (loading) return <Rows />;
+  if (error && items.length === 0) return <Failed error={error} onRetry={reload} />;
+  if (items.length === 0) return <p className={styles.empty}>{status === "open" ? "No reported people." : "Nothing closed yet."}</p>;
+
+  return (
+    <ul className={styles.list}>
+      {items.map((c) => {
+        const expanded = open === c.userId;
+        const when = status === "open" ? c.lastAt : (c.closedAt ?? c.lastAt);
+        return (
+          <li key={c.userId} className={styles.item} data-open={expanded || undefined}>
+            <button type="button" className={styles.row} aria-expanded={expanded} onClick={() => setOpen(expanded ? null : c.userId)}>
+              <Avatar name={c.user?.name ?? "?"} url={c.user?.avatarUrl} size={44} />
+              <span className={styles.whoRow}>
+                <span className={styles.name}>{c.user?.name || "Deleted account"}</span>
+                <span className={`${styles.muted} ${styles.line}`}>
+                  {c.user ? `@${c.user.username} · ` : ""}
+                  {personTags(c).join(", ") || `${c.reports} reports`}
+                </span>
+              </span>
+              {c.outcome ? (
+                <Tag tone={c.outcome === "held" ? "danger" : "success"}>{c.outcome === "held" ? "On hold" : "Dismissed"}</Tag>
+              ) : (
+                <Tag tone="warning">{c.reports === 1 ? "1 report" : `${c.reports} reports`}</Tag>
+              )}
+              <time className={styles.time} dateTime={when} title={exact(when)}>
+                {ago(when)}
+              </time>
+              <Icon name="chevron-down" size={20} className={styles.chevron} />
+            </button>
+            {expanded && (
+              <PersonDetail
+                c={c}
+                onDone={(done) => {
+                  toast("Reports dismissed.", "success");
+                  setOpen(null);
+                  setItems((list) => list.filter((x) => x.userId !== done.userId));
+                }}
+              />
+            )}
+          </li>
+        );
+      })}
+      {hasMore && <li ref={sentinel} aria-hidden />}
+      {loadingMore && <Skeleton height={72} radius={14} />}
+    </ul>
+  );
+}
+
+type Subject = "posts" | "people";
+
+const SUBJECTS: { value: Subject; label: string }[] = [
+  { value: "posts", label: "Posts" },
+  { value: "people", label: "People" },
+];
+
 export function ReportsScreen() {
+  const [subject, setSubject] = useState<Subject>("posts");
   const [status, setStatus] = useState<ReportStatus>("open");
   return (
     <Needs need="reports.view">
       <div className={styles.page}>
         <div className={styles.head}>
-          <h1 className={styles.title}>Reported posts</h1>
+          <h1 className={styles.title}>Reports</h1>
+          <Segmented label="Reported" options={SUBJECTS} value={subject} onChange={setSubject} />
           <Segmented label="Show" options={TABS} value={status} onChange={setStatus} />
         </div>
-        <Queue key={status} status={status} />
+        {subject === "posts" ? <Queue key={`posts-${status}`} status={status} /> : <PeopleQueue key={`people-${status}`} status={status} />}
       </div>
     </Needs>
   );

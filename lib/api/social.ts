@@ -14,6 +14,10 @@ export type Comment = Json<"/v1/social/posts/{id}/comments", "get">["data"][numb
 export type Notification = Json<"/v1/notifications/", "get">["data"][number];
 export type PostKind = Post["kind"];
 export type ReportReason = paths["/v1/social/posts/{id}/report"]["post"]["requestBody"]["content"]["application/json"]["reason"];
+export type FeedTab = NonNullable<NonNullable<paths["/v1/social/feed"]["get"]["parameters"]["query"]>["tab"]>;
+export type Person = Json<"/v1/social/users/{ref}/followers", "get">["data"][number];
+export type Relation = Json<"/v1/social/users/{ref}/relation", "get">["data"];
+export type UserReportReason = paths["/v1/social/users/{id}/report"]["post"]["requestBody"]["content"]["application/json"]["reason"];
 type Upload = paths["/v1/social/media"]["post"]["responses"][201]["content"]["application/json"];
 
 export interface Page<T> {
@@ -35,6 +39,14 @@ export const REPORT_REASONS: { value: ReportReason; label: string }[] = [
   { value: "other", label: "Something else" },
 ];
 
+export const USER_REPORT_REASONS: { value: UserReportReason; label: string }[] = [
+  { value: "spam", label: "Spam" },
+  { value: "fake", label: "Fake account or pretending to be someone" },
+  { value: "abuse", label: "Rude or abusive" },
+  { value: "scam", label: "Scam or asking for money" },
+  { value: "other", label: "Something else" },
+];
+
 /** Every size of a photo for `srcSet`, so browsers fetch the smallest that looks sharp. */
 export const photoSrcSet = (photo: Photo) =>
   // Photos from before the API made smaller copies have none.
@@ -47,8 +59,9 @@ const toPage = <T>(envelope: { data: T[]; meta: { nextCursor?: string | null } }
 
 const id = (value: string) => ({ params: { path: { id: value } } });
 
-export const feed = async (cursor?: string) =>
-  toPage(await signedIn(() => unwrap(api.GET("/v1/social/feed", { params: { query: { cursor } } }))));
+/** For you ranks the week's posts by likes and comments; Following is people you follow, newest first. */
+export const feed = async (tab: FeedTab, cursor?: string) =>
+  toPage(await signedIn(() => unwrap(api.GET("/v1/social/feed", { params: { query: { tab, cursor } } }))));
 
 /** A multiple of three, so the profile grid fills whole rows. */
 export const PROFILE_PAGE = 24;
@@ -107,6 +120,30 @@ export const unreadCount = async () => (await signedIn(() => unwrap(api.GET("/v1
 
 export const markRead = (notificationId?: string) =>
   signedIn(() => unwrap(api.POST("/v1/notifications/read", { body: notificationId ? { id: notificationId } : {} })));
+
+const ref = (value: string) => ({ params: { path: { ref: value } } });
+
+/** `who` is a username or a user id. */
+export const relation = async (who: string) => (await signedIn(() => unwrap(api.GET("/v1/social/users/{ref}/relation", ref(who))))).data;
+
+export const setFollow = async (userId: string, on: boolean) =>
+  (await signedIn(() => unwrap(on ? api.PUT("/v1/social/users/{id}/follow", id(userId)) : api.DELETE("/v1/social/users/{id}/follow", id(userId))))).data;
+
+/** Signed out works too: `followedByMe` is then always false. */
+export const followers = async (who: string, cursor?: string) =>
+  toPage(await unwrap(api.GET("/v1/social/users/{ref}/followers", { params: { path: { ref: who }, query: { cursor } } })));
+
+export const following = async (who: string, cursor?: string) =>
+  toPage(await unwrap(api.GET("/v1/social/users/{ref}/following", { params: { path: { ref: who }, query: { cursor } } })));
+
+/** Both of you stop seeing each other, and follows both ways end. They aren't told. */
+export const setBlock = async (userId: string, on: boolean) =>
+  (await signedIn(() => unwrap(on ? api.PUT("/v1/social/users/{id}/block", id(userId)) : api.DELETE("/v1/social/users/{id}/block", id(userId))))).data;
+
+export const blocked = async (cursor?: string) => toPage(await signedIn(() => unwrap(api.GET("/v1/social/blocks", { params: { query: { cursor } } }))));
+
+export const reportUser = (userId: string, reason: UserReportReason) =>
+  signedIn(() => unwrap(api.POST("/v1/social/users/{id}/report", { ...id(userId), body: { reason } })));
 
 /** Without `q`, the newest members. Never includes you. */
 export const findPeople = async (q?: string) =>

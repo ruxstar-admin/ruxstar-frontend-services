@@ -242,6 +242,19 @@ export function AccountScreen() {
           </Setting>
 
           {user && (
+            <Setting id="blocked" title="Blocked accounts" description="People you blocked can't see your posts, comment, follow or message you.">
+              <div className={`${styles.panel} ${styles.devices}`}>
+                <div className={styles.device}>
+                  <p className={styles.muted}>See who you blocked, and unblock them.</p>
+                  <ButtonLink href="/blocked" variant="secondary">
+                    Open
+                  </ButtonLink>
+                </div>
+              </div>
+            </Setting>
+          )}
+
+          {user && (
             <Setting id="password" title="Password" description="Change it here, or reset it from the sign-in page.">
               <PasswordPanel phone={user.phone.replace(/^\+91/, "")} onSignedOut={toSignIn} />
             </Setting>

@@ -21,6 +21,7 @@ const ICONS: Record<Notification["type"], IconName> = {
   "business.restored": "store",
   "order.placed": "print",
   "order.updated": "print",
+  "user.followed": "user",
 };
 
 /** Businesses are run from the app's vendor portal for now, so their notices open the account page that says so. */
@@ -34,6 +35,8 @@ function hrefOf(link: Notification["link"]) {
       return `/orders/${link.id}`;
     case "shop_order":
       return `/sales/${link.id}`;
+    case "profile":
+      return `/u/${link.id}`;
     default:
       return `/p/${link.id}`;
   }

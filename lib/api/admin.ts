@@ -15,6 +15,7 @@ export type Permission = Access["permissions"][number];
 export type Overview = Json<"/v1/ruxstar/overview", "get">["data"];
 export type ReportCase = Json<"/v1/ruxstar/reports", "get">["data"][number];
 export type ReportStatus = NonNullable<Query<"/v1/ruxstar/reports">["status"]>;
+export type PersonCase = Json<"/v1/ruxstar/reports/people", "get">["data"][number];
 export type UserRow = Json<"/v1/ruxstar/users", "get">["data"][number];
 export type UserDetail = Json<"/v1/ruxstar/users/{id}", "get">["data"];
 export type UserStatus = UserRow["status"];
@@ -49,6 +50,15 @@ export const removePost = async (postId: string, reason: string, key = newIdempo
       unwrap(api.POST("/v1/ruxstar/reports/{postId}/remove", { params: { path: { postId } }, body: { reason }, ...keyed(key) })),
     )
   ).data;
+
+// Reported people.
+
+export const personQueue = async (status: ReportStatus, cursor?: string) =>
+  toPage(await signedIn(() => unwrap(api.GET("/v1/ruxstar/reports/people", { params: { query: { status, cursor } } }))));
+
+/** To act on the account instead, put it on hold; that closes these too. */
+export const dismissPerson = async (userId: string, key = newIdempotencyKey()) =>
+  (await signedIn(() => unwrap(api.POST("/v1/ruxstar/reports/people/{userId}/dismiss", { params: { path: { userId } }, ...keyed(key) })))).data;
 
 // People.
 

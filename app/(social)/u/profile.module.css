@@ -56,6 +56,29 @@
   font-variant-numeric: tabular-nums;
 }
 
+.stats a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.stats a:hover {
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.blockedNote {
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--line);
+  font: var(--type-body);
+  color: var(--ink-2);
+  text-align: center;
+}
+
 .about {
   grid-area: about;
   display: grid;
@@ -188,7 +211,8 @@
     text-align: center;
   }
 
-  .stats li {
+  .stats li,
+  .stats a {
     display: grid;
   }
 

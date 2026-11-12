@@ -248,6 +248,18 @@ a.row:hover {
   background: var(--surface);
 }
 
+/* A row that links to someone, with a button beside it. */
+.personRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.personRow .row {
+  flex: 1;
+  min-width: 0;
+}
+
 .rowText {
   display: grid;
   gap: 2px;

@@ -84,7 +84,11 @@ export function Dashboard() {
             )}
             {overview.reports && (
               <Tile href="/admin/reports" icon="flag" label="Reported posts" number={overview.reports.posts}>
-                {overview.reports.posts === 0 ? "No open reports." : `${overview.reports.reports} reports in all`}
+                {overview.reports.people > 0
+                  ? `${overview.reports.people === 1 ? "1 person" : `${overview.reports.people} people`} reported too`
+                  : overview.reports.posts === 0
+                    ? "No open reports."
+                    : `${overview.reports.reports} reports in all`}
               </Tile>
             )}
             {overview.users && (

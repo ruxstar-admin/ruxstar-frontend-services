@@ -4,7 +4,7 @@ import Link from "next/link";
 import { memo, useEffect, useRef, useState, type KeyboardEvent as KeyEvent } from "react";
 import { VerifiedTick } from "@/components/kyc/VerifiedTick";
 import { Avatar } from "@/components/profile/Avatar";
-import { Button, Icon, Tag, useToast } from "@/components/ui";
+import { Button, ButtonLink, Icon, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
 import { deletePost, editPost, photoSrcSet, POST_TEXT_MAX, REPORT_REASONS, reportPost, setLike, setSave, type Post } from "@/lib/api/social";
 import { ago, compact, exact } from "@/lib/time";
@@ -324,6 +324,27 @@ export const PostCard = memo(function PostCard({ post, onChange, onRemove, eager
       )}
 
       <Photos post={post} eager={eager} />
+
+      {post.business && (
+        <div className={styles.business}>
+          {post.business.module === "pod" ? (
+            <Link href={`/b/${post.business.id}`} className={styles.businessName}>
+              <Icon name="store" size={18} />
+              <span>{post.business.name}</span>
+            </Link>
+          ) : (
+            <span className={styles.businessName}>
+              <Icon name="store" size={18} />
+              <span>{post.business.name}</span>
+            </span>
+          )}
+          {post.business.orderable && (
+            <ButtonLink href={`/b/${post.business.id}/order`} icon={<Icon name="print" size={18} />}>
+              Order
+            </ButtonLink>
+          )}
+        </div>
+      )}
 
       <footer className={styles.actions}>
         <button

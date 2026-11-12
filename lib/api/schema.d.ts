@@ -398,6 +398,9 @@ export interface paths {
                                         posts: number;
                                         /** @description Likes and comments the posts have received */
                                         engagements: number;
+                                        followers: number;
+                                        /** @description How many people they follow */
+                                        following: number;
                                     };
                                     /** Format: date-time */
                                     createdAt: string;
@@ -525,6 +528,9 @@ export interface paths {
                                         posts: number;
                                         /** @description Likes and comments the posts have received */
                                         engagements: number;
+                                        followers: number;
+                                        /** @description How many people they follow */
+                                        following: number;
                                     };
                                     /** Format: date-time */
                                     createdAt: string;
@@ -653,6 +659,9 @@ export interface paths {
                                         posts: number;
                                         /** @description Likes and comments the posts have received */
                                         engagements: number;
+                                        followers: number;
+                                        /** @description How many people they follow */
+                                        following: number;
                                     };
                                     /** Format: date-time */
                                     createdAt: string;
@@ -1047,6 +1056,9 @@ export interface paths {
                                     posts: number;
                                     /** @description Likes and comments the posts have received */
                                     engagements: number;
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -1204,6 +1216,9 @@ export interface paths {
                                     posts: number;
                                     /** @description Likes and comments the posts have received */
                                     engagements: number;
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -1300,6 +1315,9 @@ export interface paths {
                                     posts: number;
                                     /** @description Likes and comments the posts have received */
                                     engagements: number;
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -1384,6 +1402,9 @@ export interface paths {
                                     posts: number;
                                     /** @description Likes and comments the posts have received */
                                     engagements: number;
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -1469,6 +1490,9 @@ export interface paths {
                                     posts: number;
                                     /** @description Likes and comments the posts have received */
                                     engagements: number;
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
                                 };
                                 /** Format: date-time */
                                 memberSince: string;
@@ -1517,7 +1541,7 @@ export interface paths {
         };
         /**
          * Anyone's public profile, by username or id
-         * @description No sign-in needed. Deleted accounts answer NOT_FOUND.
+         * @description No sign-in needed. Deleted accounts, and people who blocked you, answer NOT_FOUND.
          */
         get: {
             parameters: {
@@ -1557,6 +1581,9 @@ export interface paths {
                                     posts: number;
                                     /** @description Likes and comments the posts have received */
                                     engagements: number;
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
                                 };
                                 /** Format: date-time */
                                 memberSince: string;
@@ -1733,6 +1760,9 @@ export interface paths {
                                     posts: number;
                                     /** @description Likes and comments the posts have received */
                                     engagements: number;
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
                                 };
                                 /** Format: date-time */
                                 createdAt: string;
@@ -2703,6 +2733,655 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/social/users/{ref}/relation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** You and someone else: following, follows you, blocked, and their counts */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description A username, or a user id */
+                    ref: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description You follow them */
+                                following: boolean;
+                                followsMe: boolean;
+                                blockedByMe: boolean;
+                                counts: {
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/users/{ref}/followers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who follows someone, newest first
+         * @description No sign-in needed. Signed in, `followedByMe` says whether you follow each of them, and people you blocked or who blocked you are left out.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description A username, or a user id */
+                    ref: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                username: string;
+                                avatarUrl: string | null;
+                                vendor: boolean;
+                                /** @description Identity verified by Ruxstar */
+                                verified: boolean;
+                                followedByMe: boolean;
+                                /** @description This is you */
+                                me: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/users/{ref}/following": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who someone follows, newest first
+         * @description No sign-in needed. Signed in, `followedByMe` says whether you follow each of them, and people you blocked or who blocked you are left out.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description A username, or a user id */
+                    ref: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                username: string;
+                                avatarUrl: string | null;
+                                vendor: boolean;
+                                /** @description Identity verified by Ruxstar */
+                                verified: boolean;
+                                followedByMe: boolean;
+                                /** @description This is you */
+                                me: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/users/{id}/follow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Follow someone
+         * @description Open follows: no request. Following again changes nothing. They are told once.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description You follow them */
+                                following: boolean;
+                                followsMe: boolean;
+                                blockedByMe: boolean;
+                                counts: {
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Stop following someone */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description You follow them */
+                                following: boolean;
+                                followsMe: boolean;
+                                blockedByMe: boolean;
+                                counts: {
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/users/{id}/block": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Block someone
+         * @description You stop seeing each other's posts, comments and profile, follows both ways end, and neither of you can follow, comment on or message the other. They aren't told. Blocking again changes nothing.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description You follow them */
+                                following: boolean;
+                                followsMe: boolean;
+                                blockedByMe: boolean;
+                                counts: {
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Unblock someone
+         * @description Follows that ended when you blocked them don't come back.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description You follow them */
+                                following: boolean;
+                                followsMe: boolean;
+                                blockedByMe: boolean;
+                                counts: {
+                                    followers: number;
+                                    /** @description How many people they follow */
+                                    following: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** People you blocked, most recent first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                username: string;
+                                avatarUrl: string | null;
+                                vendor: boolean;
+                                /** @description Identity verified by Ruxstar */
+                                verified: boolean;
+                                followedByMe: boolean;
+                                /** @description This is you */
+                                me: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/users/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report someone to Ruxstar
+         * @description One open report per person you report; reporting them again while it is open changes nothing. They aren't told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: "spam" | "fake" | "abuse" | "scam" | "other";
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/social/feed": {
         parameters: {
             query?: never;
@@ -2710,12 +3389,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Everyone's posts, newest first */
+        /**
+         * The feed: For you, or Following
+         * @description `for_you` (the default) is the last week's posts ranked by likes and comments, newer first, with people you follow boosted; older posts follow, newest first. `following` is posts by people you follow, and yours, newest first. Both leave out anyone you blocked or who blocked you.
+         */
         get: {
             parameters: {
                 query?: {
                     cursor?: string;
                     limit?: number;
+                    tab?: "for_you" | "following";
                 };
                 header?: never;
                 path?: never;
@@ -2744,6 +3427,15 @@ export interface paths {
                                     verified: boolean;
                                 };
                                 kind: "personal" | "business";
+                                /** @description The business a business post is for */
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description A live print shop: show Order, which opens its order page */
+                                    orderable: boolean;
+                                } | null;
                                 text: string;
                                 media: {
                                     url: string;
@@ -2850,6 +3542,15 @@ export interface paths {
                                     verified: boolean;
                                 };
                                 kind: "personal" | "business";
+                                /** @description The business a business post is for */
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description A live print shop: show Order, which opens its order page */
+                                    orderable: boolean;
+                                } | null;
                                 text: string;
                                 media: {
                                     url: string;
@@ -2949,6 +3650,15 @@ export interface paths {
                                     verified: boolean;
                                 };
                                 kind: "personal" | "business";
+                                /** @description The business a business post is for */
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description A live print shop: show Order, which opens its order page */
+                                    orderable: boolean;
+                                } | null;
                                 text: string;
                                 media: {
                                     url: string;
@@ -3051,6 +3761,15 @@ export interface paths {
                                     verified: boolean;
                                 };
                                 kind: "personal" | "business";
+                                /** @description The business a business post is for */
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description A live print shop: show Order, which opens its order page */
+                                    orderable: boolean;
+                                } | null;
                                 text: string;
                                 media: {
                                     url: string;
@@ -3194,6 +3913,15 @@ export interface paths {
                                     verified: boolean;
                                 };
                                 kind: "personal" | "business";
+                                /** @description The business a business post is for */
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description A live print shop: show Order, which opens its order page */
+                                    orderable: boolean;
+                                } | null;
                                 text: string;
                                 media: {
                                     url: string;
@@ -3345,6 +4073,8 @@ export interface paths {
                         text: string;
                         mediaIds?: string[];
                         kind?: "personal" | "business";
+                        /** @description Business posts only: which of your businesses it is for. Picked for you when you have just one. */
+                        businessId?: string | null;
                     };
                 };
             };
@@ -3370,6 +4100,15 @@ export interface paths {
                                     verified: boolean;
                                 };
                                 kind: "personal" | "business";
+                                /** @description The business a business post is for */
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description A live print shop: show Order, which opens its order page */
+                                    orderable: boolean;
+                                } | null;
                                 text: string;
                                 media: {
                                     url: string;
@@ -3979,12 +4718,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated";
+                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders and `shop_order` an order to your shop in the vendor portal; `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order";
+                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal and `profile` someone's profile (by user id); `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile";
                                     id: string;
                                 };
                                 read: boolean;
@@ -7879,6 +8618,8 @@ export interface paths {
                                 reports: {
                                     posts: number;
                                     reports: number;
+                                    /** @description People with open reports */
+                                    people: number;
                                 } | null;
                                 users: {
                                     total: number;
@@ -8631,6 +9372,194 @@ export interface paths {
                                 /** Format: date-time */
                                 lastAt: string;
                                 outcome: ("kept" | "removed") | null;
+                                closedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/reports/people": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reported people, one row per person
+         * @description `open` (the default) is waiting for a decision, newest report first. `closed` is decided, newest decision first.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "open" | "closed";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                userId: string;
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    status: "active" | "locked" | "deleted";
+                                } | null;
+                                status: "open" | "closed";
+                                reports: number;
+                                reasons: {
+                                    spam: number;
+                                    fake: number;
+                                    abuse: number;
+                                    scam: number;
+                                    other: number;
+                                };
+                                /** @description What reporters wrote, newest first, up to 5 */
+                                notes: string[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                outcome: ("dismissed" | "held") | null;
+                                closedAt: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/reports/people/{userId}/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close the reports about someone without acting on their account
+         * @description To act on the account, put it on hold from People; that closes these reports too.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                userId: string;
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    status: "active" | "locked" | "deleted";
+                                } | null;
+                                status: "open" | "closed";
+                                reports: number;
+                                reasons: {
+                                    spam: number;
+                                    fake: number;
+                                    abuse: number;
+                                    scam: number;
+                                    other: number;
+                                };
+                                /** @description What reporters wrote, newest first, up to 5 */
+                                notes: string[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                outcome: ("dismissed" | "held") | null;
                                 closedAt: string | null;
                             };
                             meta: {

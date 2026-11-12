@@ -7,12 +7,12 @@ import { Icon, Tag } from "@/components/ui";
 import type { PublicProfile } from "@/lib/api/account";
 import { API_URL } from "@/lib/api/client";
 import { fetchPublicPosts } from "@/lib/api/social";
-import { compact } from "@/lib/time";
 import styles from "../profile.module.css";
-import { ProfileActions } from "./actions";
 import { ProfilePosts } from "./posts";
+import { ProfileActions, ProfileRelation, ProfileStats, UnlessBlocked } from "./relation";
 
-const HANDLE = /^[a-z0-9_.]{3,20}$/;
+/** A username, or a user id from a notification; an id redirects to the username. */
+const HANDLE = /^(?:[a-z0-9_.]{3,20}|[a-f0-9]{24})$/;
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -74,50 +74,47 @@ export default async function ProfilePage({ params }: Props) {
     },
   };
 
-  const { posts: postCount, engagements } = profile.stats;
+  const { posts: postCount, followers, following } = profile.stats;
 
   return (
     <article className={styles.page}>
-      <header className={styles.header}>
-        <div className={styles.photo}>
-          <Avatar name={profile.name} url={profile.avatarUrl} size="var(--avatar)" />
-        </div>
-        <div className={styles.top}>
-          <h1 className={styles.username}>{profile.username}</h1>
-          <ProfileActions ownerId={profile.id} />
-        </div>
-        <ul className={styles.stats}>
-          <li>
-            <strong>{compact(postCount)}</strong> {postCount === 1 ? "post" : "posts"}
-          </li>
-          <li>
-            <strong>{compact(engagements)}</strong> {engagements === 1 ? "engagement" : "engagements"}
-          </li>
-        </ul>
-        <div className={styles.about}>
-          <p className={styles.name}>
-            {profile.name}
-            {profile.badges.verified && <VerifiedTick />}
-            {badges.map((badge) => (
-              <Tag key={badge}>{badge}</Tag>
-            ))}
-          </p>
-          {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
-          <ul className={styles.facts}>
-            {profile.city && (
+      <ProfileRelation ownerId={profile.id} username={profile.username} name={profile.name} counts={{ followers, following }}>
+        <header className={styles.header}>
+          <div className={styles.photo}>
+            <Avatar name={profile.name} url={profile.avatarUrl} size="var(--avatar)" />
+          </div>
+          <div className={styles.top}>
+            <h1 className={styles.username}>{profile.username}</h1>
+            <ProfileActions />
+          </div>
+          <ProfileStats posts={postCount} />
+          <div className={styles.about}>
+            <p className={styles.name}>
+              {profile.name}
+              {profile.badges.verified && <VerifiedTick />}
+              {badges.map((badge) => (
+                <Tag key={badge}>{badge}</Tag>
+              ))}
+            </p>
+            {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
+            <ul className={styles.facts}>
+              {profile.city && (
+                <li>
+                  <Icon name="map-pin" size={16} />
+                  {profile.city}
+                </li>
+              )}
               <li>
-                <Icon name="map-pin" size={16} />
-                {profile.city}
+                <Icon name="calendar" size={16} />
+                Member since {since}
               </li>
-            )}
-            <li>
-              <Icon name="calendar" size={16} />
-              Member since {since}
-            </li>
-          </ul>
-        </div>
-      </header>
-      <ProfilePosts ownerId={profile.id} username={profile.username} vendor={profile.badges.vendor} initial={posts ?? { items: [], nextCursor: null }} />
+            </ul>
+          </div>
+        </header>
+        <UnlessBlocked>
+          <ProfilePosts ownerId={profile.id} username={profile.username} vendor={profile.badges.vendor} initial={posts ?? { items: [], nextCursor: null }} />
+        </UnlessBlocked>
+      </ProfileRelation>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structured).replace(/</g, "\\u003c") }} />
     </article>
   );
