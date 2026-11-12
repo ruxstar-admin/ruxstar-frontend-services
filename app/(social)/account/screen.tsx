@@ -183,12 +183,12 @@ export function AccountScreen() {
                       Vendor portal <Tag tone={user.roles.vendor ? "success" : "neutral"}>{user.roles.vendor ? "Open" : "After verification"}</Tag>
                     </p>
                     <p className={styles.muted}>
-                      {user.roles.vendor ? "Orders to your shops are here. Add businesses and set up payments in the Ruxstar app." : "Verify your identity to open it."}
+                      {user.roles.vendor ? "Your businesses, orders, business posts and payments." : "Verify your identity to open it."}
                     </p>
                   </div>
                   {user.roles.vendor && (
-                    <ButtonLink href="/sales" variant="secondary">
-                      Shop orders
+                    <ButtonLink href="/vendor" variant="secondary">
+                      Open
                     </ButtonLink>
                   )}
                 </div>

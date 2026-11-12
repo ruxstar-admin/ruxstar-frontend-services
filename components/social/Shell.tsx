@@ -39,6 +39,34 @@ export function useBack() {
   return useCallback(() => (visits > 1 ? router.back() : router.push("/feed")), [router]);
 }
 
+const inPortal = (path: string) => path === "/vendor" || path.startsWith("/vendor/");
+
+/** Where the switch goes back to in the portal, for this visit. */
+let lastPortalPath = "/vendor";
+
+/** Vendors only: on is the vendor portal, off is the rest of Ruxstar. The tabs stay the same either way. */
+function PortalSwitch() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const on = inPortal(pathname);
+  if (on) lastPortalPath = pathname;
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      className={styles.portal}
+      title={on ? "Leave the vendor portal" : "Open the vendor portal"}
+      onClick={() => router.push(on ? "/feed" : lastPortalPath)}
+    >
+      <span className={styles.portalTrack} aria-hidden>
+        <span className={styles.portalKnob} />
+      </span>
+      Vendor portal
+    </button>
+  );
+}
+
 /** Polls gently: on every page change and when the tab comes back into view. */
 function useUnread(signedIn: boolean) {
   const pathname = usePathname();
@@ -102,13 +130,16 @@ function Nav() {
             <ButtonLink href="/signup">Join Ruxstar</ButtonLink>
           </div>
         ) : (
-          <nav className={styles.nav} aria-label="Main" data-ready={me ? true : undefined}>
-            {tabs.map(tab)}
-            <Link href={profileHref} className={styles.tab} aria-current={pathname === profileHref ? "page" : undefined}>
-              <span className={styles.icon}>{me ? <Avatar name={me.name} url={me.avatarUrl} size={28} /> : <Icon name="user" />}</span>
-              <span className={styles.tabLabel}>Profile</span>
-            </Link>
-          </nav>
+          <div className={styles.end}>
+            {me?.roles.vendor && <PortalSwitch />}
+            <nav className={styles.nav} aria-label="Main" data-ready={me ? true : undefined}>
+              {tabs.map(tab)}
+              <Link href={profileHref} className={styles.tab} aria-current={pathname === profileHref ? "page" : undefined}>
+                <span className={styles.icon}>{me ? <Avatar name={me.name} url={me.avatarUrl} size={28} /> : <Icon name="user" />}</span>
+                <span className={styles.tabLabel}>Profile</span>
+              </Link>
+            </nav>
+          </div>
         )}
       </header>
     </>

@@ -24,17 +24,16 @@ const ICONS: Record<Notification["type"], IconName> = {
   "user.followed": "user",
 };
 
-/** Businesses are run from the app's vendor portal for now, so their notices open the account page that says so. */
 function hrefOf(link: Notification["link"]) {
   switch (link.screen) {
     case "verification":
       return "/verify";
     case "business":
-      return "/account#verification";
+      return `/vendor/businesses/${link.id}`;
     case "order":
       return `/orders/${link.id}`;
     case "shop_order":
-      return `/sales/${link.id}`;
+      return `/vendor/orders/${link.id}`;
     case "profile":
       return `/u/${link.id}`;
     default:

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { RuxstarCard } from "@/components/kyc/RuxstarCard";
 import { useOnSignedOut } from "@/components/social/session";
@@ -186,7 +187,10 @@ export function VerifyScreen() {
               <RuxstarCard card={card} />
               <p className={styles.muted}>Only you can see your masked Aadhaar and PAN. Others see the Verified tick on your profile and posts.</p>
               <p className={styles.note} data-tone="info">
-                <Icon name="store" size={20} /> Your vendor portal is open in the Ruxstar app. Add your businesses and set up payments from your profile.
+                <Icon name="store" size={20} />
+                <span>
+                  Your vendor portal is open. <Link href="/vendor">Add your businesses and set up payments</Link>, here or in the Ruxstar app.
+                </span>
               </p>
             </div>
           ) : (

@@ -11,6 +11,7 @@ import { formError } from "@/lib/api/account";
 import { SHOP_STATUS_LABEL, shopOrders, type ShopOrderView } from "@/lib/api/orders";
 import social from "@/components/social/social.module.css";
 import styles from "@/components/shop/order.module.css";
+import vendor from "@/components/vendor/vendor.module.css";
 
 const VIEWS = [
   { value: "new", label: "New" },
@@ -54,7 +55,7 @@ function SalesList({ view }: { view: ShopOrderView }) {
   return (
     <ul className={styles.rows}>
       {items.map((o) => (
-        <OrderRow key={o.id} href={`/sales/${o.id}`} order={o} subtitle={o.shop.name} amount={o.price.payout} labels={SHOP_STATUS_LABEL} />
+        <OrderRow key={o.id} href={`/vendor/orders/${o.id}`} order={o} subtitle={o.shop.name} amount={o.price.payout} labels={SHOP_STATUS_LABEL} />
       ))}
       {hasMore && <li ref={sentinel} className={social.sentinel} aria-hidden />}
       {loadingMore && <SkeletonRows count={1} />}
@@ -66,8 +67,8 @@ function SalesList({ view }: { view: ShopOrderView }) {
 export function SalesScreen() {
   const [view, setView] = useState<ShopOrderView>("new");
   return (
-    <div className={styles.page}>
-      <h1 className={styles.title}>Shop orders</h1>
+    <div className={vendor.page}>
+      <h1 className={vendor.title}>Orders</h1>
       <Segmented options={VIEWS} value={view} onChange={setView} label="Which orders" />
       <SalesList key={view} view={view} />
     </div>

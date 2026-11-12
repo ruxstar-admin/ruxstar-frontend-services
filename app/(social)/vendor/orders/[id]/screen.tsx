@@ -5,6 +5,7 @@ import { Button, ButtonLink, Icon, Input, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { FileItem, PriceList, Progress } from "@/components/shop/OrderParts";
+import { Back } from "@/components/vendor/parts";
 import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import {
@@ -25,6 +26,7 @@ import { money } from "@/lib/api/shops";
 import { ago } from "@/lib/time";
 import shopStyles from "@/components/shop/shop.module.css";
 import styles from "@/components/shop/order.module.css";
+import vendor from "@/components/vendor/vendor.module.css";
 
 function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (order: ShopOrder) => void }) {
   const [moving, setMoving] = useState<ShopStatus | null>(null);
@@ -67,7 +69,8 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
   const { address } = order;
 
   return (
-    <div className={styles.page}>
+    <div className={vendor.page}>
+      <Back href="/vendor/orders">Orders</Back>
       <div className={styles.titleRow}>
         <div>
           <h1 className={styles.title}>{`Order #${order.orderNo}`}</h1>
@@ -207,8 +210,8 @@ export function ShopOrderScreen({ id }: { id: string }) {
       <Empty title={gone ? "Order not found" : "Could not load this order"}>
         <p>{formError(error).message}</p>
         {gone ? (
-          <ButtonLink href="/sales" variant="secondary">
-            Shop orders
+          <ButtonLink href="/vendor/orders" variant="secondary">
+            Orders
           </ButtonLink>
         ) : (
           <Button variant="secondary" icon={<Icon name="refresh" size={16} />} onClick={() => void load()}>
@@ -219,7 +222,7 @@ export function ShopOrderScreen({ id }: { id: string }) {
     );
   }
   return (
-    <div className={styles.page} aria-busy>
+    <div className={vendor.page} aria-busy>
       <div className={shopStyles.skeletonCard} />
     </div>
   );

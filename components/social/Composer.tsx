@@ -19,7 +19,17 @@ interface Draft {
 }
 
 /** Write a post with up to four photos. Ctrl or Cmd + Enter posts. Photos can be pasted in. */
-export function Composer({ me, kind = "personal", onPosted }: { me: User; kind?: PostKind; onPosted: (post: Post) => void }) {
+export function Composer({
+  me,
+  kind = "personal",
+  businessId,
+  onPosted,
+}: {
+  me: User;
+  kind?: PostKind;
+  businessId?: string;
+  onPosted: (post: Post) => void;
+}) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
   const [text, setText] = useState("");
@@ -90,7 +100,7 @@ export function Composer({ me, kind = "personal", onPosted }: { me: User; kind?:
     if (!ready || posting) return;
     setPosting(true);
     try {
-      const post = await createPost({ text: text.trim(), mediaIds: drafts.map((d) => d.id!), kind });
+      const post = await createPost({ text: text.trim(), mediaIds: drafts.map((d) => d.id!), kind, ...(kind === "business" && businessId ? { businessId } : {}) });
       onPosted(post);
       setText("");
       drafts.forEach((d) => removeDraft(d.key));

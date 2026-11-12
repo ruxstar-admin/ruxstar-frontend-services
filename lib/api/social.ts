@@ -88,7 +88,8 @@ async function postPhoto(photo: Blob) {
 
 export const uploadPhoto = async (photo: Blob) => (await signedIn(() => unwrap(postPhoto(photo)))).data;
 
-export const createPost = async (body: { text: string; mediaIds: string[]; kind: PostKind }) =>
+/** `businessId` names which of the vendor's businesses a business post is for. */
+export const createPost = async (body: { text: string; mediaIds: string[]; kind: PostKind; businessId?: string }) =>
   (await signedIn(() => unwrap(api.POST("/v1/social/posts", { body })))).data;
 
 export const editPost = async (postId: string, text: string) =>

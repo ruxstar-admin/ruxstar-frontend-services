@@ -23,7 +23,14 @@ function Tab({ ownerId, username, kind, initial, mine }: { ownerId: string; user
       pages={pages}
       empty={
         <Empty title={business ? "No business posts yet" : mine ? "Share your first post" : "No posts yet"}>
-          {mine && business && <p>Post offers and updates from the vendor portal in the Ruxstar app.</p>}
+          {mine && business && (
+            <>
+              <p>Post offers and updates from the vendor portal.</p>
+              <ButtonLink href="/vendor/posts" variant="secondary">
+                Post as business
+              </ButtonLink>
+            </>
+          )}
           {mine && !business && (
             <>
               <p>Your posts show up here and in everyone&apos;s feed.</p>
