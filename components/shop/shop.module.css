@@ -51,6 +51,35 @@
   background: var(--ink);
 }
 
+.filters {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* The second row narrows the first, so it is smaller and outlined. */
+.subChip {
+  flex: none;
+  height: 30px;
+  padding: 0 var(--space-3);
+  font: 500 13px/18px var(--font);
+  color: var(--ink-2);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: border-color var(--dur-quick) var(--ease-out), color var(--dur-quick) var(--ease-out);
+}
+
+.subChip:hover {
+  color: var(--ink);
+}
+
+.subChip[aria-pressed="true"] {
+  color: var(--accent-soft);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--accent);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));

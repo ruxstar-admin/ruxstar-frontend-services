@@ -20,17 +20,28 @@ export const shops = async (filters: ShopFilters, cursor?: string): Promise<Page
 
 export const getShop = async (id: string) => (await signedIn(() => unwrap(api.GET("/v1/pod/shops/{id}", { params: { path: { id } } })))).data;
 
-let products: Promise<Catalog["podProducts"]> | null = null;
+export type Category = Catalog["categories"][number];
+export type BusinessModule = Category["module"];
 
-/** What print shops can make, for the Discover filters. Fetched once per visit. */
-export function podProducts() {
-  products ??= signedIn(() => unwrap(api.GET("/v1/vendor/catalog")))
-    .then((r) => r.data.podProducts)
+/** Short names for the Discover chips; the catalog has the full category names. Same as the app. */
+export const MODULE_LABEL: Record<BusinessModule, string> = {
+  pod: "Print on demand",
+  events: "Events",
+  coaching: "Coaching",
+  stays: "Stays",
+};
+
+let catalog: Promise<Pick<Catalog, "categories" | "podProducts">> | null = null;
+
+/** The categories and what print shops can make, for the Discover filters. Fetched once per visit. */
+export function discoverCatalog() {
+  catalog ??= signedIn(() => unwrap(api.GET("/v1/vendor/catalog")))
+    .then((r) => ({ categories: r.data.categories, podProducts: r.data.podProducts }))
     .catch((err) => {
-      products = null;
+      catalog = null;
       throw err;
     });
-  return products;
+  return catalog;
 }
 
 export const money = (paise: number) =>

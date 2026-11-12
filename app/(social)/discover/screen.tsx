@@ -7,7 +7,7 @@ import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { ShopCard, ShopCardSkeleton } from "@/components/shop/ShopCard";
 import { formError } from "@/lib/api/account";
-import { podProducts, shops, type PodProduct, type ShopFilters } from "@/lib/api/shops";
+import { discoverCatalog, MODULE_LABEL, shops, type BusinessModule, type Category, type PodProduct, type ShopFilters } from "@/lib/api/shops";
 import social from "@/components/social/social.module.css";
 import styles from "@/components/shop/shop.module.css";
 
@@ -44,8 +44,8 @@ function Results({ filters }: { filters: ShopFilters }) {
   if (items.length === 0) {
     const searching = Boolean(filters.q || filters.product);
     return (
-      <Empty title={searching ? "No shops match" : "No print shops yet"}>
-        <p>{searching ? "Try another product or name." : "Print shops on Ruxstar show up here as soon as they open."}</p>
+      <Empty title={searching ? "No businesses match" : "No businesses yet"}>
+        <p>{searching ? "Try another product or name." : "Businesses on Ruxstar show up here as soon as they open."}</p>
       </Empty>
     );
   }
@@ -69,12 +69,14 @@ function Results({ filters }: { filters: ShopFilters }) {
   );
 }
 
-/** Print shops customers can order from, searchable and filtered by what they print. Same as the app's Discover tab. */
+/** Businesses customers can order from: a category first, then what it offers. Same as the app's Discover tab. */
 export function DiscoverScreen() {
   const [text, setText] = useState("");
   const [q, setQ] = useState("");
+  const [category, setCategory] = useState<BusinessModule | null>(null);
   const [product, setProduct] = useState<PodProduct | null>(null);
-  const [chips, setChips] = useState<{ id: PodProduct; label: string }[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<{ id: PodProduct; label: string }[]>([]);
 
   useEffect(() => {
     const t = setTimeout(() => setQ(text.trim()), DEBOUNCE_MS);
@@ -82,21 +84,27 @@ export function DiscoverScreen() {
   }, [text]);
 
   useEffect(() => {
-    podProducts().then(setChips, () => undefined);
+    discoverCatalog().then((c) => {
+      setCategories(c.categories);
+      setProducts(c.podProducts);
+    }, () => undefined);
   }, []);
 
-  const filters: ShopFilters = { ...(q ? { q } : {}), ...(product ? { product } : {}) };
-  const chip = (id: PodProduct | null, label: string) => (
-    <button key={id ?? "all"} type="button" className={styles.chip} aria-pressed={product === id} onClick={() => setProduct(id)}>
-      {label}
-    </button>
-  );
+  const picked = categories.find((c) => c.module === category);
+  const comingSoon = picked ? !picked.live || picked.module !== "pod" : false;
+  const printOpen = categories.some((c) => c.module === "pod" && c.live) && category !== "pod";
+  const filters: ShopFilters = { ...(q ? { q } : {}), ...(category === "pod" && product ? { product } : {}) };
+
+  const pickCategory = (next: BusinessModule | null) => {
+    setCategory(next);
+    setProduct(null);
+  };
 
   return (
     <div className={styles.page}>
       <div className={styles.head}>
         <h1 className={styles.title}>Discover</h1>
-        <p className={styles.subtitle}>Print shops on Ruxstar</p>
+        <p className={styles.subtitle}>Businesses on Ruxstar</p>
       </div>
       <label className={social.searchBox}>
         <Icon name="search" size={20} />
@@ -105,17 +113,50 @@ export function DiscoverScreen() {
           type="search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Search shops"
-          aria-label="Search shops"
+          placeholder="Search businesses"
+          aria-label="Search businesses"
           autoComplete="off"
           spellCheck={false}
         />
       </label>
-      <div className={styles.chips} role="group" aria-label="What they print">
-        {chip(null, "All")}
-        {chips.map((c) => chip(c.id, c.label))}
+      <div className={styles.filters}>
+        <div className={styles.chips} role="group" aria-label="Category">
+          <button type="button" className={styles.chip} aria-pressed={category === null} onClick={() => pickCategory(null)}>
+            All
+          </button>
+          {categories.map((c) => (
+            <button key={c.module} type="button" className={styles.chip} aria-pressed={category === c.module} onClick={() => pickCategory(c.module)}>
+              {MODULE_LABEL[c.module]}
+            </button>
+          ))}
+        </div>
+        {category === "pod" && !comingSoon && (
+          <div className={styles.chips} role="group" aria-label="What they print">
+            <button type="button" className={styles.subChip} aria-pressed={product === null} onClick={() => setProduct(null)}>
+              All print
+            </button>
+            {products.map((p) => (
+              <button key={p.id} type="button" className={styles.subChip} aria-pressed={product === p.id} onClick={() => setProduct(p.id)}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-      <Results key={`${q}|${product ?? ""}`} filters={filters} />
+      {comingSoon && picked ? (
+        <Empty title={`${MODULE_LABEL[picked.module]} coming soon`}>
+          <p>
+            {picked.label} open on Ruxstar soon.{printOpen && " Print shops are open now."}
+          </p>
+          {printOpen && (
+            <Button variant="secondary" onClick={() => pickCategory("pod")}>
+              See print shops
+            </Button>
+          )}
+        </Empty>
+      ) : (
+        <Results key={`${q}|${category ?? ""}|${product ?? ""}`} filters={filters} />
+      )}
     </div>
   );
 }
