@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { prettyPhone } from "@/components/auth/fields";
 import { useSetMe } from "@/components/social/session";
-import { Button, ButtonLink, Skeleton, Tag, useToast, type TagTone } from "@/components/ui";
+import { Button, ButtonLink, Skeleton, Switch, Tag, useToast, type TagTone } from "@/components/ui";
 import {
   endSession,
   formError,
@@ -12,6 +12,7 @@ import {
   isSignedOut,
   listSessions,
   signOut,
+  updateMe,
   type DeviceSession,
   type User,
 } from "@/lib/api/account";
@@ -59,6 +60,7 @@ export function AccountScreen() {
   const [leaving, setLeaving] = useState(false);
   const [ending, setEnding] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [savingActivity, setSavingActivity] = useState(false);
 
   const toSignIn = useCallback(() => router.replace("/signin?next=/account"), [router]);
 
@@ -97,6 +99,24 @@ export function AccountScreen() {
       toast(formError(err).message, "danger");
     } finally {
       setEnding(null);
+    }
+  }
+
+  async function changeActivity(show: boolean) {
+    if (!user) return;
+    const before = user;
+    setUser({ ...user, showActivity: show });
+    setSavingActivity(true);
+    try {
+      const saved = await updateMe({ showActivity: show });
+      setUser(saved);
+      setMe(saved);
+    } catch (err) {
+      setUser(before);
+      if (isSignedOut(err)) return toSignIn();
+      toast(formError(err).message, "danger");
+    } finally {
+      setSavingActivity(false);
     }
   }
 
@@ -260,6 +280,25 @@ export function AccountScreen() {
                     Open
                   </ButtonLink>
                 </div>
+              </div>
+            </Setting>
+          )}
+
+          {user && (
+            <Setting id="activity" title="Activity status" description="Like Instagram: in chats, people see when you were last active.">
+              <div className={styles.panel}>
+                <Switch
+                  checked={user.showActivity}
+                  disabled={savingActivity}
+                  onChange={changeActivity}
+                  description={
+                    user.showActivity
+                      ? "People you chat with can see when you were last active."
+                      : "No one sees when you're active, and you won't see when others are."
+                  }
+                >
+                  Show activity status
+                </Switch>
               </div>
             </Setting>
           )}

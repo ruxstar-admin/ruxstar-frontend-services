@@ -402,6 +402,8 @@ export interface paths {
                                         /** @description How many people they follow */
                                         following: number;
                                     };
+                                    /** @description Activity status: people they chat with see when they were last active. Off, they don't see anyone else's either. */
+                                    showActivity: boolean;
                                     /** Format: date-time */
                                     createdAt: string;
                                 };
@@ -532,6 +534,8 @@ export interface paths {
                                         /** @description How many people they follow */
                                         following: number;
                                     };
+                                    /** @description Activity status: people they chat with see when they were last active. Off, they don't see anyone else's either. */
+                                    showActivity: boolean;
                                     /** Format: date-time */
                                     createdAt: string;
                                 };
@@ -663,6 +667,8 @@ export interface paths {
                                         /** @description How many people they follow */
                                         following: number;
                                     };
+                                    /** @description Activity status: people they chat with see when they were last active. Off, they don't see anyone else's either. */
+                                    showActivity: boolean;
                                     /** Format: date-time */
                                     createdAt: string;
                                 };
@@ -1060,6 +1066,8 @@ export interface paths {
                                     /** @description How many people they follow */
                                     following: number;
                                 };
+                                /** @description Activity status: people they chat with see when they were last active. Off, they don't see anyone else's either. */
+                                showActivity: boolean;
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -1150,7 +1158,7 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Update name, username, email, bio, date of birth, gender or city */
+        /** Update name, username, email, bio, date of birth, gender, city or activity status */
         patch: {
             parameters: {
                 query?: never;
@@ -1169,6 +1177,8 @@ export interface paths {
                         dob?: string | null;
                         gender?: ("female" | "male" | "other") | null;
                         city?: string | null;
+                        /** @description Off forgets when they were last active and hides everyone else's from them */
+                        showActivity?: boolean;
                     };
                 };
             };
@@ -1220,6 +1230,8 @@ export interface paths {
                                     /** @description How many people they follow */
                                     following: number;
                                 };
+                                /** @description Activity status: people they chat with see when they were last active. Off, they don't see anyone else's either. */
+                                showActivity: boolean;
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -1319,6 +1331,8 @@ export interface paths {
                                     /** @description How many people they follow */
                                     following: number;
                                 };
+                                /** @description Activity status: people they chat with see when they were last active. Off, they don't see anyone else's either. */
+                                showActivity: boolean;
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -1406,6 +1420,8 @@ export interface paths {
                                     /** @description How many people they follow */
                                     following: number;
                                 };
+                                /** @description Activity status: people they chat with see when they were last active. Off, they don't see anyone else's either. */
+                                showActivity: boolean;
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -1764,6 +1780,8 @@ export interface paths {
                                     /** @description How many people they follow */
                                     following: number;
                                 };
+                                /** @description Activity status: people they chat with see when they were last active. Off, they don't see anyone else's either. */
+                                showActivity: boolean;
                                 /** Format: date-time */
                                 createdAt: string;
                             };
