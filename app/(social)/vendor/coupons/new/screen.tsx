@@ -5,10 +5,23 @@ import { NewCouponForm } from "@/components/coupons/NewCouponForm";
 import { ButtonLink } from "@/components/ui";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
-import { createVendorCoupon, myBusinesses } from "@/lib/api/vendor";
+import { createTeamCoupon, createVendorCoupon, myBusinesses } from "@/lib/api/vendor";
 import styles from "@/components/vendor/vendor.module.css";
 
-export function NewVendorCouponScreen() {
+/** One shop's new coupon, from Work: it works at that shop only. */
+function TeamCoupon({ placeId }: { placeId: string }) {
+  const router = useRouter();
+  const back = `/work/${placeId}/coupons`;
+  return (
+    <div className={styles.page}>
+      <Back href={back}>Coupons</Back>
+      <h1 className={styles.title}>New coupon</h1>
+      <NewCouponForm who="team" create={(body, key) => createTeamCoupon(placeId, body, key)} onDone={() => router.push(back)} />
+    </div>
+  );
+}
+
+function VendorCoupon() {
   const router = useRouter();
   const businesses = useLoad(myBusinesses);
 
@@ -38,4 +51,9 @@ export function NewVendorCouponScreen() {
       )}
     </div>
   );
+}
+
+/** A vendor's new coupon for their print shops, or with `placeId` one shop's from Work. Same as the app. */
+export function NewVendorCouponScreen({ placeId }: { placeId?: string }) {
+  return placeId ? <TeamCoupon placeId={placeId} /> : <VendorCoupon />;
 }

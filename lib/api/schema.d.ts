@@ -6719,7 +6719,7 @@ export interface paths {
         put?: never;
         /**
          * Make a post: text, up to 4 photos, or both
-         * @description Upload photos first with POST /media. `kind: business` is for vendors, from the vendor portal.
+         * @description Upload photos first with POST /media. `kind: business` is for vendors from the vendor portal, and for people on a business's team with "Post as the business", from Work; theirs is posted as the owner.
          */
         post: {
             parameters: {
@@ -6734,7 +6734,7 @@ export interface paths {
                         text: string;
                         mediaIds?: string[];
                         kind?: "personal" | "business";
-                        /** @description Business posts only: which of your businesses it is for. Picked for you when you have just one. */
+                        /** @description Business posts only: which of your businesses, or a business whose team you post for. Picked for you when you own just one. */
                         businessId?: string | null;
                     };
                 };
@@ -13851,6 +13851,1504 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/shop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The shop you work at, to change what you're allowed to
+         * @description Needs one of the shop permissions: open and close, catalog, or details and photos.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                location: {
+                                    state: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                /** @description The first is the cover */
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change the shop's name, phone, address or description
+         * @description Needs "Edit details and photos". Send only what changes. The GSTIN stays with the owner.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        description?: string | null;
+                        phone?: string | null;
+                        location?: {
+                            /** @description One of the catalog's states */
+                            state: string;
+                            /** @description One of the state's cities, or any other the vendor types */
+                            city: string;
+                            doorNo?: string | null;
+                            building?: string | null;
+                            street?: string | null;
+                            area?: string | null;
+                            pincode?: string | null;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        } | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                location: {
+                                    state: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                /** @description The first is the cover */
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/employment/{id}/shop/pod": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change the shop's products, delivery area and prices
+         * @description Needs "Change products, prices and delivery area". The same rules as the owner's setup.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        products?: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                        serveAll?: boolean;
+                        cities?: string[];
+                        turnaroundDays?: number;
+                        /** @description Paise */
+                        minOrder?: number;
+                        notes?: string | null;
+                        /** @description Replaces the prices of the products sent */
+                        prices?: {
+                            /** @enum {unknown} */
+                            product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                            minQuantity?: number;
+                            turnaroundDays?: number | null;
+                            basePrice?: number | null;
+                            bw?: number | null;
+                            color?: number | null;
+                            extras?: {
+                                /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                option: string;
+                                /** @description One of the product's values for that option */
+                                value: string;
+                                /** @description Extra paise per unit, or per page for documents */
+                                price: number;
+                            }[];
+                            tiers?: {
+                                /** @description Units, or pages for documents */
+                                from: number;
+                                /** @description Paise per unit (or page) from this many */
+                                unitPrice: number;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                location: {
+                                    state: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                /** @description The first is the cover */
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/employment/{id}/shop/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a photo to the shop, up to 3
+         * @description Needs "Edit details and photos". Send the image itself, as for the owner.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                location: {
+                                    state: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                /** @description The first is the cover */
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/shop/photos/{photoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a photo from the shop
+         * @description Needs "Edit details and photos". A live shop keeps at least one photo.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    photoId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                location: {
+                                    state: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                /** @description The first is the cover */
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/shop/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open the shop for orders
+         * @description Needs "Open and close the shop". Only a live shop opens or closes.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                location: {
+                                    state: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                /** @description The first is the cover */
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/shop/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close the shop for now
+         * @description Needs "Open and close the shop". Only a live shop opens or closes.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                /**
+                                 * @description Belongs to one module; GET /v1/vendor/catalog lists them
+                                 * @enum {unknown}
+                                 */
+                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                name: string;
+                                description: string | null;
+                                phone: string | null;
+                                location: {
+                                    state: string;
+                                    city: string;
+                                    doorNo: string | null;
+                                    building: string | null;
+                                    street: string | null;
+                                    area: string | null;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                gstin: {
+                                    number: string;
+                                    legalName: string | null;
+                                    status: string | null;
+                                } | null;
+                                /** @description The first is the cover */
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                pod: {
+                                    products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description Takes orders from every city */
+                                    serveAll: boolean;
+                                    /** @description Lower case */
+                                    cities: string[];
+                                    turnaroundDays: number;
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    notes: string | null;
+                                    prices: {
+                                        /** @enum {unknown} */
+                                        product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                        model: "per_unit" | "per_page";
+                                        minQuantity: number;
+                                        turnaroundDays: number | null;
+                                        basePrice: number | null;
+                                        bw: number | null;
+                                        color: number | null;
+                                        extras: {
+                                            /** @description size, material, printType, color or sides; for documents paperSize, binding or doubleSided */
+                                            option: string;
+                                            /** @description One of the product's values for that option */
+                                            value: string;
+                                            /** @description Extra paise per unit, or per page for documents */
+                                            price: number;
+                                        }[];
+                                        tiers: {
+                                            /** @description Units, or pages for documents */
+                                            from: number;
+                                            /** @description Paise per unit (or page) from this many */
+                                            unitPrice: number;
+                                        }[];
+                                    }[];
+                                    /** @description Chosen products still without a price */
+                                    unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                } | null;
+                                status: "draft" | "live";
+                                /** @description A live business takes orders and bookings only while open */
+                                open: boolean;
+                                /** @description False while the Ruxstar team has paused this module */
+                                moduleLive: boolean;
+                                /** @description What is still needed before it can be published */
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                suspension: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                publishedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/coupons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The shop's coupons, newest first
+         * @description Needs "Make and change coupons". Coupons the owner made for several shops are listed too, but only the owner changes them.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                fundedBy: "ruxstar" | "vendor";
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                /** @description The vendor's shops it works at; empty for Ruxstar's */
+                                businesses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                }[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                                kind: "percent" | "flat";
+                                value: number;
+                                cap: number | null;
+                                /** @description For example "20% off up to ₹100" or "₹50 off" */
+                                label: string;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                startsAt: string | null;
+                                endsAt: string | null;
+                                limit: number | null;
+                                perCustomer: number | null;
+                                firstOrderOnly: boolean;
+                                /** @description Shown in the offers at checkout */
+                                listed: boolean;
+                                active: boolean;
+                                /** @description Ruxstar switched this vendor coupon off; only Ruxstar can switch it back on */
+                                stoppedByRuxstar: boolean;
+                                /** @description Paid orders that used it, less ones refunded in full */
+                                used: number;
+                                /** @description `scheduled` hasn't started, `ended` is past its end date, `used_up` reached its limit, `off` is switched off */
+                                state: "active" | "scheduled" | "ended" | "used_up" | "off";
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Make a coupon for the shop
+         * @description Needs "Make and change coupons". It works at this shop only, and the discount comes out of the shop's share.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description 4 to 16 letters and digits; stored in capitals */
+                        code: string;
+                        /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                        kind: "percent" | "flat";
+                        /** @description Percent (1 to 100), or paise off (at least ₹1) */
+                        value: number;
+                        cap?: number | null;
+                        /** @description Paise of items before the discount; 0 for none */
+                        minOrder?: number;
+                        startsAt?: string | null;
+                        endsAt?: string | null;
+                        limit?: number | null;
+                        perCustomer?: number | null;
+                        /** @description Only a customer's first paid order: on Ruxstar for Ruxstar's, with this vendor for a vendor's */
+                        firstOrderOnly?: boolean;
+                        /** @description Show it in the offers at checkout (the default) */
+                        listed?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                fundedBy: "ruxstar" | "vendor";
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                /** @description The vendor's shops it works at; empty for Ruxstar's */
+                                businesses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                }[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                                kind: "percent" | "flat";
+                                value: number;
+                                cap: number | null;
+                                /** @description For example "20% off up to ₹100" or "₹50 off" */
+                                label: string;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                startsAt: string | null;
+                                endsAt: string | null;
+                                limit: number | null;
+                                perCustomer: number | null;
+                                firstOrderOnly: boolean;
+                                /** @description Shown in the offers at checkout */
+                                listed: boolean;
+                                active: boolean;
+                                /** @description Ruxstar switched this vendor coupon off; only Ruxstar can switch it back on */
+                                stoppedByRuxstar: boolean;
+                                /** @description Paid orders that used it, less ones refunded in full */
+                                used: number;
+                                /** @description `scheduled` hasn't started, `ended` is past its end date, `used_up` reached its limit, `off` is switched off */
+                                state: "active" | "scheduled" | "ended" | "used_up" | "off";
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/coupons/{couponId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change one of the shop's coupons, or switch it off or on
+         * @description Needs "Make and change coupons". Only coupons that work at this shop alone.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    couponId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Paise of items before the discount; 0 for none */
+                        minOrder?: number;
+                        startsAt?: string | null;
+                        endsAt?: string | null;
+                        limit?: number | null;
+                        perCustomer?: number | null;
+                        /** @description Only a customer's first paid order: on Ruxstar for Ruxstar's, with this vendor for a vendor's */
+                        firstOrderOnly?: boolean;
+                        /** @description Show it in the offers at checkout (the default) */
+                        listed?: boolean;
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                fundedBy: "ruxstar" | "vendor";
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                /** @description The vendor's shops it works at; empty for Ruxstar's */
+                                businesses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                }[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                                kind: "percent" | "flat";
+                                value: number;
+                                cap: number | null;
+                                /** @description For example "20% off up to ₹100" or "₹50 off" */
+                                label: string;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                startsAt: string | null;
+                                endsAt: string | null;
+                                limit: number | null;
+                                perCustomer: number | null;
+                                firstOrderOnly: boolean;
+                                /** @description Shown in the offers at checkout */
+                                listed: boolean;
+                                active: boolean;
+                                /** @description Ruxstar switched this vendor coupon off; only Ruxstar can switch it back on */
+                                stoppedByRuxstar: boolean;
+                                /** @description Paid orders that used it, less ones refunded in full */
+                                used: number;
+                                /** @description `scheduled` hasn't started, `ended` is past its end date, `used_up` reached its limit, `off` is switched off */
+                                state: "active" | "scheduled" | "ended" | "used_up" | "off";
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/v1/employment/": {

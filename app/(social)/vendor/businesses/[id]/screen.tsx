@@ -12,22 +12,8 @@ import { formError } from "@/lib/api/account";
 import { ApiError } from "@/lib/api/client";
 import { shrinkPhoto } from "@/lib/photo";
 import { MODULE_LABEL } from "@/lib/api/shops";
-import {
-  addBusinessPhoto,
-  addressOf,
-  areaLine,
-  canOpen,
-  deleteBusiness,
-  getBusiness,
-  listOf,
-  MISSING_LABEL,
-  publishBusiness,
-  removeBusinessPhoto,
-  setBusinessOpen,
-  statusOf,
-  vendorCatalog,
-  type Business,
-} from "@/lib/api/vendor";
+import { getWork, type TeamPermission } from "@/lib/api/team";
+import { addressOf, areaLine, canOpen, deleteBusiness, listOf, MISSING_LABEL, publishBusiness, shopDesk, statusOf, vendorCatalog, type Business } from "@/lib/api/vendor";
 import styles from "@/components/vendor/vendor.module.css";
 
 /** Matches the API's cap. */
@@ -64,7 +50,19 @@ function SetupStep({ href, title, subtitle, done, disabled }: { href: string; ti
   );
 }
 
-function Details({ business, onChange }: { business: Business; onChange: (b: Business) => void }) {
+function Details({
+  id,
+  team,
+  can,
+  business,
+  onChange,
+}: {
+  id: string;
+  team: boolean;
+  can: (permission: TeamPermission) => boolean;
+  business: Business;
+  onChange: (b: Business) => void;
+}) {
   const router = useRouter();
   const onSignedOut = useOnSignedOut();
   const catalog = useLoad(() => vendorCatalog());
@@ -72,8 +70,9 @@ function Details({ business, onChange }: { business: Business; onChange: (b: Bus
   const [failure, setFailure] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const desk = shopDesk(team);
+  const home = desk.home(id);
   const b = business;
-  const id = b.id;
 
   const category = catalog.data?.categories.find((c) => c.module === b.module);
   const type = category?.types.find((t) => t.id === b.type);
@@ -107,10 +106,12 @@ function Details({ business, onChange }: { business: Business; onChange: (b: Bus
   };
 
   const editable = !b.suspension;
+  const photosEditable = editable && can("shop.details");
+  const catalogRows = !!b.pod && editable && can("shop.catalog");
 
   return (
     <div className={styles.page}>
-      <Back href="/vendor/businesses">Businesses</Back>
+      {team ? <Back href={`/work/${id}`}>{b.name}</Back> : <Back href="/vendor/businesses">Businesses</Back>}
       <div className={styles.head}>
         <div className={styles.identity}>
           <h1 className={styles.name}>{b.name}</h1>
@@ -134,7 +135,7 @@ function Details({ business, onChange }: { business: Business; onChange: (b: Bus
         </p>
       ) : null}
 
-      {canOpen(b) && (
+      {canOpen(b) && can("shop.open") && (
         <div className={styles.openCard} data-open={b.open || undefined}>
           <Segmented
             label="Open or closed"
@@ -144,7 +145,7 @@ function Details({ business, onChange }: { business: Business; onChange: (b: Bus
               const open = next === "open";
               if (busy || open === b.open) return;
               onChange({ ...b, open });
-              void run("open", () => setBusinessOpen(id, open), b);
+              void run("open", () => desk.setOpen(id, open), b);
             }}
           />
           <p className={styles.muted}>{b.open ? "Customers can order and book now." : "Customers still see it, marked closed."}</p>
@@ -156,20 +157,20 @@ function Details({ business, onChange }: { business: Business; onChange: (b: Bus
           <li key={photo.id} className={styles.photo}>
             <img src={photo.url} alt={i === 0 ? "Cover photo" : `Photo ${i + 1}`} />
             {i === 0 && <span className={styles.coverTag}>Cover</span>}
-            {editable && (
+            {photosEditable && (
               <button
                 type="button"
                 className={styles.photoRemove}
                 aria-label="Remove photo"
                 disabled={!!busy}
-                onClick={() => void run(photo.id, () => removeBusinessPhoto(id, photo.id))}
+                onClick={() => void run(photo.id, () => desk.removePhoto(id, photo.id))}
               >
                 <Icon name="close" size={16} />
               </button>
             )}
           </li>
         ))}
-        {editable && b.photos.length < MAX_PHOTOS && (
+        {photosEditable && b.photos.length < MAX_PHOTOS && (
           <li>
             <button type="button" className={styles.addPhoto} aria-label="Add a photo" disabled={busy === "photo"} onClick={() => fileInput.current?.click()}>
               <Icon name={busy === "photo" ? "clock" : "plus"} size={28} />
@@ -182,44 +183,50 @@ function Details({ business, onChange }: { business: Business; onChange: (b: Bus
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 e.target.value = "";
-                if (file) void run("photo", async () => addBusinessPhoto(id, await shrinkPhoto(file, UPLOAD_SIDE)));
+                if (file) void run("photo", async () => desk.addPhoto(id, await shrinkPhoto(file, UPLOAD_SIDE)));
               }}
             />
           </li>
         )}
       </ul>
 
-      {b.pod && editable && (
+      {b.pod && editable && (catalogRows || !team) && (
         <ul className={styles.rows}>
-          <SetupStep
-            href={`/vendor/businesses/${id}/products`}
-            title="Products & delivery"
-            subtitle={b.pod.products.length ? `${b.pod.products.length} products · ${areaLine(b.pod)}` : "Choose what you print and where you deliver"}
-            done={!b.missing.includes("products") && !b.missing.includes("area")}
-          />
-          <SetupStep
-            href={`/vendor/businesses/${id}/prices`}
-            title="Prices"
-            subtitle={
-              !b.pod.products.length
-                ? "After you choose products"
-                : b.pod.unpriced.length
-                  ? `${b.pod.unpriced.length} product${b.pod.unpriced.length === 1 ? "" : "s"} need a price`
-                  : "Every product has a price"
-            }
-            done={b.pod.products.length > 0 && !b.missing.includes("pricing")}
-            disabled={!b.pod.products.length}
-          />
-          <li>
-            <Link href={`/vendor/businesses/${id}/team`} className={styles.row}>
-              <Icon name="users" size={20} />
-              <span className={styles.rowText}>
-                <span className={styles.rowTitle}>Team</span>
-                <span className={styles.rowLine}>Invite people to help with orders, the shop and posts</span>
-              </span>
-              <Icon name="chevron-right" size={18} />
-            </Link>
-          </li>
+          {catalogRows && (
+            <>
+              <SetupStep
+                href={`${home}/products`}
+                title="Products & delivery"
+                subtitle={b.pod.products.length ? `${b.pod.products.length} products · ${areaLine(b.pod)}` : "Choose what you print and where you deliver"}
+                done={!b.missing.includes("products") && !b.missing.includes("area")}
+              />
+              <SetupStep
+                href={`${home}/prices`}
+                title="Prices"
+                subtitle={
+                  !b.pod.products.length
+                    ? "After you choose products"
+                    : b.pod.unpriced.length
+                      ? `${b.pod.unpriced.length} product${b.pod.unpriced.length === 1 ? "" : "s"} need a price`
+                      : "Every product has a price"
+                }
+                done={b.pod.products.length > 0 && !b.missing.includes("pricing")}
+                disabled={!b.pod.products.length}
+              />
+            </>
+          )}
+          {!team && (
+            <li>
+              <Link href={`/vendor/businesses/${id}/team`} className={styles.row}>
+                <Icon name="users" size={20} />
+                <span className={styles.rowText}>
+                  <span className={styles.rowTitle}>Team</span>
+                  <span className={styles.rowLine}>Invite people to help with orders, the shop and posts</span>
+                </span>
+                <Icon name="chevron-right" size={18} />
+              </Link>
+            </li>
+          )}
         </ul>
       )}
 
@@ -230,16 +237,16 @@ function Details({ business, onChange }: { business: Business; onChange: (b: Bus
           <Fact label="Location" value={addressOf(b.location)} />
           <Fact label="GSTIN" value={b.gstin ? `${b.gstin.number}${b.gstin.legalName ? ` · ${b.gstin.legalName}` : ""}` : null} />
         </dl>
-        {editable && (
+        {editable && can("shop.details") && (
           <div>
-            <ButtonLink href={`/vendor/businesses/${id}/details`} variant="secondary" icon={<Icon name="edit" size={16} />}>
+            <ButtonLink href={`${home}/details`} variant="secondary" icon={<Icon name="edit" size={16} />}>
               Edit details
             </ButtonLink>
           </div>
         )}
       </section>
 
-      {b.status === "draft" && editable && (
+      {b.status === "draft" && editable && !team && (
         <section className={styles.form}>
           <p className={styles.muted}>
             {b.missing.length ? `To publish, add ${listOf(b.missing.map((m) => MISSING_LABEL[m]))}.` : "All set. Publishing lets customers find it and opens it straight away."}
@@ -288,21 +295,41 @@ function Details({ business, onChange }: { business: Business; onChange: (b: Bus
   );
 }
 
-/** One business: photos, details, publishing, and whether it is open. Same as the app. */
-export function BusinessScreen({ id }: { id: string }) {
-  const { data, error, reload, setData } = useLoad(() => getBusiness(id), id);
-  if (data) return <Details business={data} onChange={setData} />;
-  if (error) {
-    if (error instanceof ApiError && error.status === 404) {
+/**
+ * One business: photos, details, publishing, and whether it is open. Same as the app. `team` opens it from Work, where `id`
+ * is the place there and only what the owner allowed shows; publishing, deleting and the team stay with the owner.
+ */
+export function BusinessScreen({ id, team = false }: { id: string; team?: boolean }) {
+  const { data, error, reload, setData } = useLoad(() => shopDesk(team).get(id), id);
+  const place = useLoad(
+    async (): Promise<{ permissions: TeamPermission[] }> => ({
+      permissions: team ? ((await getWork()).places.find((p) => p.id === id)?.permissions ?? []) : [],
+    }),
+    id,
+  );
+  const can = (permission: TeamPermission) => !team || !!place.data?.permissions.includes(permission);
+  if (data && place.data) return <Details id={id} team={team} can={can} business={data} onChange={setData} />;
+  const failed = error ?? place.error;
+  if (failed) {
+    if (failed instanceof ApiError && (failed.status === 404 || (team && failed.status === 403))) {
       return (
-        <Empty title="Business not found">
-          <ButtonLink href="/vendor/businesses" variant="secondary">
-            Businesses
+        <Empty title={team ? "Not open to you" : "Business not found"}>
+          {team && <p>{failed.message}</p>}
+          <ButtonLink href={team ? `/work/${id}` : "/vendor/businesses"} variant="secondary">
+            {team ? "Back to Work" : "Businesses"}
           </ButtonLink>
         </Empty>
       );
     }
-    return <Failed error={error} onRetry={reload} />;
+    return (
+      <Failed
+        error={failed}
+        onRetry={() => {
+          if (error) reload();
+          if (place.error) place.reload();
+        }}
+      />
+    );
   }
   return <Loading rows={4} />;
 }

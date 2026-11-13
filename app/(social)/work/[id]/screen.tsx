@@ -7,13 +7,26 @@ import { Avatar } from "@/components/profile/Avatar";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { InviteCard } from "@/components/team/InviteCard";
-import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
+import { Button, ButtonLink, Icon, Tag, type IconName } from "@/components/ui";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
 import { ACCESS, getWork, leaveTeam, type PermissionInfo, type TeamPermission, type WorkPlace } from "@/lib/api/team";
 import team from "@/components/team/team.module.css";
 import styles from "@/components/vendor/vendor.module.css";
+
+const has =
+  (...wanted: TeamPermission[]) =>
+  (permissions: TeamPermission[]) =>
+    wanted.some((p) => permissions.includes(p));
+
+/** What someone can open at a business they work at, by what the owner allowed. */
+const WORK_AREAS: { title: string; line: string; icon: IconName; allowed: (permissions: TeamPermission[]) => boolean; path: string }[] = [
+  { title: "Orders", line: "New orders, ones being made, and past ones", icon: "print", allowed: has("orders.view"), path: "orders" },
+  { title: "Shop", line: "Open or close it, and change what you’re allowed to", icon: "store", allowed: has("shop.open", "shop.catalog", "shop.details"), path: "shop" },
+  { title: "Coupons", line: "Discounts for this shop", icon: "ticket", allowed: has("coupons.manage"), path: "coupons" },
+  { title: "Post as the business", line: "It goes out under the owner’s name", icon: "edit", allowed: has("posts.create"), path: "post" },
+];
 
 function Head({ business, owner }: { business: WorkPlace["business"]; owner: string }) {
   return (
@@ -52,6 +65,7 @@ function Place({ place, catalog }: { place: WorkPlace; catalog: PermissionInfo[]
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const access = ACCESS[place.access];
+  const areas = WORK_AREAS.filter((a) => a.allowed(place.permissions));
 
   const leave = async () => {
     setBusy(true);
@@ -83,18 +97,20 @@ function Place({ place, catalog }: { place: WorkPlace; catalog: PermissionInfo[]
           <ButtonLink href="/verify">Get verified</ButtonLink>
         </div>
       )}
-      {place.access === "on" && place.permissions.includes("orders.view") && (
+      {place.access === "on" && areas.length > 0 && (
         <ul className={styles.rows}>
-          <li>
-            <Link href={`/work/${place.id}/orders`} className={styles.row}>
-              <Icon name="print" size={20} />
-              <span className={styles.rowText}>
-                <span className={styles.rowTitle}>Orders</span>
-                <span className={styles.rowLine}>New orders, ones being made, and past ones</span>
-              </span>
-              <Icon name="chevron-right" size={18} />
-            </Link>
-          </li>
+          {areas.map((area) => (
+            <li key={area.path}>
+              <Link href={`/work/${place.id}/${area.path}`} className={styles.row}>
+                <Icon name={area.icon} size={20} />
+                <span className={styles.rowText}>
+                  <span className={styles.rowTitle}>{area.title}</span>
+                  <span className={styles.rowLine}>{area.line}</span>
+                </span>
+                <Icon name="chevron-right" size={18} />
+              </Link>
+            </li>
+          ))}
         </ul>
       )}
       <h2 className={team.section}>What you can do</h2>

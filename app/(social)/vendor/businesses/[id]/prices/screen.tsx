@@ -5,12 +5,13 @@ import { ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
-import { getBusiness, priceLine, vendorCatalog } from "@/lib/api/vendor";
+import { priceLine, shopDesk, vendorCatalog } from "@/lib/api/vendor";
 import styles from "@/components/vendor/vendor.module.css";
 
-/** Every product the shop prints, with its price or a "Set price" tag. Same as the app. */
-export function PodPricesScreen({ id }: { id: string }) {
-  const business = useLoad(() => getBusiness(id), id);
+/** Every product the shop prints, with its price or a "Set price" tag. Same as the app. `team` opens it from Work, by place id. */
+export function PodPricesScreen({ id, team = false }: { id: string; team?: boolean }) {
+  const home = shopDesk(team).home(id);
+  const business = useLoad(() => shopDesk(team).get(id), id);
   const catalog = useLoad(() => vendorCatalog());
   const error = business.error ?? catalog.error;
   if (error && !(business.data && catalog.data)) {
@@ -29,7 +30,7 @@ export function PodPricesScreen({ id }: { id: string }) {
 
   return (
     <div className={styles.page}>
-      <Back href={`/vendor/businesses/${id}`}>{business.data.name}</Back>
+      <Back href={home}>{business.data.name}</Back>
       <h1 className={styles.title}>Prices</h1>
       {!pod ? (
         <Empty title="Only print shops have prices" />
@@ -41,7 +42,7 @@ export function PodPricesScreen({ id }: { id: string }) {
               .filter((info) => pod.products.includes(info.id))
               .map((info) => (
                 <li key={info.id}>
-                  <Link href={`/vendor/businesses/${id}/prices/${info.id}`} className={styles.row}>
+                  <Link href={`${home}/prices/${info.id}`} className={styles.row}>
                     <span className={styles.rowText}>
                       <span className={styles.rowTitle}>{info.label}</span>
                       <span className={styles.rowLine}>
@@ -58,7 +59,7 @@ export function PodPricesScreen({ id }: { id: string }) {
       ) : (
         <Empty title="No products yet">
           <p>Choose what you print first, then set a price for each.</p>
-          <ButtonLink href={`/vendor/businesses/${id}/products`} variant="secondary">
+          <ButtonLink href={`${home}/products`} variant="secondary">
             Choose products
           </ButtonLink>
         </Empty>

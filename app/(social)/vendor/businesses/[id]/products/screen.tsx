@@ -8,13 +8,13 @@ import { useOnSignedOut } from "@/components/social/session";
 import { Back, Failed, Loading, Select, TextArea } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { getBusiness, paiseOf, rupeeInput, rupeesText, titleCase, updatePod, vendorCatalog, type Business, type BusinessCatalog, type PodProduct } from "@/lib/api/vendor";
+import { paiseOf, rupeeInput, rupeesText, shopDesk, titleCase, vendorCatalog, type Business, type BusinessCatalog, type PodProduct } from "@/lib/api/vendor";
 import styles from "@/components/vendor/vendor.module.css";
 
 const OTHER_CITY = "Other city";
 const NOTES_MAX = 1000;
 
-function Form({ business, catalog }: { business: Business; catalog: BusinessCatalog }) {
+function Form({ id, team, business, catalog }: { id: string; team: boolean; business: Business; catalog: BusinessCatalog }) {
   const router = useRouter();
   const onSignedOut = useOnSignedOut();
   const pod = business.pod!;
@@ -60,8 +60,9 @@ function Form({ business, catalog }: { business: Business; catalog: BusinessCata
     if (!serveAll && !cities.length) return setProblem("Add a city you deliver to, or turn on every city.");
     setSaving(true);
     try {
-      await updatePod(business.id, { products, serveAll, cities, turnaroundDays: turnaround, minOrder: paiseOf(minOrder) ?? 0, notes: notes.trim() || null });
-      router.push(`/vendor/businesses/${business.id}`);
+      const desk = shopDesk(team);
+      await desk.updatePod(id, { products, serveAll, cities, turnaroundDays: turnaround, minOrder: paiseOf(minOrder) ?? 0, notes: notes.trim() || null });
+      router.push(desk.home(id));
     } catch (err) {
       setSaving(false);
       if (!onSignedOut(err)) setFailure(formError(err).message);
@@ -192,9 +193,9 @@ function Form({ business, catalog }: { business: Business; catalog: BusinessCata
   );
 }
 
-/** Print on demand setup: which products, where it delivers, and how fast. Same as the app. */
-export function PodProductsScreen({ id }: { id: string }) {
-  const business = useLoad(() => getBusiness(id), id);
+/** Print on demand setup: which products, where it delivers, and how fast. Same as the app. `team` opens it from Work, by place id. */
+export function PodProductsScreen({ id, team = false }: { id: string; team?: boolean }) {
+  const business = useLoad(() => shopDesk(team).get(id), id);
   const catalog = useLoad(() => vendorCatalog());
   const error = business.error ?? catalog.error;
   if (error && !(business.data && catalog.data)) {
@@ -211,9 +212,9 @@ export function PodProductsScreen({ id }: { id: string }) {
   if (!business.data || !catalog.data) return <Loading rows={6} />;
   return (
     <div className={styles.page}>
-      <Back href={`/vendor/businesses/${id}`}>{business.data.name}</Back>
+      <Back href={shopDesk(team).home(id)}>{business.data.name}</Back>
       <h1 className={styles.title}>Products & delivery</h1>
-      {business.data.pod ? <Form business={business.data} catalog={catalog.data} /> : <Empty title="Only print shops have products" />}
+      {business.data.pod ? <Form id={id} team={team} business={business.data} catalog={catalog.data} /> : <Empty title="Only print shops have products" />}
     </div>
   );
 }

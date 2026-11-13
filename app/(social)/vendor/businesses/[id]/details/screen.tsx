@@ -11,12 +11,11 @@ import { formError } from "@/lib/api/account";
 import { ApiError } from "@/lib/api/client";
 import {
   checkProfile,
-  getBusiness,
   GSTIN,
   locationOf,
   profileFieldOf,
   profileOf,
-  updateBusiness,
+  shopDesk,
   vendorCatalog,
   type Business,
   type BusinessCatalog,
@@ -27,7 +26,7 @@ import styles from "@/components/vendor/vendor.module.css";
 
 type Errors = ProfileErrors & { gstin?: string };
 
-function Form({ business, catalog }: { business: Business; catalog: BusinessCatalog }) {
+function Form({ id, team, business, catalog }: { id: string; team: boolean; business: Business; catalog: BusinessCatalog }) {
   const router = useRouter();
   const onSignedOut = useOnSignedOut();
   const [values, setValues] = useState<ProfileValues>(() => profileOf(business));
@@ -36,7 +35,8 @@ function Form({ business, catalog }: { business: Business; catalog: BusinessCata
   const [failure, setFailure] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const typeInfo = catalog.categories.flatMap((c) => c.types).find((t) => t.id === business.type);
-  const back = `/vendor/businesses/${business.id}`;
+  const desk = shopDesk(team);
+  const back = desk.home(id);
 
   const change = (patch: Partial<ProfileValues>) => {
     setValues((v) => ({ ...v, ...patch }));
@@ -45,19 +45,19 @@ function Form({ business, catalog }: { business: Business; catalog: BusinessCata
 
   const save = async () => {
     const found: Errors = checkProfile(values);
-    if (gstin && !GSTIN.test(gstin)) found.gstin = "A GSTIN has 15 characters, like 36ABCDE1234F1Z5. Or leave it empty.";
+    if (!team && gstin && !GSTIN.test(gstin)) found.gstin = "A GSTIN has 15 characters, like 36ABCDE1234F1Z5. Or leave it empty.";
     setErrors(found);
     setFailure(null);
     if (Object.keys(found).length) return;
     setSaving(true);
     try {
-      await updateBusiness(business.id, {
+      await desk.update(id, {
         name: values.name.trim(),
         description: values.description.trim() || null,
         phone: values.phone,
         location: locationOf(values),
         // Only sent when changed: the API checks it with the GST network each time.
-        ...(gstin !== (business.gstin?.number ?? "") ? { gstin: gstin || null } : {}),
+        ...(!team && gstin !== (business.gstin?.number ?? "") ? { gstin: gstin || null } : {}),
       });
       router.push(back);
     } catch (err) {
@@ -91,20 +91,22 @@ function Form({ business, catalog }: { business: Business; catalog: BusinessCata
         namePlaceholder={typeInfo?.namePlaceholder}
         detailHint={typeInfo?.detailHint}
       />
-      <Input
-        label="GSTIN (optional)"
-        value={gstin}
-        onChange={(e) => {
-          setGstin(e.target.value.toUpperCase().replace(/\s/g, "").slice(0, 15));
-          setErrors((x) => ({ ...x, gstin: undefined }));
-        }}
-        error={errors.gstin}
-        hint="We check a GSTIN with the GST network when you save."
-        autoCapitalize="characters"
-        autoCorrect="off"
-        spellCheck={false}
-        maxLength={15}
-      />
+      {!team && (
+        <Input
+          label="GSTIN (optional)"
+          value={gstin}
+          onChange={(e) => {
+            setGstin(e.target.value.toUpperCase().replace(/\s/g, "").slice(0, 15));
+            setErrors((x) => ({ ...x, gstin: undefined }));
+          }}
+          error={errors.gstin}
+          hint="We check a GSTIN with the GST network when you save."
+          autoCapitalize="characters"
+          autoCorrect="off"
+          spellCheck={false}
+          maxLength={15}
+        />
+      )}
       {failure && (
         <p className={styles.error} role="alert">
           {failure}
@@ -119,9 +121,9 @@ function Form({ business, catalog }: { business: Business; catalog: BusinessCata
   );
 }
 
-/** Everything customers read about a business. Same as the app. */
-export function BusinessDetailsScreen({ id }: { id: string }) {
-  const business = useLoad(() => getBusiness(id), id);
+/** Everything customers read about a business. Same as the app. `team` opens it from Work, where `id` is the place there. */
+export function BusinessDetailsScreen({ id, team = false }: { id: string; team?: boolean }) {
+  const business = useLoad(() => shopDesk(team).get(id), id);
   const catalog = useLoad(() => vendorCatalog());
   const error = business.error ?? catalog.error;
   if (error && !(business.data && catalog.data)) {
@@ -138,9 +140,9 @@ export function BusinessDetailsScreen({ id }: { id: string }) {
   if (!business.data || !catalog.data) return <Loading rows={5} />;
   return (
     <div className={styles.page}>
-      <Back href={`/vendor/businesses/${id}`}>{business.data.name}</Back>
+      <Back href={shopDesk(team).home(id)}>{business.data.name}</Back>
       <h1 className={styles.title}>Business details</h1>
-      <Form business={business.data} catalog={catalog.data} />
+      <Form id={id} team={team} business={business.data} catalog={catalog.data} />
     </div>
   );
 }

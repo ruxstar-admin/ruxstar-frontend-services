@@ -64,11 +64,11 @@ export const updateBusiness = async (id: string, body: BusinessUpdate) =>
 export const updatePod = async (id: string, body: PodSetupUpdate) =>
   (await signedIn(() => unwrap(api.PATCH("/v1/vendor/businesses/{id}/pod", { ...byId(id), body })))).data;
 
-/** The spec has no body for this route (it is the raw image), so it skips the typed client. */
-async function postPhoto(id: string, photo: Blob): Promise<Business> {
+/** The spec has no body for these routes (it is the raw image), so they skip the typed client. */
+async function postPhoto(path: string, photo: Blob): Promise<Business> {
   let response: Response;
   try {
-    response = await fetch(`${API_URL}/v1/vendor/businesses/${encodeURIComponent(id)}/photos`, {
+    response = await fetch(`${API_URL}${path}`, {
       method: "POST",
       credentials: "include",
       headers: { "X-Client": "web", "Content-Type": photo.type },
@@ -84,7 +84,7 @@ async function postPhoto(id: string, photo: Blob): Promise<Business> {
 }
 
 /** A JPEG; the API keeps up to 3, the first being the cover. */
-export const addBusinessPhoto = (id: string, photo: Blob) => signedIn(() => postPhoto(id, photo));
+export const addBusinessPhoto = (id: string, photo: Blob) => signedIn(() => postPhoto(`/v1/vendor/businesses/${encodeURIComponent(id)}/photos`, photo));
 
 export const removeBusinessPhoto = async (id: string, photoId: string) =>
   (await signedIn(() => unwrap(api.DELETE("/v1/vendor/businesses/{id}/photos/{photoId}", { params: { path: { id, photoId } } })))).data;
@@ -97,6 +97,55 @@ export const setBusinessOpen = async (id: string, open: boolean) =>
 
 /** Drafts only. */
 export const deleteBusiness = (id: string) => signedIn(() => unwrap(api.DELETE("/v1/vendor/businesses/{id}", byId(id))));
+
+// The shop someone works at, by their place id in Work. Each call needs its permission; the GSTIN stays with the owner.
+
+export type TeamBusinessUpdate = Body<paths["/v1/employment/{id}/shop"]["patch"]>;
+
+export const getTeamShop = async (placeId: string) => (await signedIn(() => unwrap(api.GET("/v1/employment/{id}/shop", byId(placeId))))).data;
+
+export const updateTeamShop = async (placeId: string, body: TeamBusinessUpdate) =>
+  (await signedIn(() => unwrap(api.PATCH("/v1/employment/{id}/shop", { ...byId(placeId), body })))).data;
+
+export const updateTeamPod = async (placeId: string, body: PodSetupUpdate) =>
+  (await signedIn(() => unwrap(api.PATCH("/v1/employment/{id}/shop/pod", { ...byId(placeId), body })))).data;
+
+export const addTeamShopPhoto = (placeId: string, photo: Blob) =>
+  signedIn(() => postPhoto(`/v1/employment/${encodeURIComponent(placeId)}/shop/photos`, photo));
+
+export const removeTeamShopPhoto = async (placeId: string, photoId: string) =>
+  (await signedIn(() => unwrap(api.DELETE("/v1/employment/{id}/shop/photos/{photoId}", { params: { path: { id: placeId, photoId } } })))).data;
+
+export const setTeamShopOpen = async (placeId: string, open: boolean) =>
+  (await signedIn(() => unwrap(open ? api.POST("/v1/employment/{id}/shop/open", byId(placeId)) : api.POST("/v1/employment/{id}/shop/close", byId(placeId))))).data;
+
+/**
+ * The shop pages for the owner, by business id in the vendor portal, or for someone on the team, by their place id in Work.
+ * The calls are the same; only the pages differ. The team never sends a GSTIN.
+ */
+export function shopDesk(team: boolean) {
+  return team
+    ? {
+        team,
+        home: (id: string) => `/work/${id}/shop`,
+        get: getTeamShop,
+        update: (id: string, body: BusinessUpdate) => updateTeamShop(id, body),
+        updatePod: updateTeamPod,
+        addPhoto: addTeamShopPhoto,
+        removePhoto: removeTeamShopPhoto,
+        setOpen: setTeamShopOpen,
+      }
+    : {
+        team,
+        home: (id: string) => `/vendor/businesses/${id}`,
+        get: getBusiness,
+        update: updateBusiness,
+        updatePod,
+        addPhoto: addBusinessPhoto,
+        removePhoto: removeBusinessPhoto,
+        setOpen: setBusinessOpen,
+      };
+}
 
 export const vendorPayments = async () => (await signedIn(() => unwrap(api.GET("/v1/vendor/payments")))).data;
 
@@ -130,6 +179,22 @@ export const createVendorCoupon = async (body: NewVendorCoupon, idempotencyKey: 
 
 export const updateVendorCoupon = async (id: string, body: VendorCouponPatch) =>
   (await signedIn(() => unwrap(api.PATCH("/v1/vendor/coupons/{id}", { ...byId(id), body })))).data;
+
+export type NewTeamCoupon = Body<paths["/v1/employment/{id}/coupons"]["post"]>;
+export type TeamCouponPatch = Body<paths["/v1/employment/{id}/coupons/{couponId}"]["patch"]>;
+
+/** One shop's coupons for someone on its team, with the owner's ones for several shops too (only the owner changes those). */
+export const teamCoupons = async (placeId: string, cursor?: string): Promise<Page<VendorCoupon>> => {
+  const envelope = await signedIn(() => unwrap(api.GET("/v1/employment/{id}/coupons", { params: { path: { id: placeId }, query: { cursor } } })));
+  return { items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null };
+};
+
+/** It works at this shop only. Pass the same key when retrying the same click. */
+export const createTeamCoupon = async (placeId: string, body: NewTeamCoupon, idempotencyKey: string) =>
+  (await signedIn(() => unwrap(api.POST("/v1/employment/{id}/coupons", { ...byId(placeId), body, headers: { "Idempotency-Key": idempotencyKey } })))).data;
+
+export const updateTeamCoupon = async (placeId: string, couponId: string, body: TeamCouponPatch) =>
+  (await signedIn(() => unwrap(api.PATCH("/v1/employment/{id}/coupons/{couponId}", { params: { path: { id: placeId, couponId } }, body })))).data;
 
 // Words and lines, the same as the app.
 

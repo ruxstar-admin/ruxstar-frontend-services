@@ -11,7 +11,8 @@ import { CouponFields } from "./CouponFields";
 import styles from "./coupons.module.css";
 
 interface NewCouponFormProps {
-  who: "ruxstar" | "vendor";
+  /** `team` is someone making one for the shop they work at; it works there only. */
+  who: "ruxstar" | "vendor" | "team";
   /** The vendor's print shops. */
   shops?: { id: string; name: string }[];
   create: (body: NewCoupon & { businessIds?: string[] }, idempotencyKey: string) => Promise<{ code: string }>;
@@ -20,7 +21,7 @@ interface NewCouponFormProps {
 
 const retryable = (err: unknown) => err instanceof ApiError && err.status === 0;
 
-/** Making a coupon: Ruxstar's from the console, or a vendor's for their own print shops. Same as the app. */
+/** Making a coupon: Ruxstar's from the console, a vendor's for their own print shops, or one shop's from Work. Same as the app. */
 export function NewCouponForm({ who, shops, create, onDone }: NewCouponFormProps) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
@@ -55,7 +56,9 @@ export function NewCouponForm({ who, shops, create, onDone }: NewCouponFormProps
       <p className={styles.muted}>
         {who === "ruxstar"
           ? "Ruxstar pays for the discount, at every print shop. Shops still get their full share."
-          : "You pay for the discount: it comes out of your share, and Ruxstar's commission is on the price after it."}
+          : who === "team"
+            ? "It works at this shop only. The discount comes out of the shop's share, and Ruxstar's commission is on the price after it."
+            : "You pay for the discount: it comes out of your share, and Ruxstar's commission is on the price after it."}
       </p>
       <CouponFields draft={draft} onChange={setDraft} errors={errors} creating canMoveStart shops={shops} />
       <div className={styles.actions}>

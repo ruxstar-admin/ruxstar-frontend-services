@@ -9,7 +9,7 @@ import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
 import { OPTION_LABELS } from "@/lib/api/shops";
-import { digitsOnly, getBusiness, paiseOf, rupeeInput, rupeesText, updatePod, vendorCatalog, type Business, type PodProductInfo } from "@/lib/api/vendor";
+import { digitsOnly, paiseOf, rupeeInput, rupeesText, shopDesk, vendorCatalog, type Business, type PodProductInfo } from "@/lib/api/vendor";
 import styles from "@/components/vendor/vendor.module.css";
 
 const extraKey = (option: string, value: string) => `${option}|${value}`;
@@ -25,7 +25,21 @@ type Errors = Partial<Record<"base" | "page" | "minQuantity" | "turnaround" | "t
 
 let nextTierKey = 0;
 
-function Form({ business, info, maxTiers, maxDays }: { business: Business; info: PodProductInfo; maxTiers: number; maxDays: number }) {
+function Form({
+  id,
+  team,
+  business,
+  info,
+  maxTiers,
+  maxDays,
+}: {
+  id: string;
+  team: boolean;
+  business: Business;
+  info: PodProductInfo;
+  maxTiers: number;
+  maxDays: number;
+}) {
   const router = useRouter();
   const onSignedOut = useOnSignedOut();
   const current = business.pod?.prices.find((p) => p.product === info.id);
@@ -71,7 +85,8 @@ function Form({ business, info, maxTiers, maxDays }: { business: Business; info:
     });
     setSaving(true);
     try {
-      await updatePod(business.id, {
+      const desk = shopDesk(team);
+      await desk.updatePod(id, {
         prices: [
           {
             product: info.id,
@@ -83,7 +98,7 @@ function Form({ business, info, maxTiers, maxDays }: { business: Business; info:
           },
         ],
       });
-      router.push(`/vendor/businesses/${business.id}/prices`);
+      router.push(`${desk.home(id)}/prices`);
     } catch (err) {
       setSaving(false);
       if (!onSignedOut(err)) setFailure(formError(err).message);
@@ -214,9 +229,10 @@ function Form({ business, info, maxTiers, maxDays }: { business: Business; info:
   );
 }
 
-/** Prices for one print product: per unit (or per page for documents), extras by option and bulk tiers. Same as the app. */
-export function PodPriceScreen({ id, product }: { id: string; product: string }) {
-  const business = useLoad(() => getBusiness(id), id);
+/** Prices for one print product: per unit (or per page for documents), extras by option and bulk tiers. Same as the app. `team` opens it from Work. */
+export function PodPriceScreen({ id, product, team = false }: { id: string; product: string; team?: boolean }) {
+  const home = shopDesk(team).home(id);
+  const business = useLoad(() => shopDesk(team).get(id), id);
   const catalog = useLoad(() => vendorCatalog());
   const error = business.error ?? catalog.error;
   if (error && !(business.data && catalog.data)) {
@@ -236,14 +252,14 @@ export function PodPriceScreen({ id, product }: { id: string; product: string })
 
   return (
     <div className={styles.page}>
-      <Back href={`/vendor/businesses/${id}/prices`}>Prices</Back>
+      <Back href={`${home}/prices`}>Prices</Back>
       <h1 className={styles.title}>{info?.label ?? "Prices"}</h1>
       {ours ? (
-        <Form business={business.data} info={info!} maxTiers={catalog.data.limits.tiers} maxDays={catalog.data.limits.turnaroundDays} />
+        <Form id={id} team={team} business={business.data} info={info!} maxTiers={catalog.data.limits.tiers} maxDays={catalog.data.limits.turnaroundDays} />
       ) : (
-        <Empty title="Not one of your products">
+        <Empty title={team ? "Not one of the shop's products" : "Not one of your products"}>
           <p>Add it under Products & delivery first.</p>
-          <ButtonLink href={`/vendor/businesses/${id}/products`} variant="secondary">
+          <ButtonLink href={`${home}/products`} variant="secondary">
             Products & delivery
           </ButtonLink>
         </Empty>
