@@ -49,7 +49,7 @@ function problemsOf(form: Details, handle: HandleStatus, phone: string): Partial
   else if (nameProblem(name)) problems.name = nameProblem(name)!;
   if (!form.username) problems.username = "Choose a username.";
   else if (!validUsername(form.username)) problems.username = "Use 3 to 20 lowercase letters, numbers, dots or underscores.";
-  else if (handle === "taken") problems.username = "Pick a username that is available.";
+  else if (handle !== "available") problems.username = "Pick a username that is available.";
   const dob = dobProblem(form.dob);
   if (dob) problems.dob = dob;
   if (!form.gender) problems.gender = "Choose one.";
@@ -181,7 +181,7 @@ function DetailsStep({
           onValueChange={(v) => set("username", v)}
           onFocus={() => setHandleEntered(true)}
           check={check}
-          error={error?.field === "username" ? error.message : submitted && form.username === "" ? problems.username : undefined}
+          error={error?.field === "username" ? error.message : submitted && check.status !== "taken" ? problems.username : undefined}
         />
         <Input
           label="Date of birth"

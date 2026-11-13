@@ -153,6 +153,7 @@ function OrderDetails({ order, onChanged }: { order: Order; onChanged: (order: O
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const photoKey = useRef(newIdempotencyKey());
+  const cancelKey = useRef(newIdempotencyKey());
 
   const addPhoto = async (file: File) => {
     setAdding(true);
@@ -184,7 +185,7 @@ function OrderDetails({ order, onChanged }: { order: Order; onChanged: (order: O
     setCancelling(true);
     setError(null);
     try {
-      onChanged(await cancelOrder(order.id));
+      onChanged(await cancelOrder(order.id, cancelKey.current));
       setConfirming(false);
     } catch (err) {
       setError(formError(err).message);

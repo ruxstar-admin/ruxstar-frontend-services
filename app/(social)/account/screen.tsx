@@ -242,6 +242,19 @@ export function AccountScreen() {
           </Setting>
 
           {user && (
+            <Setting id="orders" title="Orders & bookings" description="Prints, tickets, classes and stays">
+              <div className={`${styles.panel} ${styles.devices}`}>
+                <div className={styles.device}>
+                  <p className={styles.muted}>Everything you ordered, and where it is now.</p>
+                  <ButtonLink href="/orders" variant="secondary">
+                    Open
+                  </ButtonLink>
+                </div>
+              </div>
+            </Setting>
+          )}
+
+          {user && (
             <Setting id="blocked" title="Blocked accounts" description="People you blocked can't see your posts, comment, follow or message you.">
               <div className={`${styles.panel} ${styles.devices}`}>
                 <div className={styles.device}>

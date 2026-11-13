@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { PasswordField, PhoneField, validPhone } from "@/components/auth/fields";
 import { VerifyPhone } from "@/components/auth/VerifyPhone";
 import { Button } from "@/components/ui";
-import { formError, homeFor, nextPath, signIn, signInWithCode } from "@/lib/api/account";
+import { formError, homeFor, nextPath, RESET_DONE_KEY, signIn, signInWithCode } from "@/lib/api/account";
 import styles from "../auth.module.css";
 
 export function SignInForm() {
@@ -16,6 +16,16 @@ export function SignInForm() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
+  const [reset, setReset] = useState(false);
+
+  // Read after mounting so the server render and the first client render match.
+  useEffect(() => {
+    const number = sessionStorage.getItem(RESET_DONE_KEY);
+    if (!number) return;
+    sessionStorage.removeItem(RESET_DONE_KEY);
+    setPhone(number);
+    setReset(true);
+  }, []);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -69,6 +79,11 @@ export function SignInForm() {
       <div className={styles.head}>
         <h1 className={styles.title}>Welcome back</h1>
         <p className={styles.lede}>Sign in with your password or a one-time code.</p>
+        {reset && (
+          <p className={styles.notice} role="status">
+            Password updated. Sign in with your new password.
+          </p>
+        )}
       </div>
       <form className={styles.form} onSubmit={submit} noValidate>
         <PhoneField

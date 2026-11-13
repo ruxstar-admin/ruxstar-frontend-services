@@ -9,7 +9,7 @@ import { API_URL } from "@/lib/api/client";
 import { fetchPublicPosts } from "@/lib/api/social";
 import styles from "../profile.module.css";
 import { ProfilePosts } from "./posts";
-import { ProfileActions, ProfileRelation, ProfileStats, UnlessBlocked } from "./relation";
+import { ProfileActions, ProfileChecklist, ProfileRelation, ProfileStats, UnlessBlocked } from "./relation";
 
 /** A username, or a user id from a notification; an id redirects to the username. */
 const HANDLE = /^(?:[a-z0-9_.]{3,20}|[a-f0-9]{24})$/;
@@ -111,6 +111,7 @@ export default async function ProfilePage({ params }: Props) {
             </ul>
           </div>
         </header>
+        <ProfileChecklist />
         <UnlessBlocked>
           <ProfilePosts ownerId={profile.id} username={profile.username} vendor={profile.badges.vendor} initial={posts ?? { items: [], nextCursor: null }} />
         </UnlessBlocked>

@@ -63,8 +63,8 @@ export const myOrders = async (cursor?: string): Promise<Page<Order>> => {
 
 export const getOrder = async (id: string) => (await signedIn(() => unwrap(api.GET("/v1/pod/orders/{id}", { params: { path: { id } } })))).data;
 
-export const cancelOrder = async (id: string) =>
-  (await signedIn(() => unwrap(api.POST("/v1/pod/orders/{id}/cancel", { params: { path: { id } } })))).data;
+export const cancelOrder = async (id: string, idempotencyKey: string) =>
+  (await signedIn(() => unwrap(api.POST("/v1/pod/orders/{id}/cancel", { params: { path: { id } }, headers: { "Idempotency-Key": idempotencyKey } })))).data;
 
 export const orderFileLink = async (id: string, fileId: string) =>
   (await signedIn(() => unwrap(api.GET("/v1/pod/orders/{id}/files/{fileId}", { params: { path: { id, fileId } } })))).data;

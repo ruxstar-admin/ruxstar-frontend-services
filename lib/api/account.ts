@@ -108,6 +108,9 @@ export const listSessions = async () => (await signedIn(() => unwrap(api.GET("/v
 export const endSession = async (id: string) =>
   signedIn(() => unwrap(api.DELETE("/v1/account/sessions/{id}", { params: { path: { id } } })));
 
+/** Session storage key: the number whose password was just reset, so sign-in can fill it in. Kept out of the URL. */
+export const RESET_DONE_KEY = "ruxstar.reset-done";
+
 /** Where someone starts once signed in: the console for the Ruxstar team, the feed for everyone else. */
 export const homeFor = (user: { roles: { admin: boolean; ruxstarStaff: boolean } }) =>
   user.roles.admin || user.roles.ruxstarStaff ? "/admin" : "/feed";
@@ -129,6 +132,15 @@ export interface FormError {
   code?: ApiErrorCode;
 }
 
+/** "45 seconds", "15 minutes", from the API's `retryAfterSeconds`. Same words as the app. */
+function waitCopy(err: ApiError): string {
+  const seconds = err.details.map((d) => (d as { retryAfterSeconds?: unknown }).retryAfterSeconds).find((s) => typeof s === "number");
+  if (!seconds || seconds <= 0) return "a few minutes";
+  if (seconds < 60) return `${seconds} seconds`;
+  const minutes = Math.ceil(seconds / 60);
+  return `${minutes} minute${minutes === 1 ? "" : "s"}`;
+}
+
 export function formError(err: unknown): FormError {
   if (!(err instanceof ApiError)) return { message: "Something went wrong. Try again." };
   const { code } = err;
@@ -136,9 +148,9 @@ export function formError(err: unknown): FormError {
   const field = detail?.path?.replace(/^body\//, "");
   if (code === "VALIDATION_FAILED" && detail) return { message: detail.message, field, code };
   if (code === "OTP_INVALID" && detail) return { message: `${err.message} ${detail.message}`, field: "code", code };
-  if ((code === "OTP_LIMIT" || code === "RATE_LIMITED" || code === "ACCOUNT_LOCKED") && detail) {
-    return { message: `${err.message} ${detail.message}`, code };
-  }
+  if (code === "ACCOUNT_LOCKED") return { message: `Too many wrong passwords. Try again in ${waitCopy(err)}, or sign in with a code.`, code };
+  if (code === "OTP_LIMIT") return { message: `Too many codes or tries. Try again in ${waitCopy(err)}.`, code };
+  if (code === "RATE_LIMITED") return { message: `Too many attempts. Try again in ${waitCopy(err)}.`, code };
   if (code === "PHOTO_INVALID" && detail) return { message: detail.message, code };
   if (code === "PHOTO_UNAVAILABLE") return { message: "Photos cannot be added right now. Try again in a few minutes.", code };
   return { message: err.message, field, code };

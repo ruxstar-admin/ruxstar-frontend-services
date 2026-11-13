@@ -249,7 +249,7 @@ export function UsernameField({
     checking: "Checking availability…",
     available: `@${value} is free.`,
     taken: undefined,
-    error: "Could not check right now. You can still continue.",
+    error: "Could not check right now. Edit the name to try again.",
   }[check.status];
   const showIdeas = check.suggestions.length > 0 && (check.status === "taken" || value.length === 0);
 

@@ -71,6 +71,74 @@
   gap: var(--space-2);
 }
 
+/* Your own profile only: photo, bio and city still to add. */
+.checklist {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.checklistHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font: var(--type-body);
+}
+
+.checklistCount {
+  font: var(--type-caption);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  height: 6px;
+  overflow: hidden;
+  background: var(--raised);
+  border-radius: var(--radius-pill);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transition: width var(--dur-quick) var(--ease-out);
+}
+
+.checklistText {
+  font: var(--type-caption);
+  color: var(--ink-2);
+}
+
+.checklistSteps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 var(--space-4);
+  font: 500 14px/20px var(--font);
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--raised);
+  border-radius: var(--radius-pill);
+}
+
+.step:hover {
+  background: color-mix(in srgb, var(--raised) 80%, var(--ink));
+}
+
 .blockedNote {
   padding: var(--space-8) 0;
   border-top: 1px solid var(--line);

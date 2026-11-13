@@ -68,6 +68,11 @@
   color: var(--danger);
 }
 
+.notice {
+  font: var(--type-small);
+  color: var(--success);
+}
+
 .foot {
   font: var(--type-small);
   color: var(--ink-2);

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Button, ButtonLink, Icon, useToast } from "@/components/ui";
 import { useMe, useOnSignedOut } from "@/components/social/session";
-import { formError } from "@/lib/api/account";
+import { formError, type User } from "@/lib/api/account";
 import { startDm } from "@/lib/api/chats";
 import { ApiError } from "@/lib/api/client";
 import { relation as loadRelation, reportUser, setBlock, setFollow, USER_REPORT_REASONS, type Relation } from "@/lib/api/social";
@@ -98,7 +98,7 @@ export function UnlessBlocked({ children }: { children: ReactNode }) {
   return children;
 }
 
-type MenuView = "main" | "block" | "report";
+type MenuView = "main" | "block" | "report" | "reported";
 
 function MoreMenu() {
   const toast = useToast();
@@ -140,6 +140,18 @@ function MoreMenu() {
       await action();
       toast(done, "success");
       setOpen(false);
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const report = async (reason: (typeof USER_REPORT_REASONS)[number]["value"]) => {
+    setBusy(true);
+    try {
+      await reportUser(ownerId, reason);
+      setView("reported");
     } catch (err) {
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
     } finally {
@@ -208,16 +220,72 @@ function MoreMenu() {
                   role="menuitem"
                   className={menu.menuItem}
                   disabled={busy}
-                  onClick={() => run(() => reportUser(ownerId, r.value), "Thanks. We will take a look.")}
+                  onClick={() => void report(r.value)}
                 >
                   {r.label}
                 </button>
               ))}
             </>
           )}
+          {view === "reported" && (
+            <div className={menu.confirm}>
+              <p>
+                <strong>Thanks for telling us</strong>
+                <br />
+                The Ruxstar team will take a look.
+              </p>
+              <div className={menu.confirmActions}>
+                {!blocked && (
+                  <Button variant="secondary" loading={busy} onClick={() => run(async () => setRelation(await setBlock(ownerId, true)), `Blocked @${username}.`)}>
+                    {`Also block ${name}`}
+                  </Button>
+                )}
+                <Button disabled={busy} onClick={() => setOpen(false)}>
+                  Done
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
+  );
+}
+
+const STEPS = [
+  { key: "photo", label: "Add a photo", done: (me: User) => !!me.avatarUrl },
+  { key: "bio", label: "Add a bio", done: (me: User) => !!me.bio?.trim() },
+  { key: "city", label: "Add your city", done: (me: User) => !!me.city?.trim() },
+] as const;
+
+/** On your own profile: what is still missing, one click each. Nothing once all three are done. Same as the app. */
+export function ProfileChecklist() {
+  const me = useMe();
+  const { ownerId } = useRelation();
+  if (!me || me.id !== ownerId) return null;
+  const missing = STEPS.filter((step) => !step.done(me));
+  if (missing.length === 0) return null;
+  const done = STEPS.length - missing.length;
+
+  return (
+    <section className={styles.checklist} aria-label="Finish your profile">
+      <div className={styles.checklistHead}>
+        <strong>Finish your profile</strong>
+        <span className={styles.checklistCount}>{`${done} of ${STEPS.length}`}</span>
+      </div>
+      <div className={styles.track} role="progressbar" aria-label="Profile completion" aria-valuemin={0} aria-valuemax={STEPS.length} aria-valuenow={done}>
+        <span className={styles.fill} style={{ width: `${(done / STEPS.length) * 100}%` }} />
+      </div>
+      <p className={styles.checklistText}>People trust a profile with a face, a line about you and a city.</p>
+      <div className={styles.checklistSteps}>
+        {missing.map((step) => (
+          <Link key={step.key} href="/account#profile" className={styles.step}>
+            <Icon name="plus" size={16} />
+            {step.label}
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -227,16 +295,32 @@ export function ProfileActions() {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
   const router = useRouter();
-  const { ownerId, relation, setRelation, unavailable } = useRelation();
+  const { ownerId, name, username, relation, setRelation, unavailable } = useRelation();
   const [busy, setBusy] = useState(false);
   const [opening, setOpening] = useState(false);
 
   if (me === undefined) return null;
   if (me?.id === ownerId) {
+    const share = async () => {
+      const url = `${window.location.origin}/u/${username}`;
+      if (navigator.share) {
+        await navigator.share({ title: `${name} on Ruxstar`, url }).catch(() => undefined);
+        return;
+      }
+      await navigator.clipboard.writeText(url).then(
+        () => toast("Link copied."),
+        () => toast(url),
+      );
+    };
     return (
-      <ButtonLink href="/account" variant="secondary">
-        Edit profile
-      </ButtonLink>
+      <div className={styles.actions}>
+        <ButtonLink href="/account" variant="secondary">
+          Edit profile
+        </ButtonLink>
+        <Button variant="secondary" icon={<Icon name="share" size={18} />} onClick={() => void share()}>
+          Share profile
+        </Button>
+      </div>
     );
   }
   if (!me) return <ButtonLink href="/signup">Join Ruxstar</ButtonLink>;

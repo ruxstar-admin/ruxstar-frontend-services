@@ -201,7 +201,8 @@ function Editor({ post, onDone }: { post: Post; onDone: (post?: Post) => void })
   const onSignedOut = useOnSignedOut();
   const [text, setText] = useState(post.text);
   const [saving, setSaving] = useState(false);
-  const empty = !text.trim() && post.media.length === 0;
+  // Same as the app: photos can't be changed here, so an edit always keeps some text.
+  const empty = !text.trim();
 
   const save = async () => {
     setSaving(true);

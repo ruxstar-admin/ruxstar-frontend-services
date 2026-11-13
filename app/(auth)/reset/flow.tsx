@@ -6,7 +6,7 @@ import { useState, type FormEvent } from "react";
 import { AccountUsername, NewPasswordFields, passwordProblem } from "@/components/auth/fields";
 import { VerifyPhone } from "@/components/auth/VerifyPhone";
 import { Button, ButtonLink } from "@/components/ui";
-import { formError, resetPassword, signIn } from "@/lib/api/account";
+import { formError, RESET_DONE_KEY, resetPassword } from "@/lib/api/account";
 import styles from "../auth.module.css";
 
 export function ResetFlow() {
@@ -65,8 +65,8 @@ export function ResetFlow() {
       return;
     }
     try {
-      await signIn(verified!.phone, password);
-      router.replace("/account");
+      sessionStorage.setItem(RESET_DONE_KEY, verified!.phone);
+      router.replace("/signin");
     } catch {
       setDone(true);
       setBusy(false);

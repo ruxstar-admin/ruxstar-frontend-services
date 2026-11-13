@@ -16,6 +16,7 @@ const ACTIONS: Record<string, string> = {
   "kyc.reject": "Sent verification back",
   "report.keep": "Kept a reported post",
   "post.remove": "Removed a post",
+  "user_report.dismiss": "Dismissed reports about someone",
   "user.suspend": "Put an account on hold",
   "user.unlock": "Unlocked an account",
   "user.sign_out": "Signed an account out everywhere",
