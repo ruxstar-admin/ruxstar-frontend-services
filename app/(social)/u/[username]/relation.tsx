@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Button, ButtonLink, Icon, useToast } from "@/components/ui";
 import { useMe, useOnSignedOut } from "@/components/social/session";
 import { formError } from "@/lib/api/account";
+import { startDm } from "@/lib/api/chats";
 import { ApiError } from "@/lib/api/client";
 import { relation as loadRelation, reportUser, setBlock, setFollow, USER_REPORT_REASONS, type Relation } from "@/lib/api/social";
 import { compact } from "@/lib/time";
@@ -224,8 +226,10 @@ export function ProfileActions() {
   const me = useMe();
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
+  const router = useRouter();
   const { ownerId, relation, setRelation, unavailable } = useRelation();
   const [busy, setBusy] = useState(false);
+  const [opening, setOpening] = useState(false);
 
   if (me === undefined) return null;
   if (me?.id === ownerId) {
@@ -254,12 +258,28 @@ export function ProfileActions() {
     }
   };
 
+  const message = async () => {
+    setOpening(true);
+    try {
+      const chat = await startDm(ownerId);
+      router.push(`/messages/${chat.id}`);
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+      setOpening(false);
+    }
+  };
+
   return (
     <div className={styles.actions}>
       {relation?.blockedByMe ? null : (
-        <Button variant={relation?.following ? "secondary" : "primary"} onClick={toggle} disabled={!relation || busy}>
-          {relation?.following ? "Following" : relation?.followsMe ? "Follow back" : "Follow"}
-        </Button>
+        <>
+          <Button variant={relation?.following ? "secondary" : "primary"} onClick={toggle} disabled={!relation || busy}>
+            {relation?.following ? "Following" : relation?.followsMe ? "Follow back" : "Follow"}
+          </Button>
+          <Button variant="secondary" onClick={message} loading={opening} disabled={!relation}>
+            Message
+          </Button>
+        </>
       )}
       <MoreMenu />
     </div>

@@ -3382,6 +3382,1949 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/social/chats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your chats, or your message requests, latest message first
+         * @description `box: requests` lists chats and group invites from people you don't follow. 1:1 chats with someone blocked either way are left out.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    box?: "chats" | "requests";
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                kind: "dm" | "group";
+                                /** @description The group's name, or the other person's name in a 1:1 chat */
+                                title: string;
+                                /** @description 1:1 chats only: the other person */
+                                peer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                /** @description People in it, invites included */
+                                members: number;
+                                /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                state: "active" | "request";
+                                muted: boolean;
+                                unread: number;
+                                /** @description Groups: you can add and remove people, rename it and make admins */
+                                admin: boolean;
+                                canSend: boolean;
+                                /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
+                                waiting: boolean;
+                                last: {
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
+                                    text: string;
+                                    mine: boolean;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Unread messages for the badge, and waiting requests
+         * @description Poll every 15 seconds or so while the app or site is open. Muted chats don't count.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Unread messages in chats that aren't muted */
+                                unread: number;
+                                /** @description Message requests waiting */
+                                requests: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/dm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open your 1:1 chat with someone, starting it if needed
+         * @description If they don't follow you, it reaches them as a request when you send your first message, and you can't send more until they accept. Blocked either way: FORBIDDEN.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description MongoDB ObjectId as hex */
+                        userId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                kind: "dm" | "group";
+                                /** @description The group's name, or the other person's name in a 1:1 chat */
+                                title: string;
+                                /** @description 1:1 chats only: the other person */
+                                peer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                /** @description People in it, invites included */
+                                members: number;
+                                /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                state: "active" | "request";
+                                muted: boolean;
+                                unread: number;
+                                /** @description Groups: you can add and remove people, rename it and make admins */
+                                admin: boolean;
+                                canSend: boolean;
+                                /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
+                                waiting: boolean;
+                                last: {
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
+                                    text: string;
+                                    mine: boolean;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Everyone in it, you first. Groups list up to 50; 1:1 chats list both people. */
+                                people: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                    admin: boolean;
+                                    /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                    state: "active" | "request";
+                                    me: boolean;
+                                }[];
+                                /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
+                                seenAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                kind: "dm" | "group";
+                                /** @description The group's name, or the other person's name in a 1:1 chat */
+                                title: string;
+                                /** @description 1:1 chats only: the other person */
+                                peer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                /** @description People in it, invites included */
+                                members: number;
+                                /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                state: "active" | "request";
+                                muted: boolean;
+                                unread: number;
+                                /** @description Groups: you can add and remove people, rename it and make admins */
+                                admin: boolean;
+                                canSend: boolean;
+                                /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
+                                waiting: boolean;
+                                last: {
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
+                                    text: string;
+                                    mine: boolean;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Everyone in it, you first. Groups list up to 50; 1:1 chats list both people. */
+                                people: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                    admin: boolean;
+                                    /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                    state: "active" | "request";
+                                    me: boolean;
+                                }[];
+                                /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
+                                seenAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a private group, up to 50 people with you
+         * @description You become its admin. People who don't follow you get it as a request and join when they accept.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        userIds: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                kind: "dm" | "group";
+                                /** @description The group's name, or the other person's name in a 1:1 chat */
+                                title: string;
+                                /** @description 1:1 chats only: the other person */
+                                peer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                /** @description People in it, invites included */
+                                members: number;
+                                /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                state: "active" | "request";
+                                muted: boolean;
+                                unread: number;
+                                /** @description Groups: you can add and remove people, rename it and make admins */
+                                admin: boolean;
+                                canSend: boolean;
+                                /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
+                                waiting: boolean;
+                                last: {
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
+                                    text: string;
+                                    mine: boolean;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Everyone in it, you first. Groups list up to 50; 1:1 chats list both people. */
+                                people: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                    admin: boolean;
+                                    /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                    state: "active" | "request";
+                                    me: boolean;
+                                }[];
+                                /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
+                                seenAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One chat, with everyone in it */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                kind: "dm" | "group";
+                                /** @description The group's name, or the other person's name in a 1:1 chat */
+                                title: string;
+                                /** @description 1:1 chats only: the other person */
+                                peer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                /** @description People in it, invites included */
+                                members: number;
+                                /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                state: "active" | "request";
+                                muted: boolean;
+                                unread: number;
+                                /** @description Groups: you can add and remove people, rename it and make admins */
+                                admin: boolean;
+                                canSend: boolean;
+                                /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
+                                waiting: boolean;
+                                last: {
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
+                                    text: string;
+                                    mine: boolean;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Everyone in it, you first. Groups list up to 50; 1:1 chats list both people. */
+                                people: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                    admin: boolean;
+                                    /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                    state: "active" | "request";
+                                    me: boolean;
+                                }[];
+                                /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
+                                seenAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Rename a group (admins) */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                kind: "dm" | "group";
+                                /** @description The group's name, or the other person's name in a 1:1 chat */
+                                title: string;
+                                /** @description 1:1 chats only: the other person */
+                                peer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                /** @description People in it, invites included */
+                                members: number;
+                                /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                state: "active" | "request";
+                                muted: boolean;
+                                unread: number;
+                                /** @description Groups: you can add and remove people, rename it and make admins */
+                                admin: boolean;
+                                canSend: boolean;
+                                /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
+                                waiting: boolean;
+                                last: {
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
+                                    text: string;
+                                    mine: boolean;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Everyone in it, you first. Groups list up to 50; 1:1 chats list both people. */
+                                people: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                    admin: boolean;
+                                    /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                    state: "active" | "request";
+                                    me: boolean;
+                                }[];
+                                /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
+                                seenAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A chat's messages, newest first
+         * @description For opening a chat and scrolling back. Then poll /updates for new ones. Group members see messages from when they were added.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description MongoDB ObjectId as hex */
+                                chatId: string;
+                                kind: "text" | "post" | "photo" | "event";
+                                /** @description Null for group lines like "Asha added Ravi" */
+                                sender: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                mine: boolean;
+                                text: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False when the post was deleted, or you can't see its author */
+                                    available: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        vendor: boolean;
+                                        /** @description Identity verified by Ruxstar */
+                                        verified: boolean;
+                                    } | null;
+                                    /** @description The start of the post */
+                                    text: string;
+                                    /** @description A small copy of its first photo */
+                                    photo: string | null;
+                                } | null;
+                                photo: {
+                                    /** @description Works for at least an hour */
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Send text, a post, or a post with a note
+         * @description Send an Idempotency-Key, so a retry never sends twice. Sending accepts a request you had. In a 1:1 chat the other person hasn't accepted, you get one message: the next answers CHAT_REQUEST_PENDING.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        text?: string;
+                        /** @description MongoDB ObjectId as hex */
+                        postId?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description MongoDB ObjectId as hex */
+                                chatId: string;
+                                kind: "text" | "post" | "photo" | "event";
+                                /** @description Null for group lines like "Asha added Ravi" */
+                                sender: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                mine: boolean;
+                                text: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False when the post was deleted, or you can't see its author */
+                                    available: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        vendor: boolean;
+                                        /** @description Identity verified by Ruxstar */
+                                        verified: boolean;
+                                    } | null;
+                                    /** @description The start of the post */
+                                    text: string;
+                                    /** @description A small copy of its first photo */
+                                    photo: string | null;
+                                } | null;
+                                photo: {
+                                    /** @description Works for at least an hour */
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/updates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What changed in an open chat since your last look
+         * @description Poll every 3 seconds or so while a chat is open. Pass the last answer's `now` as `since`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    since: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Sent since `since`, oldest first. Includes a few seconds before it, so merge by id. */
+                                messages: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    chatId: string;
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Null for group lines like "Asha added Ravi" */
+                                    sender: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        vendor: boolean;
+                                        /** @description Identity verified by Ruxstar */
+                                        verified: boolean;
+                                    } | null;
+                                    mine: boolean;
+                                    text: string;
+                                    post: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description False when the post was deleted, or you can't see its author */
+                                        available: boolean;
+                                        author: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            name: string;
+                                            username: string;
+                                            avatarUrl: string | null;
+                                            vendor: boolean;
+                                            /** @description Identity verified by Ruxstar */
+                                            verified: boolean;
+                                        } | null;
+                                        /** @description The start of the post */
+                                        text: string;
+                                        /** @description A small copy of its first photo */
+                                        photo: string | null;
+                                    } | null;
+                                    photo: {
+                                        /** @description Works for at least an hour */
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                }[];
+                                /** @description Messages unsent since `since`. Remove them. */
+                                unsent: string[];
+                                seenAt: string | null;
+                                /** @description The chat's name, people or admins changed. Fetch it again. */
+                                changed: boolean;
+                                /** Format: date-time */
+                                now: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a photo
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB, and an Idempotency-Key. It is kept privately, as WebP at most 1280 pixels on its long side, without its metadata. Its link works for at least an hour.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description MongoDB ObjectId as hex */
+                                chatId: string;
+                                kind: "text" | "post" | "photo" | "event";
+                                /** @description Null for group lines like "Asha added Ravi" */
+                                sender: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                mine: boolean;
+                                text: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False when the post was deleted, or you can't see its author */
+                                    available: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        vendor: boolean;
+                                        /** @description Identity verified by Ruxstar */
+                                        verified: boolean;
+                                    } | null;
+                                    /** @description The start of the post */
+                                    text: string;
+                                    /** @description A small copy of its first photo */
+                                    photo: string | null;
+                                } | null;
+                                photo: {
+                                    /** @description Works for at least an hour */
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/messages/{messageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Unsend your message. It disappears for everyone. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a chat read
+         * @description Call when a chat is opened and when new messages arrive while it is open. In 1:1 chats the other person sees Seen.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept a message request or group invite */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                kind: "dm" | "group";
+                                /** @description The group's name, or the other person's name in a 1:1 chat */
+                                title: string;
+                                /** @description 1:1 chats only: the other person */
+                                peer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                /** @description People in it, invites included */
+                                members: number;
+                                /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                state: "active" | "request";
+                                muted: boolean;
+                                unread: number;
+                                /** @description Groups: you can add and remove people, rename it and make admins */
+                                admin: boolean;
+                                canSend: boolean;
+                                /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
+                                waiting: boolean;
+                                last: {
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
+                                    text: string;
+                                    mine: boolean;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Everyone in it, you first. Groups list up to 50; 1:1 chats list both people. */
+                                people: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                    admin: boolean;
+                                    /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                    state: "active" | "request";
+                                    me: boolean;
+                                }[];
+                                /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
+                                seenAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Turn down a message request or group invite
+         * @description A 1:1 request is hidden from you and the sender can't send more; they aren't told. A group invite takes you out of the group.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/mute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mute or unmute a chat
+         * @description A muted chat still shows its unread count but doesn't add to the badge.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        muted: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/people": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add people to a group (admins)
+         * @description People who don't follow you get it as a request. CHAT_GROUP_FULL past 50 people.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        userIds: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                kind: "dm" | "group";
+                                /** @description The group's name, or the other person's name in a 1:1 chat */
+                                title: string;
+                                /** @description 1:1 chats only: the other person */
+                                peer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                /** @description People in it, invites included */
+                                members: number;
+                                /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                state: "active" | "request";
+                                muted: boolean;
+                                unread: number;
+                                /** @description Groups: you can add and remove people, rename it and make admins */
+                                admin: boolean;
+                                canSend: boolean;
+                                /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
+                                waiting: boolean;
+                                last: {
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
+                                    text: string;
+                                    mine: boolean;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Everyone in it, you first. Groups list up to 50; 1:1 chats list both people. */
+                                people: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                    admin: boolean;
+                                    /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                    state: "active" | "request";
+                                    me: boolean;
+                                }[];
+                                /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
+                                seenAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/people/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove someone from a group (admins) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/admins/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Make someone a group admin (admins) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                kind: "dm" | "group";
+                                /** @description The group's name, or the other person's name in a 1:1 chat */
+                                title: string;
+                                /** @description 1:1 chats only: the other person */
+                                peer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                /** @description People in it, invites included */
+                                members: number;
+                                /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                state: "active" | "request";
+                                muted: boolean;
+                                unread: number;
+                                /** @description Groups: you can add and remove people, rename it and make admins */
+                                admin: boolean;
+                                canSend: boolean;
+                                /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
+                                waiting: boolean;
+                                last: {
+                                    kind: "text" | "post" | "photo" | "event";
+                                    /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
+                                    text: string;
+                                    mine: boolean;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Everyone in it, you first. Groups list up to 50; 1:1 chats list both people. */
+                                people: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                    admin: boolean;
+                                    /** @description `request`: someone you don't follow started it or added you. Accept to reply; it sits in Requests until then. */
+                                    state: "active" | "request";
+                                    me: boolean;
+                                }[];
+                                /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
+                                seenAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Leave a group
+         * @description If you were its only admin, the person who has been in it longest becomes admin.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/social/feed": {
         parameters: {
             query?: never;
@@ -11348,7 +13291,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "ORDER_STATE" | "PAYMENTS_UNAVAILABLE";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "ORDER_STATE" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
                 message: string;
                 details: ({
                     path?: string;

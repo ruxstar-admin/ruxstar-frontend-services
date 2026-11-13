@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useChatUnread } from "@/components/chat/use-chat-unread";
 import { Avatar } from "@/components/profile/Avatar";
 import { ButtonLink, Icon, ToastProvider, type IconName } from "@/components/ui";
 import { homeFor } from "@/lib/api/account";
@@ -14,6 +15,7 @@ const TABS: { href: string; label: string; icon: IconName }[] = [
   { href: "/feed", label: "Feed", icon: "home" },
   { href: "/discover", label: "Discover", icon: "store" },
   { href: "/search", label: "Search", icon: "search" },
+  { href: "/messages", label: "Messages", icon: "chat" },
   { href: "/saved", label: "Saved", icon: "bookmark" },
   { href: "/notifications", label: "Notifications", icon: "bell" },
 ];
@@ -92,14 +94,18 @@ function Nav() {
   const me = useMe();
   const pathname = usePathname();
   const unread = useUnread(!!me);
+  const chats = useChatUnread(!!me);
   const profileHref = me ? `/u/${me.username}` : "/signin";
   const team = !!me && (me.roles.admin || me.roles.ruxstarStaff);
   const tabs = team ? [CONSOLE_TAB, ...TABS] : TABS;
 
   const tab = (t: (typeof tabs)[number]) => {
     const active =
-      pathname === t.href || (t.href === CONSOLE_TAB.href && pathname.startsWith(`${t.href}/`)) || (t.href === "/discover" && pathname.startsWith("/b/"));
-    const badge = t.href === "/notifications" && unread > 0 ? (unread > 9 ? "9+" : String(unread)) : null;
+      pathname === t.href ||
+      ((t.href === CONSOLE_TAB.href || t.href === "/messages") && pathname.startsWith(`${t.href}/`)) ||
+      (t.href === "/discover" && pathname.startsWith("/b/"));
+    const count = t.href === "/notifications" ? unread : t.href === "/messages" ? chats.unread + chats.requests : 0;
+    const badge = count > 0 ? (count > 9 ? "9+" : String(count)) : null;
     return (
       <Link key={t.href} href={t.href} className={styles.tab} aria-current={active ? "page" : undefined}>
         <span className={styles.icon}>

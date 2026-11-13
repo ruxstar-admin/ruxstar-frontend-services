@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { memo, useEffect, useRef, useState, type KeyboardEvent as KeyEvent } from "react";
+import { SharePostDialog } from "@/components/chat/SharePostDialog";
 import { VerifiedTick } from "@/components/kyc/VerifiedTick";
 import { Avatar } from "@/components/profile/Avatar";
 import { Button, ButtonLink, Icon, Tag, useToast } from "@/components/ui";
@@ -245,6 +246,7 @@ export const PostCard = memo(function PostCard({ post, onChange, onRemove, eager
   const onSignedOut = useOnSignedOut();
   const [editing, setEditing] = useState(false);
   const [popping, setPopping] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const { author } = post;
 
   const toggle = async (kind: "like" | "save") => {
@@ -372,9 +374,10 @@ export const PostCard = memo(function PostCard({ post, onChange, onRemove, eager
             <span className={styles.num}>{compact(post.counts.comments)}</span>
           </Link>
         )}
-        <button type="button" className={styles.action} aria-label="Share" onClick={share}>
+        <button type="button" className={styles.action} aria-label="Share" aria-haspopup={me ? "dialog" : undefined} onClick={me ? () => setSharing(true) : share}>
           <Icon name="share" size={22} />
         </button>
+        {me && <SharePostDialog postId={post.id} open={sharing} onClose={() => setSharing(false)} onShareLink={share} />}
         <span className={styles.spacer} />
         <button
           type="button"
