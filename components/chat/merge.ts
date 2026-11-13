@@ -1,4 +1,30 @@
-import type { Message, ShownMessage } from "@/lib/api/chats";
+import type { Message, ReactionCount, ShownMessage } from "@/lib/api/chats";
+
+/** Swaps in the server's copy of messages already on screen whose reactions changed. */
+export const applyUpdated = (current: ShownMessage[], updated: Message[]): ShownMessage[] => {
+  if (updated.length === 0) return current;
+  const byId = new Map(updated.map((m) => [m.id, m]));
+  let changed = false;
+  const next = current.map((m) => {
+    const fresh = byId.get(m.id);
+    if (!fresh) return m;
+    changed = true;
+    return { ...fresh, key: m.key };
+  });
+  return changed ? next : current;
+};
+
+/**
+ * Your reaction set to `emoji`, or taken back when it already was, as the API will do it: one per person,
+ * and an emoji nobody uses any more disappears.
+ */
+export const withMyReaction = (reactions: ReactionCount[], emoji: string): ReactionCount[] => {
+  const previous = reactions.find((r) => r.mine)?.emoji;
+  const without = reactions.flatMap((r) => (r.mine ? (r.count > 1 ? [{ ...r, count: r.count - 1, mine: false }] : []) : [r]));
+  if (previous === emoji) return without;
+  const existing = without.find((r) => r.emoji === emoji);
+  return existing ? without.map((r) => (r === existing ? { ...r, count: r.count + 1, mine: true } : r)) : [...without, { emoji, count: 1, mine: true }];
+};
 
 /**
  * Adds messages the server returned that aren't on screen yet. Yours still sending stay last,

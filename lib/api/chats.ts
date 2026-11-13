@@ -24,7 +24,12 @@ export type ShownMessage = Message & {
   key?: string;
   /** A photo you are sending, shown from the file until the server has it. */
   upload?: { url: string; width: number; height: number };
+  /** A voice message you are sending, played from the recording until the server has it. */
+  recording?: { url: string; durationMs: number; levels: number[] };
 };
+export type ReplyPreview = NonNullable<Message["replyTo"]>;
+export type ReactionCount = Message["reactions"][number];
+export type Typist = ChatUpdates["typing"][number];
 
 export const MESSAGE_TEXT_MAX = 1000;
 export const GROUP_TITLE_MAX = 60;
@@ -53,25 +58,33 @@ export const getChat = async (id: string) => (await signedIn(() => unwrap(api.GE
 export const chatMessages = async (id: string, cursor?: string) =>
   toPage(await signedIn(() => unwrap(api.GET("/v1/social/chats/{id}/messages", { params: { path: { id }, query: { cursor } } }))));
 
-/** `since` is the server's `now` from the last answer, so a computer clock that is off never skips messages. */
-export const chatUpdates = async (id: string, since: string) =>
-  (await signedIn(() => unwrap(api.GET("/v1/social/chats/{id}/updates", { params: { path: { id }, query: { since } } })))).data;
+/** How long an /updates call may wait for something to happen before answering empty. */
+export const UPDATES_WAIT_S = 20;
 
-export const sendMessage = async (id: string, body: { text?: string; postId?: string }, key: string) =>
+/**
+ * `since` is the server's `now` from the last answer, so a computer clock that is off never skips messages.
+ * With `wait`, the API holds the call until something changes (a message, a reaction, typing, Seen) or that
+ * many seconds pass.
+ */
+export const chatUpdates = async (id: string, since: string, wait = 0, signal?: AbortSignal) =>
+  (await signedIn(() => unwrap(api.GET("/v1/social/chats/{id}/updates", { params: { path: { id }, query: { since, wait } }, signal })))).data;
+
+export const sendMessage = async (id: string, body: { text?: string; postId?: string; replyToId?: string }, key: string) =>
   (await signedIn(() => unwrap(api.POST("/v1/social/chats/{id}/messages", { ...chat(id), body, ...keyed(key) })))).data;
 
-/** The spec has no body for this route (it is the raw image), so it skips the typed client. */
-async function postPhoto(id: string, photo: Blob, key: string): Promise<Message> {
+/** The spec has no body for these routes (the raw image or recording), so they skip the typed client. */
+async function postFile(path: string, file: Blob, key: string, query: Record<string, string | undefined>, failed: string): Promise<Message> {
+  const search = new URLSearchParams(Object.entries(query).filter((e): e is [string, string] => e[1] !== undefined));
   let response: Response;
   try {
-    response = await fetch(`${API_URL}/v1/social/chats/${id}/photos`, {
+    response = await fetch(`${API_URL}${path}${search.size ? `?${search}` : ""}`, {
       method: "POST",
       credentials: "include",
-      headers: { "X-Client": "web", "Content-Type": photo.type, "Idempotency-Key": key },
-      body: photo,
+      headers: { "X-Client": "web", "Content-Type": file.type, "Idempotency-Key": key },
+      body: file,
     });
   } catch {
-    throw new ApiError(0, "NETWORK", "The photo didn't send. Check your connection and try again.");
+    throw new ApiError(0, "NETWORK", failed);
   }
   const body = (await response.json().catch(() => null)) as { data?: Message; error?: ApiErrorBody } | null;
   if (response.ok && body?.data) return body.data;
@@ -79,7 +92,31 @@ async function postPhoto(id: string, photo: Blob, key: string): Promise<Message>
   throw new ApiError(response.status, "INTERNAL", "Something went wrong on our side.");
 }
 
-export const sendPhoto = (id: string, photo: Blob, key: string) => signedIn(() => postPhoto(id, photo, key));
+export const sendPhoto = (id: string, photo: Blob, key: string, replyToId?: string) =>
+  signedIn(() => postFile(`/v1/social/chats/${id}/photos`, photo, key, { replyToId }, "The photo didn't send. Check your connection and try again."));
+
+/** `audio` must be AAC in MP4 (audio/mp4), so it plays on iPhones too. */
+export const sendVoice = (id: string, audio: Blob, voice: { durationMs: number; levels: number[] }, key: string, replyToId?: string) =>
+  signedIn(() =>
+    postFile(
+      `/v1/social/chats/${id}/voice`,
+      new Blob([audio], { type: "audio/mp4" }),
+      key,
+      { durationMs: String(Math.round(voice.durationMs)), levels: voice.levels.length ? voice.levels.join(",") : undefined, replyToId },
+      "The voice message didn't send. Check your connection and try again.",
+    ),
+  );
+
+/** One reaction per person: reacting again swaps it. Answers with the message as it is now. */
+export const reactTo = async (id: string, messageId: string, emoji: string) =>
+  (await signedIn(() => unwrap(api.PUT("/v1/social/chats/{id}/messages/{messageId}/reaction", { params: { path: { id, messageId } }, body: { emoji } })))).data;
+
+export const unreact = async (id: string, messageId: string) =>
+  (await signedIn(() => unwrap(api.DELETE("/v1/social/chats/{id}/messages/{messageId}/reaction", { params: { path: { id, messageId } } })))).data;
+
+/** Tell the others you're typing (again every few seconds while you keep going), or that you stopped. */
+export const sendTyping = (id: string, typing: boolean) =>
+  signedIn(() => unwrap(api.POST("/v1/social/chats/{id}/typing", { ...chat(id), body: { typing } })));
 
 export const unsendMessage = (id: string, messageId: string) =>
   signedIn(() => unwrap(api.DELETE("/v1/social/chats/{id}/messages/{messageId}", { params: { path: { id, messageId } } })));

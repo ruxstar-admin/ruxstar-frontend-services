@@ -246,6 +246,20 @@ const ICONS = {
       <path d="M12 10v4M12 17h.01" />
     </>
   ),
+  mic: (
+    <>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
+    </>
+  ),
+  play: <path d="M8 5.5v13l10-6.5z" />,
+  pause: <path d="M8.5 5.5v13M15.5 5.5v13" />,
+  reply: (
+    <>
+      <path d="M10 8.5 5 13l5 4.5" />
+      <path d="M5 13h9.5a4.5 4.5 0 0 0 4.5-4.5V6" />
+    </>
+  ),
 } satisfies Record<string, ReactElement>;
 
 export type IconName = keyof typeof ICONS;

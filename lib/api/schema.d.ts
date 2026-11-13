@@ -3442,7 +3442,7 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -3496,7 +3496,7 @@ export interface paths {
         };
         /**
          * Unread messages for the badge, and waiting requests
-         * @description Poll every 15 seconds or so while the app or site is open. Muted chats don't count.
+         * @description Poll every 15 seconds or so while the app or site is open. Muted chats don't count. It also marks you active for "Active 5m ago".
          */
         get: {
             parameters: {
@@ -3619,7 +3619,7 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -3645,6 +3645,8 @@ export interface paths {
                                 }[];
                                 /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
                                 seenAt: string | null;
+                                /** @description 1:1 chats: when the other person last had Ruxstar open, to the minute. Show "Active now" or "Active 5m ago". */
+                                activeAt: string | null;
                             };
                             meta: {
                                 requestId: string;
@@ -3688,7 +3690,7 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -3714,6 +3716,8 @@ export interface paths {
                                 }[];
                                 /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
                                 seenAt: string | null;
+                                /** @description 1:1 chats: when the other person last had Ruxstar open, to the minute. Show "Active now" or "Active 5m ago". */
+                                activeAt: string | null;
                             };
                             meta: {
                                 requestId: string;
@@ -3812,7 +3816,7 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -3838,6 +3842,8 @@ export interface paths {
                                 }[];
                                 /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
                                 seenAt: string | null;
+                                /** @description 1:1 chats: when the other person last had Ruxstar open, to the minute. Show "Active now" or "Active 5m ago". */
+                                activeAt: string | null;
                             };
                             meta: {
                                 requestId: string;
@@ -3927,7 +3933,7 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -3953,6 +3959,8 @@ export interface paths {
                                 }[];
                                 /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
                                 seenAt: string | null;
+                                /** @description 1:1 chats: when the other person last had Ruxstar open, to the minute. Show "Active now" or "Active 5m ago". */
+                                activeAt: string | null;
                             };
                             meta: {
                                 requestId: string;
@@ -4040,7 +4048,7 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -4066,6 +4074,8 @@ export interface paths {
                                 }[];
                                 /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
                                 seenAt: string | null;
+                                /** @description 1:1 chats: when the other person last had Ruxstar open, to the minute. Show "Active now" or "Active 5m ago". */
+                                activeAt: string | null;
                             };
                             meta: {
                                 requestId: string;
@@ -4133,7 +4143,7 @@ export interface paths {
                                 id: string;
                                 /** @description MongoDB ObjectId as hex */
                                 chatId: string;
-                                kind: "text" | "post" | "photo" | "event";
+                                kind: "text" | "post" | "photo" | "voice" | "event";
                                 /** @description Null for group lines like "Asha added Ravi" */
                                 sender: {
                                     /** @description MongoDB ObjectId as hex */
@@ -4173,6 +4183,32 @@ export interface paths {
                                     width: number;
                                     height: number;
                                 } | null;
+                                voice: {
+                                    /** @description AAC in MP4. Works for at least an hour and answers Range requests. */
+                                    url: string;
+                                    durationMs: number;
+                                    /** @description Loudness bars for its waveform; may be empty */
+                                    levels: number[];
+                                } | null;
+                                replyTo: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False once that message was unsent */
+                                    available: boolean;
+                                    /** @description Their name; "You" for your own */
+                                    sender: string;
+                                    mine: boolean;
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description The start of it, or "Photo", "Voice message" or "Post" */
+                                    text: string;
+                                } | null;
+                                /** @description Each emoji once, in the order first used. One reaction per person. */
+                                reactions: {
+                                    emoji: string;
+                                    count: number;
+                                    /** @description This one is yours */
+                                    mine: boolean;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                             }[];
@@ -4224,6 +4260,8 @@ export interface paths {
                         text?: string;
                         /** @description MongoDB ObjectId as hex */
                         postId?: string;
+                        /** @description MongoDB ObjectId as hex */
+                        replyToId?: string;
                     };
                 };
             };
@@ -4240,7 +4278,7 @@ export interface paths {
                                 id: string;
                                 /** @description MongoDB ObjectId as hex */
                                 chatId: string;
-                                kind: "text" | "post" | "photo" | "event";
+                                kind: "text" | "post" | "photo" | "voice" | "event";
                                 /** @description Null for group lines like "Asha added Ravi" */
                                 sender: {
                                     /** @description MongoDB ObjectId as hex */
@@ -4280,6 +4318,32 @@ export interface paths {
                                     width: number;
                                     height: number;
                                 } | null;
+                                voice: {
+                                    /** @description AAC in MP4. Works for at least an hour and answers Range requests. */
+                                    url: string;
+                                    durationMs: number;
+                                    /** @description Loudness bars for its waveform; may be empty */
+                                    levels: number[];
+                                } | null;
+                                replyTo: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False once that message was unsent */
+                                    available: boolean;
+                                    /** @description Their name; "You" for your own */
+                                    sender: string;
+                                    mine: boolean;
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description The start of it, or "Photo", "Voice message" or "Post" */
+                                    text: string;
+                                } | null;
+                                /** @description Each emoji once, in the order first used. One reaction per person. */
+                                reactions: {
+                                    emoji: string;
+                                    count: number;
+                                    /** @description This one is yours */
+                                    mine: boolean;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -4324,12 +4388,14 @@ export interface paths {
         };
         /**
          * What changed in an open chat since your last look
-         * @description Poll every 3 seconds or so while a chat is open. Pass the last answer's `now` as `since`.
+         * @description Call it again as soon as it answers while a chat is open, passing the last answer's `now` as `since`. With `wait` it holds on until something changes (a message, an unsend, a reaction, typing, Seen) or `wait` seconds pass, so new messages show at once.
          */
         get: {
             parameters: {
                 query: {
                     since: string;
+                    /** @description Seconds to hold the call open when nothing has changed yet. It answers the moment something does. */
+                    wait?: number;
                 };
                 header?: never;
                 path: {
@@ -4354,7 +4420,7 @@ export interface paths {
                                     id: string;
                                     /** @description MongoDB ObjectId as hex */
                                     chatId: string;
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Null for group lines like "Asha added Ravi" */
                                     sender: {
                                         /** @description MongoDB ObjectId as hex */
@@ -4394,12 +4460,126 @@ export interface paths {
                                         width: number;
                                         height: number;
                                     } | null;
+                                    voice: {
+                                        /** @description AAC in MP4. Works for at least an hour and answers Range requests. */
+                                        url: string;
+                                        durationMs: number;
+                                        /** @description Loudness bars for its waveform; may be empty */
+                                        levels: number[];
+                                    } | null;
+                                    replyTo: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description False once that message was unsent */
+                                        available: boolean;
+                                        /** @description Their name; "You" for your own */
+                                        sender: string;
+                                        mine: boolean;
+                                        kind: "text" | "post" | "photo" | "voice" | "event";
+                                        /** @description The start of it, or "Photo", "Voice message" or "Post" */
+                                        text: string;
+                                    } | null;
+                                    /** @description Each emoji once, in the order first used. One reaction per person. */
+                                    reactions: {
+                                        emoji: string;
+                                        count: number;
+                                        /** @description This one is yours */
+                                        mine: boolean;
+                                    }[];
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                }[];
+                                /** @description Older messages whose reactions changed since `since`. Replace the ones you have. */
+                                updated: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    chatId: string;
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description Null for group lines like "Asha added Ravi" */
+                                    sender: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        vendor: boolean;
+                                        /** @description Identity verified by Ruxstar */
+                                        verified: boolean;
+                                    } | null;
+                                    mine: boolean;
+                                    text: string;
+                                    post: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description False when the post was deleted, or you can't see its author */
+                                        available: boolean;
+                                        author: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            name: string;
+                                            username: string;
+                                            avatarUrl: string | null;
+                                            vendor: boolean;
+                                            /** @description Identity verified by Ruxstar */
+                                            verified: boolean;
+                                        } | null;
+                                        /** @description The start of the post */
+                                        text: string;
+                                        /** @description A small copy of its first photo */
+                                        photo: string | null;
+                                    } | null;
+                                    photo: {
+                                        /** @description Works for at least an hour */
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    voice: {
+                                        /** @description AAC in MP4. Works for at least an hour and answers Range requests. */
+                                        url: string;
+                                        durationMs: number;
+                                        /** @description Loudness bars for its waveform; may be empty */
+                                        levels: number[];
+                                    } | null;
+                                    replyTo: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description False once that message was unsent */
+                                        available: boolean;
+                                        /** @description Their name; "You" for your own */
+                                        sender: string;
+                                        mine: boolean;
+                                        kind: "text" | "post" | "photo" | "voice" | "event";
+                                        /** @description The start of it, or "Photo", "Voice message" or "Post" */
+                                        text: string;
+                                    } | null;
+                                    /** @description Each emoji once, in the order first used. One reaction per person. */
+                                    reactions: {
+                                        emoji: string;
+                                        count: number;
+                                        /** @description This one is yours */
+                                        mine: boolean;
+                                    }[];
                                     /** Format: date-time */
                                     createdAt: string;
                                 }[];
                                 /** @description Messages unsent since `since`. Remove them. */
                                 unsent: string[];
                                 seenAt: string | null;
+                                /** @description 1:1 chats: when the other person last had Ruxstar open */
+                                activeAt: string | null;
+                                /** @description Others typing right now. Hide each after about 6 seconds unless the next answer still has them. */
+                                typing: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                }[];
                                 /** @description The chat's name, people or admins changed. Fetch it again. */
                                 changed: boolean;
                                 /** Format: date-time */
@@ -4439,6 +4619,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/social/chats/{id}/typing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Say you're typing, or that you stopped
+         * @description Send `typing: true` when someone starts typing and every 4 seconds while they keep going, and `false` when they stop. It wears off after 6 seconds.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        typing: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/social/chats/{id}/photos": {
         parameters: {
             query?: never;
@@ -4454,7 +4708,10 @@ export interface paths {
          */
         post: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description MongoDB ObjectId as hex */
+                    replyToId?: string;
+                };
                 header?: never;
                 path: {
                     /** @description MongoDB ObjectId as hex */
@@ -4476,7 +4733,7 @@ export interface paths {
                                 id: string;
                                 /** @description MongoDB ObjectId as hex */
                                 chatId: string;
-                                kind: "text" | "post" | "photo" | "event";
+                                kind: "text" | "post" | "photo" | "voice" | "event";
                                 /** @description Null for group lines like "Asha added Ravi" */
                                 sender: {
                                     /** @description MongoDB ObjectId as hex */
@@ -4516,6 +4773,32 @@ export interface paths {
                                     width: number;
                                     height: number;
                                 } | null;
+                                voice: {
+                                    /** @description AAC in MP4. Works for at least an hour and answers Range requests. */
+                                    url: string;
+                                    durationMs: number;
+                                    /** @description Loudness bars for its waveform; may be empty */
+                                    levels: number[];
+                                } | null;
+                                replyTo: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False once that message was unsent */
+                                    available: boolean;
+                                    /** @description Their name; "You" for your own */
+                                    sender: string;
+                                    mine: boolean;
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description The start of it, or "Photo", "Voice message" or "Post" */
+                                    text: string;
+                                } | null;
+                                /** @description Each emoji once, in the order first used. One reaction per person. */
+                                reactions: {
+                                    emoji: string;
+                                    count: number;
+                                    /** @description This one is yours */
+                                    mine: boolean;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -4546,6 +4829,417 @@ export interface paths {
             };
         };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/voice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a voice message
+         * @description Send the recording itself as AAC in MP4 (an .m4a file) with Content-Type audio/mp4, up to 5 MB and 2 minutes, and an Idempotency-Key. Pass its length in `durationMs` and, if you have them, loudness bars for its waveform in `levels`. It is kept privately; its link works for at least an hour.
+         */
+        post: {
+            parameters: {
+                query: {
+                    /** @description MongoDB ObjectId as hex */
+                    replyToId?: string;
+                    durationMs: number;
+                    /** @description Up to 48 loudness bars, 0-100, comma separated */
+                    levels?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description MongoDB ObjectId as hex */
+                                chatId: string;
+                                kind: "text" | "post" | "photo" | "voice" | "event";
+                                /** @description Null for group lines like "Asha added Ravi" */
+                                sender: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                mine: boolean;
+                                text: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False when the post was deleted, or you can't see its author */
+                                    available: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        vendor: boolean;
+                                        /** @description Identity verified by Ruxstar */
+                                        verified: boolean;
+                                    } | null;
+                                    /** @description The start of the post */
+                                    text: string;
+                                    /** @description A small copy of its first photo */
+                                    photo: string | null;
+                                } | null;
+                                photo: {
+                                    /** @description Works for at least an hour */
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                voice: {
+                                    /** @description AAC in MP4. Works for at least an hour and answers Range requests. */
+                                    url: string;
+                                    durationMs: number;
+                                    /** @description Loudness bars for its waveform; may be empty */
+                                    levels: number[];
+                                } | null;
+                                replyTo: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False once that message was unsent */
+                                    available: boolean;
+                                    /** @description Their name; "You" for your own */
+                                    sender: string;
+                                    mine: boolean;
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description The start of it, or "Photo", "Voice message" or "Post" */
+                                    text: string;
+                                } | null;
+                                /** @description Each emoji once, in the order first used. One reaction per person. */
+                                reactions: {
+                                    emoji: string;
+                                    count: number;
+                                    /** @description This one is yours */
+                                    mine: boolean;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/messages/{messageId}/reaction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * React to a message with an emoji
+         * @description One reaction per person: reacting again swaps it. Group lines can't be reacted to.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        emoji: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description MongoDB ObjectId as hex */
+                                chatId: string;
+                                kind: "text" | "post" | "photo" | "voice" | "event";
+                                /** @description Null for group lines like "Asha added Ravi" */
+                                sender: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                mine: boolean;
+                                text: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False when the post was deleted, or you can't see its author */
+                                    available: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        vendor: boolean;
+                                        /** @description Identity verified by Ruxstar */
+                                        verified: boolean;
+                                    } | null;
+                                    /** @description The start of the post */
+                                    text: string;
+                                    /** @description A small copy of its first photo */
+                                    photo: string | null;
+                                } | null;
+                                photo: {
+                                    /** @description Works for at least an hour */
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                voice: {
+                                    /** @description AAC in MP4. Works for at least an hour and answers Range requests. */
+                                    url: string;
+                                    durationMs: number;
+                                    /** @description Loudness bars for its waveform; may be empty */
+                                    levels: number[];
+                                } | null;
+                                replyTo: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False once that message was unsent */
+                                    available: boolean;
+                                    /** @description Their name; "You" for your own */
+                                    sender: string;
+                                    mine: boolean;
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description The start of it, or "Photo", "Voice message" or "Post" */
+                                    text: string;
+                                } | null;
+                                /** @description Each emoji once, in the order first used. One reaction per person. */
+                                reactions: {
+                                    emoji: string;
+                                    count: number;
+                                    /** @description This one is yours */
+                                    mine: boolean;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Take back your reaction */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description MongoDB ObjectId as hex */
+                                chatId: string;
+                                kind: "text" | "post" | "photo" | "voice" | "event";
+                                /** @description Null for group lines like "Asha added Ravi" */
+                                sender: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                mine: boolean;
+                                text: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False when the post was deleted, or you can't see its author */
+                                    available: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        vendor: boolean;
+                                        /** @description Identity verified by Ruxstar */
+                                        verified: boolean;
+                                    } | null;
+                                    /** @description The start of the post */
+                                    text: string;
+                                    /** @description A small copy of its first photo */
+                                    photo: string | null;
+                                } | null;
+                                photo: {
+                                    /** @description Works for at least an hour */
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                voice: {
+                                    /** @description AAC in MP4. Works for at least an hour and answers Range requests. */
+                                    url: string;
+                                    durationMs: number;
+                                    /** @description Loudness bars for its waveform; may be empty */
+                                    levels: number[];
+                                } | null;
+                                replyTo: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False once that message was unsent */
+                                    available: boolean;
+                                    /** @description Their name; "You" for your own */
+                                    sender: string;
+                                    mine: boolean;
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description The start of it, or "Photo", "Voice message" or "Post" */
+                                    text: string;
+                                } | null;
+                                /** @description Each emoji once, in the order first used. One reaction per person. */
+                                reactions: {
+                                    emoji: string;
+                                    count: number;
+                                    /** @description This one is yours */
+                                    mine: boolean;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -4744,7 +5438,7 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -4770,6 +5464,8 @@ export interface paths {
                                 }[];
                                 /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
                                 seenAt: string | null;
+                                /** @description 1:1 chats: when the other person last had Ruxstar open, to the minute. Show "Active now" or "Active 5m ago". */
+                                activeAt: string | null;
                             };
                             meta: {
                                 requestId: string;
@@ -5012,7 +5708,7 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -5038,6 +5734,8 @@ export interface paths {
                                 }[];
                                 /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
                                 seenAt: string | null;
+                                /** @description 1:1 chats: when the other person last had Ruxstar open, to the minute. Show "Active now" or "Active 5m ago". */
+                                activeAt: string | null;
                             };
                             meta: {
                                 requestId: string;
@@ -5197,7 +5895,7 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "event";
+                                    kind: "text" | "post" | "photo" | "voice" | "event";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -5223,6 +5921,8 @@ export interface paths {
                                 }[];
                                 /** @description 1:1 chats: when the other person last read it. Show Seen under your messages up to then. */
                                 seenAt: string | null;
+                                /** @description 1:1 chats: when the other person last had Ruxstar open, to the minute. Show "Active now" or "Active 5m ago". */
+                                activeAt: string | null;
                             };
                             meta: {
                                 requestId: string;
