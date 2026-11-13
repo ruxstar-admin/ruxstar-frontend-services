@@ -26,7 +26,10 @@ export type PodSetupUpdate = Body<paths["/v1/vendor/businesses/{id}/pod"]["patch
 export type Payments = Data<paths["/v1/vendor/payments"]["get"]["responses"][200]>;
 export type PayoutMethod = NonNullable<Payments["payoutMethod"]>;
 export type PayoutMethodInput = Body<paths["/v1/vendor/payout-method"]["put"]>;
-/** `paid` is a share arriving as pending, `available` its hold ending (the same money moving), `refund` money going back. */
+/**
+ * `paid` is a share arriving as pending, `available` its hold ending (the same money moving), `refund` money going back,
+ * `withdrawal` money withdrawn and `returned` a failed withdrawal coming back.
+ */
 export type StatementLine = Data<paths["/v1/vendor/payments/statement"]["get"]["responses"][200]>[number];
 
 const byId = (id: string) => ({ params: { path: { id } } });
@@ -102,6 +105,10 @@ export const vendorStatement = async (cursor?: string): Promise<Page<StatementLi
   const envelope = await signedIn(() => unwrap(api.GET("/v1/vendor/payments/statement", { params: { query: { cursor } } })));
   return { items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null };
 };
+
+/** Everything available, less the fee, to the checked bank account or UPI ID. Pass the same key when retrying the same click. */
+export const withdraw = async (idempotencyKey: string) =>
+  (await signedIn(() => unwrap(api.POST("/v1/vendor/payouts", { headers: { "Idempotency-Key": idempotencyKey } })))).data;
 
 /** Checked with Cashfree; it must be in the name on the vendor's Aadhaar. */
 export const setPayoutMethod = async (body: PayoutMethodInput) =>

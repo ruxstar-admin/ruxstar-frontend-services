@@ -22,6 +22,7 @@ const ICONS: Record<Notification["type"], IconName> = {
   "order.placed": "print",
   "order.updated": "print",
   "user.followed": "user",
+  "payout.updated": "wallet",
 };
 
 function hrefOf(link: Notification["link"]) {
@@ -36,6 +37,8 @@ function hrefOf(link: Notification["link"]) {
       return `/vendor/orders/${link.id}`;
     case "profile":
       return `/u/${link.id}`;
+    case "payments":
+      return "/vendor/payments";
     default:
       return `/p/${link.id}`;
   }
@@ -83,7 +86,7 @@ export function NotificationsScreen() {
             <li key={n.id}>
               <Link href={hrefOf(n.link)} className={styles.row}>
                 <span className={styles.rowIcon}>
-                  <Icon name={ICONS[n.type]} filled={n.type === "post.like"} size={20} />
+                  <Icon name={ICONS[n.type] ?? "bell"} filled={n.type === "post.like"} size={20} />
                 </span>
                 <span className={styles.rowText}>
                   <span className={styles.rowTitle}>{n.title}</span>

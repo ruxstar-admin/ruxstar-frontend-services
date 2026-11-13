@@ -7379,12 +7379,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed";
+                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal and `profile` someone's profile (by user id); `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile";
+                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id) and `payments` Payments in the vendor portal (`id` is the payout); `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments";
                                     id: string;
                                 };
                                 read: boolean;
@@ -7604,6 +7604,13 @@ export interface paths {
                                     /** @description The customer reported a problem; it waits for Ruxstar */
                                     held: boolean;
                                 }[];
+                                /** @description The least that can be withdrawn and the fee taken from each withdrawal, both set by Ruxstar */
+                                withdrawal: {
+                                    /** @description Amount in paise */
+                                    minimum: number;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                };
                                 payoutMethod: {
                                     kind: "bank" | "upi";
                                     /** @description For example YES BANK ••1191, or asha@upi */
@@ -7619,10 +7626,13 @@ export interface paths {
                                     id: string;
                                     /** @description Amount in paise */
                                     amount: number;
+                                    /** @description Paise taken from the amount; the bank gets amount - fee */
+                                    fee: number;
                                     status: "pending" | "paid" | "failed";
                                     to: string;
                                     utr: string | null;
                                     paidAt: string | null;
+                                    failure: string | null;
                                     /** Format: date-time */
                                     createdAt: string;
                                 }[];
@@ -7661,6 +7671,82 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/vendor/payouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw everything available to your payout account
+         * @description Takes the whole available balance, at least the minimum, and sends it less the payout fee. One withdrawal at a time. It usually arrives within minutes; until Cashfree confirms it, it shows as pending. If it fails, the amount is back in your balance. Send an Idempotency-Key.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description Amount in paise */
+                                amount: number;
+                                /** @description Paise taken from the amount; the bank gets amount - fee */
+                                fee: number;
+                                status: "pending" | "paid" | "failed";
+                                to: string;
+                                utr: string | null;
+                                paidAt: string | null;
+                                failure: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/vendor/payments/statement": {
         parameters: {
             query?: never;
@@ -7670,7 +7756,7 @@ export interface paths {
         };
         /**
          * Every change to your earnings, newest first
-         * @description One line per money movement on your orders: the share arriving (pending), the hold ending (available), and refunds out of your share. Payouts are listed with the balance.
+         * @description One line per money movement: an order's share arriving (pending), its hold ending (available), refunds out of your share, withdrawals, and failed withdrawals coming back.
          */
         get: {
             parameters: {
@@ -7694,13 +7780,14 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description paid: an order's share arrived, pending until its hold ends. available: the hold ended and it can be withdrawn. refund: money went back to the customer out of your share. */
-                                kind: "paid" | "available" | "refund";
-                                /** @description Paise; negative for refunds */
+                                /** @description paid: an order's share arrived, pending until its hold ends. available: the hold ended and it can be withdrawn. refund: money went back to the customer out of your share. withdrawal: you withdrew it. returned: a withdrawal failed and came back. */
+                                kind: "paid" | "available" | "refund" | "withdrawal" | "returned";
+                                /** @description Paise; negative for refunds and withdrawals */
                                 amount: number;
                                 /** Format: date-time */
                                 at: string;
                                 module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                /** @description Set on order lines */
                                 order: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -7710,7 +7797,13 @@ export interface paths {
                                         id: string;
                                         name: string;
                                     } | null;
-                                };
+                                } | null;
+                                /** @description Set on withdrawal lines */
+                                payout: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    to: string;
+                                } | null;
                             }[];
                             meta: {
                                 requestId: string;
@@ -15428,6 +15521,12 @@ export interface paths {
                                 commissionBps: number;
                                 /** @description Paise the customer pays Ruxstar on each order */
                                 platformFee: number;
+                                payouts: {
+                                    /** @description Paise taken from each vendor withdrawal */
+                                    fee: number;
+                                    /** @description Paise, the least a vendor can withdraw */
+                                    minimum: number;
+                                } | null;
                                 deliveryEnabled: boolean;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
@@ -15481,7 +15580,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Switch a module on or off, or change its signups, commission, platform fee or delivery */
+        /** Switch a module on or off, or change its signups, commission, platform fee or delivery; on the ledger, the payout fee and minimum */
         patch: {
             parameters: {
                 query?: never;
@@ -15499,6 +15598,10 @@ export interface paths {
                         commissionBps?: number;
                         /** @description Paise, up to ₹500 */
                         platformFee?: number;
+                        /** @description Ledger only. Paise taken from each withdrawal, up to ₹100 */
+                        payoutFee?: number;
+                        /** @description Ledger only. Paise, at least ₹1 more than the payout fee */
+                        minPayout?: number;
                         deliveryEnabled?: boolean;
                     };
                 };
@@ -15519,6 +15622,12 @@ export interface paths {
                                 commissionBps: number;
                                 /** @description Paise the customer pays Ruxstar on each order */
                                 platformFee: number;
+                                payouts: {
+                                    /** @description Paise taken from each vendor withdrawal */
+                                    fee: number;
+                                    /** @description Paise, the least a vendor can withdraw */
+                                    minimum: number;
+                                } | null;
                                 deliveryEnabled: boolean;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
@@ -15558,7 +15667,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "ORDER_STATE" | "REPORT_CLOSED" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "PAYOUT_METHOD_REQUIRED" | "PAYOUT_TOO_SMALL" | "PAYOUT_IN_PROGRESS" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "ORDER_STATE" | "REPORT_CLOSED" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
                 message: string;
                 details: ({
                     path?: string;

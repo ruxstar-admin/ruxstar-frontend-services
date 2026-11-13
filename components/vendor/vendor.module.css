@@ -720,7 +720,7 @@ a.row:hover .rowTitle {
   padding: 0;
 }
 
-.statement a {
+.statement li > :is(a, div) {
   display: flex;
   flex: 1;
   align-items: center;
@@ -735,15 +735,16 @@ a.row:hover .rowTitle {
   text-decoration: underline;
 }
 
-.statement a > .identity {
+.statement li > :is(a, div) > .identity {
   flex: 1;
 }
 
-.statement a[data-kind="available"] > :is(svg, strong) {
+.statement [data-kind="available"] > :is(svg, strong),
+.statement [data-kind="returned"] > :is(svg, strong) {
   color: var(--success);
 }
 
-.statement a[data-kind="refund"] > :is(svg, strong) {
+.statement [data-kind="refund"] > :is(svg, strong) {
   color: var(--danger);
 }
 
