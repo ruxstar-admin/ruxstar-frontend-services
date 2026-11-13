@@ -5,6 +5,7 @@ import { Button, ButtonLink, Icon, Input } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useBack } from "@/components/social/Shell";
 import { useOnSignedOut } from "@/components/social/session";
+import { CheckoutCoupons } from "@/components/coupons/CheckoutCoupons";
 import { FileItem, PriceList } from "@/components/shop/OrderParts";
 import { formError, getMe } from "@/lib/api/account";
 import { newIdempotencyKey } from "@/lib/api/client";
@@ -92,6 +93,7 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
   const [uploading, setUploading] = useState(false);
   const [address, setAddress] = useState<OrderAddress>({ name: "", phone: "", line: "", city: shop.city, pincode: "" });
   const [note, setNote] = useState("");
+  const [couponCode, setCouponCode] = useState<string | null>(null);
   const [priced, setPriced] = useState<{ key: string; quote: Quote | null; error: string | null } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
@@ -119,17 +121,19 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
     };
   }, [shop.city]);
 
-  const choiceKey = JSON.stringify([productId, options, colour, qty, fileIds]);
+  const choiceKey = JSON.stringify([productId, options, colour, qty, fileIds, couponCode]);
   const priceable = !missing && qty >= 1 && !(perPage && !colour);
   const current = priceable && priced?.key === choiceKey ? priced : null;
   const quote = current?.quote ?? null;
   const quoteError = current?.error ?? null;
+  // The offers stay on screen while a new price loads, so the list doesn't jump.
+  const offers = priceable ? (priced?.quote?.offers ?? null) : null;
   useEffect(() => {
     attempt.current = newIdempotencyKey();
     if (!priceable) return;
     let live = true;
     const timer = setTimeout(() => {
-      quoteOrder({ shopId: shop.id, product: productId, options, colour, quantity: qty, fileIds })
+      quoteOrder({ shopId: shop.id, product: productId, options, colour, quantity: qty, fileIds, couponCode: couponCode ?? undefined })
         .then((q) => live && setPriced({ key: choiceKey, quote: q, error: null }))
         .catch((err) => live && setPriced({ key: choiceKey, quote: null, error: formError(err).message }));
     }, QUOTE_DELAY_MS);
@@ -197,6 +201,7 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
           fileIds,
           address: { ...address, name: address.name.trim(), line: address.line.trim(), city: address.city.trim() },
           note: note.trim() || undefined,
+          couponCode: quote?.coupon?.code,
           returnTo: `${window.location.origin}/orders`,
         },
         attempt.current,
@@ -329,6 +334,20 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
           placeholder="Optional: colours, placement, deadline…"
         />
       </section>
+
+      {priceable && (
+        <section className={styles.section}>
+          <h2 className={styles.overline}>Offers</h2>
+          <CheckoutCoupons
+            offers={offers}
+            applied={quote?.coupon ?? null}
+            discount={quote?.discount ?? 0}
+            problem={quote?.couponProblem ?? null}
+            onApply={setCouponCode}
+            onRemove={() => setCouponCode(null)}
+          />
+        </section>
+      )}
 
       <section className={styles.section}>
         <h2 className={styles.overline}>Price</h2>

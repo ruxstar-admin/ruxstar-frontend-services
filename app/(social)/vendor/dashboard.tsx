@@ -92,6 +92,21 @@ export function VendorDashboard() {
           )}
         </Link>
       )}
+
+      {list.some((b) => b.module === "pod") && (
+        <ul className={styles.rows}>
+          <li>
+            <Link href="/vendor/coupons" className={styles.row}>
+              <Icon name="ticket" size={20} />
+              <span className={styles.rowText}>
+                <span className={styles.rowTitle}>Coupons</span>
+                <span className={styles.rowLine}>Discounts for your print shops</span>
+              </span>
+              <Icon name="chevron-right" size={18} />
+            </Link>
+          </li>
+        </ul>
+      )}
     </div>
   );
 }

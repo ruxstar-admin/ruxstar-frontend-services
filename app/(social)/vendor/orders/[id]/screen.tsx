@@ -226,6 +226,7 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
             after={[
               ...(order.price.platformFee ? [{ label: "Platform fee, to Ruxstar", amount: order.price.platformFee, negative: true }] : []),
               { label: `Ruxstar commission, ${order.price.commissionBps / 100}%`, amount: order.price.commission, negative: true },
+              ...(order.price.coupon?.fundedBy === "ruxstar" && order.price.discount ? [{ label: "Coupon, paid by Ruxstar", amount: order.price.discount }] : []),
               ...partials.map((r) => ({ label: `Refunded: ${r.reason ?? "partial refund"}`, amount: r.amount, negative: true })),
               { label: "You get", amount: order.price.payoutLeft },
             ]}

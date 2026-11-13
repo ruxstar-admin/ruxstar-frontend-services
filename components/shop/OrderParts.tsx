@@ -22,13 +22,21 @@ import styles from "./order.module.css";
 type Line = { label: string; amount: number; negative?: boolean };
 
 /** The itemised price and total, then any lines after it, like the shop's commission. */
-export function PriceList({ price, pricing, after = [] }: { price: Pick<Quote, "units" | "unitPrice" | "extrasPerUnit" | "platformFee" | "total">; pricing: "per_unit" | "per_page"; after?: Line[] }) {
+export function PriceList({
+  price,
+  pricing,
+  after = [],
+}: {
+  price: Pick<Quote, "units" | "unitPrice" | "extrasPerUnit" | "platformFee" | "discount" | "coupon" | "total">;
+  pricing: "per_unit" | "per_page";
+  after?: Line[];
+}) {
   return (
     <dl className={styles.prices}>
       {priceLines(price, pricing).map((l) => (
         <div key={l.label} className={styles.priceRow}>
           <dt>{l.label}</dt>
-          <dd>{money(l.amount)}</dd>
+          <dd>{`${l.negative ? "−" : ""}${money(l.amount)}`}</dd>
         </div>
       ))}
       <div className={`${styles.priceRow} ${styles.total}`}>

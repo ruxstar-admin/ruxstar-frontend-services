@@ -114,6 +114,23 @@ export const withdraw = async (idempotencyKey: string) =>
 export const setPayoutMethod = async (body: PayoutMethodInput) =>
   (await signedIn(() => unwrap(api.PUT("/v1/vendor/payout-method", { body })))).data;
 
+export type VendorCoupon = Data<paths["/v1/vendor/coupons"]["get"]["responses"][200]>[number];
+export type NewVendorCoupon = Body<paths["/v1/vendor/coupons"]["post"]>;
+export type VendorCouponPatch = Body<paths["/v1/vendor/coupons/{id}"]["patch"]>;
+
+/** The vendor's coupons for their print shops, newest first. */
+export const vendorCoupons = async (cursor?: string): Promise<Page<VendorCoupon>> => {
+  const envelope = await signedIn(() => unwrap(api.GET("/v1/vendor/coupons", { params: { query: { cursor } } })));
+  return { items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null };
+};
+
+/** Pass the same key when retrying the same click. */
+export const createVendorCoupon = async (body: NewVendorCoupon, idempotencyKey: string) =>
+  (await signedIn(() => unwrap(api.POST("/v1/vendor/coupons", { body, headers: { "Idempotency-Key": idempotencyKey } })))).data;
+
+export const updateVendorCoupon = async (id: string, body: VendorCouponPatch) =>
+  (await signedIn(() => unwrap(api.PATCH("/v1/vendor/coupons/{id}", { ...byId(id), body })))).data;
+
 // Words and lines, the same as the app.
 
 export const MODULE_ICON = { pod: "print", events: "ticket", coaching: "book", stays: "home" } as const satisfies Record<BusinessModule, string>;

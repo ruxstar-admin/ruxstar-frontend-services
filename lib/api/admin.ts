@@ -92,6 +92,23 @@ export const heldOrders = async (orderNo: number | undefined, cursor?: string) =
 export const releaseHeld = async (id: string, reason: string, key = newIdempotencyKey()) =>
   (await signedIn(() => unwrap(api.POST("/v1/ruxstar/held-orders/{id}/release", { params: { path: { id } }, body: { reason }, ...keyed(key) })))).data;
 
+// Coupons.
+
+export type ManagedCoupon = Json<"/v1/ruxstar/coupons", "get">["data"][number];
+export type CouponFunder = ManagedCoupon["fundedBy"];
+export type NewCoupon = paths["/v1/ruxstar/coupons"]["post"]["requestBody"]["content"]["application/json"];
+export type CouponPatch = paths["/v1/ruxstar/coupons/{id}"]["patch"]["requestBody"]["content"]["application/json"];
+
+export const listCoupons = async (funder: CouponFunder, code: string | undefined, cursor?: string) =>
+  toPage(await signedIn(() => unwrap(api.GET("/v1/ruxstar/coupons", { params: { query: { ...(code ? { code } : { funder }), cursor } } }))));
+
+export const createCoupon = async (body: NewCoupon, key = newIdempotencyKey()) =>
+  (await signedIn(() => unwrap(api.POST("/v1/ruxstar/coupons", { body, ...keyed(key) })))).data;
+
+/** On a vendor's coupon only `active` can change. */
+export const updateCoupon = async (id: string, body: CouponPatch) =>
+  (await signedIn(() => unwrap(api.PATCH("/v1/ruxstar/coupons/{id}", { params: { path: { id } }, body })))).data;
+
 // People.
 
 export const findUsers = async (q: string, status: UserStatus | undefined, cursor?: string) =>

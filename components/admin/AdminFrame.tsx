@@ -21,6 +21,7 @@ const SECTIONS: { href: string; label: string; icon: IconName; need: Need }[] = 
   { href: "/admin/businesses", label: "Businesses", icon: "store", need: "businesses.view" },
   { href: "/admin/modules", label: "Modules", icon: "stack", need: "modules.view" },
   { href: "/admin/payouts", label: "Payouts", icon: "wallet", need: "payouts.view" },
+  { href: "/admin/coupons", label: "Coupons", icon: "ticket", need: "coupons.view" },
   { href: "/admin/audit", label: "Audit log", icon: "clock", need: "audit.view" },
 ];
 

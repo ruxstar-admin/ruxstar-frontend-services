@@ -8111,14 +8111,23 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                     commissionBps: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
                                     payout: number;
                                     /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
@@ -8295,14 +8304,23 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                     commissionBps: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
                                     payout: number;
                                     /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
@@ -8491,14 +8509,23 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                     commissionBps: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
                                     payout: number;
                                     /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
@@ -8686,14 +8713,23 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                     commissionBps: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
                                     payout: number;
                                     /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
@@ -8803,6 +8839,354 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/coupons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your coupons, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                fundedBy: "ruxstar" | "vendor";
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                /** @description The vendor's shops it works at; empty for Ruxstar's */
+                                businesses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                }[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                                kind: "percent" | "flat";
+                                value: number;
+                                cap: number | null;
+                                /** @description For example "20% off up to ₹100" or "₹50 off" */
+                                label: string;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                startsAt: string | null;
+                                endsAt: string | null;
+                                limit: number | null;
+                                perCustomer: number | null;
+                                firstOrderOnly: boolean;
+                                /** @description Shown in the offers at checkout */
+                                listed: boolean;
+                                active: boolean;
+                                /** @description Ruxstar switched this vendor coupon off; only Ruxstar can switch it back on */
+                                stoppedByRuxstar: boolean;
+                                /** @description Paid orders that used it, less ones refunded in full */
+                                used: number;
+                                /** @description `scheduled` hasn't started, `ended` is past its end date, `used_up` reached its limit, `off` is switched off */
+                                state: "active" | "scheduled" | "ended" | "used_up" | "off";
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Make a coupon for your print shops
+         * @description You pay for the discount: it comes out of your share, and commission is charged on the price after it. The code and the discount can't change afterwards. Each customer can use it once unless `perCustomer` says otherwise.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description 4 to 16 letters and digits; stored in capitals */
+                        code: string;
+                        /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                        kind: "percent" | "flat";
+                        /** @description Percent (1 to 100), or paise off (at least ₹1) */
+                        value: number;
+                        cap?: number | null;
+                        /** @description Paise of items before the discount; 0 for none */
+                        minOrder?: number;
+                        startsAt?: string | null;
+                        endsAt?: string | null;
+                        limit?: number | null;
+                        perCustomer?: number | null;
+                        /** @description Only a customer's first paid order: on Ruxstar for Ruxstar's, with this vendor for a vendor's */
+                        firstOrderOnly?: boolean;
+                        /** @description Show it in the offers at checkout (the default) */
+                        listed?: boolean;
+                        /** @description Your print shops it works at */
+                        businessIds: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                fundedBy: "ruxstar" | "vendor";
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                /** @description The vendor's shops it works at; empty for Ruxstar's */
+                                businesses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                }[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                                kind: "percent" | "flat";
+                                value: number;
+                                cap: number | null;
+                                /** @description For example "20% off up to ₹100" or "₹50 off" */
+                                label: string;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                startsAt: string | null;
+                                endsAt: string | null;
+                                limit: number | null;
+                                perCustomer: number | null;
+                                firstOrderOnly: boolean;
+                                /** @description Shown in the offers at checkout */
+                                listed: boolean;
+                                active: boolean;
+                                /** @description Ruxstar switched this vendor coupon off; only Ruxstar can switch it back on */
+                                stoppedByRuxstar: boolean;
+                                /** @description Paid orders that used it, less ones refunded in full */
+                                used: number;
+                                /** @description `scheduled` hasn't started, `ended` is past its end date, `used_up` reached its limit, `off` is switched off */
+                                state: "active" | "scheduled" | "ended" | "used_up" | "off";
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/coupons/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change your coupon's shops, dates and limits, or switch it off or on
+         * @description Send only what changes. A coupon Ruxstar switched off stays off until Ruxstar switches it back on.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Paise of items before the discount; 0 for none */
+                        minOrder?: number;
+                        startsAt?: string | null;
+                        endsAt?: string | null;
+                        limit?: number | null;
+                        perCustomer?: number | null;
+                        /** @description Only a customer's first paid order: on Ruxstar for Ruxstar's, with this vendor for a vendor's */
+                        firstOrderOnly?: boolean;
+                        /** @description Show it in the offers at checkout (the default) */
+                        listed?: boolean;
+                        active?: boolean;
+                        /** @description Your print shops it works at */
+                        businessIds?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                fundedBy: "ruxstar" | "vendor";
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                /** @description The vendor's shops it works at; empty for Ruxstar's */
+                                businesses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                }[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                                kind: "percent" | "flat";
+                                value: number;
+                                cap: number | null;
+                                /** @description For example "20% off up to ₹100" or "₹50 off" */
+                                label: string;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                startsAt: string | null;
+                                endsAt: string | null;
+                                limit: number | null;
+                                perCustomer: number | null;
+                                firstOrderOnly: boolean;
+                                /** @description Shown in the offers at checkout */
+                                listed: boolean;
+                                active: boolean;
+                                /** @description Ruxstar switched this vendor coupon off; only Ruxstar can switch it back on */
+                                stoppedByRuxstar: boolean;
+                                /** @description Paid orders that used it, less ones refunded in full */
+                                used: number;
+                                /** @description `scheduled` hasn't started, `ended` is past its end date, `used_up` reached its limit, `off` is switched off */
+                                state: "active" | "scheduled" | "ended" | "used_up" | "off";
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/v1/vendor/catalog": {
@@ -10667,8 +11051,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * What an order would cost
-         * @description The same checks and prices as placing it, so a quote that passes can be ordered.
+         * What an order would cost, and the coupons that work on it
+         * @description The same checks and prices as placing it, so a quote that passes can be ordered. With `couponCode` the price has it taken off, or `couponProblem` says why it can't be used.
          */
         post: {
             parameters: {
@@ -10692,6 +11076,8 @@ export interface paths {
                         colour?: "bw" | "color";
                         /** @description Pieces, or copies of the files for documents */
                         quantity: number;
+                        /** @description A coupon to take off the items; any case */
+                        couponCode?: string;
                         /** @description Documents are priced by their pages; none counts as 1 page */
                         fileIds: string[];
                     };
@@ -10714,15 +11100,36 @@ export interface paths {
                                 extrasPerUnit: number;
                                 /** @description Amount in paise */
                                 items: number;
+                                /** @description Amount in paise. Taken off the items by the coupon. */
+                                discount: number;
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
                                 /** @description Amount in paise */
                                 platformFee: number;
-                                /** @description Amount in paise */
+                                /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                 total: number;
                                 /** @description Pages in the files, for documents */
                                 pages: number;
                                 /** @description Amount in paise */
                                 minOrder: number;
                                 turnaroundDays: number;
+                                couponProblem: string | null;
+                                /** @description Coupons the customer can pick, best first */
+                                offers: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    label: string;
+                                    terms: string | null;
+                                    /** @description Paise it takes off this order; 0 when it doesn't apply yet */
+                                    discount: number;
+                                    problem: string | null;
+                                }[];
                             };
                             meta: {
                                 requestId: string;
@@ -10887,9 +11294,18 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                 };
                             }[];
@@ -10947,6 +11363,8 @@ export interface paths {
                         colour?: "bw" | "color";
                         /** @description Pieces, or copies of the files for documents */
                         quantity: number;
+                        /** @description A coupon to take off the items; any case */
+                        couponCode?: string;
                         fileIds: string[];
                         address: {
                             name: string;
@@ -11077,9 +11495,18 @@ export interface paths {
                                         extrasPerUnit: number;
                                         /** @description Amount in paise */
                                         items: number;
+                                        /** @description Amount in paise. Taken off the items by the coupon. */
+                                        discount: number;
+                                        coupon: {
+                                            code: string;
+                                            /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                            fundedBy: "ruxstar" | "vendor";
+                                            /** @description "Ruxstar offer" or "Shop offer" */
+                                            label: string;
+                                        } | null;
                                         /** @description Amount in paise */
                                         platformFee: number;
-                                        /** @description Amount in paise */
+                                        /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                         total: number;
                                     };
                                 };
@@ -11323,9 +11750,18 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                 };
                             };
@@ -11499,9 +11935,18 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                 };
                             };
@@ -11750,9 +12195,18 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                 };
                             };
@@ -11924,9 +12378,18 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                 };
                             };
@@ -12239,10 +12702,10 @@ export interface paths {
                                 /** @description Admins have every permission and manage staff */
                                 admin: boolean;
                                 title: string | null;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
                                 /** @description Every permission staff can be given */
                                 catalog: {
-                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view";
+                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view";
                                     label: string;
                                 }[];
                             };
@@ -13431,14 +13894,23 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                     commissionBps: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
                                     payout: number;
                                     /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
@@ -13626,14 +14098,23 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                     commissionBps: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
                                     payout: number;
                                     /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
@@ -13836,14 +14317,23 @@ export interface paths {
                                     extrasPerUnit: number;
                                     /** @description Amount in paise */
                                     items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                     commissionBps: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise */
+                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
                                     payout: number;
                                     /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
@@ -14254,6 +14744,354 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/coupons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Coupons, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description Ruxstar's coupons (the default) or vendors' */
+                    funder?: "ruxstar" | "vendor";
+                    /** @description Find one code */
+                    code?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                fundedBy: "ruxstar" | "vendor";
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                /** @description The vendor's shops it works at; empty for Ruxstar's */
+                                businesses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                }[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                                kind: "percent" | "flat";
+                                value: number;
+                                cap: number | null;
+                                /** @description For example "20% off up to ₹100" or "₹50 off" */
+                                label: string;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                startsAt: string | null;
+                                endsAt: string | null;
+                                limit: number | null;
+                                perCustomer: number | null;
+                                firstOrderOnly: boolean;
+                                /** @description Shown in the offers at checkout */
+                                listed: boolean;
+                                active: boolean;
+                                /** @description Ruxstar switched this vendor coupon off; only Ruxstar can switch it back on */
+                                stoppedByRuxstar: boolean;
+                                /** @description Paid orders that used it, less ones refunded in full */
+                                used: number;
+                                /** @description `scheduled` hasn't started, `ended` is past its end date, `used_up` reached its limit, `off` is switched off */
+                                state: "active" | "scheduled" | "ended" | "used_up" | "off";
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Make a Ruxstar coupon
+         * @description It works at every print shop and Ruxstar pays for the discount: the shop's share stays as if there were no coupon. The code and the discount can't change afterwards. Each customer can use it once unless `perCustomer` says otherwise.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description 4 to 16 letters and digits; stored in capitals */
+                        code: string;
+                        /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                        kind: "percent" | "flat";
+                        /** @description Percent (1 to 100), or paise off (at least ₹1) */
+                        value: number;
+                        cap?: number | null;
+                        /** @description Paise of items before the discount; 0 for none */
+                        minOrder?: number;
+                        startsAt?: string | null;
+                        endsAt?: string | null;
+                        limit?: number | null;
+                        perCustomer?: number | null;
+                        /** @description Only a customer's first paid order: on Ruxstar for Ruxstar's, with this vendor for a vendor's */
+                        firstOrderOnly?: boolean;
+                        /** @description Show it in the offers at checkout (the default) */
+                        listed?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                fundedBy: "ruxstar" | "vendor";
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                /** @description The vendor's shops it works at; empty for Ruxstar's */
+                                businesses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                }[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                                kind: "percent" | "flat";
+                                value: number;
+                                cap: number | null;
+                                /** @description For example "20% off up to ₹100" or "₹50 off" */
+                                label: string;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                startsAt: string | null;
+                                endsAt: string | null;
+                                limit: number | null;
+                                perCustomer: number | null;
+                                firstOrderOnly: boolean;
+                                /** @description Shown in the offers at checkout */
+                                listed: boolean;
+                                active: boolean;
+                                /** @description Ruxstar switched this vendor coupon off; only Ruxstar can switch it back on */
+                                stoppedByRuxstar: boolean;
+                                /** @description Paid orders that used it, less ones refunded in full */
+                                used: number;
+                                /** @description `scheduled` hasn't started, `ended` is past its end date, `used_up` reached its limit, `off` is switched off */
+                                state: "active" | "scheduled" | "ended" | "used_up" | "off";
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/coupons/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change a coupon's dates and limits, or switch it off or on
+         * @description On a vendor's coupon only `active` can change, to stop one being misused. Send only what changes.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Paise of items before the discount; 0 for none */
+                        minOrder?: number;
+                        startsAt?: string | null;
+                        endsAt?: string | null;
+                        limit?: number | null;
+                        perCustomer?: number | null;
+                        /** @description Only a customer's first paid order: on Ruxstar for Ruxstar's, with this vendor for a vendor's */
+                        firstOrderOnly?: boolean;
+                        /** @description Show it in the offers at checkout (the default) */
+                        listed?: boolean;
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                fundedBy: "ruxstar" | "vendor";
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                /** @description The vendor's shops it works at; empty for Ruxstar's */
+                                businesses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                }[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
+                                kind: "percent" | "flat";
+                                value: number;
+                                cap: number | null;
+                                /** @description For example "20% off up to ₹100" or "₹50 off" */
+                                label: string;
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                startsAt: string | null;
+                                endsAt: string | null;
+                                limit: number | null;
+                                perCustomer: number | null;
+                                firstOrderOnly: boolean;
+                                /** @description Shown in the offers at checkout */
+                                listed: boolean;
+                                active: boolean;
+                                /** @description Ruxstar switched this vendor coupon off; only Ruxstar can switch it back on */
+                                stoppedByRuxstar: boolean;
+                                /** @description Paid orders that used it, less ones refunded in full */
+                                used: number;
+                                /** @description `scheduled` hasn't started, `ended` is past its end date, `used_up` reached its limit, `off` is switched off */
+                                state: "active" | "scheduled" | "ended" | "used_up" | "off";
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/v1/ruxstar/users": {
         parameters: {
             query?: never;
@@ -14414,7 +15252,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -14536,7 +15374,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -14646,7 +15484,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -14756,7 +15594,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -14826,7 +15664,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -14895,7 +15733,7 @@ export interface paths {
                     "application/json": {
                         /** @description For example Support lead */
                         title: string;
-                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
+                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
                     };
                 };
             };
@@ -14917,7 +15755,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -14984,7 +15822,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -16024,7 +16862,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "PAYOUT_METHOD_REQUIRED" | "PAYOUT_TOO_SMALL" | "PAYOUT_IN_PROGRESS" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "ORDER_STATE" | "REPORT_CLOSED" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "PAYOUT_METHOD_REQUIRED" | "PAYOUT_TOO_SMALL" | "PAYOUT_IN_PROGRESS" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "COUPON_INVALID" | "ORDER_STATE" | "REPORT_CLOSED" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
                 message: string;
                 details: ({
                     path?: string;
