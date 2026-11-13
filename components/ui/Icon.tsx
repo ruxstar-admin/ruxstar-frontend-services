@@ -108,6 +108,12 @@ const ICONS = {
       <path d="M21 10h-4.5a2.25 2.25 0 0 0 0 4.5H21" />
     </>
   ),
+  card: (
+    <>
+      <rect x="3" y="5.5" width="18" height="13" rx="2.5" />
+      <path d="M3 10h18M7 15h4" />
+    </>
+  ),
   bookmark: <path d="M6.5 3.5h11v17l-5.5-4-5.5 4z" />,
   comment: <path d="M20.5 11.5a8 8 0 0 1-11.6 7.1L3.5 20.5l1.9-5.1A8 8 0 1 1 20.5 11.5z" />,
   chat: (

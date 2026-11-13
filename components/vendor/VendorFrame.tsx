@@ -15,6 +15,7 @@ const SECTIONS: { href: string; label: string; icon: IconName; fills?: true }[] 
   { href: "/vendor/orders", label: "Orders", icon: "print" },
   { href: "/vendor/posts", label: "Posts", icon: "image" },
   { href: "/vendor/payments", label: "Payments", icon: "wallet" },
+  { href: "/vendor/card", label: "Ruxstar Card", icon: "card" },
 ];
 
 function Closed({ title, body, action }: { title: string; body: string; action: ReactNode }) {
@@ -27,7 +28,7 @@ function Closed({ title, body, action }: { title: string; body: string; action: 
   );
 }
 
-/** The vendor portal: its sections beside the page, or along the top on phones. Same sections as the app's portal tabs. */
+/** The vendor portal: its sections beside the page, or along the top on phones. The app's portal tabs, plus the Ruxstar Card it opens from the Dashboard. */
 export function VendorFrame({ children }: { children: ReactNode }) {
   const me = useMe();
   const setMe = useSetMe();
