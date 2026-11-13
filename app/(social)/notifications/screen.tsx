@@ -46,6 +46,8 @@ function hrefOf(link: Notification["link"]) {
       return `/work/${link.id}`;
     case "team":
       return `/vendor/businesses/${link.id}/team`;
+    case "work_order":
+      return `/work/order/${link.id}`;
     default:
       return `/p/${link.id}`;
   }

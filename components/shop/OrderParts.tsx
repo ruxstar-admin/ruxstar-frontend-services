@@ -151,7 +151,8 @@ export function OrderRow({
   href: string;
   order: Pick<Order, "orderNo" | "productLabel" | "status" | "createdAt">;
   subtitle: string;
-  amount: number;
+  /** Left out when null, as for someone on a team who can't see the shop's earnings. */
+  amount: number | null;
   labels: Record<OrderStatus, string>;
 }) {
   return (
@@ -165,7 +166,7 @@ export function OrderRow({
           <span className={styles.faint}>{`${subtitle} · ${ago(order.createdAt)}`}</span>
         </span>
         <span className={styles.rowEnd}>
-          <strong>{money(amount)}</strong>
+          {amount !== null && <strong>{money(amount)}</strong>}
           <Tag tone={STATUS_TONE[order.status]}>{labels[order.status]}</Tag>
         </span>
       </Link>

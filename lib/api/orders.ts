@@ -17,6 +17,8 @@ export type QuoteBody = paths["/v1/pod/quote"]["post"]["requestBody"]["content"]
 export type OrderAddress = Order["address"];
 export type PrintFile = Order["files"][number];
 export type ShopOrder = Json<"/v1/vendor/orders/{id}", "get">;
+/** The shop's money is null without `earnings.view`, and `refundable` is 0 without `orders.refund`. */
+export type TeamOrder = Json<"/v1/employment/orders/{id}", "get">;
 export type ShopOrderView = NonNullable<NonNullable<paths["/v1/vendor/orders"]["get"]["parameters"]["query"]>["view"]>;
 export type ShopStatus = paths["/v1/vendor/orders/{id}/status"]["post"]["requestBody"]["content"]["application/json"]["status"];
 export type OrderRefund = Order["refunds"][number];
@@ -122,6 +124,39 @@ export const refundShopOrder = async (id: string, amount: number, reason: string
   (
     await signedIn(() =>
       unwrap(api.POST("/v1/vendor/orders/{id}/refund", { params: { path: { id } }, body: { amount, reason }, headers: { "Idempotency-Key": idempotencyKey } })),
+    )
+  ).data;
+
+/** A shop's orders for someone on its team; `placeId` is their place there. */
+export const teamOrders = async (placeId: string, view: ShopOrderView, cursor?: string): Promise<Page<TeamOrder>> => {
+  const envelope = await signedIn(() => unwrap(api.GET("/v1/employment/{id}/orders", { params: { path: { id: placeId }, query: { view, cursor } } })));
+  return { items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null };
+};
+
+export const getTeamOrder = async (id: string) =>
+  (await signedIn(() => unwrap(api.GET("/v1/employment/orders/{id}", { params: { path: { id } } })))).data;
+
+/** `orders.move`, or `orders.reject` to turn it down. */
+export const moveTeamOrder = async (id: string, status: ShopStatus, reason: string | undefined, idempotencyKey: string) =>
+  (
+    await signedIn(() =>
+      unwrap(
+        api.POST("/v1/employment/orders/{id}/status", {
+          params: { path: { id } },
+          headers: { "Idempotency-Key": idempotencyKey },
+          body: reason ? { status, reason } : { status },
+        }),
+      ),
+    )
+  ).data;
+
+export const teamOrderFileLink = async (id: string, fileId: string) =>
+  (await signedIn(() => unwrap(api.GET("/v1/employment/orders/{id}/files/{fileId}", { params: { path: { id, fileId } } })))).data;
+
+export const refundTeamOrder = async (id: string, amount: number, reason: string, idempotencyKey: string) =>
+  (
+    await signedIn(() =>
+      unwrap(api.POST("/v1/employment/orders/{id}/refund", { params: { path: { id } }, body: { amount, reason }, headers: { "Idempotency-Key": idempotencyKey } })),
     )
   ).data;
 

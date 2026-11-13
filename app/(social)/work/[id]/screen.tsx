@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Avatar } from "@/components/profile/Avatar";
@@ -81,6 +82,20 @@ function Place({ place, catalog }: { place: WorkPlace; catalog: PermissionInfo[]
         <div>
           <ButtonLink href="/verify">Get verified</ButtonLink>
         </div>
+      )}
+      {place.access === "on" && place.permissions.includes("orders.view") && (
+        <ul className={styles.rows}>
+          <li>
+            <Link href={`/work/${place.id}/orders`} className={styles.row}>
+              <Icon name="print" size={20} />
+              <span className={styles.rowText}>
+                <span className={styles.rowTitle}>Orders</span>
+                <span className={styles.rowLine}>New orders, ones being made, and past ones</span>
+              </span>
+              <Icon name="chevron-right" size={18} />
+            </Link>
+          </li>
+        </ul>
       )}
       <h2 className={team.section}>What you can do</h2>
       <Allowed catalog={catalog} permissions={place.permissions} />

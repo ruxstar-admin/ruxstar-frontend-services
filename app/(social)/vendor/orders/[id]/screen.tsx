@@ -23,14 +23,37 @@ import {
   type PrintFile,
   type ShopOrder,
   type ShopStatus,
+  type TeamOrder,
 } from "@/lib/api/orders";
 import { money } from "@/lib/api/shops";
+import type { TeamPermission } from "@/lib/api/team";
 import { ago, exact } from "@/lib/time";
 import shopStyles from "@/components/shop/shop.module.css";
 import styles from "@/components/shop/order.module.css";
 import vendor from "@/components/vendor/vendor.module.css";
 
-function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (order: ShopOrder) => void }) {
+/** The owner's order calls or the team's, and where Back goes. */
+export interface OrderDesk<T extends ShopOrder | TeamOrder> {
+  move: (id: string, status: ShopStatus, reason: string | undefined, idempotencyKey: string) => Promise<T>;
+  fileLink: (id: string, fileId: string) => Promise<{ url: string }>;
+  refund: (id: string, amount: number, reason: string, idempotencyKey: string) => Promise<T>;
+  back: { href: string; label: string };
+}
+
+const SHOP_DESK: OrderDesk<ShopOrder> = {
+  move: moveShopOrder,
+  fileLink: shopOrderFileLink,
+  refund: refundShopOrder,
+  back: { href: "/vendor/orders", label: "Orders" },
+};
+
+const teamOf = (order: ShopOrder | TeamOrder) => ("placeId" in order ? order : null);
+
+/** A shop order for its owner, or for someone on its team with only what their permissions allow. */
+export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk, onChanged }: { order: T; desk: OrderDesk<T>; onChanged: (order: T) => void }) {
+  const team = teamOf(order);
+  const can = (permission: TeamPermission) => !team || team.permissions.includes(permission);
+  const { price } = order;
   const [moving, setMoving] = useState<ShopStatus | null>(null);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
@@ -47,7 +70,7 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
     setError(null);
     keys.current[status] ??= newIdempotencyKey();
     try {
-      const next = await moveShopOrder(order.id, status, status === "rejected" ? reason.trim() : undefined, keys.current[status]);
+      const next = await desk.move(order.id, status, status === "rejected" ? reason.trim() : undefined, keys.current[status]);
       keys.current = {};
       setRejecting(false);
       onChanged(next);
@@ -62,7 +85,7 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
     // Opened before the request so the browser does not block it as a pop-up.
     const tab = window.open("", "_blank");
     try {
-      const { url } = await shopOrderFileLink(order.id, file.id);
+      const { url } = await desk.fileLink(order.id, file.id);
       if (tab) tab.location.href = url;
       else window.location.assign(url);
     } catch (err) {
@@ -78,7 +101,7 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
     setRefunding(true);
     setError(null);
     try {
-      const next = await refundShopOrder(order.id, refundPaise, refundReason.trim(), refundKey.current);
+      const next = await desk.refund(order.id, refundPaise, refundReason.trim(), refundKey.current);
       refundKey.current = newIdempotencyKey();
       setRefundOpen(false);
       setRefundAmount("");
@@ -91,24 +114,37 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
     }
   };
 
-  const steps = nextSteps(order.status);
+  const steps = nextSteps(order.status).filter((status) => can(status === "rejected" ? "orders.reject" : "orders.move"));
   const closed = isClosed(order.status);
   const { address } = order;
   const partials = order.refunds.filter((r) => r.kind === "partial");
+  const balance = team ? "the shop's available balance" : "your available balance";
   const moneyNote =
-    order.status === "refunded"
-      ? "Ruxstar refunded the customer in full, so there is no payout for this order."
-      : order.releasedAt
-        ? `${money(order.price.payoutLeft)} is in your available balance.`
-        : order.problem?.status === "open"
-          ? "Held while Ruxstar looks into the customer’s problem."
-          : order.releaseAt
-            ? `Moves to your available balance on ${exact(order.releaseAt)}, 48 hours after delivery.`
-            : "Moves to your available balance 48 hours after you mark it delivered.";
+    price.payoutLeft === null
+      ? "The owner hasn’t let you see what the shop earns."
+      : order.status === "refunded"
+        ? "Ruxstar refunded the customer in full, so there is no payout for this order."
+        : order.releasedAt
+          ? `${money(price.payoutLeft)} is in ${balance}.`
+          : order.problem?.status === "open"
+            ? "Held while Ruxstar looks into the customer’s problem."
+            : order.releaseAt
+              ? `Moves to ${balance} on ${exact(order.releaseAt)}, 48 hours after delivery.`
+              : `Moves to ${balance} 48 hours after it is marked delivered.`;
+  const shopMoney =
+    price.payoutLeft === null || price.commission === null || price.commissionBps === null
+      ? []
+      : [
+          ...(price.platformFee ? [{ label: "Platform fee, to Ruxstar", amount: price.platformFee, negative: true }] : []),
+          { label: `Ruxstar commission, ${price.commissionBps / 100}%`, amount: price.commission, negative: true },
+          ...(price.coupon?.fundedBy === "ruxstar" && price.discount ? [{ label: "Coupon, paid by Ruxstar", amount: price.discount }] : []),
+          ...partials.map((r) => ({ label: `Refunded: ${r.reason ?? "partial refund"}`, amount: r.amount, negative: true })),
+          { label: team ? "The shop gets" : "You get", amount: price.payoutLeft },
+        ];
 
   return (
     <div className={vendor.page}>
-      <Back href="/vendor/orders">Orders</Back>
+      <Back href={desk.back.href}>{desk.back.label}</Back>
       <div className={styles.titleRow}>
         <div>
           <h1 className={styles.title}>{`Order #${order.orderNo}`}</h1>
@@ -119,7 +155,7 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
 
       {order.status === "rejected" && (
         <div className={styles.news}>
-          <strong>You turned this order down</strong>
+          <strong>{team ? "The shop turned this order down" : "You turned this order down"}</strong>
           {order.reason && <p className={styles.small}>{order.reason}</p>}
           <p className={styles.small}>The customer was refunded in full.</p>
         </div>
@@ -220,17 +256,7 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
       <section className={styles.section}>
         <h2 className={styles.overline}>Money</h2>
         <div className={styles.panel}>
-          <PriceList
-            price={order.price}
-            pricing={order.pricing}
-            after={[
-              ...(order.price.platformFee ? [{ label: "Platform fee, to Ruxstar", amount: order.price.platformFee, negative: true }] : []),
-              { label: `Ruxstar commission, ${order.price.commissionBps / 100}%`, amount: order.price.commission, negative: true },
-              ...(order.price.coupon?.fundedBy === "ruxstar" && order.price.discount ? [{ label: "Coupon, paid by Ruxstar", amount: order.price.discount }] : []),
-              ...partials.map((r) => ({ label: `Refunded: ${r.reason ?? "partial refund"}`, amount: r.amount, negative: true })),
-              { label: "You get", amount: order.price.payoutLeft },
-            ]}
-          />
+          <PriceList price={price} pricing={order.pricing} after={shopMoney} />
           <p className={styles.faint}>{moneyNote}</p>
           {order.refundable >= 100 && !refundOpen && (
             <div className={styles.actions}>
@@ -243,7 +269,7 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
         {refundOpen && (
           <div className={styles.news}>
             <strong>Refund part of this order</strong>
-            <p className={styles.small}>{`It comes out of your share, up to ${money(order.refundable)}. The customer sees your reason and the order carries on.`}</p>
+            <p className={styles.small}>{`It comes out of ${team ? "the shop's" : "your"} share, up to ${money(order.refundable)}. The customer sees your reason and the order carries on.`}</p>
             <Input
               label="Amount"
               prefix="₹"
@@ -297,7 +323,7 @@ export function ShopOrderScreen({ id }: { id: string }) {
     void load();
   }, [load]);
 
-  if (order) return <ShopOrderDetails order={order} onChanged={setOrder} />;
+  if (order) return <ShopOrderDetails order={order} desk={SHOP_DESK} onChanged={setOrder} />;
   if (error) {
     const gone = error instanceof ApiError && error.status === 404;
     return (
