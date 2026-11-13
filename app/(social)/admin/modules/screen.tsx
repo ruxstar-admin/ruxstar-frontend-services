@@ -13,6 +13,76 @@ import { MODULE_LABEL } from "./labels";
 const percentOf = (bps: number) => String(bps / 100);
 const rupeesOf = (paise: number) => String(paise / 100);
 const MAX_FEE_RUPEES = 500;
+const MAX_PAYOUT_FEE_RUPEES = 100;
+const MAX_MIN_PAYOUT_RUPEES = 100_000;
+const paiseOf = (rupees: string) => (rupees.trim() === "" ? NaN : Math.round(Number(rupees) * 100));
+
+/** Ledger only: the fee taken from each vendor withdrawal and the least they can withdraw. Same as the app. */
+function Withdrawals({ m, payouts, onSaved }: { m: ModuleSettings; payouts: NonNullable<ModuleSettings["payouts"]>; onSaved: (m: ModuleSettings) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const [fee, setFee] = useState(rupeesOf(payouts.fee));
+  const [minimum, setMinimum] = useState(rupeesOf(payouts.minimum));
+  const [busy, setBusy] = useState(false);
+
+  const feePaise = paiseOf(fee);
+  const minPaise = paiseOf(minimum);
+  const feeError = Number.isFinite(feePaise) && feePaise >= 0 && feePaise <= MAX_PAYOUT_FEE_RUPEES * 100 ? undefined : `Enter an amount from 0 to ${MAX_PAYOUT_FEE_RUPEES}`;
+  const minError =
+    !Number.isFinite(minPaise) || minPaise < 100 || minPaise > MAX_MIN_PAYOUT_RUPEES * 100
+      ? `Enter an amount from 1 to ${MAX_MIN_PAYOUT_RUPEES.toLocaleString("en-IN")}`
+      : !feeError && minPaise < feePaise + 100
+        ? "At least ₹1 more than the fee"
+        : undefined;
+  const changed = feePaise !== payouts.fee || minPaise !== payouts.minimum;
+
+  async function save() {
+    setBusy(true);
+    try {
+      const done = await updateModule(m.module, { payoutFee: feePaise, minPayout: minPaise });
+      onSaved(done);
+      if (done.payouts) {
+        setFee(rupeesOf(done.payouts.fee));
+        setMinimum(rupeesOf(done.payouts.minimum));
+      }
+      toast("Withdrawal settings saved.", "success");
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className={styles.toolbar}>
+      <Input
+        label="Fee taken from each withdrawal"
+        inputMode="decimal"
+        prefix="₹"
+        value={fee}
+        onChange={(e) => setFee(e.target.value.replace(/[^\d.]/g, ""))}
+        disabled={!canManage}
+        hint="Covers Cashfree's charge. The vendor gets the rest. 0 for none."
+        error={feeError}
+      />
+      <Input
+        label="Least a vendor can withdraw"
+        inputMode="decimal"
+        prefix="₹"
+        value={minimum}
+        onChange={(e) => setMinimum(e.target.value.replace(/[^\d.]/g, ""))}
+        disabled={!canManage}
+        error={minError}
+      />
+      {canManage && (
+        <Button variant="secondary" disabled={!!feeError || !!minError || !changed} loading={busy} onClick={() => void save()}>
+          Save withdrawal settings
+        </Button>
+      )}
+    </div>
+  );
+}
 
 function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
   const toast = useToast();
@@ -117,6 +187,7 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
           </Button>
         )}
       </div>
+      {m.payouts && <Withdrawals m={m} payouts={m.payouts} onSaved={onSaved} />}
     </Card>
   );
 }

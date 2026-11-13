@@ -72,6 +72,26 @@ export const orderProblems = async (status: ProblemStatus, cursor?: string) =>
 export const settleOrder = async (id: string, body: SettleBody, key = newIdempotencyKey()) =>
   (await signedIn(() => unwrap(api.POST("/v1/ruxstar/reports/orders/{id}/settle", { params: { path: { id } }, body, ...keyed(key) })))).data;
 
+// Payouts and held money.
+
+export type StaffPayout = Json<"/v1/ruxstar/payouts", "get">["data"][number];
+export type PayoutStatus = StaffPayout["status"];
+export type HeldOrder = Json<"/v1/ruxstar/held-orders", "get">["data"][number];
+
+export const listPayouts = async (status: PayoutStatus, cursor?: string) =>
+  toPage(await signedIn(() => unwrap(api.GET("/v1/ruxstar/payouts", { params: { query: { status, cursor } } }))));
+
+/** Asks Cashfree now; it is sent again only if Cashfree never got it. */
+export const checkPayout = async (id: string) =>
+  (await signedIn(() => unwrap(api.POST("/v1/ruxstar/payouts/{id}/check", { params: { path: { id } } })))).data;
+
+export const heldOrders = async (orderNo: number | undefined, cursor?: string) =>
+  toPage(await signedIn(() => unwrap(api.GET("/v1/ruxstar/held-orders", { params: { query: { ...(orderNo ? { orderNo } : {}), cursor } } }))));
+
+/** The reason goes to the audit log; the vendor is told it was released early. */
+export const releaseHeld = async (id: string, reason: string, key = newIdempotencyKey()) =>
+  (await signedIn(() => unwrap(api.POST("/v1/ruxstar/held-orders/{id}/release", { params: { path: { id } }, body: { reason }, ...keyed(key) })))).data;
+
 // People.
 
 export const findUsers = async (q: string, status: UserStatus | undefined, cursor?: string) =>

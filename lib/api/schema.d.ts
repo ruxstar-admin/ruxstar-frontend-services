@@ -12239,10 +12239,10 @@ export interface paths {
                                 /** @description Admins have every permission and manage staff */
                                 admin: boolean;
                                 title: string | null;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
                                 /** @description Every permission staff can be given */
                                 catalog: {
-                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view";
+                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view";
                                     label: string;
                                 }[];
                             };
@@ -13897,6 +13897,363 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/payouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vendors' withdrawals, newest first
+         * @description `pending` is on the way, `failed` came back to the vendor's balance, `paid` reached their account.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "pending" | "failed" | "paid";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description Paise taken from the vendor's balance */
+                                amount: number;
+                                /** @description Paise kept by Ruxstar; the bank gets amount - fee */
+                                fee: number;
+                                status: "pending" | "paid" | "failed";
+                                to: string;
+                                /** @description Cashfree's transfer_id */
+                                transferId: string;
+                                utr: string | null;
+                                failure: {
+                                    code: string;
+                                    /** @description What the vendor was told */
+                                    text: string;
+                                } | null;
+                                /** @description Times it was sent to Cashfree */
+                                attempts: number;
+                                checkedAt: string | null;
+                                paidAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/payouts/{id}/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask Cashfree about a withdrawal on the way now
+         * @description Settles it if Cashfree knows how it went, and sends it again only if Cashfree never got it. Safe to repeat.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description Paise taken from the vendor's balance */
+                                amount: number;
+                                /** @description Paise kept by Ruxstar; the bank gets amount - fee */
+                                fee: number;
+                                status: "pending" | "paid" | "failed";
+                                to: string;
+                                /** @description Cashfree's transfer_id */
+                                transferId: string;
+                                utr: string | null;
+                                failure: {
+                                    code: string;
+                                    /** @description What the vendor was told */
+                                    text: string;
+                                } | null;
+                                /** @description Times it was sent to Cashfree */
+                                attempts: number;
+                                checkedAt: string | null;
+                                paidAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/held-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Delivered orders whose share is still on hold, latest release date first
+         * @description Print orders wait 48 hours after delivery, and while a reported problem is open.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description Find one order by its number */
+                    orderNo?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description Paise: the shop's share left after partial refunds */
+                                amount: number;
+                                deliveredAt: string | null;
+                                /** Format: date-time */
+                                releaseAt: string;
+                                /** @description A customer's reported problem waits for a decision; it can't be released until then */
+                                problemOpen: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/held-orders/{id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Release one order's share before its hold is over
+         * @description The vendor can withdraw it at once and is told. The reason goes to the audit log. A reported problem has to be settled first.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Why it is released early; kept in the audit log */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                amount: number;
+                                /** Format: date-time */
+                                releasedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/users": {
         parameters: {
             query?: never;
@@ -14057,7 +14414,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -14179,7 +14536,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -14289,7 +14646,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -14399,7 +14756,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -14469,7 +14826,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -14538,7 +14895,7 @@ export interface paths {
                     "application/json": {
                         /** @description For example Support lead */
                         title: string;
-                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
+                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
                     };
                 };
             };
@@ -14560,7 +14917,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -14627,7 +14984,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
