@@ -9,6 +9,11 @@ import { Card, Icon, Skeleton, Tag, type IconName } from "@/components/ui";
 import { getOverview, type Overview } from "@/lib/api/admin";
 import { MODULE_LABEL } from "./modules/labels";
 
+const alsoReported = ({ people, reviews }: { people: number; reviews: number }) =>
+  [people > 0 ? (people === 1 ? "1 person" : `${people} people`) : null, reviews > 0 ? (reviews === 1 ? "1 review" : `${reviews} reviews`) : null]
+    .filter(Boolean)
+    .join(" and ");
+
 function Tile({ href, icon, label, number, children }: { href: string; icon: IconName; label: string; number: number; children: ReactNode }) {
   return (
     <Card as="article" interactive padding="lg">
@@ -84,8 +89,8 @@ export function Dashboard() {
             )}
             {overview.reports && (
               <Tile href="/admin/reports" icon="flag" label="Reported posts" number={overview.reports.posts}>
-                {overview.reports.people > 0
-                  ? `${overview.reports.people === 1 ? "1 person" : `${overview.reports.people} people`} reported too`
+                {alsoReported(overview.reports)
+                  ? `${alsoReported(overview.reports)} reported too`
                   : overview.reports.posts === 0
                     ? "No open reports."
                     : `${overview.reports.reports} reports in all`}

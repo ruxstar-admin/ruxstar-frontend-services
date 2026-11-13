@@ -5,8 +5,10 @@ import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useBack } from "@/components/social/Shell";
 import { useOnSignedOut } from "@/components/social/session";
+import { ReviewCard } from "@/components/reviews/Reviews";
 import { ShopCover } from "@/components/shop/ShopCard";
 import { ApiError } from "@/lib/api/client";
+import { ratingLine, shopReviews, type Review } from "@/lib/api/reviews";
 import {
   deliveryLine,
   fromLine,
@@ -58,6 +60,38 @@ function Product({ product, shopDays }: { product: ShopProduct; shopDays: number
   );
 }
 
+const PREVIEW_REVIEWS = 3;
+
+/** The newest few reviews, and the way to all of them. */
+function ReviewsPreview({ shop }: { shop: Shop }) {
+  const [reviews, setReviews] = useState<Review[]>([]);
+
+  useEffect(() => {
+    let live = true;
+    shopReviews(shop.id).then(
+      (page) => live && setReviews(page.items.slice(0, PREVIEW_REVIEWS)),
+      () => {},
+    );
+    return () => {
+      live = false;
+    };
+  }, [shop.id]);
+
+  return (
+    <section className={styles.section}>
+      <h2 className={styles.overline}>Reviews</h2>
+      {reviews.map((r) => (
+        <ReviewCard key={r.id} review={r} />
+      ))}
+      {shop.rating.count > reviews.length && (
+        <ButtonLink variant="secondary" href={`/b/${shop.id}/reviews`}>
+          {`See all ${shop.rating.count} reviews`}
+        </ButtonLink>
+      )}
+    </section>
+  );
+}
+
 function ShopView({ shop }: { shop: Shop }) {
   const back = useBack();
   const price = fromLine(shop);
@@ -85,6 +119,9 @@ function ShopView({ shop }: { shop: Shop }) {
       </div>
 
       <div className={styles.panel}>
+        <span className={styles.fact}>
+          <Icon name="star" size={18} /> {ratingLine(shop.rating)}
+        </span>
         <span className={styles.fact}>
           <Icon name="clock" size={18} /> {readyLine(shop.turnaroundDays)}
         </span>
@@ -118,6 +155,8 @@ function ShopView({ shop }: { shop: Shop }) {
           <p className={styles.text}>{shop.notes}</p>
         </section>
       )}
+
+      {shop.rating.count > 0 && <ReviewsPreview shop={shop} />}
 
       <div className={styles.orderBar}>
         <span className={styles.orderText}>

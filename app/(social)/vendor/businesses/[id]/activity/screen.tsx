@@ -63,7 +63,7 @@ export function ActivityScreen({ id, by, name }: { id: string; by?: string; name
     <div className={styles.page}>
       {by ? <Back href={`/vendor/businesses/${id}/team`}>Team</Back> : <Back href={`/vendor/businesses/${id}`}>Business</Back>}
       <h1 className={styles.title}>{name ? `${name}’s activity` : "Activity"}</h1>
-      {!by && <p className={styles.muted}>Orders, shop and coupon changes, posts and the team, by you, your team, customers and Ruxstar.</p>}
+      {!by && <p className={styles.muted}>Orders, reviews, shop and coupon changes, posts and the team, by you, your team, customers and Ruxstar.</p>}
       {items.length === 0 ? (
         <div className={styles.card}>
           <h2 className={styles.cardHead}>Nothing yet</h2>

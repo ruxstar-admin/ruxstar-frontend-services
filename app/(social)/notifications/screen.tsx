@@ -26,6 +26,9 @@ const ICONS: Record<Notification["type"], IconName> = {
   "team.invited": "users",
   "team.joined": "users",
   "team.ended": "users",
+  "review.posted": "star",
+  "review.replied": "reply",
+  "review.removed": "flag",
 };
 
 function hrefOf(link: Notification["link"]) {
@@ -48,6 +51,10 @@ function hrefOf(link: Notification["link"]) {
       return `/vendor/businesses/${link.id}/team`;
     case "work_order":
       return `/work/order/${link.id}`;
+    case "reviews":
+      return `/vendor/businesses/${link.id}/reviews`;
+    case "work_reviews":
+      return `/work/${link.id}/reviews`;
     default:
       return `/p/${link.id}`;
   }

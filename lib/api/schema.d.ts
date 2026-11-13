@@ -7379,12 +7379,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended";
+                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business) and `work_order` an order to a shop you work at, in the Work area; `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order";
+                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business) and `work_reviews` the reviews of a shop you work at (`id` is the place on the team); `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews";
                                     id: string;
                                 };
                                 read: boolean;
@@ -8076,6 +8076,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -8269,6 +8271,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -8474,6 +8478,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -8678,6 +8684,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -9230,7 +9238,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                                     /** Format: date-time */
                                     invitedAt: string;
                                     /** @description When the invite runs out; null once accepted */
@@ -9239,11 +9247,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply") | null;
                                 }[];
                                 /** @description People the team can hold, invites included */
                                 max: number;
@@ -9294,7 +9302,7 @@ export interface paths {
                     "application/json": {
                         /** @description Their Ruxstar username, without the @ */
                         username: string;
-                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                     };
                 };
             };
@@ -9318,7 +9326,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                                 /** Format: date-time */
                                 invitedAt: string;
                                 /** @description When the invite runs out; null once accepted */
@@ -9443,7 +9451,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                     };
                 };
             };
@@ -9467,7 +9475,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                                 /** Format: date-time */
                                 invitedAt: string;
                                 /** @description When the invite runs out; null once accepted */
@@ -9511,7 +9519,7 @@ export interface paths {
         };
         /**
          * What happened at a business and who did it, newest first
-         * @description Orders moved and refunded, shop and coupon changes, posts and the team, by you, the team, customers or Ruxstar. `by` shows one person's. Customers and the Ruxstar team stay unnamed.
+         * @description Orders moved and refunded, reviews and replies, shop and coupon changes, posts and the team, by you, the team, customers or Ruxstar. `by` shows one person's. Customers and the Ruxstar team stay unnamed.
          */
         get: {
             parameters: {
@@ -9589,6 +9597,278 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your shop's reviews, newest first
+         * @description Reviews Ruxstar removed aren't listed. The rating is on the business.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was ordered, for example Business cards */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                orderNo: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/reviews/{reviewId}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Reply to a review, or change your reply
+         * @description Everyone sees the reply under the review. The customer is told the first time.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    reviewId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The customer is told the first time */
+                        text: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was ordered, for example Business cards */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                orderNo: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Take down your reply to a review */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    reviewId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was ordered, for example Business cards */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                orderNo: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -9813,6 +10093,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -9985,6 +10271,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -10137,6 +10429,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -10360,6 +10658,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -10553,6 +10857,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -10706,6 +11016,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -10865,6 +11181,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -11021,6 +11343,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -11178,6 +11506,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -11335,6 +11669,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -11664,6 +12004,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -11865,6 +12207,8 @@ export interface paths {
                                     canReport: boolean;
                                     /** @description The last moment to report a problem after delivery */
                                     reportUntil: string | null;
+                                    /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                    reviewUntil: string | null;
                                     problem: {
                                         kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                         note: string;
@@ -12120,6 +12464,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -12305,6 +12651,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -12565,6 +12913,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -12748,6 +13098,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -12797,6 +13149,405 @@ export interface paths {
                                     /** @description Amount in paise. The items less the discount, plus the platform fee. */
                                     total: number;
                                 };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/orders/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your review of one of your orders
+         * @description Null until you review it. One Ruxstar removed comes back with its reason; it can't be changed or written again.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was ordered, for example Business cards */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Review an order, or change your review
+         * @description Once it's delivered and for 30 days after: 1 to 5 stars and, if you like, a few words. Orders cancelled or refunded in full can't be reviewed. Leaving out `text` keeps what you wrote; null or blank clears it. The shop is told about a new review.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        rating: number;
+                        text?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was ordered, for example Business cards */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Delete your review of an order
+         * @description You can review the order again while it is still open for reviews.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/shops/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A print shop's reviews, newest first
+         * @description The shop's rating is on the shop itself.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was ordered, for example Business cards */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/reviews/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report a review to Ruxstar
+         * @description One open report per review you report; reporting it again while it is open changes nothing. The writer isn't told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: "spam" | "fake" | "abuse" | "other";
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
                             };
                             meta: {
                                 requestId: string;
@@ -12897,6 +13648,12 @@ export interface paths {
                                 /** @description Usual days to get an order ready; 0 is the same day */
                                 turnaroundDays: number;
                                 products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                             }[];
                             meta: {
                                 requestId: string;
@@ -12992,6 +13749,12 @@ export interface paths {
                                 /** @description Usual days to get an order ready; 0 is the same day */
                                 turnaroundDays: number;
                                 products: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 description: string | null;
                                 /** @description The first is the cover */
                                 photos: {
@@ -13180,6 +13943,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -13240,7 +14005,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                             }[];
                             meta: {
                                 requestId: string;
@@ -13373,6 +14138,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -13433,7 +14200,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                             };
                             meta: {
                                 requestId: string;
@@ -13578,6 +14345,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -13638,7 +14407,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                             };
                             meta: {
                                 requestId: string;
@@ -13782,6 +14551,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -13842,7 +14613,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                             };
                             meta: {
                                 requestId: string;
@@ -14062,6 +14833,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -14232,6 +15009,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -14425,6 +15208,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -14578,6 +15367,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -14737,6 +15532,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -14893,6 +15694,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -15050,6 +15857,12 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 } | null;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                                 publishedAt: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
@@ -15443,6 +16256,281 @@ export interface paths {
         };
         trace?: never;
     };
+    "/v1/employment/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The shop's reviews, newest first
+         * @description Needs "Reply to reviews".
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was ordered, for example Business cards */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                orderNo: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/reviews/{reviewId}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Reply to a review for the shop, or change the reply
+         * @description Needs "Reply to reviews". The reply is the shop's, so anyone allowed can change it. The customer is told the first time.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    reviewId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The customer is told the first time */
+                        text: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was ordered, for example Business cards */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                orderNo: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Take down the shop's reply to a review
+         * @description Needs "Reply to reviews".
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    reviewId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was ordered, for example Business cards */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                orderNo: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/employment/": {
         parameters: {
             query?: never;
@@ -15490,7 +16578,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                                     /** Format: date-time */
                                     invitedAt: string;
                                     /** Format: date-time */
@@ -15515,7 +16603,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                                     /** Format: date-time */
                                     joinedAt: string;
                                     /** @description `verify`: get verified before anything works; `on_hold`: Ruxstar put the business on hold */
@@ -15523,11 +16611,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply") | null;
                                 }[];
                             };
                             meta: {
@@ -15614,7 +16702,7 @@ export interface paths {
                                 owner: {
                                     name: string;
                                 };
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                                 /** Format: date-time */
                                 joinedAt: string;
                                 /** @description `verify`: get verified before anything works; `on_hold`: Ruxstar put the business on hold */
@@ -15894,6 +16982,8 @@ export interface paths {
                                     reports: number;
                                     /** @description People with open reports */
                                     people: number;
+                                    /** @description Shop reviews with open reports */
+                                    reviews: number;
                                 } | null;
                                 users: {
                                     total: number;
@@ -16872,6 +17962,378 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/reports/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reported shop reviews, one row per review
+         * @description `open` (the default) is waiting for a decision, newest report first. `closed` is decided, newest decision first.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "open" | "closed";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                reviewId: string;
+                                /** @description Null once the customer deleted it */
+                                review: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    rating: number;
+                                    text: string | null;
+                                    /** @description What was ordered, for example Business cards */
+                                    product: string;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string | null;
+                                        avatarUrl: string | null;
+                                    } | null;
+                                    /** @description The shop's answer */
+                                    reply: {
+                                        text: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                        editedAt: string | null;
+                                    } | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    editedAt: string | null;
+                                    status: "live" | "removed";
+                                    shop: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    orderNo: number;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                status: "open" | "closed";
+                                reports: number;
+                                reasons: {
+                                    spam: number;
+                                    fake: number;
+                                    abuse: number;
+                                    other: number;
+                                };
+                                /** @description What reporters wrote, newest first, up to 5 */
+                                notes: string[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                outcome: ("kept" | "removed") | null;
+                                closedAt: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/reports/reviews/{reviewId}/keep": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close the reports about a review and leave it up */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    reviewId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                reviewId: string;
+                                /** @description Null once the customer deleted it */
+                                review: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    rating: number;
+                                    text: string | null;
+                                    /** @description What was ordered, for example Business cards */
+                                    product: string;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string | null;
+                                        avatarUrl: string | null;
+                                    } | null;
+                                    /** @description The shop's answer */
+                                    reply: {
+                                        text: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                        editedAt: string | null;
+                                    } | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    editedAt: string | null;
+                                    status: "live" | "removed";
+                                    shop: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    orderNo: number;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                status: "open" | "closed";
+                                reports: number;
+                                reasons: {
+                                    spam: number;
+                                    fake: number;
+                                    abuse: number;
+                                    other: number;
+                                };
+                                /** @description What reporters wrote, newest first, up to 5 */
+                                notes: string[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                outcome: ("kept" | "removed") | null;
+                                closedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/reports/reviews/{reviewId}/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a review down
+         * @description It leaves the shop's page and rating, and its open reports close. The customer is told the reason and can't write it again; the shop sees it in Activity.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    reviewId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The customer is told, so be clear */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                reviewId: string;
+                                /** @description Null once the customer deleted it */
+                                review: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    rating: number;
+                                    text: string | null;
+                                    /** @description What was ordered, for example Business cards */
+                                    product: string;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string | null;
+                                        avatarUrl: string | null;
+                                    } | null;
+                                    /** @description The shop's answer */
+                                    reply: {
+                                        text: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                        editedAt: string | null;
+                                    } | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    editedAt: string | null;
+                                    status: "live" | "removed";
+                                    shop: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    orderNo: number;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                status: "open" | "closed";
+                                reports: number;
+                                reasons: {
+                                    spam: number;
+                                    fake: number;
+                                    abuse: number;
+                                    other: number;
+                                };
+                                /** @description What reporters wrote, newest first, up to 5 */
+                                notes: string[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                outcome: ("kept" | "removed") | null;
+                                closedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/reports/orders": {
         parameters: {
             query?: never;
@@ -16973,6 +18435,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -17177,6 +18641,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -17396,6 +18862,8 @@ export interface paths {
                                 canReport: boolean;
                                 /** @description The last moment to report a problem after delivery */
                                 reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
                                 problem: {
                                     kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
                                     note: string;
@@ -19097,6 +20565,12 @@ export interface paths {
                                         /** Format: date-time */
                                         at: string;
                                     } | null;
+                                    /** @description Live reviews */
+                                    rating: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
                                     publishedAt: string | null;
                                     /** Format: date-time */
                                     createdAt: string;
@@ -19266,6 +20740,12 @@ export interface paths {
                                         /** Format: date-time */
                                         at: string;
                                     } | null;
+                                    /** @description Live reviews */
+                                    rating: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
                                     publishedAt: string | null;
                                     /** Format: date-time */
                                     createdAt: string;
@@ -19457,6 +20937,12 @@ export interface paths {
                                         /** Format: date-time */
                                         at: string;
                                     } | null;
+                                    /** @description Live reviews */
+                                    rating: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
                                     publishedAt: string | null;
                                     /** Format: date-time */
                                     createdAt: string;
@@ -19639,6 +21125,12 @@ export interface paths {
                                         /** Format: date-time */
                                         at: string;
                                     } | null;
+                                    /** @description Live reviews */
+                                    rating: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
                                     publishedAt: string | null;
                                     /** Format: date-time */
                                     createdAt: string;
@@ -19742,7 +21234,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
                                     /** Format: date-time */
                                     invitedAt: string;
                                     /** @description When the invite runs out; null once accepted */
@@ -19751,11 +21243,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply") | null;
                                 }[];
                                 /** @description People the team can hold, invites included */
                                 max: number;

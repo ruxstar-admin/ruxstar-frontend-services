@@ -12,6 +12,7 @@ import {
   type ShopCard as Card,
   type ShopPhoto,
 } from "@/lib/api/shops";
+import { ratingLine, ratingShort } from "@/lib/api/reviews";
 import styles from "./shop.module.css";
 
 interface CoverProps {
@@ -61,6 +62,9 @@ export function ShopCard({ shop, eager, index }: { shop: Card; eager?: boolean; 
         </div>
         <span className={styles.meta}>{[shop.typeLabel, placeLine(shop)].filter(Boolean).join(" · ")}</span>
         <span className={styles.facts}>
+          <span aria-label={ratingLine(shop.rating)} data-rated={shop.rating.average !== null || undefined} className={styles.ratingFact}>
+            <Icon name="star" size={14} filled={shop.rating.average !== null} /> {ratingShort(shop.rating)}
+          </span>
           <span>
             <Icon name="clock" size={14} /> {readyLine(shop.turnaroundDays)}
           </span>

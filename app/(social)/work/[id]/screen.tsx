@@ -25,6 +25,7 @@ const WORK_AREAS: { title: string; line: string; icon: IconName; allowed: (permi
   { title: "Orders", line: "New orders, ones being made, and past ones", icon: "print", allowed: has("orders.view"), path: "orders" },
   { title: "Shop", line: "Open or close it, and change what you’re allowed to", icon: "store", allowed: has("shop.open", "shop.catalog", "shop.details"), path: "shop" },
   { title: "Coupons", line: "Discounts for this shop", icon: "ticket", allowed: has("coupons.manage"), path: "coupons" },
+  { title: "Reviews", line: "What customers said, and the shop’s replies", icon: "star", allowed: has("reviews.reply"), path: "reviews" },
   { title: "Post as the business", line: "It goes out under the owner’s name", icon: "edit", allowed: has("posts.create"), path: "post" },
 ];
 

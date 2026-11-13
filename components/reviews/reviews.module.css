@@ -1,0 +1,155 @@
+.stars {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  color: var(--ink-3);
+}
+
+.stars [data-on] {
+  color: var(--warning);
+}
+
+.picker {
+  display: inline-flex;
+  gap: var(--space-2);
+}
+
+.pickStar {
+  display: inline-grid;
+  place-items: center;
+  padding: 2px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.pickStar[data-on] {
+  color: var(--warning);
+}
+
+.pickStar:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
+.pickStar:disabled {
+  cursor: default;
+}
+
+.review {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.who {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font: var(--type-body);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  font: var(--type-caption);
+  color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text {
+  font: var(--type-body);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.reply {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--raised);
+  border-left: 3px solid var(--accent-soft);
+  border-radius: 10px;
+}
+
+.replyLabel {
+  font: var(--type-caption);
+  color: var(--accent-soft);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.ask {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--accent-soft);
+  border-radius: var(--radius-card);
+}
+
+.removed {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background: var(--raised);
+  border-radius: var(--radius-card);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.center {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+}
+
+.muted {
+  font: var(--type-small);
+  color: var(--ink-2);
+}
+
+.faint {
+  font: var(--type-caption);
+  color: var(--ink-3);
+}
+
+.link {
+  padding: 0;
+  font: var(--type-small);
+  color: var(--ink);
+  background: none;
+  border: 0;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+
+.link[data-muted] {
+  color: var(--ink-2);
+}

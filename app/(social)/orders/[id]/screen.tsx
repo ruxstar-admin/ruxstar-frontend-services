@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
+import { RateOrder } from "@/components/reviews/Reviews";
 import { FileItem, PriceList, ProblemCard, Progress } from "@/components/shop/OrderParts";
 import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
@@ -261,6 +262,8 @@ function OrderDetails({ order, onChanged }: { order: Order; onChanged: (order: O
           </div>
         )
       )}
+
+      {order.deliveredAt && <RateOrder order={order} />}
 
       {partials.length > 0 && (
         <section className={styles.section}>

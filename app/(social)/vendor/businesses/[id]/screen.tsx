@@ -11,6 +11,7 @@ import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
 import { ApiError } from "@/lib/api/client";
 import { shrinkPhoto } from "@/lib/photo";
+import { ratingLine } from "@/lib/api/reviews";
 import { MODULE_LABEL } from "@/lib/api/shops";
 import { getWork, type TeamPermission } from "@/lib/api/team";
 import { addressOf, areaLine, canOpen, deleteBusiness, listOf, MISSING_LABEL, publishBusiness, shopDesk, statusOf, vendorCatalog, type Business } from "@/lib/api/vendor";
@@ -222,6 +223,18 @@ function Details({
                 <span className={styles.rowText}>
                   <span className={styles.rowTitle}>Team</span>
                   <span className={styles.rowLine}>Invite people to help with orders, the shop and posts</span>
+                </span>
+                <Icon name="chevron-right" size={18} />
+              </Link>
+            </li>
+          )}
+          {!team && b.pod && b.status === "live" && (
+            <li>
+              <Link href={`/vendor/businesses/${id}/reviews`} className={styles.row}>
+                <Icon name="star" size={20} />
+                <span className={styles.rowText}>
+                  <span className={styles.rowTitle}>Reviews</span>
+                  <span className={styles.rowLine}>{ratingLine(b.rating)}</span>
                 </span>
                 <Icon name="chevron-right" size={18} />
               </Link>

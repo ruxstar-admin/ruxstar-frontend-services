@@ -225,6 +225,10 @@
   gap: 4px;
 }
 
+.ratingFact[data-rated] svg {
+  color: var(--warning);
+}
+
 .skeletonCard {
   aspect-ratio: 4 / 3.4;
   background: var(--surface);

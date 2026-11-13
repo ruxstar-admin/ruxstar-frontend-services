@@ -12,6 +12,7 @@ import { formError } from "@/lib/api/account";
 import { dismissPerson, keepPost, personQueue, removePost, reportQueue, type PersonCase, type ReportCase, type ReportStatus } from "@/lib/api/admin";
 import { ago, exact } from "@/lib/time";
 import { OrderProblemsQueue } from "./orders";
+import { ReviewReportsQueue } from "./reviews";
 
 const TABS: { value: ReportStatus; label: string }[] = [
   { value: "open", label: "To review" },
@@ -309,11 +310,12 @@ function PeopleQueue({ status }: { status: ReportStatus }) {
   );
 }
 
-type Subject = "posts" | "people" | "orders";
+type Subject = "posts" | "people" | "reviews" | "orders";
 
 const SUBJECTS: { value: Subject; label: string }[] = [
   { value: "posts", label: "Posts" },
   { value: "people", label: "People" },
+  { value: "reviews", label: "Reviews" },
   { value: "orders", label: "Orders" },
 ];
 
@@ -334,6 +336,8 @@ function Reports() {
         <Queue key={`posts-${status}`} status={status} />
       ) : subject === "people" ? (
         <PeopleQueue key={`people-${status}`} status={status} />
+      ) : subject === "reviews" ? (
+        <ReviewReportsQueue key={`reviews-${status}`} status={status} />
       ) : (
         <OrderProblemsQueue key={`orders-${status}`} status={status === "open" ? "open" : "resolved"} />
       )}
