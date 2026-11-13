@@ -1,0 +1,167 @@
+.lightbox {
+  --edge: clamp(12px, 3vw, 32px);
+
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  color: var(--ink);
+  background: rgb(0 0 0 / var(--fade, 1));
+  border: 0;
+  overscroll-behavior: contain;
+}
+
+.lightbox::backdrop {
+  background: transparent;
+}
+
+.lightbox[open] {
+  animation: open var(--dur-quick) var(--ease-out);
+}
+
+.track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  touch-action: pan-x pinch-zoom;
+  transition: transform var(--dur-quick) var(--ease-out);
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.track[data-zoomed] {
+  overflow-x: hidden;
+}
+
+.slide {
+  display: grid;
+  place-items: safe center;
+  flex: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+
+.slide[data-zoomed] {
+  overflow: auto;
+  cursor: grab;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+.slide[data-zoomed]:active {
+  cursor: grabbing;
+}
+
+/* Sized to the screen: a percentage of the slide's auto-sized grid row would not limit it. */
+.photo {
+  display: block;
+  max-width: 100vw;
+  max-height: 100dvh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  cursor: zoom-in;
+}
+
+.slide[data-zoomed] .photo {
+  cursor: inherit;
+}
+
+.chrome {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--edge);
+  pointer-events: none;
+}
+
+.chrome > * {
+  pointer-events: auto;
+}
+
+.round {
+  display: inline-grid;
+  place-items: center;
+  width: var(--size-touch);
+  height: var(--size-touch);
+  color: var(--ink);
+  background: rgb(0 0 0 / 50%);
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition:
+    background var(--dur-quick) var(--ease-out),
+    transform var(--dur-press) var(--ease-out);
+}
+
+.round:hover {
+  background: rgb(255 255 255 / 18%);
+}
+
+.round:active {
+  transform: scale(var(--press-scale));
+}
+
+.round:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
+.counter {
+  padding: var(--space-1) var(--space-3);
+  font: var(--type-small);
+  font-variant-numeric: tabular-nums;
+  background: rgb(0 0 0 / 50%);
+  border-radius: var(--radius-pill);
+}
+
+.side {
+  position: absolute;
+  top: 50%;
+  margin-top: calc(var(--size-touch) / -2);
+}
+
+.side[data-side="left"] {
+  left: var(--edge);
+}
+
+.side[data-side="right"] {
+  right: var(--edge);
+}
+
+/* Phones swipe between photos instead. */
+@media (pointer: coarse) {
+  .side {
+    display: none;
+  }
+}
+
+@keyframes open {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox[open] {
+    animation: none;
+  }
+
+  .track {
+    transition: none;
+  }
+}

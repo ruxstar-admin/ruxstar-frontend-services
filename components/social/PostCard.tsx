@@ -7,8 +7,9 @@ import { VerifiedTick } from "@/components/kyc/VerifiedTick";
 import { Avatar } from "@/components/profile/Avatar";
 import { Button, ButtonLink, Icon, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { deletePost, editPost, photoSrcSet, POST_TEXT_MAX, REPORT_REASONS, reportPost, setLike, setSave, type Post } from "@/lib/api/social";
+import { deletePost, editPost, POST_TEXT_MAX, REPORT_REASONS, reportPost, setLike, setSave, type Post } from "@/lib/api/social";
 import { ago, compact, exact } from "@/lib/time";
+import { PostPhotos } from "./PostPhotos";
 import { useMe, useOnSignedOut, useSignInFirst } from "./session";
 import styles from "./PostCard.module.css";
 
@@ -20,51 +21,6 @@ interface PostCardProps {
   eager?: boolean;
   /** On the post's own page the comment button scrolls instead of linking. */
   onComment?: () => void;
-}
-
-/** The feed column is at most 640 px wide; on phones it is the screen less its margins. */
-const ONE_PHOTO = "(max-width: 640px) 100vw, 640px";
-const TWO_UP = "(max-width: 640px) 50vw, 320px";
-
-function Photos({ post, eager }: { post: Post; eager?: boolean }) {
-  const { media } = post;
-  if (media.length === 0) return null;
-  const loading = eager ? "eager" : "lazy";
-  if (media.length === 1) {
-    const [photo] = media;
-    return (
-      <Link href={`/p/${post.id}`} className={styles.single} style={{ aspectRatio: `${photo!.width} / ${photo!.height}` }} tabIndex={-1}>
-        <img
-          src={photo!.url}
-          srcSet={photoSrcSet(photo!)}
-          sizes={ONE_PHOTO}
-          width={photo!.width}
-          height={photo!.height}
-          alt=""
-          loading={loading}
-          decoding="async"
-          fetchPriority={eager ? "high" : "auto"}
-        />
-      </Link>
-    );
-  }
-  return (
-    <Link href={`/p/${post.id}`} className={styles.grid} data-count={media.length} tabIndex={-1}>
-      {media.map((photo) => (
-        <img
-          key={photo.url}
-          src={photo.url}
-          srcSet={photoSrcSet(photo)}
-          sizes={TWO_UP}
-          width={photo.width}
-          height={photo.height}
-          alt=""
-          loading={loading}
-          decoding="async"
-        />
-      ))}
-    </Link>
-  );
 }
 
 type MenuView = "main" | "delete" | "report";
@@ -326,7 +282,7 @@ export const PostCard = memo(function PostCard({ post, onChange, onRemove, eager
         post.text && <p className={styles.text}>{post.text}</p>
       )}
 
-      <Photos post={post} eager={eager} />
+      <PostPhotos photos={post.media} eager={eager} onDoubleLike={() => !post.likedByMe && toggle("like")} />
 
       {post.business && (
         <div className={styles.business}>

@@ -110,27 +110,200 @@
   border-top: 1px solid var(--line);
 }
 
-.tool {
-  display: inline-grid;
-  place-items: center;
-  width: var(--size-touch);
-  height: var(--size-touch);
+.composer[data-dropping] {
+  border-color: var(--accent-soft);
+  background: var(--raised);
+}
+
+.tools {
+  display: flex;
+  gap: var(--space-1);
   margin-right: auto;
+}
+
+.photoTool {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--size-touch);
+  padding: 0 var(--space-4) 0 var(--space-3);
+  font: 600 14px/20px var(--font);
   color: var(--accent-soft);
   background: none;
   border: 0;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: background var(--dur-quick) var(--ease-out);
+  transition:
+    background var(--dur-quick) var(--ease-out),
+    transform var(--dur-press) var(--ease-out);
 }
 
-.tool:hover:not(:disabled) {
+.photoTool:hover:not(:disabled) {
   background: var(--raised);
 }
 
-.tool:disabled {
+.photoTool:active:not(:disabled) {
+  transform: scale(var(--press-scale));
+}
+
+.photoTool:disabled {
   color: var(--ink-3);
   cursor: not-allowed;
+}
+
+/* Taking a photo in the browser only works on phones and tablets. */
+@media (pointer: fine) {
+  .cameraTool {
+    display: none;
+  }
+}
+
+.composePhotos {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.composePreview {
+  position: relative;
+  overflow: hidden;
+  max-height: min(560px, 70dvh);
+  border-radius: var(--radius-control);
+  background: var(--raised);
+}
+
+.composePreview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity var(--dur-quick) var(--ease-out);
+}
+
+.composePreview[data-status="uploading"] img {
+  opacity: 0.6;
+}
+
+.composePreview[data-status="failed"] img {
+  opacity: 0.35;
+}
+
+.previewRetry {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font: 600 16px/24px var(--font);
+  color: var(--ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stripThumb {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  border-radius: var(--radius-control);
+  background: var(--raised);
+  box-shadow: inset 0 0 0 2px transparent;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  transition: transform var(--dur-quick) var(--ease-out);
+  animation: fade var(--dur-quick) var(--ease-out);
+}
+
+.stripThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  transition: opacity var(--dur-quick) var(--ease-out);
+}
+
+.stripThumb[data-on]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 2px solid var(--accent-soft);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.stripThumb[data-dragging] {
+  z-index: 2;
+  cursor: grabbing;
+  transition: none;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 45%);
+}
+
+.stripThumb[data-status="uploading"] img {
+  opacity: 0.5;
+}
+
+.stripThumb[data-status="failed"] img {
+  opacity: 0.3;
+}
+
+.stripThumb:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
+.stripThumb .thumbRemove {
+  z-index: 2;
+}
+
+.stripFailed {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--danger);
+}
+
+.stripAdd {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  color: var(--ink-2);
+  background: var(--raised);
+  border: 0;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition:
+    color var(--dur-quick) var(--ease-out),
+    background var(--dur-quick) var(--ease-out);
+}
+
+.stripAdd:hover {
+  color: var(--ink);
+  background: var(--line);
+}
+
+.stripHelp,
+.stripError {
+  margin: 0;
+  font: var(--type-caption);
+  color: var(--ink-2);
+}
+
+.stripError {
+  color: var(--danger);
 }
 
 .count {
@@ -143,40 +316,6 @@
   color: var(--warning);
 }
 
-.thumbs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.thumb {
-  position: relative;
-  width: 96px;
-  height: 96px;
-  overflow: hidden;
-  border-radius: var(--radius-control);
-  background: var(--raised);
-  animation: fade var(--dur-quick) var(--ease-out);
-}
-
-.thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: opacity var(--dur-quick) var(--ease-out);
-}
-
-.thumb[data-status="uploading"] img {
-  opacity: 0.5;
-}
-
-.thumb[data-status="failed"] img {
-  opacity: 0.3;
-}
-
 .thumbSpinner {
   position: absolute;
   inset: 50% auto auto 50%;
@@ -187,17 +326,6 @@
   border-right-color: transparent;
   border-radius: 50%;
   animation: spin 700ms linear infinite;
-}
-
-.thumbRetry {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: var(--ink);
-  background: none;
-  border: 0;
-  cursor: pointer;
 }
 
 .thumbRemove {

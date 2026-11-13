@@ -62,54 +62,6 @@
   text-wrap: pretty;
 }
 
-.single,
-.grid {
-  display: block;
-  overflow: hidden;
-  border-radius: var(--radius-control);
-  background: var(--raised);
-}
-
-.single {
-  max-height: 640px;
-}
-
-.single img,
-.grid img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--dur-slow) var(--ease-out);
-}
-
-@media (hover: hover) {
-  .single:hover img,
-  .grid img:hover {
-    transform: scale(1.015);
-  }
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3px;
-  aspect-ratio: 1;
-}
-
-.grid[data-count="2"] {
-  aspect-ratio: 2;
-}
-
-.grid[data-count="3"] img:first-child {
-  grid-row: span 2;
-}
-
-.grid img {
-  overflow: hidden;
-  min-height: 0;
-}
-
 /* The shop a business post is for, with Order when it takes print orders now. */
 .business {
   display: flex;
