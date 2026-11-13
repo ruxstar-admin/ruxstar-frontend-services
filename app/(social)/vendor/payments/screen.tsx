@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { Button, Icon, Input, Segmented, Tag } from "@/components/ui";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Button, Icon, Input, Segmented, Tag, type IconName } from "@/components/ui";
 import { useOnSignedOut } from "@/components/social/session";
+import { usePages } from "@/components/social/use-pages";
+import { SkeletonRows } from "@/app/(social)/notifications/screen";
 import { Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
 import { ApiError } from "@/lib/api/client";
 import { money } from "@/lib/api/shops";
-import { digitsOnly, setPayoutMethod, vendorPayments, type PayoutMethod } from "@/lib/api/vendor";
+import { digitsOnly, setPayoutMethod, vendorPayments, vendorStatement, type PayoutMethod, type StatementLine } from "@/lib/api/vendor";
 import { ago, exact } from "@/lib/time";
 import styles from "@/components/vendor/vendor.module.css";
 
@@ -145,7 +148,69 @@ function MethodForm({ onSaved, onCancel }: { onSaved: (method: PayoutMethod) => 
   );
 }
 
-/** Balance, where the vendor is paid, and their payouts. Same as the app. */
+const LINES = {
+  paid: { icon: "wallet", title: "paid", note: "Pending" },
+  available: { icon: "check", title: "available", note: "Can be withdrawn" },
+  refund: { icon: "undo", title: "refund", note: "Back to the customer" },
+} as const satisfies Record<StatementLine["kind"], { icon: IconName; title: string; note: string }>;
+
+/** Every change to the vendor's earnings, a page at a time. Each line opens its order. */
+function Statement() {
+  const onSignedOut = useOnSignedOut();
+  const { items, loading, loadingMore, hasMore, error, more, reload } = usePages(vendorStatement);
+
+  useEffect(() => {
+    if (error) onSignedOut(error);
+  }, [error, onSignedOut]);
+
+  if (loading) return <SkeletonRows count={2} />;
+  if (error && items.length === 0) {
+    return (
+      <div className={styles.card}>
+        <p className={styles.error} role="alert">
+          {formError(error).message}
+        </p>
+        <div>
+          <Button variant="secondary" onClick={reload}>
+            Try again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  if (items.length === 0) return <p className={styles.muted}>Nothing yet. Your share of each paid order shows here.</p>;
+  return (
+    <>
+      <ul className={`${styles.card} ${styles.payouts} ${styles.statement}`}>
+        {items.map((line) => {
+          const look = LINES[line.kind];
+          const sign = line.kind === "paid" ? "+" : line.kind === "refund" ? "−" : "";
+          return (
+            <li key={line.id}>
+              <Link href={`/vendor/orders/${line.order.id}`} data-kind={line.kind}>
+                <Icon name={look.icon} size={20} />
+                <span className={styles.identity}>
+                  <span>{`Order #${line.order.orderNo} ${look.title}`}</span>
+                  <span className={styles.muted}>{[line.order.business?.name, look.note, ago(line.at)].filter(Boolean).join(" · ")}</span>
+                </span>
+                <strong>{`${sign}${money(Math.abs(line.amount))}`}</strong>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      {hasMore && (
+        <div>
+          <button type="button" className={styles.link} disabled={loadingMore} onClick={more}>
+            {loadingMore ? "Loading…" : "Show more"}
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
+/** Balance, where the vendor is paid, their earnings statement and payouts. Same as the app. */
 export function PaymentsScreen() {
   const { data, error, reload, setData } = useLoad(vendorPayments);
   const [changing, setChanging] = useState(false);
@@ -233,6 +298,9 @@ export function PaymentsScreen() {
       ) : (
         <p className={styles.muted}>No payouts yet.</p>
       )}
+
+      <h2 className={styles.overline}>Statement</h2>
+      <Statement />
     </div>
   );
 }

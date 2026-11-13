@@ -2,6 +2,7 @@ import { signedIn } from "./account";
 import { api, API_URL, ApiError, newIdempotencyKey, unwrap, type ApiErrorBody } from "./client";
 import type { paths } from "./schema";
 import { money } from "./shops";
+import type { Page } from "./social";
 
 type Data<T> = T extends { content: { "application/json": { data: infer D } } } ? D : never;
 type Body<T> = T extends { requestBody: { content: { "application/json": infer B } } } ? B : never;
@@ -25,6 +26,8 @@ export type PodSetupUpdate = Body<paths["/v1/vendor/businesses/{id}/pod"]["patch
 export type Payments = Data<paths["/v1/vendor/payments"]["get"]["responses"][200]>;
 export type PayoutMethod = NonNullable<Payments["payoutMethod"]>;
 export type PayoutMethodInput = Body<paths["/v1/vendor/payout-method"]["put"]>;
+/** `paid` is a share arriving as pending, `available` its hold ending (the same money moving), `refund` money going back. */
+export type StatementLine = Data<paths["/v1/vendor/payments/statement"]["get"]["responses"][200]>[number];
 
 const byId = (id: string) => ({ params: { path: { id } } });
 
@@ -93,6 +96,12 @@ export const setBusinessOpen = async (id: string, open: boolean) =>
 export const deleteBusiness = (id: string) => signedIn(() => unwrap(api.DELETE("/v1/vendor/businesses/{id}", byId(id))));
 
 export const vendorPayments = async () => (await signedIn(() => unwrap(api.GET("/v1/vendor/payments")))).data;
+
+/** Every change to the vendor's earnings, newest first. */
+export const vendorStatement = async (cursor?: string): Promise<Page<StatementLine>> => {
+  const envelope = await signedIn(() => unwrap(api.GET("/v1/vendor/payments/statement", { params: { query: { cursor } } })));
+  return { items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null };
+};
 
 /** Checked with Cashfree; it must be in the name on the vendor's Aadhaar. */
 export const setPayoutMethod = async (body: PayoutMethodInput) =>

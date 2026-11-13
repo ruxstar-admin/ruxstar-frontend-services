@@ -716,6 +716,37 @@ a.row:hover .rowTitle {
   border-top: 1px solid var(--line);
 }
 
+.statement li {
+  padding: 0;
+}
+
+.statement a {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3) 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.statement a:hover > .identity > :first-child {
+  text-decoration: underline;
+}
+
+.statement a > .identity {
+  flex: 1;
+}
+
+.statement a[data-kind="available"] > :is(svg, strong) {
+  color: var(--success);
+}
+
+.statement a[data-kind="refund"] > :is(svg, strong) {
+  color: var(--danger);
+}
+
 /* Posts. */
 
 .pickers {

@@ -7661,6 +7661,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/vendor/payments/statement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every change to your earnings, newest first
+         * @description One line per money movement on your orders: the share arriving (pending), the hold ending (available), and refunds out of your share. Payouts are listed with the balance.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description paid: an order's share arrived, pending until its hold ends. available: the hold ended and it can be withdrawn. refund: money went back to the customer out of your share. */
+                                kind: "paid" | "available" | "refund";
+                                /** @description Paise; negative for refunds */
+                                amount: number;
+                                /** Format: date-time */
+                                at: string;
+                                module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    } | null;
+                                };
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/vendor/payout-method": {
         parameters: {
             query?: never;
