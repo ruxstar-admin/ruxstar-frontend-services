@@ -169,6 +169,14 @@ export const findBusinesses = async (filter: BusinessFilter, cursor?: string) =>
 export const getBusiness = async (id: string) =>
   (await signedIn(() => unwrap(api.GET("/v1/ruxstar/businesses/{id}", { params: { path: { id } } })))).data;
 
+export const getBusinessTeam = async (id: string) =>
+  (await signedIn(() => unwrap(api.GET("/v1/ruxstar/businesses/{id}/team", { params: { path: { id } } })))).data;
+
+/** The person and the vendor both see the reason. */
+export const removeFromTeam = async (id: string, memberId: string, reason: string, key = newIdempotencyKey()) => {
+  await signedIn(() => unwrap(api.POST("/v1/ruxstar/businesses/{id}/team/{memberId}/remove", { params: { path: { id, memberId } }, body: { reason }, ...keyed(key) })));
+};
+
 /** The vendor is told the reason. */
 export const holdBusiness = async (id: string, reason: string, key = newIdempotencyKey()) =>
   (

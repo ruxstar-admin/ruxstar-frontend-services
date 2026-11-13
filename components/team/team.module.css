@@ -1,0 +1,125 @@
+.switches {
+  display: grid;
+  padding: 0 var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.switches > * + * {
+  border-top: 1px solid var(--line);
+}
+
+.picker {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.muted {
+  font: var(--type-small);
+  color: var(--ink-2);
+}
+
+.section {
+  margin-top: var(--space-2);
+  font: 600 16px/24px var(--font);
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 64px;
+  padding: var(--space-3) 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  background: none;
+  border: 0;
+}
+
+a.member,
+button.member {
+  cursor: pointer;
+}
+
+a.member:hover .name,
+button.member:hover .name {
+  text-decoration: underline;
+}
+
+.text {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font: 600 15px/22px var(--font);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line {
+  overflow: hidden;
+  font: var(--type-small);
+  color: var(--ink-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invite {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.inviteHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.allowed {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-4);
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.allowed li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.allowed svg {
+  color: var(--success);
+}
+
+.error {
+  font: var(--type-small);
+  color: var(--danger);
+}
+
+.success {
+  font: var(--type-small);
+  color: var(--success);
+}

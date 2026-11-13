@@ -210,6 +210,16 @@ function Details({ business, onChange }: { business: Business; onChange: (b: Bus
             done={b.pod.products.length > 0 && !b.missing.includes("pricing")}
             disabled={!b.pod.products.length}
           />
+          <li>
+            <Link href={`/vendor/businesses/${id}/team`} className={styles.row}>
+              <Icon name="users" size={20} />
+              <span className={styles.rowText}>
+                <span className={styles.rowTitle}>Team</span>
+                <span className={styles.rowLine}>Invite people to help with orders, the shop and posts</span>
+              </span>
+              <Icon name="chevron-right" size={18} />
+            </Link>
+          </li>
         </ul>
       )}
 

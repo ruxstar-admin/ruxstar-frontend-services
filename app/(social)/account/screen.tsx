@@ -285,6 +285,19 @@ export function AccountScreen() {
           )}
 
           {user && (
+            <Setting id="work" title="Work" description="Team invites and businesses you help run">
+              <div className={`${styles.panel} ${styles.devices}`}>
+                <div className={styles.device}>
+                  <p className={styles.muted}>Accept invites from business owners, and see what you can do at each.</p>
+                  <ButtonLink href="/work" variant="secondary">
+                    Open
+                  </ButtonLink>
+                </div>
+              </div>
+            </Setting>
+          )}
+
+          {user && (
             <Setting id="activity" title="Activity status" description="Like Instagram: in chats, people see when you were last active.">
               <div className={styles.panel}>
                 <Switch

@@ -7379,12 +7379,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated";
+                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id) and `payments` Payments in the vendor portal (`id` is the payout); `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments";
+                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team) and `team` a business's Team in the vendor portal (`id` is the business); `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team";
                                     id: string;
                                 };
                                 read: boolean;
@@ -9160,6 +9160,319 @@ export interface paths {
                                 createdAt: string;
                                 /** Format: date-time */
                                 updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/team": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A business's team and open invites, with what can be given */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Active people first, then invites, oldest first */
+                                members: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    person: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string | null;
+                                        avatar: string | null;
+                                    };
+                                    /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
+                                    status: "invited" | "waiting" | "active";
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                    /** Format: date-time */
+                                    invitedAt: string;
+                                    /** @description When the invite runs out; null once accepted */
+                                    expiresAt: string | null;
+                                    joinedAt: string | null;
+                                }[];
+                                permissions: {
+                                    /** @description What the owner lets this person do at the business */
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create";
+                                    label: string;
+                                    hint: string | null;
+                                    /** @description Given with this one, since it can't work without it */
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create") | null;
+                                }[];
+                                /** @description People the team can hold, invites included */
+                                max: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Invite someone to the team by their username
+         * @description They get a notification and have 7 days to accept. Nothing works for them until their identity verification is approved. A team holds up to 20 people, invites included. Permissions that need "See orders" bring it with them. Withdrawals, payment details, publishing, deleting and the team itself stay with the owner.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Their Ruxstar username, without the @ */
+                        username: string;
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                person: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatar: string | null;
+                                };
+                                /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
+                                status: "invited" | "waiting" | "active";
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                /** Format: date-time */
+                                invitedAt: string;
+                                /** @description When the invite runs out; null once accepted */
+                                expiresAt: string | null;
+                                joinedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/team/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove someone from the team, or cancel their invite
+         * @description Their access ends at once. Someone who was working here is told.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    memberId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Change what a team member, or someone invited, may do
+         * @description Replaces their permissions. It applies on their next request.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    memberId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                person: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatar: string | null;
+                                };
+                                /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
+                                status: "invited" | "waiting" | "active";
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                /** Format: date-time */
+                                invitedAt: string;
+                                /** @description When the invite runs out; null once accepted */
+                                expiresAt: string | null;
+                                joinedAt: string | null;
                             };
                             meta: {
                                 requestId: string;
@@ -12665,6 +12978,348 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your team invites and the businesses you work at
+         * @description Invites that ran out are left out. A place's `access` says whether anything works there yet.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Newest first */
+                                invites: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                        type: string;
+                                        city: string | null;
+                                        /** @description The cover photo's URL */
+                                        photo: string | null;
+                                        status: "draft" | "live";
+                                        open: boolean;
+                                    };
+                                    owner: {
+                                        name: string;
+                                    };
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                    /** Format: date-time */
+                                    invitedAt: string;
+                                    /** Format: date-time */
+                                    expiresAt: string;
+                                }[];
+                                /** @description Newest first */
+                                places: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                        type: string;
+                                        city: string | null;
+                                        /** @description The cover photo's URL */
+                                        photo: string | null;
+                                        status: "draft" | "live";
+                                        open: boolean;
+                                    };
+                                    owner: {
+                                        name: string;
+                                    };
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                    /** Format: date-time */
+                                    joinedAt: string;
+                                    /** @description `verify`: get verified before anything works; `on_hold`: Ruxstar put the business on hold */
+                                    access: "on" | "verify" | "on_hold";
+                                }[];
+                                permissions: {
+                                    /** @description What the owner lets this person do at the business */
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create";
+                                    label: string;
+                                    hint: string | null;
+                                    /** @description Given with this one, since it can't work without it */
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create") | null;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Join a business's team
+         * @description The owner is told. Nothing works for you there until your identity verification is approved.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                    type: string;
+                                    city: string | null;
+                                    /** @description The cover photo's URL */
+                                    photo: string | null;
+                                    status: "draft" | "live";
+                                    open: boolean;
+                                };
+                                owner: {
+                                    name: string;
+                                };
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                /** Format: date-time */
+                                joinedAt: string;
+                                /** @description `verify`: get verified before anything works; `on_hold`: Ruxstar put the business on hold */
+                                access: "on" | "verify" | "on_hold";
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Turn down a team invite */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/{id}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Leave a business's team
+         * @description Your access ends at once and the owner is told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -16554,6 +17209,176 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/businesses/{id}/team": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A business's team and open invites */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Active people first, then invites, oldest first */
+                                members: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    person: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string | null;
+                                        avatar: string | null;
+                                    };
+                                    /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
+                                    status: "invited" | "waiting" | "active";
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create")[];
+                                    /** Format: date-time */
+                                    invitedAt: string;
+                                    /** @description When the invite runs out; null once accepted */
+                                    expiresAt: string | null;
+                                    joinedAt: string | null;
+                                }[];
+                                permissions: {
+                                    /** @description What the owner lets this person do at the business */
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create";
+                                    label: string;
+                                    hint: string | null;
+                                    /** @description Given with this one, since it can't work without it */
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create") | null;
+                                }[];
+                                /** @description People the team can hold, invites included */
+                                max: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/businesses/{id}/team/{memberId}/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Remove someone from a business's team
+         * @description The reason goes to the audit log, and the person and the owner both see it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    memberId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Kept in the audit log; the owner and the person see it */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
                             };
                             meta: {
                                 requestId: string;

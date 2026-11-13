@@ -7,7 +7,21 @@ import { Failed, Fact, ReasonForm, date, styles } from "@/components/admin/parts
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, ButtonLink, Card, Icon, Skeleton, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { getBusiness, getBusinessCatalog, holdBusiness, restoreBusiness, type Business, type BusinessCase, type BusinessCatalog } from "@/lib/api/admin";
+import {
+  getBusiness,
+  getBusinessCatalog,
+  getBusinessTeam,
+  holdBusiness,
+  removeFromTeam,
+  restoreBusiness,
+  type Business,
+  type BusinessCase,
+  type BusinessCatalog,
+} from "@/lib/api/admin";
+import type { Team, TeamMember } from "@/lib/api/team";
+import { MemberRow } from "@/components/team/MemberRow";
+import teamStyles from "@/components/team/team.module.css";
+import vendorStyles from "@/components/vendor/vendor.module.css";
 import { ago } from "@/lib/time";
 import { MODULE_LABEL } from "../../modules/labels";
 import { BusinessTag } from "../tags";
@@ -98,6 +112,82 @@ function Actions({ c, onChanged }: { c: BusinessCase; onChanged: (next: Business
         </Button>
       )}
     </div>
+  );
+}
+
+/** The people the vendor has on the business's team. Anyone can be removed with a reason both they and the vendor see. Same as the app. */
+function BusinessTeam({ businessId }: { businessId: string }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("businesses.manage");
+  const [team, setTeam] = useState<Team | null>(null);
+  const [error, setError] = useState<unknown>(null);
+  const [attempt, setAttempt] = useState(0);
+  const [removing, setRemoving] = useState<TeamMember | null>(null);
+  const [busy, setBusy] = useState(false);
+  const key = useRef(crypto.randomUUID());
+
+  useEffect(() => {
+    let live = true;
+    getBusinessTeam(businessId).then(
+      (next) => live && setTeam(next),
+      (err) => live && !onSignedOut(err) && setError(err),
+    );
+    return () => {
+      live = false;
+    };
+  }, [businessId, attempt, onSignedOut]);
+
+  async function remove(reason: string) {
+    if (!removing) return;
+    setBusy(true);
+    try {
+      await removeFromTeam(businessId, removing.id, reason, key.current);
+      key.current = crypto.randomUUID();
+      toast(`${removing.person.name} was removed. They and the vendor have been told why.`, "success");
+      setRemoving(null);
+      setAttempt((n) => n + 1);
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className={styles.page}>
+      <h2 className={teamStyles.section}>Team</h2>
+      {error ? (
+        <Failed
+          error={error}
+          onRetry={() => {
+            setError(null);
+            setAttempt((n) => n + 1);
+          }}
+        />
+      ) : !team ? (
+        <Skeleton height={64} radius={12} />
+      ) : removing ? (
+        <ReasonForm
+          prompt={`Why is ${removing.person.name} being removed? Their access ends at once. They and the vendor will see this reason.`}
+          placeholder="For example: reported for taking orders outside Ruxstar."
+          confirm="Remove"
+          busy={busy}
+          onCancel={() => setRemoving(null)}
+          onSubmit={(reason) => void remove(reason)}
+        />
+      ) : team.members.length ? (
+        <ul className={vendorStyles.rows}>
+          {team.members.map((m) => (
+            <li key={m.id}>
+              <MemberRow member={m} catalog={team.permissions} onClick={canManage ? () => setRemoving(m) : undefined} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className={styles.muted}>No one on the team.</p>
+      )}
+    </section>
   );
 }
 
@@ -217,6 +307,8 @@ export function BusinessScreen({ id }: { id: string }) {
                 warn={!c.payoutMethod}
               />
             </dl>
+
+            {b.module === "pod" && <BusinessTeam businessId={b.id} />}
 
             <Actions
               c={c}
