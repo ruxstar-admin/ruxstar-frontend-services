@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Avatar } from "@/components/profile/Avatar";
@@ -173,6 +174,14 @@ function Member({ businessId, data, member }: { businessId: string; data: Team; 
           <Button size="lg" loading={busy === "save"} disabled={!changed || permissions.length === 0 || !!busy} onClick={() => void run("save")}>
             Save changes
           </Button>
+          {!invited && (
+            <Link
+              href={`/vendor/businesses/${businessId}/activity?${new URLSearchParams({ by: member.person.id, name: member.person.name })}`}
+              className={styles.link}
+            >
+              See what they did
+            </Link>
+          )}
           <button type="button" className={styles.link} data-muted onClick={() => setConfirming(true)}>
             {invited ? "Cancel this invite" : "Remove from the team"}
           </button>

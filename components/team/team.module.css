@@ -72,6 +72,18 @@ button.member:hover .name {
   white-space: nowrap;
 }
 
+/* Customers and Ruxstar in the activity list, who have no photo there. */
+.whoIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--ink-2);
+  background: var(--raised);
+  border-radius: 50%;
+}
+
 .invite {
   display: grid;
   gap: var(--space-3);

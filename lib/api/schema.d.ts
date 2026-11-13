@@ -9502,6 +9502,98 @@ export interface paths {
         };
         trace?: never;
     };
+    "/v1/vendor/businesses/{id}/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What happened at a business and who did it, newest first
+         * @description Orders moved and refunded, shop and coupon changes, posts and the team, by you, the team, customers or Ruxstar. `by` shows one person's. Customers and the Ruxstar team stay unnamed.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description Only what this person did, by user id (someone on the team, or you) */
+                    by?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** Format: date-time */
+                                at: string;
+                                who: {
+                                    /** @description `team` is someone who is or was on the team. Customers and the Ruxstar team stay unnamed. */
+                                    kind: "you" | "team" | "customer" | "ruxstar";
+                                    /** @description The user, for you and the team */
+                                    id: string | null;
+                                    /** @description "You", their name, "A customer" or "Ruxstar" */
+                                    name: string;
+                                    username: string | null;
+                                    avatar: string | null;
+                                };
+                                /** @description Such as `pod_order.status` or `business.open` */
+                                action: string;
+                                /** @description What happened, without who: "Accepted order #1042" */
+                                line: string;
+                                /** @description The order it was about, to open it */
+                                orderId: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/vendor/catalog": {
         parameters: {
             query?: never;

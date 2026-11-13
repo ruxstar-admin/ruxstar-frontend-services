@@ -1,6 +1,7 @@
 import { signedIn } from "./account";
 import { api, newIdempotencyKey, unwrap } from "./client";
 import type { paths } from "./schema";
+import type { Page } from "./social";
 
 type Data<T> = T extends { content: { "application/json": { data: infer D } } } ? D : never;
 
@@ -13,6 +14,8 @@ export type TeamPermission = PermissionInfo["key"];
 export type Work = Data<paths["/v1/employment/"]["get"]["responses"][200]>;
 export type WorkInvite = Work["invites"][number];
 export type WorkPlace = Work["places"][number];
+/** GET /v1/vendor/businesses/:id/activity: who did what, for the owner. Customers and the Ruxstar team stay unnamed. */
+export type ActivityEntry = Data<paths["/v1/vendor/businesses/{id}/activity"]["get"]["responses"][200]>[number];
 
 const team = (id: string) => ({ params: { path: { id } } });
 const member = (id: string, memberId: string) => ({ params: { path: { id, memberId } } });
@@ -36,6 +39,12 @@ export const setMemberPermissions = async (businessId: string, memberId: string,
 /** Removes a member or cancels an invite. */
 export const removeMember = async (businessId: string, memberId: string) => {
   await signedIn(() => unwrap(api.DELETE("/v1/vendor/businesses/{id}/team/{memberId}", member(businessId, memberId))));
+};
+
+/** What happened at the business, newest first; `by` is one person's (a user id). */
+export const businessActivity = async (businessId: string, by?: string, cursor?: string): Promise<Page<ActivityEntry>> => {
+  const envelope = await signedIn(() => unwrap(api.GET("/v1/vendor/businesses/{id}/activity", { params: { path: { id: businessId }, query: { by, cursor } } })));
+  return { items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null };
 };
 
 // The Work area.

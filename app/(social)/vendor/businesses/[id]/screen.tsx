@@ -190,9 +190,9 @@ function Details({
         )}
       </ul>
 
-      {b.pod && editable && (catalogRows || !team) && (
+      {(catalogRows || !team) && (
         <ul className={styles.rows}>
-          {catalogRows && (
+          {catalogRows && b.pod && (
             <>
               <SetupStep
                 href={`${home}/products`}
@@ -215,13 +215,25 @@ function Details({
               />
             </>
           )}
-          {!team && (
+          {!team && b.pod && editable && (
             <li>
               <Link href={`/vendor/businesses/${id}/team`} className={styles.row}>
                 <Icon name="users" size={20} />
                 <span className={styles.rowText}>
                   <span className={styles.rowTitle}>Team</span>
                   <span className={styles.rowLine}>Invite people to help with orders, the shop and posts</span>
+                </span>
+                <Icon name="chevron-right" size={18} />
+              </Link>
+            </li>
+          )}
+          {!team && (
+            <li>
+              <Link href={`/vendor/businesses/${id}/activity`} className={styles.row}>
+                <Icon name="clock" size={20} />
+                <span className={styles.rowText}>
+                  <span className={styles.rowTitle}>Activity</span>
+                  <span className={styles.rowLine}>Who did what: you, your team, customers and Ruxstar</span>
                 </span>
                 <Icon name="chevron-right" size={18} />
               </Link>
