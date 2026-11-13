@@ -91,6 +91,11 @@ export function Dashboard() {
                     : `${overview.reports.reports} reports in all`}
               </Tile>
             )}
+            {overview.orders && (
+              <Tile href="/admin/reports" icon="print" label="Print order problems" number={overview.orders.problems}>
+                {overview.orders.problems === 0 ? "Nothing waiting." : "Shop payouts held until you settle them"}
+              </Tile>
+            )}
             {overview.users && (
               <Tile href="/admin/users" icon="user" label="People" number={overview.users.total}>
                 {overview.users.newThisWeek} joined this week

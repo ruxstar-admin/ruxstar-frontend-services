@@ -16,6 +16,7 @@ const AREA: Record<string, string> = {
   users: "People",
   modules: "Modules",
   businesses: "Businesses",
+  orders: "Print orders",
   audit: "Audit log",
 };
 

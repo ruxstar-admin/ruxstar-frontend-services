@@ -11,6 +11,7 @@ import { Button, Icon, Segmented, Skeleton, Tag, useToast } from "@/components/u
 import { formError } from "@/lib/api/account";
 import { dismissPerson, keepPost, personQueue, removePost, reportQueue, type PersonCase, type ReportCase, type ReportStatus } from "@/lib/api/admin";
 import { ago, exact } from "@/lib/time";
+import { OrderProblemsQueue } from "./orders";
 
 const TABS: { value: ReportStatus; label: string }[] = [
   { value: "open", label: "To review" },
@@ -308,26 +309,42 @@ function PeopleQueue({ status }: { status: ReportStatus }) {
   );
 }
 
-type Subject = "posts" | "people";
+type Subject = "posts" | "people" | "orders";
 
 const SUBJECTS: { value: Subject; label: string }[] = [
   { value: "posts", label: "Posts" },
   { value: "people", label: "People" },
+  { value: "orders", label: "Orders" },
 ];
 
-export function ReportsScreen() {
-  const [subject, setSubject] = useState<Subject>("posts");
+function Reports() {
+  const canReports = useCan("reports.view");
+  const canOrders = useCan("orders.view");
+  const subjects = SUBJECTS.filter((s) => (s.value === "orders" ? canOrders : canReports));
+  const [subject, setSubject] = useState<Subject>(canReports ? "posts" : "orders");
   const [status, setStatus] = useState<ReportStatus>("open");
   return (
-    <Needs need="reports.view">
-      <div className={styles.page}>
-        <div className={styles.head}>
-          <h1 className={styles.title}>Reports</h1>
-          <Segmented label="Reported" options={SUBJECTS} value={subject} onChange={setSubject} />
-          <Segmented label="Show" options={TABS} value={status} onChange={setStatus} />
-        </div>
-        {subject === "posts" ? <Queue key={`posts-${status}`} status={status} /> : <PeopleQueue key={`people-${status}`} status={status} />}
+    <div className={styles.page}>
+      <div className={styles.head}>
+        <h1 className={styles.title}>Reports</h1>
+        {subjects.length > 1 && <Segmented label="Reported" options={subjects} value={subject} onChange={setSubject} />}
+        <Segmented label="Show" options={TABS} value={status} onChange={setStatus} />
       </div>
+      {subject === "posts" ? (
+        <Queue key={`posts-${status}`} status={status} />
+      ) : subject === "people" ? (
+        <PeopleQueue key={`people-${status}`} status={status} />
+      ) : (
+        <OrderProblemsQueue key={`orders-${status}`} status={status === "open" ? "open" : "resolved"} />
+      )}
+    </div>
+  );
+}
+
+export function ReportsScreen() {
+  return (
+    <Needs need={["reports.view", "orders.view"]}>
+      <Reports />
     </Needs>
   );
 }

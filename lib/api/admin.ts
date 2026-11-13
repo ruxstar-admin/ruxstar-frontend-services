@@ -60,6 +60,18 @@ export const personQueue = async (status: ReportStatus, cursor?: string) =>
 export const dismissPerson = async (userId: string, key = newIdempotencyKey()) =>
   (await signedIn(() => unwrap(api.POST("/v1/ruxstar/reports/people/{userId}/dismiss", { params: { path: { userId } }, ...keyed(key) })))).data;
 
+// Print order problems.
+
+export type StaffOrder = Json<"/v1/ruxstar/reports/orders/{id}", "get">["data"];
+export type ProblemStatus = NonNullable<Query<"/v1/ruxstar/reports/orders">["status"]>;
+export type SettleBody = paths["/v1/ruxstar/reports/orders/{id}/settle"]["post"]["requestBody"]["content"]["application/json"];
+
+export const orderProblems = async (status: ProblemStatus, cursor?: string) =>
+  toPage(await signedIn(() => unwrap(api.GET("/v1/ruxstar/reports/orders", { params: { query: { status, cursor } } }))));
+
+export const settleOrder = async (id: string, body: SettleBody, key = newIdempotencyKey()) =>
+  (await signedIn(() => unwrap(api.POST("/v1/ruxstar/reports/orders/{id}/settle", { params: { path: { id } }, body, ...keyed(key) })))).data;
+
 // People.
 
 export const findUsers = async (q: string, status: UserStatus | undefined, cursor?: string) =>

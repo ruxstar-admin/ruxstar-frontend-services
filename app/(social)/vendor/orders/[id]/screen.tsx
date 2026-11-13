@@ -4,16 +4,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink, Icon, Input, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
-import { FileItem, PriceList, Progress } from "@/components/shop/OrderParts";
+import { FileItem, PriceList, ProblemCard, Progress } from "@/components/shop/OrderParts";
 import { Back } from "@/components/vendor/parts";
 import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import {
   choiceLine,
   getShopOrder,
+  isClosed,
   moveShopOrder,
   nextSteps,
   quantityLine,
+  refundShopOrder,
   SHOP_STATUS_LABEL,
   shopOrderFileLink,
   STATUS_TONE,
@@ -23,7 +25,7 @@ import {
   type ShopStatus,
 } from "@/lib/api/orders";
 import { money } from "@/lib/api/shops";
-import { ago } from "@/lib/time";
+import { ago, exact } from "@/lib/time";
 import shopStyles from "@/components/shop/shop.module.css";
 import styles from "@/components/shop/order.module.css";
 import vendor from "@/components/vendor/vendor.module.css";
@@ -32,8 +34,13 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
   const [moving, setMoving] = useState<ShopStatus | null>(null);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [refundAmount, setRefundAmount] = useState("");
+  const [refundReason, setRefundReason] = useState("");
+  const [refunding, setRefunding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const keys = useRef<Partial<Record<ShopStatus, string>>>({});
+  const refundKey = useRef(newIdempotencyKey());
 
   const move = async (status: ShopStatus) => {
     setMoving(status);
@@ -64,9 +71,40 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
     }
   };
 
+  const refundPaise = Math.round(Number(refundAmount || "0") * 100);
+  const refundValid = refundPaise >= 100 && refundPaise <= order.refundable && refundReason.trim().length >= 5;
+
+  const refund = async () => {
+    setRefunding(true);
+    setError(null);
+    try {
+      const next = await refundShopOrder(order.id, refundPaise, refundReason.trim(), refundKey.current);
+      refundKey.current = newIdempotencyKey();
+      setRefundOpen(false);
+      setRefundAmount("");
+      setRefundReason("");
+      onChanged(next);
+    } catch (err) {
+      setError(formError(err).message);
+    } finally {
+      setRefunding(false);
+    }
+  };
+
   const steps = nextSteps(order.status);
-  const closed = order.status === "rejected" || order.status === "cancelled";
+  const closed = isClosed(order.status);
   const { address } = order;
+  const partials = order.refunds.filter((r) => r.kind === "partial");
+  const moneyNote =
+    order.status === "refunded"
+      ? "Ruxstar refunded the customer in full, so there is no payout for this order."
+      : order.releasedAt
+        ? `${money(order.price.payoutLeft)} is in your available balance.`
+        : order.problem?.status === "open"
+          ? "Held while Ruxstar looks into the customer’s problem."
+          : order.releaseAt
+            ? `Moves to your available balance on ${exact(order.releaseAt)}, 48 hours after delivery.`
+            : "Moves to your available balance 48 hours after you mark it delivered.";
 
   return (
     <div className={vendor.page}>
@@ -88,9 +126,28 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
       )}
       {order.status === "cancelled" && (
         <div className={styles.news}>
-          <strong>The customer cancelled</strong>
+          <strong>{order.reason ? "Cancelled" : "The customer cancelled"}</strong>
+          {order.reason && <p className={styles.small}>{order.reason}</p>}
           <p className={styles.small}>They were refunded in full. Nothing to make.</p>
         </div>
+      )}
+      {order.status === "refunded" && (
+        <div className={styles.news}>
+          <strong>Ruxstar refunded this order</strong>
+          {order.reason && <p className={styles.small}>{order.reason}</p>}
+        </div>
+      )}
+      {order.status === "placed" && order.acceptBy && (
+        <div className={styles.news}>
+          <strong>{`Accept by ${exact(order.acceptBy)}`}</strong>
+          <p className={styles.small}>After that it is cancelled and the customer is refunded.</p>
+        </div>
+      )}
+      {order.problem && (
+        <section className={styles.section}>
+          <h2 className={styles.overline}>Customer reported a problem</h2>
+          <ProblemCard problem={order.problem} forShop />
+        </section>
       )}
       {error && (
         <p className={styles.error} role="alert">
@@ -169,13 +226,49 @@ function ShopOrderDetails({ order, onChanged }: { order: ShopOrder; onChanged: (
             after={[
               ...(order.price.platformFee ? [{ label: "Platform fee, to Ruxstar", amount: order.price.platformFee, negative: true }] : []),
               { label: `Ruxstar commission, ${order.price.commissionBps / 100}%`, amount: order.price.commission, negative: true },
-              { label: "You get", amount: order.price.payout },
+              ...partials.map((r) => ({ label: `Refunded: ${r.reason ?? "partial refund"}`, amount: r.amount, negative: true })),
+              { label: "You get", amount: order.price.payoutLeft },
             ]}
           />
-          <p className={styles.faint}>
-            {order.status === "delivered" ? `${money(order.price.payout)} is in your available balance.` : "Moves to your available balance when you mark it delivered."}
-          </p>
+          <p className={styles.faint}>{moneyNote}</p>
+          {order.refundable >= 100 && !refundOpen && (
+            <div className={styles.actions}>
+              <Button variant="ghost" onClick={() => setRefundOpen(true)}>
+                Refund part of this order
+              </Button>
+            </div>
+          )}
         </div>
+        {refundOpen && (
+          <div className={styles.news}>
+            <strong>Refund part of this order</strong>
+            <p className={styles.small}>{`It comes out of your share, up to ${money(order.refundable)}. The customer sees your reason and the order carries on.`}</p>
+            <Input
+              label="Amount"
+              prefix="₹"
+              inputMode="decimal"
+              value={refundAmount}
+              onChange={(e) => setRefundAmount(e.target.value.replace(/[^0-9.]/g, "").replace(/(\.\d{0,2}).*$/, "$1"))}
+              placeholder="250"
+              error={refundPaise > order.refundable ? `At most ${money(order.refundable)}.` : undefined}
+            />
+            <Input
+              label="Reason"
+              value={refundReason}
+              onChange={(e) => setRefundReason(e.target.value)}
+              maxLength={300}
+              placeholder="For example: 2 of the 12 shirts couldn't be printed"
+            />
+            <div className={styles.actions}>
+              <Button loading={refunding} disabled={!refundValid} onClick={() => void refund()}>
+                {refundPaise >= 100 ? `Refund ${money(refundPaise)}` : "Refund"}
+              </Button>
+              <Button variant="ghost" disabled={refunding} onClick={() => setRefundOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -6847,7 +6847,7 @@ export interface paths {
         };
         /**
          * Your balance, payout account and latest payouts
-         * @description Pending is your share of paid orders not delivered yet; it becomes available on delivery.
+         * @description Pending is your share of paid orders, less partial refunds. It becomes available 48 hours after delivery, or once Ruxstar settles a problem the customer reported.
          */
         get: {
             parameters: {
@@ -6874,6 +6874,18 @@ export interface paths {
                                     /** @description Amount in paise */
                                     paidOut: number;
                                 };
+                                /** @description Delivered orders whose share is still on hold, soonest first, up to 20 */
+                                upcoming: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    orderId: string;
+                                    orderNo: number;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    availableAt: string;
+                                    /** @description The customer reported a problem; it waits for Ruxstar */
+                                    held: boolean;
+                                }[];
                                 payoutMethod: {
                                     kind: "bank" | "upi";
                                     /** @description For example YES BANK ••1191, or asha@upi */
@@ -7135,21 +7147,60 @@ export interface paths {
                                     pincode: string;
                                 };
                                 note: string | null;
-                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                 timeline: {
-                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                     /** Format: date-time */
                                     at: string;
                                 }[];
                                 paidAt: string | null;
-                                refund: {
+                                /** @description Oldest first */
+                                refunds: {
                                     /** @description Amount in paise */
                                     amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
                                     status: "pending" | "done";
-                                } | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
                                 reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -7172,7 +7223,14 @@ export interface paths {
                                     commission: number;
                                     /** @description Amount in paise */
                                     payout: number;
+                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    payoutLeft: number;
                                 };
+                                /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
+                                refundable: number;
                             }[];
                             meta: {
                                 requestId: string;
@@ -7273,21 +7331,60 @@ export interface paths {
                                     pincode: string;
                                 };
                                 note: string | null;
-                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                 timeline: {
-                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                     /** Format: date-time */
                                     at: string;
                                 }[];
                                 paidAt: string | null;
-                                refund: {
+                                /** @description Oldest first */
+                                refunds: {
                                     /** @description Amount in paise */
                                     amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
                                     status: "pending" | "done";
-                                } | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
                                 reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -7310,7 +7407,14 @@ export interface paths {
                                     commission: number;
                                     /** @description Amount in paise */
                                     payout: number;
+                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    payoutLeft: number;
                                 };
+                                /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
+                                refundable: number;
                             };
                             meta: {
                                 requestId: string;
@@ -7357,7 +7461,7 @@ export interface paths {
         put?: never;
         /**
          * Accept or turn down a new order, or move it on
-         * @description A new order is accepted or turned down (with a reason; the customer is refunded in full). After that it moves through printing, ready, out for delivery and delivered; steps can be skipped. On delivery your share moves to your available balance.
+         * @description A new order is accepted or turned down (with a reason; the customer is refunded in full). One not accepted within 6 hours of payment is cancelled and refunded. After that it moves through printing, ready, out for delivery and delivered; steps can be skipped. Your share becomes available 48 hours after delivery, unless the customer reports a problem first.
          */
         post: {
             parameters: {
@@ -7423,21 +7527,60 @@ export interface paths {
                                     pincode: string;
                                 };
                                 note: string | null;
-                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                 timeline: {
-                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                     /** Format: date-time */
                                     at: string;
                                 }[];
                                 paidAt: string | null;
-                                refund: {
+                                /** @description Oldest first */
+                                refunds: {
                                     /** @description Amount in paise */
                                     amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
                                     status: "pending" | "done";
-                                } | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
                                 reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -7460,7 +7603,209 @@ export interface paths {
                                     commission: number;
                                     /** @description Amount in paise */
                                     payout: number;
+                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    payoutLeft: number;
                                 };
+                                /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
+                                refundable: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/orders/{id}/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refund part of an order
+         * @description For when part of an order can't be made, or to put something right. It comes out of your share, up to `refundable`, and the order carries on. Not possible once your share is released.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Amount in paise, at least ₹1 */
+                        amount: number;
+                        /** @description The customer sees it */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    commissionBps: number;
+                                    /** @description Amount in paise */
+                                    commission: number;
+                                    /** @description Amount in paise */
+                                    payout: number;
+                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    payoutLeft: number;
+                                };
+                                /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
+                                refundable: number;
                             };
                             meta: {
                                 requestId: string;
@@ -9578,21 +9923,60 @@ export interface paths {
                                     pincode: string;
                                 };
                                 note: string | null;
-                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                 timeline: {
-                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                     /** Format: date-time */
                                     at: string;
                                 }[];
                                 paidAt: string | null;
-                                refund: {
+                                /** @description Oldest first */
+                                refunds: {
                                     /** @description Amount in paise */
                                     amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
                                     status: "pending" | "done";
-                                } | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
                                 reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -9729,21 +10113,60 @@ export interface paths {
                                         pincode: string;
                                     };
                                     note: string | null;
-                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                     timeline: {
-                                        /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                        status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                        /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                        status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                         /** Format: date-time */
                                         at: string;
                                     }[];
                                     paidAt: string | null;
-                                    refund: {
+                                    /** @description Oldest first */
+                                    refunds: {
                                         /** @description Amount in paise */
                                         amount: number;
+                                        /** @description Partial refunds come out of the shop's share */
+                                        kind: "full" | "partial";
+                                        reason: string | null;
                                         status: "pending" | "done";
-                                    } | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    refunded: number;
                                     reason: string | null;
+                                    /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                    acceptBy: string | null;
+                                    /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                    readyBy: string | null;
+                                    deliveredAt: string | null;
+                                    /** @description The customer can report a problem now */
+                                    canReport: boolean;
+                                    /** @description The last moment to report a problem after delivery */
+                                    reportUntil: string | null;
+                                    problem: {
+                                        kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                        note: string;
+                                        photos: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            /** @description Opens the photo without signing in; works for 10 minutes */
+                                            url: string;
+                                        }[];
+                                        status: "open" | "resolved";
+                                        /** Format: date-time */
+                                        reportedAt: string;
+                                        resolution: {
+                                            outcome: "refunded" | "partial" | "dismissed";
+                                            /** @description Amount in paise */
+                                            amount: number;
+                                            /** @description Ruxstar's answer, shown to the customer and the shop */
+                                            note: string;
+                                            /** Format: date-time */
+                                            at: string;
+                                        } | null;
+                                    } | null;
                                     /** Format: date-time */
                                     createdAt: string;
                                     /** Format: date-time */
@@ -9936,21 +10359,60 @@ export interface paths {
                                     pincode: string;
                                 };
                                 note: string | null;
-                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                 timeline: {
-                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                     /** Format: date-time */
                                     at: string;
                                 }[];
                                 paidAt: string | null;
-                                refund: {
+                                /** @description Oldest first */
+                                refunds: {
                                     /** @description Amount in paise */
                                     amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
                                     status: "pending" | "done";
-                                } | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
                                 reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -10073,21 +10535,60 @@ export interface paths {
                                     pincode: string;
                                 };
                                 note: string | null;
-                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                 timeline: {
-                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded */
-                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled";
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
                                     /** Format: date-time */
                                     at: string;
                                 }[];
                                 paidAt: string | null;
-                                refund: {
+                                /** @description Oldest first */
+                                refunds: {
                                     /** @description Amount in paise */
                                     amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
                                     status: "pending" | "done";
-                                } | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
                                 reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -10202,6 +10703,362 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/orders/{id}/problem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report a problem with an order
+         * @description Within 48 hours of delivery, or any time after the ready date while it hasn't arrived. One report per order; add photos after. The shop sees it, its share is held, and Ruxstar settles it with a refund or an answer.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                        /** @description What went wrong */
+                        note: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pod/orders/{id}/problem/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a photo to your problem report
+         * @description Send a JPEG, PNG or WebP up to 8 MB as the body, with its Content-Type. Up to 3 photos, while Ruxstar hasn't settled it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -10485,10 +11342,10 @@ export interface paths {
                                 /** @description Admins have every permission and manage staff */
                                 admin: boolean;
                                 title: string | null;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
                                 /** @description Every permission staff can be given */
                                 catalog: {
-                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view";
+                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view";
                                     label: string;
                                 }[];
                             };
@@ -10578,6 +11435,10 @@ export interface paths {
                                     module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
                                     live: boolean;
                                 }[] | null;
+                                orders: {
+                                    /** @description Order problems waiting for a decision */
+                                    problems: number;
+                                } | null;
                                 staff: {
                                     active: number;
                                 } | null;
@@ -11537,6 +12398,608 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/reports/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Print orders with a reported problem
+         * @description `open` waits for a decision, and holds the shop's share. `resolved` is settled. Both newest report first.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description `open` (the default) waits for Ruxstar, newest report first */
+                    status?: "open" | "resolved";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    commissionBps: number;
+                                    /** @description Amount in paise */
+                                    commission: number;
+                                    /** @description Amount in paise */
+                                    payout: number;
+                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    payoutLeft: number;
+                                };
+                                /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
+                                refundable: number;
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                };
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/reports/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One order with a reported problem */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    commissionBps: number;
+                                    /** @description Amount in paise */
+                                    commission: number;
+                                    /** @description Amount in paise */
+                                    payout: number;
+                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    payoutLeft: number;
+                                };
+                                /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
+                                refundable: number;
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                };
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/reports/orders/{id}/settle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Settle a reported problem
+         * @description `refund_full` refunds what is left of the order and ends it as refunded. `refund_partial` refunds `amount` from the shop's share and the order carries on. `dismiss` answers without a refund. Either way the shop's share is released once its hold is over. Refunds aren't possible once the share is released.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description `refund_full` refunds what is left of the order and ends it; `refund_partial` takes `amount` from the shop's share */
+                        outcome: "refund_full" | "refund_partial" | "dismiss";
+                        /** @description Amount in paise, at least ₹1 */
+                        amount?: number;
+                        /** @description Shown to the customer and the shop */
+                        note: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    commissionBps: number;
+                                    /** @description Amount in paise */
+                                    commission: number;
+                                    /** @description Amount in paise */
+                                    payout: number;
+                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    payoutLeft: number;
+                                };
+                                /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
+                                refundable: number;
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                };
+                                vendor: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/users": {
         parameters: {
             query?: never;
@@ -11697,7 +13160,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -11819,7 +13282,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -11929,7 +13392,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -12039,7 +13502,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -12109,7 +13572,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -12178,7 +13641,7 @@ export interface paths {
                     "application/json": {
                         /** @description For example Support lead */
                         title: string;
-                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
+                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
                     };
                 };
             };
@@ -12200,7 +13663,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -12267,7 +13730,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -13291,7 +14754,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "ORDER_STATE" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "ORDER_STATE" | "REPORT_CLOSED" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
                 message: string;
                 details: ({
                     path?: string;

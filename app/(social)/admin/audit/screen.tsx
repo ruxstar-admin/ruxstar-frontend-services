@@ -31,6 +31,10 @@ const ACTIONS: Record<string, string> = {
   "business.suspend": "Put a business on hold",
   "business.restore": "Lifted a hold on a business",
   "payout_method.set": "Set where they get paid",
+  "pod_order.status": "Moved a print order on",
+  "pod_order.problem": "Reported a problem with a print order",
+  "pod_order.refund": "Refunded part of a print order",
+  "pod_order.settle": "Settled a print order problem",
 };
 
 const MODULES: { value: string; label: string }[] = [

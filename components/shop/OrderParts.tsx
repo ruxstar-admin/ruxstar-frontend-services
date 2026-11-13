@@ -2,7 +2,20 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon, Tag } from "@/components/ui";
 import { ago, exact } from "@/lib/time";
-import { fileSize, priceLines, progressOf, STATUS_TONE, type Order, type OrderStatus, type PrintFile, type Quote } from "@/lib/api/orders";
+import {
+  fileSize,
+  priceLines,
+  PROBLEM_LABEL,
+  PROBLEM_PHOTOS_MAX,
+  progressOf,
+  resolutionLine,
+  STATUS_TONE,
+  type Order,
+  type OrderProblem,
+  type OrderStatus,
+  type PrintFile,
+  type Quote,
+} from "@/lib/api/orders";
 import { money } from "@/lib/api/shops";
 import styles from "./order.module.css";
 
@@ -73,6 +86,50 @@ export function Progress({ order }: { order: Pick<Order, "status" | "timeline"> 
         </li>
       ))}
     </ol>
+  );
+}
+
+/** A reported problem: what went wrong, the photos, and what Ruxstar decided. Photos are added by picking a file while it is open. */
+export function ProblemCard({ problem, forShop = false, onAddPhoto, adding }: { problem: OrderProblem; forShop?: boolean; onAddPhoto?: (file: File) => void; adding?: boolean }) {
+  const open = problem.status === "open";
+  const room = open && problem.photos.length < PROBLEM_PHOTOS_MAX && !!onAddPhoto;
+  return (
+    <div className={styles.problem}>
+      <div className={styles.problemHead}>
+        <strong>{PROBLEM_LABEL[problem.kind]}</strong>
+        <Tag tone={open ? "warning" : "success"}>{open ? "With Ruxstar" : "Settled"}</Tag>
+      </div>
+      <time className={styles.faint} dateTime={problem.reportedAt} title={exact(problem.reportedAt)}>
+        {`Reported ${ago(problem.reportedAt)}`}
+      </time>
+      <p>{problem.note}</p>
+      {(problem.photos.length > 0 || room) && (
+        <div className={styles.photos}>
+          {problem.photos.map((photo, i) => (
+            <a key={photo.id} href={photo.url} target="_blank" rel="noreferrer" className={styles.photo}>
+              <img src={photo.url} alt={`Photo ${i + 1}`} />
+            </a>
+          ))}
+          {room && (
+            <label className={styles.addPhoto} data-busy={adding ? true : undefined}>
+              <Icon name="camera" size={20} />
+              <span className={styles.faint}>{adding ? "Adding…" : "Add photo"}</span>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={adding}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (file) onAddPhoto(file);
+                }}
+              />
+            </label>
+          )}
+        </div>
+      )}
+      <p className={open ? styles.small : undefined}>{resolutionLine(problem, forShop)}</p>
+    </div>
   );
 }
 

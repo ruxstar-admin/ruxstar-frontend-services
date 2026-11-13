@@ -9,13 +9,13 @@ import { formError } from "@/lib/api/account";
 import { getAccess, type Access, type Permission } from "@/lib/api/admin";
 import styles from "./console.module.css";
 
-/** `"admin"` sections are for admins only; the rest need the permission named. */
-type Need = Permission | "admin" | null;
+/** `"admin"` sections are for admins only; the rest need the permission named, or any one of a list. */
+type Need = Permission | "admin" | null | readonly Permission[];
 
 const SECTIONS: { href: string; label: string; icon: IconName; need: Need }[] = [
   { href: "/admin", label: "Dashboard", icon: "grid", need: null },
   { href: "/admin/kyc", label: "Verification", icon: "verified", need: "kyc.view" },
-  { href: "/admin/reports", label: "Reports", icon: "flag", need: "reports.view" },
+  { href: "/admin/reports", label: "Reports", icon: "flag", need: ["reports.view", "orders.view"] },
   { href: "/admin/users", label: "People", icon: "user", need: "users.view" },
   { href: "/admin/staff", label: "Staff", icon: "shield", need: "admin" },
   { href: "/admin/businesses", label: "Businesses", icon: "store", need: "businesses.view" },
@@ -25,7 +25,10 @@ const SECTIONS: { href: string; label: string; icon: IconName; need: Need }[] = 
 
 const AccessContext = createContext<Access | null>(null);
 
-export const allows = (access: Access, need: Need) => need === null || access.admin || (need !== "admin" && access.permissions.includes(need));
+export const allows = (access: Access, need: Need): boolean =>
+  need === null ||
+  access.admin ||
+  (typeof need === "string" ? need !== "admin" && access.permissions.includes(need) : need.some((p) => access.permissions.includes(p)));
 
 /** What the signed-in person may do in the console. Only inside `AdminFrame`. */
 export function useAccess(): Access {

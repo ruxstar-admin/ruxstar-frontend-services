@@ -9,7 +9,7 @@ import { formError } from "@/lib/api/account";
 import { ApiError } from "@/lib/api/client";
 import { money } from "@/lib/api/shops";
 import { digitsOnly, setPayoutMethod, vendorPayments, type PayoutMethod } from "@/lib/api/vendor";
-import { ago } from "@/lib/time";
+import { ago, exact } from "@/lib/time";
 import styles from "@/components/vendor/vendor.module.css";
 
 const KINDS = [
@@ -171,8 +171,25 @@ export function PaymentsScreen() {
             <dd>{money(data.balance.paidOut)}</dd>
           </div>
         </dl>
-        <p className={styles.faint}>Your balance fills in once your businesses take orders and bookings.</p>
+        <p className={styles.faint}>Pending is your share of paid orders. It becomes available 48 hours after delivery, or once Ruxstar settles a problem a customer reported.</p>
       </div>
+
+      {data.upcoming.length > 0 && (
+        <>
+          <h2 className={styles.overline}>Coming up</h2>
+          <ul className={`${styles.card} ${styles.payouts}`}>
+            {data.upcoming.map((u) => (
+              <li key={u.orderId}>
+                <span className={styles.identity}>
+                  <strong>{money(u.amount)}</strong>
+                  <span className={styles.muted}>{u.held ? `Order #${u.orderNo} · held for a reported problem` : `Order #${u.orderNo} · available ${exact(u.availableAt)}`}</span>
+                </span>
+                <Tag tone={u.held ? "warning" : "neutral"}>{u.held ? "Held" : "Waiting"}</Tag>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       <h2 className={styles.overline}>Where you get paid</h2>
       {data.payoutMethod && !changing ? (
