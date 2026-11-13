@@ -172,7 +172,11 @@
   align-items: flex-start;
   gap: 2px;
   max-width: 78%;
-  animation: fade var(--dur-quick) var(--ease-out) both;
+}
+
+.line[data-fresh],
+.event[data-fresh] {
+  animation: slide-in var(--dur-base) var(--ease-out) both;
 }
 
 .line[data-mine] {
@@ -180,21 +184,57 @@
   align-items: flex-end;
 }
 
-.line[data-gap] {
+/* A new run from someone else starts a little lower; a time line above already spaces it. */
+.line:is([data-pos="single"], [data-pos="first"]):not(.stamp + .line) {
   margin-top: var(--space-2);
 }
 
 .sender {
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-3) 0 calc(28px + var(--space-2) + var(--space-3));
   font: 600 12px/16px var(--font);
   color: var(--ink-2);
 }
 
 .bubbleRow {
   display: flex;
-  align-items: center;
-  gap: var(--space-1);
+  align-items: flex-end;
+  gap: var(--space-2);
   max-width: 100%;
+}
+
+.lineAvatar {
+  flex: none;
+  width: 28px;
+}
+
+.hold {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (pointer: coarse) {
+  .hold {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+}
+
+/* Bubbles in a run join on the sender's side. */
+.line:not([data-mine]):is([data-pos="first"], [data-pos="middle"]) :is(.bubble, .photo) {
+  border-bottom-left-radius: 6px;
+}
+
+.line:not([data-mine]):is([data-pos="middle"], [data-pos="last"]) :is(.bubble, .photo) {
+  border-top-left-radius: 6px;
+}
+
+.line[data-mine]:is([data-pos="first"], [data-pos="middle"]) :is(.bubble, .photo) {
+  border-bottom-right-radius: 6px;
+}
+
+.line[data-mine]:is([data-pos="middle"], [data-pos="last"]) :is(.bubble, .photo) {
+  border-top-right-radius: 6px;
 }
 
 .line[data-mine] .bubbleRow {
@@ -234,14 +274,27 @@
   display: block;
   overflow: hidden;
   max-width: min(320px, 100%);
+  padding: 0;
   background: var(--raised);
+  border: 0;
   border-radius: 18px;
+}
+
+button.photo {
+  cursor: zoom-in;
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+button.photo:active {
+  transform: scale(var(--press-scale));
 }
 
 .photo img {
   display: block;
   width: 100%;
   height: auto;
+  max-height: 420px;
+  object-fit: cover;
 }
 
 .post {
@@ -293,6 +346,7 @@ a.post:hover {
 .lineAction {
   display: inline-grid;
   flex: none;
+  align-self: center;
   place-items: center;
   width: 36px;
   height: 36px;
@@ -311,13 +365,14 @@ a.post:hover {
 }
 
 .lineAction:hover {
-  color: var(--danger);
+  color: var(--ink);
   background: var(--surface);
 }
 
+/* Touch screens hold the message instead. */
 @media (hover: none) {
   .lineAction {
-    opacity: 1;
+    display: none;
   }
 }
 
@@ -334,17 +389,6 @@ a.post:hover {
   background: none;
   border: 0;
   cursor: pointer;
-}
-
-.confirm {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-2);
-  padding: var(--space-2) 0;
-  font: var(--type-small);
-  color: var(--ink-2);
 }
 
 .foot {
@@ -382,56 +426,136 @@ a.post:hover {
   border-radius: var(--radius-control);
 }
 
+/* One pill, as in the app: camera, the text, then gallery or send. */
 .composer {
   display: flex;
   align-items: flex-end;
   gap: var(--space-2);
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: 26px;
+  transition: border-color var(--dur-quick) var(--ease-out);
+}
+
+.composer:focus-within {
+  border-color: var(--ink-3);
 }
 
 .composerInput {
   flex: 1;
-  min-height: 44px;
+  min-height: 36px;
   max-height: 160px;
-  padding: 10px var(--space-4);
+  padding: 6px var(--space-2);
   font: var(--type-body);
   color: var(--ink);
-  background: var(--surface);
-  border: 1px solid transparent;
-  border-radius: 22px;
+  background: none;
+  border: 0;
   outline: none;
   resize: none;
-}
-
-.composerInput:focus {
-  border-color: var(--ink-3);
 }
 
 .composerInput::placeholder {
   color: var(--ink-3);
 }
 
+.cameraButton,
+.composerIcon,
 .sendButton {
   display: inline-grid;
   flex: none;
   place-items: center;
-  width: var(--size-touch);
-  height: var(--size-touch);
-  color: var(--on-action);
-  background: var(--action);
+  width: 36px;
+  height: 36px;
   border: 0;
   border-radius: 50%;
   cursor: pointer;
   transition: transform var(--dur-press) var(--ease-out);
 }
 
-.sendButton:active:not(:disabled) {
+.cameraButton {
+  color: #fff;
+  background: var(--accent-deep);
+}
+
+.composerIcon {
+  color: var(--ink);
+  background: none;
+}
+
+.composerIcon:hover {
+  background: var(--raised);
+}
+
+.sendButton {
+  color: var(--on-action);
+  background: var(--action);
+  animation: pop var(--dur-quick) var(--ease-out);
+}
+
+:is(.cameraButton, .composerIcon, .sendButton):active {
   transform: scale(0.92);
 }
 
-.sendButton:disabled {
-  color: var(--disabled-ink);
-  background: var(--disabled);
-  cursor: not-allowed;
+/* Computers have no camera to hand; the gallery button covers it. */
+@media (pointer: fine) {
+  .cameraButton {
+    display: none;
+  }
+
+  .composerInput {
+    padding-left: var(--space-3);
+  }
+}
+
+/* Message menu */
+.menu {
+  width: min(360px, calc(100vw - 32px));
+}
+
+.menuBody {
+  display: grid;
+  padding: var(--space-3);
+}
+
+.menuTitle {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  font: var(--type-caption);
+  color: var(--ink-3);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 52px;
+  padding: var(--space-2) var(--space-3);
+  font: 600 15px/20px var(--font);
+  text-align: left;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.menuItem:hover,
+.menuItem:focus-visible {
+  background: var(--surface);
+}
+
+.menuItem[data-danger] {
+  color: var(--danger);
+}
+
+.menuText {
+  display: grid;
+  gap: 2px;
+}
+
+.menuHint {
+  font: var(--type-caption);
+  color: var(--ink-3);
 }
 
 .charCount {
@@ -657,9 +781,17 @@ a.post:hover {
   outline: none;
 }
 
-@keyframes fade {
+@keyframes slide-in {
   from {
     opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
   }
 }
 
@@ -671,7 +803,9 @@ a.post:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .line,
+  .line[data-fresh],
+  .event[data-fresh],
+  .sendButton,
   .dialog[open] {
     animation: none;
   }

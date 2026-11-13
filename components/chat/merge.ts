@@ -20,8 +20,9 @@ export const mergeOlder = (current: ShownMessage[], olderNewestFirst: Message[])
 
 /** Swaps a message you sent for the server's copy, dropping it if a poll already brought that copy. */
 export const confirmSent = (current: ShownMessage[], tempId: string, saved: Message): ShownMessage[] => {
+  const temp = current.find((m) => m.id === tempId);
   const rest = current.filter((m) => m.id !== tempId);
-  return rest.some((m) => m.id === saved.id) ? rest : [...rest, saved];
+  return rest.some((m) => m.id === saved.id) ? rest : [...rest, { ...saved, key: temp?.key }];
 };
 
 export const dropUnsent = (current: ShownMessage[], ids: string[]): ShownMessage[] => {

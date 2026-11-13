@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent, type PointerEvent } from "react";
 import { ChatAvatar } from "@/components/chat/ChatAvatar";
 import { seenMessageId } from "@/components/chat/merge";
+import { MessageMenu } from "@/components/chat/MessageMenu";
+import { layoutThread, type ThreadRow } from "@/components/chat/thread-layout";
 import { useThread } from "@/components/chat/use-thread";
 import { Avatar } from "@/components/profile/Avatar";
+import { Lightbox } from "@/components/social/Lightbox";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, Icon, Skeleton, useToast } from "@/components/ui";
@@ -16,16 +19,53 @@ import { exact } from "@/lib/time";
 import styles from "@/components/chat/chat.module.css";
 import social from "@/components/social/social.module.css";
 
-/** A new time line shows after a quiet spell this long. */
-const STAMP_GAP_MS = 15 * 60_000;
 const NEAR_BOTTOM_PX = 240;
+/** Holding a message this long on a touch screen opens its menu, as in the app. */
+const HOLD_MS = 450;
+const HOLD_SLOP_PX = 10;
+const AVATAR = 28;
 
-const time = new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
-const dayTime = new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
-const stampOf = (iso: string) => {
-  const at = new Date(iso);
-  return at.toDateString() === new Date().toDateString() ? time.format(at) : dayTime.format(at);
-};
+/** Touch-and-hold for touch screens; mouse users right-click or use the ⋯ button. */
+function useHold(onHold: () => void) {
+  const timer = useRef<number | null>(null);
+  const start = useRef({ x: 0, y: 0 });
+  const held = useRef(false);
+  const cancel = () => {
+    if (timer.current !== null) window.clearTimeout(timer.current);
+    timer.current = null;
+  };
+  useEffect(() => cancel, []);
+  return {
+    onPointerDown: (e: PointerEvent) => {
+      held.current = false;
+      if (e.pointerType === "mouse") return;
+      start.current = { x: e.clientX, y: e.clientY };
+      cancel();
+      timer.current = window.setTimeout(() => {
+        held.current = true;
+        navigator.vibrate?.(10);
+        onHold();
+      }, HOLD_MS);
+    },
+    onPointerMove: (e: PointerEvent) => {
+      if (Math.hypot(e.clientX - start.current.x, e.clientY - start.current.y) > HOLD_SLOP_PX) cancel();
+    },
+    onPointerUp: cancel,
+    onPointerCancel: cancel,
+    onContextMenu: (e: MouseEvent) => {
+      e.preventDefault();
+      cancel();
+      if (!held.current) onHold();
+    },
+    /** A tap that ended a hold mustn't also open the photo or post. */
+    onClickCapture: (e: MouseEvent) => {
+      if (!held.current) return;
+      e.preventDefault();
+      e.stopPropagation();
+      held.current = false;
+    },
+  };
+}
 
 const nearBottom = () => window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - NEAR_BOTTOM_PX;
 const toBottom = () => window.scrollTo({ top: document.documentElement.scrollHeight });
@@ -35,17 +75,17 @@ const noticeOf = (chat: ChatDetail) => {
   return chat.waiting ? `You can send more once ${chat.title} accepts your request.` : "You can't message this account.";
 };
 
-function Content({ message }: { message: ShownMessage }) {
+function Content({ message, onOpenPhoto }: { message: ShownMessage; onOpenPhoto: () => void }) {
   if (message.kind === "photo") {
     const photo = message.upload ?? message.photo;
     if (!photo) return null;
-    const img = <img src={photo.url} width={photo.width} height={photo.height} alt="Photo" loading="lazy" decoding="async" />;
+    const img = <img src={photo.url} width={photo.width} height={photo.height} alt="Photo" loading="lazy" decoding="async" draggable={false} />;
     return message.upload ? (
       <span className={styles.photo}>{img}</span>
     ) : (
-      <a href={photo.url} target="_blank" rel="noreferrer" className={styles.photo}>
+      <button type="button" className={styles.photo} aria-label="Photo. Opens full screen" onClick={onOpenPhoto}>
         {img}
-      </a>
+      </button>
     );
   }
   if (message.kind === "post") {
@@ -69,7 +109,13 @@ function Composer({ onSend, onPhoto }: { onSend: (text: string) => void; onPhoto
   const [text, setText] = useState("");
   const input = useRef<HTMLTextAreaElement>(null);
   const file = useRef<HTMLInputElement>(null);
+  const camera = useRef<HTMLInputElement>(null);
   const trimmed = text.trim();
+  const chosen = (e: ChangeEvent<HTMLInputElement>) => {
+    const picked = e.target.files?.[0];
+    e.target.value = "";
+    if (picked) onPhoto(picked);
+  };
 
   useLayoutEffect(() => {
     const el = input.current;
@@ -95,50 +141,96 @@ function Composer({ onSend, onPhoto }: { onSend: (text: string) => void; onPhoto
   return (
     <>
       <div className={styles.composer}>
-        <button type="button" className={styles.iconButton} aria-label="Send a photo" onClick={() => file.current?.click()}>
-          <Icon name="image" size={22} />
+        <button type="button" className={styles.cameraButton} aria-label="Take a photo" onClick={() => camera.current?.click()}>
+          <Icon name="camera" size={18} />
         </button>
-        <input
-          ref={file}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          hidden
-          onChange={(e) => {
-            const chosen = e.target.files?.[0];
-            e.target.value = "";
-            if (chosen) onPhoto(chosen);
-          }}
-        />
+        <input ref={camera} type="file" accept="image/*" capture="environment" hidden onChange={chosen} />
+        <input ref={file} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={chosen} />
         <textarea
           ref={input}
           className={styles.composerInput}
           value={text}
           maxLength={MESSAGE_TEXT_MAX}
           rows={1}
-          placeholder="Message"
+          placeholder="Message…"
           aria-label="Message"
           onChange={(e) => setText(e.target.value)}
           onKeyDown={onKeyDown}
           autoFocus
         />
-        <button type="button" className={styles.sendButton} aria-label="Send" disabled={!trimmed} onClick={send}>
-          <Icon name="send" size={20} />
-        </button>
+        {trimmed ? (
+          <button type="button" key="send" className={styles.sendButton} aria-label="Send" onClick={send}>
+            <Icon name="send" size={18} />
+          </button>
+        ) : (
+          <button type="button" key="photo" className={styles.composerIcon} aria-label="Send a photo from your device" onClick={() => file.current?.click()}>
+            <Icon name="image" size={22} />
+          </button>
+        )}
       </div>
       {text.length > MESSAGE_TEXT_MAX - 100 && <p className={styles.charCount}>{`${text.length}/${MESSAGE_TEXT_MAX}`}</p>}
     </>
   );
 }
 
-/** A chat: newest at the bottom, polled every 3 seconds. Your own messages can be unsent for everyone. */
+interface LineProps {
+  row: ThreadRow;
+  isGroup: boolean;
+  seen: boolean;
+  fresh: boolean;
+  onMenu: (message: ShownMessage) => void;
+  onOpenPhoto: (message: ShownMessage) => void;
+  onRetry: (message: ShownMessage) => void;
+}
+
+/** One message: bubbles in a run join up on the sender's side, and others' runs end with their photo, as in the app. */
+function Line({ row, isGroup, seen, fresh, onMenu, onOpenPhoto, onRetry }: LineProps) {
+  const { message: m, position } = row;
+  const pending = !!m.sendState;
+  const hold = useHold(() => !pending && onMenu(m));
+  const opensRun = position === "single" || position === "first";
+  const closesRun = position === "single" || position === "last";
+
+  return (
+    <li className={styles.line} data-mine={m.mine || undefined} data-pos={position} data-fresh={fresh || undefined} data-state={m.sendState}>
+      {isGroup && !m.mine && opensRun && m.sender && <span className={styles.sender}>{m.sender.name}</span>}
+      <span className={styles.bubbleRow} title={exact(m.createdAt)}>
+        {!m.mine && <span className={styles.lineAvatar}>{closesRun && m.sender && <Avatar name={m.sender.name} url={m.sender.avatarUrl} size={AVATAR} />}</span>}
+        <span className={styles.hold} {...hold}>
+          <Content message={m} onOpenPhoto={() => onOpenPhoto(m)} />
+        </span>
+        {!pending && (
+          <button type="button" className={styles.lineAction} aria-label="Message options" onClick={() => onMenu(m)}>
+            <Icon name="more" size={18} />
+          </button>
+        )}
+      </span>
+      {m.sendState === "failed" && (
+        <button type="button" className={styles.retry} onClick={() => onRetry(m)}>
+          Not sent. Retry
+        </button>
+      )}
+      {seen && <span className={styles.note}>Seen</span>}
+    </li>
+  );
+}
+
+/** A chat: newest at the bottom, polled every 3 seconds. Tap a photo to see it full screen; hold, right-click or ⋯ for a message's menu. */
 export function ThreadScreen({ id }: { id: string }) {
   const router = useRouter();
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
   const thread = useThread(id);
   const { chat, messages } = thread;
-  const [confirming, setConfirming] = useState<string | null>(null);
+  const [menuFor, setMenuFor] = useState<ShownMessage | null>(null);
+  const [viewing, setViewing] = useState<number | null>(null);
   const [deciding, setDeciding] = useState<"accept" | "decline" | null>(null);
+  // Messages newer than what was there when the chat opened slide in; the history doesn't.
+  const [openedWith, setOpenedWith] = useState<string | null>(null);
+  if (openedWith === null && !thread.loading) setOpenedWith(messages.at(-1)?.createdAt ?? "");
+  const rows = useMemo(() => layoutThread(messages), [messages]);
+  const withPhotos = useMemo(() => messages.filter((m) => m.photo), [messages]);
+  const photos = useMemo(() => withPhotos.map((m) => ({ ...m.photo!, smaller: [] })), [withPhotos]);
   const firstScroll = useRef(true);
   const lastId = useRef<string | null>(null);
   const keepFrom = useRef<number | null>(null);
@@ -218,6 +310,7 @@ export function ThreadScreen({ id }: { id: string }) {
   const isGroup = chat.kind === "group";
   const seenId = isGroup ? null : seenMessageId(messages, chat.seenAt);
   const subtitle = isGroup ? `${chat.members} people` : chat.peer ? `@${chat.peer.username}` : "";
+  const openPhoto = (m: ShownMessage) => setViewing(Math.max(0, withPhotos.indexOf(m)));
   const notice = noticeOf(chat);
 
   return (
@@ -253,62 +346,41 @@ export function ThreadScreen({ id }: { id: string }) {
             </Empty>
           </li>
         )}
-        {messages.map((m, i) => {
-          const prev = messages[i - 1];
-          const gap = !prev || new Date(m.createdAt).getTime() - new Date(prev.createdAt).getTime() > STAMP_GAP_MS;
-          const stamp = gap ? (
-            <li key={`${m.id}-stamp`} className={styles.stamp}>
-              {stampOf(m.createdAt)}
+        {rows.map((row) => {
+          const m = row.message;
+          const key = m.key ?? m.id;
+          const fresh = !!m.sendState || (openedWith !== null && m.createdAt > openedWith);
+          const stamp = row.header ? (
+            <li key={`${key}-stamp`} className={styles.stamp}>
+              {row.header}
             </li>
           ) : null;
           if (m.kind === "event") {
             return [
               stamp,
-              <li key={m.id} className={styles.event}>
+              <li key={key} className={styles.event} data-fresh={fresh || undefined}>
                 {m.text}
               </li>,
             ];
           }
-          const newSender = gap || !prev || prev.kind === "event" || prev.mine !== m.mine || prev.sender?.id !== m.sender?.id;
           return [
             stamp,
-            <li key={m.id} className={styles.line} data-mine={m.mine || undefined} data-gap={(newSender && !gap) || undefined} data-state={m.sendState}>
-              {isGroup && !m.mine && newSender && m.sender && <span className={styles.sender}>{m.sender.name}</span>}
-              <span className={styles.bubbleRow} title={exact(m.createdAt)}>
-                <Content message={m} />
-                {m.mine && m.sendState !== "sending" && confirming !== m.id && (
-                  <button type="button" className={styles.lineAction} aria-label="Unsend" onClick={() => setConfirming(m.id)}>
-                    <Icon name="trash" size={18} />
-                  </button>
-                )}
-              </span>
-              {confirming === m.id && (
-                <span className={styles.confirm}>
-                  Unsend for everyone?
-                  <Button variant="ghost" onClick={() => setConfirming(null)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={async () => {
-                      setConfirming(null);
-                      report(await thread.unsend(m));
-                    }}
-                  >
-                    Unsend
-                  </Button>
-                </span>
-              )}
-              {m.sendState === "failed" && (
-                <button type="button" className={styles.retry} onClick={() => thread.retry(m)}>
-                  Not sent. Retry
-                </button>
-              )}
-              {m.id === seenId && <span className={styles.note}>Seen</span>}
-            </li>,
+            <Line
+              key={key}
+              row={row}
+              isGroup={isGroup}
+              seen={m.id === seenId}
+              fresh={fresh}
+              onMenu={setMenuFor}
+              onOpenPhoto={openPhoto}
+              onRetry={thread.retry}
+            />,
           ];
         })}
       </ol>
+
+      {menuFor && <MessageMenu message={menuFor} onClose={() => setMenuFor(null)} onUnsend={async (m) => report(await thread.unsend(m))} />}
+      {viewing !== null && <Lightbox photos={photos} start={viewing} onClose={() => setViewing(null)} />}
 
       <div className={styles.foot}>
         {chat.state === "request" ? (
