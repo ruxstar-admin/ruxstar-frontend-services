@@ -58,6 +58,7 @@ export function AccountScreen() {
   const [attempt, setAttempt] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [ending, setEnding] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<string | null>(null);
 
   const toSignIn = useCallback(() => router.replace("/signin?next=/account"), [router]);
 
@@ -89,6 +90,7 @@ export function AccountScreen() {
     try {
       await endSession(device.id);
       setDevices((list) => list?.filter((d) => d.id !== device.id) ?? null);
+      setConfirming(null);
       toast(`${device.label} is signed out.`, "success");
     } catch (err) {
       if (isSignedOut(err)) return toSignIn();
@@ -218,15 +220,23 @@ export function AccountScreen() {
                         </p>
                         <p className={styles.muted}>{lastSeen(d.lastSeenAt, d.current)}</p>
                       </div>
-                      {!d.current && (
-                        <Button
-                          variant="secondary"
-                          onClick={() => revoke(d)}
-                          loading={ending === d.id}
-                          aria-label={`Sign out ${d.label}`}
-                        >
+                      {!d.current && confirming !== d.id && (
+                        <Button variant="secondary" onClick={() => setConfirming(d.id)} aria-label={`Sign out ${d.label}`}>
                           Sign out
                         </Button>
+                      )}
+                      {confirming === d.id && (
+                        <div className={styles.confirmDevice} role="group" aria-label={`Sign out ${d.label}?`}>
+                          <p className={styles.muted}>It will need a password or a one-time code to sign in again.</p>
+                          <div className={styles.confirmActions}>
+                            <Button variant="ghost" disabled={ending === d.id} onClick={() => setConfirming(null)}>
+                              Cancel
+                            </Button>
+                            <Button variant="danger" loading={ending === d.id} onClick={() => void revoke(d)}>
+                              Sign out
+                            </Button>
+                          </div>
+                        </div>
                       )}
                     </li>
                   ))

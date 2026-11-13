@@ -44,6 +44,7 @@ const MODULES: { value: string; label: string }[] = [
   { value: "kyc", label: "Verification" },
   { value: "social", label: "Posts" },
   { value: "ruxstar", label: "Staff" },
+  { value: "vendor", label: "Vendor" },
   { value: "pod", label: "Print on demand" },
   { value: "events", label: "Events" },
   { value: "coaching", label: "Coaching" },
