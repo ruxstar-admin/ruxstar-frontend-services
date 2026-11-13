@@ -1,7 +1,7 @@
 .page {
-  --margin: clamp(16px, 5vw, 64px);
+  --margin: clamp(16px, 3vw, 40px);
   min-height: 100dvh;
-  max-width: 1120px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 20px var(--margin) 96px;
 }

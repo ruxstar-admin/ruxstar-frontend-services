@@ -62,8 +62,9 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   max-width: 720px;
-  min-height: calc(100dvh - 64px - clamp(20px, 4vh, 40px) - 96px);
-  margin: 0 auto;
+  /* Down to the window's bottom edge: the page's bottom padding is room for the phone tab bar. */
+  min-height: calc(100dvh - 64px - clamp(20px, 4vh, 40px));
+  margin: 0 auto -96px;
 }
 
 .threadHead {
@@ -678,6 +679,11 @@ a.post:hover {
 
 /* Phones: the tabs bar sits at the bottom, so the composer stays above it. */
 @media (max-width: 640px) {
+  .thread {
+    min-height: calc(100dvh - 64px - clamp(20px, 4vh, 40px) - 60px - env(safe-area-inset-bottom));
+    margin-bottom: calc(60px + env(safe-area-inset-bottom) - 96px);
+  }
+
   .foot {
     bottom: calc(60px + env(safe-area-inset-bottom));
   }

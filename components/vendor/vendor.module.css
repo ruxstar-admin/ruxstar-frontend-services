@@ -3,7 +3,7 @@
 .page {
   display: grid;
   gap: var(--space-5);
-  max-width: 760px;
+  max-width: 960px;
 }
 
 .head {

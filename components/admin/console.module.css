@@ -2,9 +2,9 @@
 
 .frame {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: 200px minmax(0, 1fr);
   align-items: start;
-  gap: var(--space-8);
+  gap: var(--space-6);
 }
 
 .side {
