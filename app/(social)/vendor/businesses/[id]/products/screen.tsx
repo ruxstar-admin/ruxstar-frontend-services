@@ -8,11 +8,18 @@ import { useOnSignedOut } from "@/components/social/session";
 import { Back, Failed, Loading, Select, TextArea } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
+import { ApiError } from "@/lib/api/client";
 import { paiseOf, rupeeInput, rupeesText, shopDesk, titleCase, vendorCatalog, type Business, type BusinessCatalog, type PodProduct } from "@/lib/api/vendor";
 import styles from "@/components/vendor/vendor.module.css";
 
 const OTHER_CITY = "Other city";
 const NOTES_MAX = 1000;
+
+/** The server's reasons, such as "Set a price for every product you offer", rather than its one-line summary. Same as the app. */
+function failureOf(err: unknown) {
+  const reasons = err instanceof ApiError && err.code === "BUSINESS_INCOMPLETE" ? err.details.map((d) => d.message).filter(Boolean) : [];
+  return reasons.length ? `${reasons.join(". ")}.` : formError(err).message;
+}
 
 function Form({ id, team, business, catalog }: { id: string; team: boolean; business: Business; catalog: BusinessCatalog }) {
   const router = useRouter();
@@ -61,11 +68,13 @@ function Form({ id, team, business, catalog }: { id: string; team: boolean; busi
     setSaving(true);
     try {
       const desk = shopDesk(team);
-      await desk.updatePod(id, { products, serveAll, cities, turnaroundDays: turnaround, minOrder: paiseOf(minOrder) ?? 0, notes: notes.trim() || null });
-      router.push(desk.home(id));
+      const saved = await desk.updatePod(id, { products, serveAll, cities, turnaroundDays: turnaround, minOrder: paiseOf(minOrder) ?? 0, notes: notes.trim() || null });
+      // A product just switched on has no price yet, and customers can't see it until it has one.
+      const added = saved.pod?.unpriced.some((p) => !pod.products.includes(p));
+      router.push(added ? `${desk.home(id)}/prices` : desk.home(id));
     } catch (err) {
       setSaving(false);
-      if (!onSignedOut(err)) setFailure(formError(err).message);
+      if (!onSignedOut(err)) setFailure(failureOf(err));
     }
   };
 

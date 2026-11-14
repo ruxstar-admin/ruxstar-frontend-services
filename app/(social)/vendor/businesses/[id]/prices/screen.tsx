@@ -36,7 +36,9 @@ export function PodPricesScreen({ id, team = false }: { id: string; team?: boole
         <Empty title="Only print shops have prices" />
       ) : pod.products.length ? (
         <>
-          <p className={styles.intro}>{pod.unpriced.length ? `${pod.unpriced.length} of ${pod.products.length} still need a price.` : "Every product has a price."}</p>
+          <p className={styles.intro}>{pod.unpriced.length
+              ? `${pod.unpriced.length} of ${pod.products.length} still need a price. Customers see a product once it has one.`
+              : "Every product has a price."}</p>
           <ul className={styles.rows}>
             {catalog.data.podProducts
               .filter((info) => pod.products.includes(info.id))
