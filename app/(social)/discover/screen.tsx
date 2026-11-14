@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { Button, ButtonLink, Icon } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
@@ -12,6 +13,16 @@ import social from "@/components/social/social.module.css";
 import styles from "@/components/shop/shop.module.css";
 
 const DEBOUNCE_MS = 300;
+
+/** Its own chunk: people who never open Events don't download it. */
+const EventResults = dynamic(() => import("@/components/events/EventResults"), {
+  loading: () => (
+    <div className={styles.grid} aria-busy>
+      <ShopCardSkeleton />
+      <ShopCardSkeleton />
+    </div>
+  ),
+});
 
 function Results({ filters }: { filters: ShopFilters }) {
   const onSignedOut = useOnSignedOut();
@@ -70,10 +81,10 @@ function Results({ filters }: { filters: ShopFilters }) {
 }
 
 /** Businesses customers can order from: a category first, then what it offers. Same as the app's Discover tab. */
-export function DiscoverScreen() {
+export function DiscoverScreen({ initialCategory = null }: { initialCategory?: BusinessModule | null }) {
   const [text, setText] = useState("");
   const [q, setQ] = useState("");
-  const [category, setCategory] = useState<BusinessModule | null>(null);
+  const [category, setCategory] = useState<BusinessModule | null>(initialCategory);
   const [product, setProduct] = useState<PodProduct | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<{ id: PodProduct; label: string }[]>([]);
@@ -91,8 +102,10 @@ export function DiscoverScreen() {
   }, []);
 
   const picked = categories.find((c) => c.module === category);
-  const comingSoon = picked ? !picked.live || picked.module !== "pod" : false;
+  const comingSoon = picked ? !picked.live || (picked.module !== "pod" && picked.module !== "events") : false;
   const printOpen = categories.some((c) => c.module === "pod" && c.live) && category !== "pod";
+  const eventsOpen = categories.some((c) => c.module === "events" && c.live);
+  const showEvents = category === "events" && !comingSoon;
   const filters: ShopFilters = { ...(q ? { q } : {}), ...(category === "pod" && product ? { product } : {}) };
 
   const pickCategory = (next: BusinessModule | null) => {
@@ -108,6 +121,12 @@ export function DiscoverScreen() {
           <p className={styles.subtitle}>Businesses on Ruxstar</p>
         </div>
         <div className={styles.headActions}>
+          {eventsOpen && (
+            <ButtonLink href="/tickets" variant="secondary">
+              <Icon name="ticket" size={18} />
+              Your tickets
+            </ButtonLink>
+          )}
           <ButtonLink href="/orders" variant="secondary">
             <Icon name="receipt" size={18} />
             Your orders
@@ -125,8 +144,8 @@ export function DiscoverScreen() {
           type="search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Shop, what they print, or a city"
-          aria-label="Search businesses"
+          placeholder={showEvents ? "Event, organiser or city" : "Shop, what they print, or a city"}
+          aria-label={showEvents ? "Search events" : "Search businesses"}
           autoComplete="off"
           spellCheck={false}
         />
@@ -166,6 +185,8 @@ export function DiscoverScreen() {
             </Button>
           )}
         </Empty>
+      ) : showEvents ? (
+        <EventResults q={q} />
       ) : (
         <Results key={`${q}|${category ?? ""}|${product ?? ""}`} filters={filters} />
       )}

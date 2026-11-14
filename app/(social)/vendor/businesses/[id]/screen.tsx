@@ -120,6 +120,7 @@ function Details({
   const editable = !b.suspension;
   const photosEditable = editable && can("shop.details");
   const catalogRows = !!b.pod && editable && can("shop.catalog");
+  const events = b.module === "events";
 
   return (
     <div className={styles.page}>
@@ -236,8 +237,23 @@ function Details({
               />
             </>
           )}
+          {!team && events && (
+            <>
+              <Tile
+                href={`/vendor/businesses/${id}/events`}
+                icon="calendar"
+                title="Events"
+                subtitle={b.status === "live" ? "Make events, sell tickets, see bookings" : "Make events now; publish the business to sell"}
+                disabled={!editable}
+              />
+              <Tile href="/gate" icon="ticket" title="Scan tickets" subtitle="Check people in at the gate" />
+            </>
+          )}
           {!team && b.pod && editable && (
             <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team" subtitle="Invite people to help with orders, the shop and posts" />
+          )}
+          {!team && events && editable && (
+            <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team & gate keepers" subtitle="Invite people to scan tickets or help run events" />
           )}
           {!team && b.pod && b.status === "live" && <Tile href={`/vendor/businesses/${id}/reviews`} icon="star" title="Reviews" subtitle={ratingLine(b.rating)} />}
           {!team && b.pod && (

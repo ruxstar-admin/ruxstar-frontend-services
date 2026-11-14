@@ -14,6 +14,8 @@ export function TeamScreen({ id }: { id: string }) {
   if (error && !data) return <Failed error={error} onRetry={reload} />;
   if (!data) return <Loading rows={3} />;
   const full = data.members.length >= data.max;
+  const quickStart = data.permissions.some((p) => !p.verify);
+  const gate = data.permissions.some((p) => p.key === "tickets.scan");
 
   return (
     <div className={styles.page}>
@@ -29,8 +31,9 @@ export function TeamScreen({ id }: { id: string }) {
         )}
       </div>
       <p className={styles.intro}>
-        Invite people by their Ruxstar username and choose what each can do. Nothing works for them until their identity verification (Aadhaar, PAN
-        and a selfie) is approved.
+        {quickStart
+          ? "Invite people by their Ruxstar username and choose what each can do. Gate keepers who only scan tickets can start once they accept; anything more waits until their identity verification (Aadhaar, PAN and a selfie) is approved."
+          : "Invite people by their Ruxstar username and choose what each can do. Nothing works for them until their identity verification (Aadhaar, PAN and a selfie) is approved."}
       </p>
       {data.members.length ? (
         <>
@@ -47,7 +50,7 @@ export function TeamScreen({ id }: { id: string }) {
         </>
       ) : (
         <Empty title="No one yet">
-          <p>Invite someone to help with orders, the shop or posts.</p>
+          <p>{gate ? "Invite gate keepers to scan tickets at your events." : "Invite someone to help with orders, the shop or posts."}</p>
         </Empty>
       )}
     </div>

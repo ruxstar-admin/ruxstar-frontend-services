@@ -359,6 +359,437 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/account/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your GST invoices and credit notes, newest first
+         * @description Every paid order has one from the business (or Ruxstar), plus Ruxstar's for its platform fee when there was one. Refunds add credit notes.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description MongoDB ObjectId as hex */
+                    orderId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                /** @description Consecutive within the seller's series for the financial year */
+                                number: string;
+                                /** @description Indian financial year, for example 2026-27 */
+                                fy: string;
+                                /** @description Whose document it is: the business's, or Ruxstar's */
+                                issuer: "vendor" | "ruxstar";
+                                /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                role: "supply" | "fee";
+                                /** @description turf and ecommerce have defaults ready for when they open */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                order: {
+                                    type: "pod_order" | "event_order";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                seller: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                buyer: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                /** @description Ruxstar as the e-commerce operator, on a business's documents */
+                                operator: {
+                                    name: string;
+                                    gstin: string | null;
+                                } | null;
+                                placeOfSupply: {
+                                    state: string;
+                                    code: string;
+                                } | null;
+                                /** @description intra: CGST and SGST. inter: IGST. */
+                                supply: "intra" | "inter";
+                                /** @description Ruxstar pays the GST on the business's sale as the e-commerce operator (section 9(5)) */
+                                operatorPays: boolean;
+                                lines: {
+                                    description: string;
+                                    /** @description HSN for goods, SAC for services; empty when not set */
+                                    code: string;
+                                    codeKind: "hsn" | "sac";
+                                    quantity: number;
+                                    /** @description Paise per unit, as charged */
+                                    unitPrice: number;
+                                    /** @description Paise off the line by the seller */
+                                    discount: number;
+                                    /** @description GST rate in basis points: 1800 = 18% */
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Paise: taxable value plus tax */
+                                    total: number;
+                                }[];
+                                totals: {
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Amount in paise */
+                                    tax: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description A Ruxstar coupon: paid to the seller by Ruxstar, not by the customer */
+                                    ruxstarDiscount: number;
+                                    /** @description Total less the Ruxstar discount */
+                                    payable: number;
+                                };
+                                /** @description Tax Ruxstar collects at source on the business's sale. Shown to the business and the console only */
+                                tcs: {
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                } | null;
+                                /** @description Credit notes: the invoice it reduces */
+                                against: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    number: string;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                } | null;
+                                /** @description Credit notes: the refund behind it */
+                                refund: {
+                                    id: string;
+                                    reason: string | null;
+                                } | null;
+                                /** @description Invoices: paise credited back so far */
+                                credited: number;
+                                notes: string[];
+                                /** Format: date-time */
+                                issuedAt: string;
+                                /** @description Opens the PDF without signing in; works for 10 minutes. Add `download=1` to save it instead */
+                                pdfUrl: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/account/invoices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of your invoices or credit notes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                /** @description Consecutive within the seller's series for the financial year */
+                                number: string;
+                                /** @description Indian financial year, for example 2026-27 */
+                                fy: string;
+                                /** @description Whose document it is: the business's, or Ruxstar's */
+                                issuer: "vendor" | "ruxstar";
+                                /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                role: "supply" | "fee";
+                                /** @description turf and ecommerce have defaults ready for when they open */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                order: {
+                                    type: "pod_order" | "event_order";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                seller: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                buyer: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                /** @description Ruxstar as the e-commerce operator, on a business's documents */
+                                operator: {
+                                    name: string;
+                                    gstin: string | null;
+                                } | null;
+                                placeOfSupply: {
+                                    state: string;
+                                    code: string;
+                                } | null;
+                                /** @description intra: CGST and SGST. inter: IGST. */
+                                supply: "intra" | "inter";
+                                /** @description Ruxstar pays the GST on the business's sale as the e-commerce operator (section 9(5)) */
+                                operatorPays: boolean;
+                                lines: {
+                                    description: string;
+                                    /** @description HSN for goods, SAC for services; empty when not set */
+                                    code: string;
+                                    codeKind: "hsn" | "sac";
+                                    quantity: number;
+                                    /** @description Paise per unit, as charged */
+                                    unitPrice: number;
+                                    /** @description Paise off the line by the seller */
+                                    discount: number;
+                                    /** @description GST rate in basis points: 1800 = 18% */
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Paise: taxable value plus tax */
+                                    total: number;
+                                }[];
+                                totals: {
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Amount in paise */
+                                    tax: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description A Ruxstar coupon: paid to the seller by Ruxstar, not by the customer */
+                                    ruxstarDiscount: number;
+                                    /** @description Total less the Ruxstar discount */
+                                    payable: number;
+                                };
+                                /** @description Tax Ruxstar collects at source on the business's sale. Shown to the business and the console only */
+                                tcs: {
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                } | null;
+                                /** @description Credit notes: the invoice it reduces */
+                                against: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    number: string;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                } | null;
+                                /** @description Credit notes: the refund behind it */
+                                refund: {
+                                    id: string;
+                                    reason: string | null;
+                                } | null;
+                                /** @description Invoices: paise credited back so far */
+                                credited: number;
+                                notes: string[];
+                                /** Format: date-time */
+                                issuedAt: string;
+                                /** @description Opens the PDF without signing in; works for 10 minutes. Add `download=1` to save it instead */
+                                pdfUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/account/invoices/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of your invoices or credit notes as a PDF */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The PDF */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/account/otp": {
         parameters: {
             query?: never;
@@ -8130,12 +8561,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened";
+                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets; `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal; `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event";
                                     id: string;
                                 };
                                 read: boolean;
@@ -8574,6 +9005,24 @@ export interface paths {
                                     status: "pending" | "paid" | "failed";
                                     utr: string | null;
                                 } | null;
+                                /** @description The GST invoice for a paid line, or the credit note for a refund line, when one was issued */
+                                invoice?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                } | null;
                             }[];
                             meta: {
                                 requestId: string;
@@ -8746,6 +9195,503 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/vendor/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * GST invoices, bills of supply and credit notes for your sales, newest first
+         * @description Ruxstar issues them in your business's name when an order is paid, and a credit note for every refund. Ruxstar's platform fee invoices aren't included.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description MongoDB ObjectId as hex */
+                    business?: string;
+                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                    kind?: "tax_invoice" | "bill_of_supply" | "credit_note";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                /** @description Consecutive within the seller's series for the financial year */
+                                number: string;
+                                /** @description Indian financial year, for example 2026-27 */
+                                fy: string;
+                                /** @description Whose document it is: the business's, or Ruxstar's */
+                                issuer: "vendor" | "ruxstar";
+                                /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                role: "supply" | "fee";
+                                /** @description turf and ecommerce have defaults ready for when they open */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                order: {
+                                    type: "pod_order" | "event_order";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                seller: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                buyer: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                /** @description Ruxstar as the e-commerce operator, on a business's documents */
+                                operator: {
+                                    name: string;
+                                    gstin: string | null;
+                                } | null;
+                                placeOfSupply: {
+                                    state: string;
+                                    code: string;
+                                } | null;
+                                /** @description intra: CGST and SGST. inter: IGST. */
+                                supply: "intra" | "inter";
+                                /** @description Ruxstar pays the GST on the business's sale as the e-commerce operator (section 9(5)) */
+                                operatorPays: boolean;
+                                lines: {
+                                    description: string;
+                                    /** @description HSN for goods, SAC for services; empty when not set */
+                                    code: string;
+                                    codeKind: "hsn" | "sac";
+                                    quantity: number;
+                                    /** @description Paise per unit, as charged */
+                                    unitPrice: number;
+                                    /** @description Paise off the line by the seller */
+                                    discount: number;
+                                    /** @description GST rate in basis points: 1800 = 18% */
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Paise: taxable value plus tax */
+                                    total: number;
+                                }[];
+                                totals: {
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Amount in paise */
+                                    tax: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description A Ruxstar coupon: paid to the seller by Ruxstar, not by the customer */
+                                    ruxstarDiscount: number;
+                                    /** @description Total less the Ruxstar discount */
+                                    payable: number;
+                                };
+                                /** @description Tax Ruxstar collects at source on the business's sale. Shown to the business and the console only */
+                                tcs: {
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                } | null;
+                                /** @description Credit notes: the invoice it reduces */
+                                against: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    number: string;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                } | null;
+                                /** @description Credit notes: the refund behind it */
+                                refund: {
+                                    id: string;
+                                    reason: string | null;
+                                } | null;
+                                /** @description Invoices: paise credited back so far */
+                                credited: number;
+                                notes: string[];
+                                /** Format: date-time */
+                                issuedAt: string;
+                                /** @description Opens the PDF without signing in; works for 10 minutes. Add `download=1` to save it instead */
+                                pdfUrl: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/invoices/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your GST documents for a period as a spreadsheet (CSV)
+         * @description One row per line, for your GST returns. Up to a year and 5,000 documents at a time; amounts in rupees.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description YYYY-MM-DD, India time */
+                    from: string;
+                    /** @description YYYY-MM-DD, India time */
+                    to: string;
+                    /** @description MongoDB ObjectId as hex */
+                    business?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description CSV */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/csv": string;
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/invoices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One GST document for your sales */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                /** @description Consecutive within the seller's series for the financial year */
+                                number: string;
+                                /** @description Indian financial year, for example 2026-27 */
+                                fy: string;
+                                /** @description Whose document it is: the business's, or Ruxstar's */
+                                issuer: "vendor" | "ruxstar";
+                                /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                role: "supply" | "fee";
+                                /** @description turf and ecommerce have defaults ready for when they open */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                order: {
+                                    type: "pod_order" | "event_order";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                seller: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                buyer: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                /** @description Ruxstar as the e-commerce operator, on a business's documents */
+                                operator: {
+                                    name: string;
+                                    gstin: string | null;
+                                } | null;
+                                placeOfSupply: {
+                                    state: string;
+                                    code: string;
+                                } | null;
+                                /** @description intra: CGST and SGST. inter: IGST. */
+                                supply: "intra" | "inter";
+                                /** @description Ruxstar pays the GST on the business's sale as the e-commerce operator (section 9(5)) */
+                                operatorPays: boolean;
+                                lines: {
+                                    description: string;
+                                    /** @description HSN for goods, SAC for services; empty when not set */
+                                    code: string;
+                                    codeKind: "hsn" | "sac";
+                                    quantity: number;
+                                    /** @description Paise per unit, as charged */
+                                    unitPrice: number;
+                                    /** @description Paise off the line by the seller */
+                                    discount: number;
+                                    /** @description GST rate in basis points: 1800 = 18% */
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Paise: taxable value plus tax */
+                                    total: number;
+                                }[];
+                                totals: {
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Amount in paise */
+                                    tax: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description A Ruxstar coupon: paid to the seller by Ruxstar, not by the customer */
+                                    ruxstarDiscount: number;
+                                    /** @description Total less the Ruxstar discount */
+                                    payable: number;
+                                };
+                                /** @description Tax Ruxstar collects at source on the business's sale. Shown to the business and the console only */
+                                tcs: {
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                } | null;
+                                /** @description Credit notes: the invoice it reduces */
+                                against: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    number: string;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                } | null;
+                                /** @description Credit notes: the refund behind it */
+                                refund: {
+                                    id: string;
+                                    reason: string | null;
+                                } | null;
+                                /** @description Invoices: paise credited back so far */
+                                credited: number;
+                                notes: string[];
+                                /** Format: date-time */
+                                issuedAt: string;
+                                /** @description Opens the PDF without signing in; works for 10 minutes. Add `download=1` to save it instead */
+                                pdfUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/invoices/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One GST document for your sales as a PDF */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The PDF */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/vendor/orders": {
         parameters: {
             query?: never;
@@ -8875,6 +9821,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -9104,6 +10068,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -9345,6 +10327,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -9585,6 +10585,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -9905,6 +10923,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -10118,6 +11154,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -10674,9 +11728,9 @@ export interface paths {
                                         username: string | null;
                                         avatar: string | null;
                                     };
-                                    /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
+                                    /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -10692,12 +11746,14 @@ export interface paths {
                                     joinedAt: string | null;
                                 }[];
                                 permissions: {
-                                    /** @description What the owner lets this person do at the business */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver";
+                                    /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests") | null;
+                                    /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
+                                    verify: boolean;
                                 }[];
                                 /** @description People the team can hold, invites included */
                                 max: number;
@@ -10731,7 +11787,7 @@ export interface paths {
         put?: never;
         /**
          * Invite someone to the team by their username
-         * @description They get a notification and have 7 days to accept. Nothing works for them until their identity verification is approved. A team holds up to 20 people, invites included. Permissions that need "See orders" bring it with them. Pay is optional and shown to them with the invite, so they can compare offers. Withdrawals, payment details, publishing, deleting and the team itself stay with the owner.
+         * @description They get a notification and have 7 days to accept. Nothing works for them until their identity verification is approved, except scanning tickets at events, which anyone can do. A team holds up to 20 people, invites included. Permissions that need another (such as "See orders") bring it with them. Pay is optional and shown to them with the invite, so they can compare offers. Withdrawals, payment details, publishing, deleting and the team itself stay with the owner.
          */
         post: {
             parameters: {
@@ -10748,7 +11804,7 @@ export interface paths {
                     "application/json": {
                         /** @description Their Ruxstar username, without the @ */
                         username: string;
-                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                         pay?: {
                             /** @description In paise, at least ₹1 */
                             amount: number;
@@ -10778,9 +11834,9 @@ export interface paths {
                                     username: string | null;
                                     avatar: string | null;
                                 };
-                                /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
+                                /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -10913,7 +11969,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                         /** @description Only while they're invited: the offer can't change once they accept */
                         pay?: {
                             /** @description In paise, at least ₹1 */
@@ -10944,9 +12000,9 @@ export interface paths {
                                     username: string | null;
                                     avatar: string | null;
                                 };
-                                /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
+                                /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -10987,6 +12043,1328 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A business's events, soonest first, then past ones */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Make an event as a draft
+         * @description Add a poster next if you like, then publish it. Ticket types, questions and limits follow GET /v1/events/rules.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        description: string | null;
+                        /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                        kind: "show" | "sports" | "meetup";
+                        /** @description Null for an online event */
+                        venue: {
+                            name: string;
+                            address: string;
+                            city: string;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        } | null;
+                        /** @description Set for an online event, which has no venue and nothing to scan */
+                        online: {
+                            /** @description The meeting link. Only people with a ticket see it */
+                            link: string;
+                        } | null;
+                        /** Format: date-time */
+                        startsAt: string;
+                        /** Format: date-time */
+                        endsAt: string;
+                        team: {
+                            min: number;
+                            max: number;
+                        } | null;
+                        /** @description Ruxstar sets how many; GET /v1/events/rules says */
+                        tiers: {
+                            /** @description When editing: the ticket type it changes. Leave out for a new one */
+                            id?: string;
+                            /** @description For example General, VIP or Early bird */
+                            name: string;
+                            /** @description Paise per person, or per team for team entries. 0 is free */
+                            price: number;
+                            /** @description People, or teams for team entries */
+                            capacity: number;
+                        }[];
+                        /** @description Ruxstar sets how many; GET /v1/events/rules says */
+                        questions: {
+                            id?: string;
+                            /** @description Asked for each ticket holder, for example T-shirt size */
+                            label: string;
+                            required: boolean;
+                        }[];
+                        /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                        refunds: "standard" | "none";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/events/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of your events, with its sales */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete a draft event */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Change an event */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Send only what changes. `tiers` and `questions` replace the lists: keep a ticket type's id to change it. A type with sales can't be removed or go below what's sold, and team entries can't change once anything is sold. Ticket holders are told when the time or place changes. */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title?: string;
+                        description?: string | null;
+                        /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                        kind?: "show" | "sports" | "meetup";
+                        /** @description Null for an online event */
+                        venue?: {
+                            name: string;
+                            address: string;
+                            city: string;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        } | null;
+                        /** @description Set for an online event, which has no venue and nothing to scan */
+                        online?: {
+                            /** @description The meeting link. Only people with a ticket see it */
+                            link: string;
+                        } | null;
+                        /** Format: date-time */
+                        startsAt?: string;
+                        /** Format: date-time */
+                        endsAt?: string;
+                        team?: {
+                            min: number;
+                            max: number;
+                        } | null;
+                        /** @description Ruxstar sets how many; GET /v1/events/rules says */
+                        tiers?: {
+                            /** @description When editing: the ticket type it changes. Leave out for a new one */
+                            id?: string;
+                            /** @description For example General, VIP or Early bird */
+                            name: string;
+                            /** @description Paise per person, or per team for team entries. 0 is free */
+                            price: number;
+                            /** @description People, or teams for team entries */
+                            capacity: number;
+                        }[];
+                        /** @description Ruxstar sets how many; GET /v1/events/rules says */
+                        questions?: {
+                            id?: string;
+                            /** @description Asked for each ticket holder, for example T-shirt size */
+                            label: string;
+                            required: boolean;
+                        }[];
+                        /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                        refunds?: "standard" | "none";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/vendor/events/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set the event's poster
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. It replaces the one there was.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/events/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Put a draft event on sale
+         * @description Needs the business published, a start in the future, the venue or online link, and a ticket type. Everything missing comes back at once.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/events/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel an event
+         * @description Every booking is cancelled and refunded in full, platform fee included, and every ticket holder is told why. It can't be undone.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Every ticket holder is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/events/{id}/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Who booked, newest first, with each person's ticket and answers */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "confirmed" | "cancelled";
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                team: string | null;
+                                /** @description Amount in paise */
+                                total: number;
+                                /** @description Amount in paise */
+                                share: number;
+                                /** @description Amount in paise */
+                                refunded: number;
+                                tickets: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    phone: string | null;
+                                    tier: string;
+                                    code: string;
+                                    answers: {
+                                        label: string;
+                                        answer: string;
+                                    }[];
+                                    status: "awaiting_payment" | "valid" | "cancelled";
+                                    lastIn: string | null;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/vendor/businesses/{id}/activity": {
@@ -11396,7 +13774,7 @@ export interface paths {
                                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                          * @enum {unknown}
                                          */
-                                        id: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                        id: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                         label: string;
                                         description: string;
                                         examples: string;
@@ -11503,7 +13881,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -11650,7 +14028,7 @@ export interface paths {
                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                          * @enum {unknown}
                          */
-                        type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                        type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                         name: string;
                         /** @description 10-digit mobile number */
                         phone: string;
@@ -11690,7 +14068,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -11857,7 +14235,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -12095,7 +14473,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -12311,7 +14689,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -12479,7 +14857,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -12653,7 +15031,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -12824,7 +15202,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -12996,7 +15374,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -13168,7 +15546,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -13634,6 +16012,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -13871,6 +16267,24 @@ export interface paths {
                                             at: string;
                                         } | null;
                                     } | null;
+                                    /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                    invoices?: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                        kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                        number: string;
+                                        /** @description Whose document it is: the business's, or Ruxstar's */
+                                        issuer: "vendor" | "ruxstar";
+                                        /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                        role: "supply" | "fee";
+                                        /** @description Amount in paise */
+                                        total: number;
+                                        /** @description Credit notes: the refund behind it */
+                                        refundId: string | null;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                    }[];
                                     /** Format: date-time */
                                     createdAt: string;
                                     /** Format: date-time */
@@ -14157,6 +16571,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -14373,6 +16805,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -14664,6 +17114,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -14878,6 +17346,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -15404,7 +17890,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -15505,7 +17991,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -15707,6 +18193,1904 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/events/desk/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Events you can check people in at, soonest first
+         * @description Your own events, and those of businesses where you're on the team with “Scan tickets”. Online events have nothing to scan.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                venueName: string | null;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Tickets can be checked in today */
+                                today: boolean;
+                                days: string[];
+                                counts: {
+                                    tickets: number;
+                                    inToday: number;
+                                };
+                                canSeeGuests: boolean;
+                                role: "owner" | "team";
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/desk/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One event at the gate, with today's count
+         * @description Poll it every 10 seconds or so for the live count; it's two counts on indexes.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                venueName: string | null;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Tickets can be checked in today */
+                                today: boolean;
+                                days: string[];
+                                counts: {
+                                    tickets: number;
+                                    inToday: number;
+                                };
+                                canSeeGuests: boolean;
+                                role: "owner" | "team";
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/desk/{id}/scan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check in the ticket the camera read */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description What the camera read */
+                        qr: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description ok (green): let them in. inside (amber): already checked in today, let them back in. wrong_event, wrong_day, cancelled, unknown (red): don't */
+                                result: "ok" | "inside" | "wrong_event" | "wrong_day" | "cancelled" | "unknown";
+                                ticket: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    tier: string;
+                                    team: string | null;
+                                    code: string;
+                                } | null;
+                                /** @description With inside: when they first came in today */
+                                firstAt: string | null;
+                                message: string;
+                                counts: {
+                                    tickets: number;
+                                    inToday: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/desk/{id}/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Find tickets by their six letters or the holder's phone number
+         * @description For a phone that won't scan. Checking someone in from here is recorded as by hand.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description A ticket's six letters, or a phone number's 10 digits */
+                    q: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                tier: string;
+                                team: string | null;
+                                code: string;
+                                /** @description The last four digits only */
+                                phone: string;
+                                status: "awaiting_payment" | "valid" | "cancelled";
+                                inToday: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/desk/{id}/tickets/{ticketId}/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check a ticket in by hand
+         * @description Recorded with who did it, for the organiser.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    ticketId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description ok (green): let them in. inside (amber): already checked in today, let them back in. wrong_event, wrong_day, cancelled, unknown (red): don't */
+                                result: "ok" | "inside" | "wrong_event" | "wrong_day" | "cancelled" | "unknown";
+                                ticket: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    tier: string;
+                                    team: string | null;
+                                    code: string;
+                                } | null;
+                                /** @description With inside: when they first came in today */
+                                firstAt: string | null;
+                                message: string;
+                                counts: {
+                                    tickets: number;
+                                    inToday: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/desk/{id}/offline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every ticket for checking in without a connection
+         * @description About 200 bytes a ticket. Each QR code is matched by its SHA-256, so the codes themselves never leave Ruxstar. Send what was scanned to /sync once back online.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                eventId: string;
+                                day: string;
+                                /** Format: date-time */
+                                at: string;
+                                tickets: {
+                                    /** @description SHA-256 of the QR text, hex */
+                                    h: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description The six letters */
+                                    c: string;
+                                    /** @description The holder's name */
+                                    n: string;
+                                    /** @description The ticket type */
+                                    t: string;
+                                    /** @description SHA-256 of the phone's 10 digits, hex, for looking up by phone */
+                                    p: string;
+                                    /** @description v: valid. x: cancelled */
+                                    s: "v" | "x";
+                                    /** @description When they first came in today */
+                                    i: string | null;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/desk/{id}/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send check-ins made offline
+         * @description Up to 500 at once, in the order they happened. A ticket let in as new on two phones comes back as a clash and is flagged for the organiser.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        scans: {
+                            /** @description MongoDB ObjectId as hex */
+                            ticketId: string;
+                            /** Format: date-time */
+                            at: string;
+                            manual: boolean;
+                            /** @description This phone showed green: it thought they were coming in for the first time today */
+                            fresh: boolean;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                saved: number;
+                                /** @description Let in as new on two phones while offline */
+                                clashes: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    name: string;
+                                    code: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                }[];
+                                counts: {
+                                    tickets: number;
+                                    inToday: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/desk/{id}/guests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The guest list: everyone, who's arrived today, or who hasn't
+         * @description For the owner, and people on the team with “See the guest list”.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    view?: "all" | "arrived" | "not_arrived";
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                tier: string;
+                                team: string | null;
+                                code: string;
+                                phone: string | null;
+                                inToday: string | null;
+                                by: string | null;
+                                manual: boolean;
+                                /** @description Let in as new on two phones while offline */
+                                clash: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ruxstar's rules for events: refunds, the waitlist and limits */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                refundHours: number;
+                                waitlistHours: number;
+                                maxTicketTypes: number;
+                                maxQuestions: number;
+                                maxPerOrder: number;
+                                maxDays: number;
+                                commissionBps: number;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Events on sale, soonest first
+         * @description Including ones under way. With `city`, events there and online ones. Empty while Ruxstar has events switched off.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    city?: string;
+                    /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                    kind?: "show" | "sports" | "meetup";
+                    /** @description Words in the title or the organiser's name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One event: tickets left, the questions asked, refunds, and your bookings and waitlist places */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description Tickets (or teams) that can be bought now */
+                                    left: number;
+                                    soldOut: boolean;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                refunds: {
+                                    /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                    policy: "standard" | "none";
+                                    /** @description Cancel before this for a full refund; null with no refunds */
+                                    until: string | null;
+                                    /** @description Hours before the start that refunds stop */
+                                    hours: number;
+                                };
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "live" | "cancelled" | "ended";
+                                cancelReason: string | null;
+                                canBuy: boolean;
+                                whyNot: string | null;
+                                /** @description Your orders for it, newest first */
+                                myOrders: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    status: string;
+                                    tickets: number;
+                                }[];
+                                myWaits: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    tierId: string;
+                                    quantity: number;
+                                    status: "waiting" | "offered";
+                                    position: number | null;
+                                    /** @description Book before this, or the seats go to the next person */
+                                    offeredUntil: string | null;
+                                }[];
+                                maxPerOrder: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{id}/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Book tickets: one per person, each with a name and phone number
+         * @description Free bookings are confirmed at once. Paid ones return a checkout link and hold the seats for 20 minutes; unpaid, they go back on sale. For a team entry, send `team` and one ticket per player. With `waitlistId`, the seats held for you are used.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description One per person, or per player for a team entry */
+                        tickets: {
+                            /** @description Ignored for team entries: the team's ticket type is used */
+                            tierId: string;
+                            name: string;
+                            /** @description 10 digits */
+                            phone: string;
+                            answers?: {
+                                id: string;
+                                answer: string;
+                            }[];
+                        }[];
+                        team?: {
+                            tierId: string;
+                            name: string;
+                        };
+                        /** @description MongoDB ObjectId as hex */
+                        waitlistId?: string;
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    status: "awaiting_payment" | "confirmed" | "cancelled";
+                                    event: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        title: string;
+                                        /** Format: date-time */
+                                        startsAt: string;
+                                        /** Format: date-time */
+                                        endsAt: string;
+                                        venueName: string | null;
+                                        address: string | null;
+                                        city: string | null;
+                                        online: boolean;
+                                        onlineLink: string | null;
+                                        photo: {
+                                            url: string;
+                                            width: number;
+                                            height: number;
+                                        } | null;
+                                        cancelled: boolean;
+                                    };
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    lines: {
+                                        tierId: string;
+                                        name: string;
+                                        quantity: number;
+                                        /** @description Amount in paise */
+                                        unitPrice: number;
+                                    }[];
+                                    team: string | null;
+                                    price: {
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        platformFee: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    };
+                                    refund: {
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        status: "pending" | "done";
+                                        reason: string | null;
+                                    } | null;
+                                    reason: string | null;
+                                    canCancel: boolean;
+                                    /** @description Cancel before this for a full refund */
+                                    cancelUntil: string | null;
+                                    /** @description Unpaid orders give their seats back after this */
+                                    payBy: string | null;
+                                    tickets: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        phone: string | null;
+                                        tier: string;
+                                        team: string | null;
+                                        /** @description Six letters the gate can type in instead of scanning */
+                                        code: string;
+                                        qr: string | null;
+                                        status: "awaiting_payment" | "valid" | "cancelled";
+                                        /** @description The latest entry */
+                                        checkedInAt: string | null;
+                                    }[];
+                                    /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                    invoices?: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                        kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                        number: string;
+                                        /** @description Whose document it is: the business's, or Ruxstar's */
+                                        issuer: "vendor" | "ruxstar";
+                                        /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                        role: "supply" | "fee";
+                                        /** @description Amount in paise */
+                                        total: number;
+                                        /** @description Credit notes: the refund behind it */
+                                        refundId: string | null;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                };
+                                checkoutUrl: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{id}/waitlist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Join the waitlist for a sold-out ticket type
+         * @description When tickets come back, the next person gets them held for Ruxstar's waitlist hours and a notification. One place per ticket type.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        tierId: string;
+                        quantity: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                tierId: string;
+                                quantity: number;
+                                status: "waiting" | "offered";
+                                position: number | null;
+                                /** @description Book before this, or the seats go to the next person */
+                                offeredUntil: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/waitlist/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Leave a waitlist, or let held tickets go */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your tickets: upcoming soonest first, or past ones newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    view?: "upcoming" | "past";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                event: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    venueName: string | null;
+                                    address: string | null;
+                                    city: string | null;
+                                    online: boolean;
+                                    onlineLink: string | null;
+                                    photo: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    cancelled: boolean;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    tierId: string;
+                                    name: string;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                }[];
+                                team: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                } | null;
+                                reason: string | null;
+                                canCancel: boolean;
+                                /** @description Cancel before this for a full refund */
+                                cancelUntil: string | null;
+                                /** @description Unpaid orders give their seats back after this */
+                                payBy: string | null;
+                                tickets: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    phone: string | null;
+                                    tier: string;
+                                    team: string | null;
+                                    /** @description Six letters the gate can type in instead of scanning */
+                                    code: string;
+                                    qr: string | null;
+                                    status: "awaiting_payment" | "valid" | "cancelled";
+                                    /** @description The latest entry */
+                                    checkedInAt: string | null;
+                                }[];
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One booking with its tickets and QR codes
+         * @description While it waits for payment, Cashfree is asked whether it was paid.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                event: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    venueName: string | null;
+                                    address: string | null;
+                                    city: string | null;
+                                    online: boolean;
+                                    onlineLink: string | null;
+                                    photo: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    cancelled: boolean;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    tierId: string;
+                                    name: string;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                }[];
+                                team: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                } | null;
+                                reason: string | null;
+                                canCancel: boolean;
+                                /** @description Cancel before this for a full refund */
+                                cancelUntil: string | null;
+                                /** @description Unpaid orders give their seats back after this */
+                                payBy: string | null;
+                                tickets: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    phone: string | null;
+                                    tier: string;
+                                    team: string | null;
+                                    /** @description Six letters the gate can type in instead of scanning */
+                                    code: string;
+                                    qr: string | null;
+                                    status: "awaiting_payment" | "valid" | "cancelled";
+                                    /** @description The latest entry */
+                                    checkedInAt: string | null;
+                                }[];
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/orders/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A fresh checkout link for a booking waiting for payment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a booking
+         * @description Unpaid: the seats go back on sale. Paid: a full refund until Ruxstar's refund hours before the start, unless the organiser chose no refunds.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                event: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    venueName: string | null;
+                                    address: string | null;
+                                    city: string | null;
+                                    online: boolean;
+                                    onlineLink: string | null;
+                                    photo: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    cancelled: boolean;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    tierId: string;
+                                    name: string;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                }[];
+                                team: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                } | null;
+                                reason: string | null;
+                                canCancel: boolean;
+                                /** @description Cancel before this for a full refund */
+                                cancelUntil: string | null;
+                                /** @description Unpaid orders give their seats back after this */
+                                payBy: string | null;
+                                tickets: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    phone: string | null;
+                                    tier: string;
+                                    team: string | null;
+                                    /** @description Six letters the gate can type in instead of scanning */
+                                    code: string;
+                                    qr: string | null;
+                                    status: "awaiting_payment" | "valid" | "cancelled";
+                                    /** @description The latest entry */
+                                    checkedInAt: string | null;
+                                }[];
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/employment/{id}/orders": {
         parameters: {
             query?: never;
@@ -15840,6 +20224,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -15907,7 +20309,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                             }[];
                             meta: {
                                 requestId: string;
@@ -16069,6 +20471,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -16136,7 +20556,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                             };
                             meta: {
                                 requestId: string;
@@ -16310,6 +20730,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -16377,7 +20815,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                             };
                             meta: {
                                 requestId: string;
@@ -16550,6 +20988,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -16617,7 +21073,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                             };
                             meta: {
                                 requestId: string;
@@ -16870,6 +21326,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -16937,7 +21411,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                             };
                             meta: {
                                 requestId: string;
@@ -17086,6 +21560,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -17153,7 +21645,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                             };
                             meta: {
                                 requestId: string;
@@ -17294,7 +21786,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -17479,7 +21971,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -17695,7 +22187,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -17863,7 +22355,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -18037,7 +22529,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -18208,7 +22700,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -18380,7 +22872,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -19188,7 +23680,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -19221,7 +23713,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                                     /** @description The pay they accepted */
                                     pay: {
                                         /** @description In paise, at least ₹1 */
@@ -19237,12 +23729,14 @@ export interface paths {
                                     access: "on" | "verify" | "on_hold";
                                 }[];
                                 permissions: {
-                                    /** @description What the owner lets this person do at the business */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver";
+                                    /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests") | null;
+                                    /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
+                                    verify: boolean;
                                 }[];
                             };
                             meta: {
@@ -19329,7 +23823,7 @@ export interface paths {
                                 owner: {
                                     name: string;
                                 };
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                                 /** @description The pay they accepted */
                                 pay: {
                                     /** @description In paise, at least ₹1 */
@@ -19579,6 +24073,11 @@ export interface paths {
                                     /** @description What is being carried, for example Business cards × 200 */
                                     item: string;
                                     distanceKm: number | null;
+                                    /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                    dropNear: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                     /** @description Amount in paise */
                                     pay: number;
                                     offerUntil: string | null;
@@ -19732,6 +24231,11 @@ export interface paths {
                                     /** @description What is being carried, for example Business cards × 200 */
                                     item: string;
                                     distanceKm: number | null;
+                                    /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                    dropNear: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                     /** @description Amount in paise */
                                     pay: number;
                                     offerUntil: string | null;
@@ -19856,6 +24360,11 @@ export interface paths {
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
                                 distanceKm: number | null;
+                                /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                dropNear: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
                                 /** @description Amount in paise */
                                 pay: number;
                                 offerUntil: string | null;
@@ -19973,6 +24482,11 @@ export interface paths {
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
                                 distanceKm: number | null;
+                                /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                dropNear: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
                                 /** @description Amount in paise */
                                 pay: number;
                                 offerUntil: string | null;
@@ -20088,6 +24602,11 @@ export interface paths {
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
                                 distanceKm: number | null;
+                                /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                dropNear: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
                                 /** @description Amount in paise */
                                 pay: number;
                                 offerUntil: string | null;
@@ -20207,6 +24726,11 @@ export interface paths {
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
                                 distanceKm: number | null;
+                                /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                dropNear: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
                                 /** @description Amount in paise */
                                 pay: number;
                                 offerUntil: string | null;
@@ -20324,6 +24848,11 @@ export interface paths {
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
                                 distanceKm: number | null;
+                                /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                dropNear: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
                                 /** @description Amount in paise */
                                 pay: number;
                                 offerUntil: string | null;
@@ -20441,6 +24970,11 @@ export interface paths {
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
                                 distanceKm: number | null;
+                                /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                dropNear: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
                                 /** @description Amount in paise */
                                 pay: number;
                                 offerUntil: string | null;
@@ -20557,6 +25091,11 @@ export interface paths {
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
                                 distanceKm: number | null;
+                                /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                dropNear: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
                                 /** @description Amount in paise */
                                 pay: number;
                                 offerUntil: string | null;
@@ -20682,6 +25221,11 @@ export interface paths {
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
                                 distanceKm: number | null;
+                                /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                dropNear: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
                                 /** @description Amount in paise */
                                 pay: number;
                                 offerUntil: string | null;
@@ -20806,6 +25350,11 @@ export interface paths {
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
                                 distanceKm: number | null;
+                                /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
+                                dropNear: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
                                 /** @description Amount in paise */
                                 pay: number;
                                 offerUntil: string | null;
@@ -20898,12 +25447,18 @@ export interface paths {
                                 today: number;
                                 /** @description Amount in paise */
                                 week: number;
+                                /** @description Ruxstar partner deliveries, ever */
                                 trips: number;
-                                /** @description Newest first, up to 20 */
+                                /** @description Deliveries for shops you're on the team of, ever. Their shop pays for these outside Ruxstar */
+                                teamTrips: number;
+                                /** @description Your deliveries, newest first, up to 20. Team ones have no pay in Ruxstar */
                                 recent: {
                                     /** @description MongoDB ObjectId as hex */
                                     jobId: string;
                                     orderNo: number;
+                                    /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                    carrier: "team" | "partner";
+                                    shop: string;
                                     /** @description Amount in paise */
                                     pay: number;
                                     /** Format: date-time */
@@ -23635,6 +28190,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -23875,6 +28448,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -24130,6 +28721,24 @@ export interface paths {
                                         at: string;
                                     } | null;
                                 } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
                                 /** Format: date-time */
                                 createdAt: string;
                                 /** Format: date-time */
@@ -25777,7 +30386,7 @@ export interface paths {
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -25961,7 +30570,7 @@ export interface paths {
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -26167,7 +30776,7 @@ export interface paths {
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -26364,7 +30973,7 @@ export interface paths {
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "coaching" | "pg" | "hostel";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -26558,9 +31167,9 @@ export interface paths {
                                         username: string | null;
                                         avatar: string | null;
                                     };
-                                    /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
+                                    /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -26576,12 +31185,14 @@ export interface paths {
                                     joinedAt: string | null;
                                 }[];
                                 permissions: {
-                                    /** @description What the owner lets this person do at the business */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver";
+                                    /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests") | null;
+                                    /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
+                                    verify: boolean;
                                 }[];
                                 /** @description People the team can hold, invites included */
                                 max: number;
@@ -27460,6 +32071,1304 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every event, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "draft" | "live" | "cancelled";
+                    /** @description Words in the title or the organiser's name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/events/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One event, with its sales */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/events/{id}/take-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take an event down
+         * @description Cancels it: every booking is refunded in full and every ticket holder and the organiser are told why. It can't be undone.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The organiser and every ticket holder see it */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description show: concerts and live shows. sports: matches and tournaments. meetup: workshops, talks and meetups */
+                                kind: "show" | "sports" | "meetup";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                city: string | null;
+                                venueName: string | null;
+                                online: boolean;
+                                /** @description Team entries: the price is per team */
+                                team: boolean;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description Every ticket type is free */
+                                free: boolean;
+                                soldOut: boolean;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                onlineLink: string | null;
+                                teamSize: {
+                                    min: number;
+                                    max: number;
+                                } | null;
+                                tiers: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    capacity: number;
+                                    /** @description Paid or free tickets (or teams) confirmed */
+                                    sold: number;
+                                    /** @description Waiting for payment, or held for someone on the waitlist */
+                                    held: number;
+                                    left: number;
+                                }[];
+                                questions: {
+                                    id: string;
+                                    label: string;
+                                    required: boolean;
+                                }[];
+                                /** @description standard: customers can cancel for a full refund until Ruxstar's refund hours before the start. none: no refunds */
+                                refunds: "standard" | "none";
+                                status: "draft" | "live" | "cancelled" | "ended";
+                                publishedAt: string | null;
+                                cancellation: {
+                                    by: "vendor" | "staff";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                counts: {
+                                    /** @description Confirmed tickets, one per person */
+                                    tickets: number;
+                                    /** @description Tickets checked in today */
+                                    checkedIn: number;
+                                    /** @description People on the waitlist */
+                                    waiting: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every GST invoice, bill of supply and credit note, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                    kind?: "tax_invoice" | "bill_of_supply" | "credit_note";
+                    /** @description Exact document number */
+                    number?: string;
+                    orderNo?: number;
+                    /** @description MongoDB ObjectId as hex */
+                    business?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                /** @description Consecutive within the seller's series for the financial year */
+                                number: string;
+                                /** @description Indian financial year, for example 2026-27 */
+                                fy: string;
+                                /** @description Whose document it is: the business's, or Ruxstar's */
+                                issuer: "vendor" | "ruxstar";
+                                /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                role: "supply" | "fee";
+                                /** @description turf and ecommerce have defaults ready for when they open */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                order: {
+                                    type: "pod_order" | "event_order";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                seller: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                buyer: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                /** @description Ruxstar as the e-commerce operator, on a business's documents */
+                                operator: {
+                                    name: string;
+                                    gstin: string | null;
+                                } | null;
+                                placeOfSupply: {
+                                    state: string;
+                                    code: string;
+                                } | null;
+                                /** @description intra: CGST and SGST. inter: IGST. */
+                                supply: "intra" | "inter";
+                                /** @description Ruxstar pays the GST on the business's sale as the e-commerce operator (section 9(5)) */
+                                operatorPays: boolean;
+                                lines: {
+                                    description: string;
+                                    /** @description HSN for goods, SAC for services; empty when not set */
+                                    code: string;
+                                    codeKind: "hsn" | "sac";
+                                    quantity: number;
+                                    /** @description Paise per unit, as charged */
+                                    unitPrice: number;
+                                    /** @description Paise off the line by the seller */
+                                    discount: number;
+                                    /** @description GST rate in basis points: 1800 = 18% */
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Paise: taxable value plus tax */
+                                    total: number;
+                                }[];
+                                totals: {
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Amount in paise */
+                                    tax: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description A Ruxstar coupon: paid to the seller by Ruxstar, not by the customer */
+                                    ruxstarDiscount: number;
+                                    /** @description Total less the Ruxstar discount */
+                                    payable: number;
+                                };
+                                /** @description Tax Ruxstar collects at source on the business's sale. Shown to the business and the console only */
+                                tcs: {
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                } | null;
+                                /** @description Credit notes: the invoice it reduces */
+                                against: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    number: string;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                } | null;
+                                /** @description Credit notes: the refund behind it */
+                                refund: {
+                                    id: string;
+                                    reason: string | null;
+                                } | null;
+                                /** @description Invoices: paise credited back so far */
+                                credited: number;
+                                notes: string[];
+                                /** Format: date-time */
+                                issuedAt: string;
+                                /** @description Opens the PDF without signing in; works for 10 minutes. Add `download=1` to save it instead */
+                                pdfUrl: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/invoices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One GST document */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                /** @description Consecutive within the seller's series for the financial year */
+                                number: string;
+                                /** @description Indian financial year, for example 2026-27 */
+                                fy: string;
+                                /** @description Whose document it is: the business's, or Ruxstar's */
+                                issuer: "vendor" | "ruxstar";
+                                /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                role: "supply" | "fee";
+                                /** @description turf and ecommerce have defaults ready for when they open */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                order: {
+                                    type: "pod_order" | "event_order";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                seller: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                buyer: {
+                                    name: string;
+                                    legalName: string | null;
+                                    gstin: string | null;
+                                    address: string | null;
+                                    state: string | null;
+                                    stateCode: string | null;
+                                };
+                                /** @description Ruxstar as the e-commerce operator, on a business's documents */
+                                operator: {
+                                    name: string;
+                                    gstin: string | null;
+                                } | null;
+                                placeOfSupply: {
+                                    state: string;
+                                    code: string;
+                                } | null;
+                                /** @description intra: CGST and SGST. inter: IGST. */
+                                supply: "intra" | "inter";
+                                /** @description Ruxstar pays the GST on the business's sale as the e-commerce operator (section 9(5)) */
+                                operatorPays: boolean;
+                                lines: {
+                                    description: string;
+                                    /** @description HSN for goods, SAC for services; empty when not set */
+                                    code: string;
+                                    codeKind: "hsn" | "sac";
+                                    quantity: number;
+                                    /** @description Paise per unit, as charged */
+                                    unitPrice: number;
+                                    /** @description Paise off the line by the seller */
+                                    discount: number;
+                                    /** @description GST rate in basis points: 1800 = 18% */
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Paise: taxable value plus tax */
+                                    total: number;
+                                }[];
+                                totals: {
+                                    /** @description Amount in paise */
+                                    taxable: number;
+                                    /** @description Amount in paise */
+                                    cgst: number;
+                                    /** @description Amount in paise */
+                                    sgst: number;
+                                    /** @description Amount in paise */
+                                    igst: number;
+                                    /** @description Amount in paise */
+                                    tax: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description A Ruxstar coupon: paid to the seller by Ruxstar, not by the customer */
+                                    ruxstarDiscount: number;
+                                    /** @description Total less the Ruxstar discount */
+                                    payable: number;
+                                };
+                                /** @description Tax Ruxstar collects at source on the business's sale. Shown to the business and the console only */
+                                tcs: {
+                                    rateBps: number;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                } | null;
+                                /** @description Credit notes: the invoice it reduces */
+                                against: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    number: string;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                } | null;
+                                /** @description Credit notes: the refund behind it */
+                                refund: {
+                                    id: string;
+                                    reason: string | null;
+                                } | null;
+                                /** @description Invoices: paise credited back so far */
+                                credited: number;
+                                notes: string[];
+                                /** Format: date-time */
+                                issuedAt: string;
+                                /** @description Opens the PDF without signing in; works for 10 minutes. Add `download=1` to save it instead */
+                                pdfUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/invoices/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One GST document as a PDF */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The PDF */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gst": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * GST settings: Ruxstar's own details and each module's rules
+         * @description Changes apply to documents issued from then on; documents already issued never change.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Ruxstar's own details for its invoices (platform fee, and sales it invoices itself) and as the operator on businesses' invoices */
+                                seller: {
+                                    legalName: string;
+                                    tradeName: string;
+                                    gstin: string | null;
+                                    address: {
+                                        line: string;
+                                        city: string;
+                                        /** @description One of the states in the vendor catalog */
+                                        state: string;
+                                        pincode: string;
+                                    } | null;
+                                    /** @description HSN or SAC, 4 to 8 digits */
+                                    feeCode: string;
+                                    /** @description Basis points: 1800 = 18% */
+                                    feeRateBps: number;
+                                    updatedAt: string | null;
+                                };
+                                modules: {
+                                    /** @description turf and ecommerce have defaults ready for when they open */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                    /** @description Issue GST documents for this module's orders */
+                                    enabled: boolean;
+                                    /** @description vendor: the business sells and Ruxstar is the e-commerce operator. ruxstar: Ruxstar invoices the sale itself. */
+                                    seller: "vendor" | "ruxstar";
+                                    /** @description A business without a GSTIN: it issues a bill of supply, or Ruxstar invoices the sale and pays the GST (section 9(5)) */
+                                    withoutGstin: "bill_of_supply" | "ruxstar";
+                                    /** @description HSN or SAC, 4 to 8 digits */
+                                    code: string;
+                                    /** @description hsn for goods, sac for services */
+                                    codeKind: "hsn" | "sac";
+                                    /** @description Basis points: 1800 = 18% */
+                                    rateBps: number;
+                                    /** @description Units priced at or below `upTo` (tax included) use this rate instead */
+                                    lowRate: {
+                                        /** @description Paise per unit */
+                                        upTo: number;
+                                        /** @description Basis points: 1800 = 18% */
+                                        rateBps: number;
+                                    } | null;
+                                    /** @description Rates for one product or kind of business; the rest use the module's */
+                                    items: {
+                                        /** @description A print product, an event kind (show, sports, meetup) or a business type (pg, hostel) */
+                                        key: string;
+                                        label: string;
+                                        /** @description HSN or SAC, 4 to 8 digits */
+                                        code: string;
+                                        /** @description hsn for goods, sac for services */
+                                        codeKind: "hsn" | "sac";
+                                        /** @description Basis points: 1800 = 18% */
+                                        rateBps: number;
+                                        /** @description Units priced at or below `upTo` (tax included) use this rate instead */
+                                        lowRate: {
+                                            /** @description Paise per unit */
+                                            upTo: number;
+                                            /** @description Basis points: 1800 = 18% */
+                                            rateBps: number;
+                                        } | null;
+                                    }[];
+                                    /** @description Prices customers see include GST */
+                                    pricesIncludeTax: boolean;
+                                    /** @description Tax collected at source on registered businesses' sales, in basis points */
+                                    tcsBps: number;
+                                    /** @description Null while on the defaults */
+                                    updatedAt: string | null;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gst/modules/{module}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change one module's GST rules
+         * @description Send only what changes. `items` replaces the whole list. Applies to orders paid from now on.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description turf and ecommerce have defaults ready for when they open */
+                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Issue GST documents for this module's orders */
+                        enabled?: boolean;
+                        /** @description vendor: the business sells and Ruxstar is the e-commerce operator. ruxstar: Ruxstar invoices the sale itself. */
+                        seller?: "vendor" | "ruxstar";
+                        /** @description A business without a GSTIN: it issues a bill of supply, or Ruxstar invoices the sale and pays the GST (section 9(5)) */
+                        withoutGstin?: "bill_of_supply" | "ruxstar";
+                        /** @description HSN or SAC, 4 to 8 digits */
+                        code?: string;
+                        /** @description hsn for goods, sac for services */
+                        codeKind?: "hsn" | "sac";
+                        /** @description Basis points: 1800 = 18% */
+                        rateBps?: number;
+                        /** @description Units priced at or below `upTo` (tax included) use this rate instead */
+                        lowRate?: {
+                            /** @description Paise per unit */
+                            upTo: number;
+                            /** @description Basis points: 1800 = 18% */
+                            rateBps: number;
+                        } | null;
+                        /** @description Rates for one product or kind of business; the rest use the module's */
+                        items?: {
+                            /** @description A print product, an event kind (show, sports, meetup) or a business type (pg, hostel) */
+                            key: string;
+                            label: string;
+                            /** @description HSN or SAC, 4 to 8 digits */
+                            code: string;
+                            /** @description hsn for goods, sac for services */
+                            codeKind: "hsn" | "sac";
+                            /** @description Basis points: 1800 = 18% */
+                            rateBps: number;
+                            /** @description Units priced at or below `upTo` (tax included) use this rate instead */
+                            lowRate: {
+                                /** @description Paise per unit */
+                                upTo: number;
+                                /** @description Basis points: 1800 = 18% */
+                                rateBps: number;
+                            } | null;
+                        }[];
+                        /** @description Prices customers see include GST */
+                        pricesIncludeTax?: boolean;
+                        /** @description Tax collected at source on registered businesses' sales, in basis points */
+                        tcsBps?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description turf and ecommerce have defaults ready for when they open */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                /** @description Issue GST documents for this module's orders */
+                                enabled: boolean;
+                                /** @description vendor: the business sells and Ruxstar is the e-commerce operator. ruxstar: Ruxstar invoices the sale itself. */
+                                seller: "vendor" | "ruxstar";
+                                /** @description A business without a GSTIN: it issues a bill of supply, or Ruxstar invoices the sale and pays the GST (section 9(5)) */
+                                withoutGstin: "bill_of_supply" | "ruxstar";
+                                /** @description HSN or SAC, 4 to 8 digits */
+                                code: string;
+                                /** @description hsn for goods, sac for services */
+                                codeKind: "hsn" | "sac";
+                                /** @description Basis points: 1800 = 18% */
+                                rateBps: number;
+                                /** @description Units priced at or below `upTo` (tax included) use this rate instead */
+                                lowRate: {
+                                    /** @description Paise per unit */
+                                    upTo: number;
+                                    /** @description Basis points: 1800 = 18% */
+                                    rateBps: number;
+                                } | null;
+                                /** @description Rates for one product or kind of business; the rest use the module's */
+                                items: {
+                                    /** @description A print product, an event kind (show, sports, meetup) or a business type (pg, hostel) */
+                                    key: string;
+                                    label: string;
+                                    /** @description HSN or SAC, 4 to 8 digits */
+                                    code: string;
+                                    /** @description hsn for goods, sac for services */
+                                    codeKind: "hsn" | "sac";
+                                    /** @description Basis points: 1800 = 18% */
+                                    rateBps: number;
+                                    /** @description Units priced at or below `upTo` (tax included) use this rate instead */
+                                    lowRate: {
+                                        /** @description Paise per unit */
+                                        upTo: number;
+                                        /** @description Basis points: 1800 = 18% */
+                                        rateBps: number;
+                                    } | null;
+                                }[];
+                                /** @description Prices customers see include GST */
+                                pricesIncludeTax: boolean;
+                                /** @description Tax collected at source on registered businesses' sales, in basis points */
+                                tcsBps: number;
+                                /** @description Null while on the defaults */
+                                updatedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/ruxstar/gst/seller": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change Ruxstar's own GST details
+         * @description Send only what changes; null clears the GSTIN or address. Without a GSTIN, Ruxstar's documents are bills of supply.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        legalName?: string;
+                        tradeName?: string;
+                        gstin?: string | null;
+                        address?: {
+                            line: string;
+                            city: string;
+                            /** @description One of the states in the vendor catalog */
+                            state: string;
+                            pincode: string;
+                        } | null;
+                        /** @description HSN or SAC, 4 to 8 digits */
+                        feeCode?: string;
+                        /** @description Basis points: 1800 = 18% */
+                        feeRateBps?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Ruxstar's own details for its invoices (platform fee, and sales it invoices itself) and as the operator on businesses' invoices */
+                            data: {
+                                legalName: string;
+                                tradeName: string;
+                                gstin: string | null;
+                                address: {
+                                    line: string;
+                                    city: string;
+                                    /** @description One of the states in the vendor catalog */
+                                    state: string;
+                                    pincode: string;
+                                } | null;
+                                /** @description HSN or SAC, 4 to 8 digits */
+                                feeCode: string;
+                                /** @description Basis points: 1800 = 18% */
+                                feeRateBps: number;
+                                updatedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/v1/ruxstar/audit": {
         parameters: {
             query?: never;
@@ -27614,6 +33523,15 @@ export interface paths {
                                     /** @description A Ruxstar partner offer nobody accepts is cancelled after this */
                                     offerMinutes: number;
                                 } | null;
+                                eventRules: {
+                                    /** @description Customers can cancel for a full refund until this many hours before the start */
+                                    refundHours: number;
+                                    /** @description How long someone offered a seat from the waitlist has to pay */
+                                    waitlistHours: number;
+                                    maxTicketTypes: number;
+                                    /** @description Questions an organiser can ask each ticket holder */
+                                    maxQuestions: number;
+                                } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
                                 updatedAt: string;
@@ -27704,6 +33622,16 @@ export interface paths {
                             perKm: number;
                         };
                         offerMinutes?: number;
+                        /** @description Events only. Send only what changes. */
+                        eventRules?: {
+                            /** @description Customers can cancel for a full refund until this many hours before the start */
+                            refundHours?: number;
+                            /** @description How long someone offered a seat from the waitlist has to pay */
+                            waitlistHours?: number;
+                            maxTicketTypes?: number;
+                            /** @description Questions an organiser can ask each ticket holder */
+                            maxQuestions?: number;
+                        };
                     };
                 };
             };
@@ -27747,6 +33675,15 @@ export interface paths {
                                     };
                                     /** @description A Ruxstar partner offer nobody accepts is cancelled after this */
                                     offerMinutes: number;
+                                } | null;
+                                eventRules: {
+                                    /** @description Customers can cancel for a full refund until this many hours before the start */
+                                    refundHours: number;
+                                    /** @description How long someone offered a seat from the waitlist has to pay */
+                                    waitlistHours: number;
+                                    maxTicketTypes: number;
+                                    /** @description Questions an organiser can ask each ticket holder */
+                                    maxQuestions: number;
                                 } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */

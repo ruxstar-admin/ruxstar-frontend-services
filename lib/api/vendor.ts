@@ -203,6 +203,7 @@ export const TYPE_ICON = {
   print_shop: "print",
   concert: "ticket",
   sports_event: "star",
+  meetup: "users",
   coaching: "book",
   pg: "home",
   hostel: "home",

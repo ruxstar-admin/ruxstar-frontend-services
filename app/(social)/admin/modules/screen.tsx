@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Needs, useCan } from "@/components/admin/AdminFrame";
-import { Failed, Rows, styles } from "@/components/admin/parts";
+import { Failed, Fact, Rows, styles } from "@/components/admin/parts";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, Card, Input, Switch, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
@@ -172,6 +172,116 @@ function DeliveryRates({ m, delivery: d, onSaved }: { m: ModuleSettings; deliver
   );
 }
 
+type EventRules = NonNullable<ModuleSettings["eventRules"]>;
+type RuleKey = keyof EventRules;
+
+/** The API's limits for each rule, and the words around each field. */
+const RULES: { key: RuleKey; min: number; max: number; label: string; unit: string; hint: string }[] = [
+  {
+    key: "refundHours",
+    min: 0,
+    max: 720,
+    label: "Refunds stop this many hours before the start",
+    unit: "hours",
+    hint: "Customers can cancel for a full refund until then. Applies to every event at once, tickets already sold included. 0 lets them cancel right up to the start. Organisers can still choose no refunds.",
+  },
+  {
+    key: "waitlistHours",
+    min: 1,
+    max: 48,
+    label: "Hours to pay for seats from the waitlist",
+    unit: "hours",
+    hint: "When seats free up, the next person waiting gets this long to pay. Then the offer moves on.",
+  },
+  {
+    key: "maxTicketTypes",
+    min: 1,
+    max: 10,
+    label: "Ticket types per event",
+    unit: "",
+    hint: "Like General, VIP and Early bird. Checked when an organiser saves an event; events that already have more keep them until edited.",
+  },
+  {
+    key: "maxQuestions",
+    min: 0,
+    max: 10,
+    label: "Questions per ticket holder",
+    unit: "",
+    hint: "Extra questions an organiser can ask each person, like T-shirt size. 0 turns them off for new and edited events.",
+  },
+];
+
+const rulesText = (rules: EventRules) => Object.fromEntries(RULES.map((f) => [f.key, String(rules[f.key])])) as Record<RuleKey, string>;
+const plural = (n: number, unit: string) => (unit ? `${n} ${n === 1 ? unit.slice(0, -1) : unit}` : String(n));
+
+/** Events only: the refund window, the waitlist's time to pay, and how much an organiser can add to one event. Same as the app. */
+function EventRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: EventRules; onSaved: (m: ModuleSettings) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const [text, setText] = useState(() => rulesText(rules));
+  const [busy, setBusy] = useState(false);
+
+  const values = Object.fromEntries(RULES.map((f) => [f.key, wholeOf(text[f.key])])) as Record<RuleKey, number>;
+  const errors = Object.fromEntries(
+    RULES.map((f) => [f.key, values[f.key] >= f.min && values[f.key] <= f.max ? undefined : `Enter a whole number from ${f.min} to ${f.max}`]),
+  ) as Record<RuleKey, string | undefined>;
+  const invalid = RULES.some((f) => errors[f.key]);
+  const changes = Object.fromEntries(RULES.filter((f) => values[f.key] !== rules[f.key]).map((f) => [f.key, values[f.key]])) as Partial<EventRules>;
+  const changed = Object.keys(changes).length > 0;
+
+  async function save() {
+    setBusy(true);
+    try {
+      const done = await updateModule(m.module, { eventRules: changes });
+      onSaved(done);
+      if (done.eventRules) setText(rulesText(done.eventRules));
+      toast("Event rules saved.", "success");
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <div className={styles.group}>
+        <h3 className={styles.label}>Event rules</h3>
+        <p className={styles.muted}>Every organiser&apos;s events follow these.</p>
+      </div>
+      {canManage ? (
+        <div className={styles.group}>
+          {RULES.map((f) => (
+            <Input
+              key={f.key}
+              label={f.label}
+              inputMode="numeric"
+              value={text[f.key]}
+              onChange={(e) => whole((v) => setText((all) => ({ ...all, [f.key]: v })))(e.target.value)}
+              suffix={f.unit || undefined}
+              hint={errors[f.key] ? undefined : f.hint}
+              error={errors[f.key]}
+              maxLength={3}
+            />
+          ))}
+          <div>
+            <Button variant="secondary" disabled={invalid || !changed} loading={busy} onClick={() => void save()}>
+              Save event rules
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <dl className={styles.facts}>
+          {RULES.map((f) => (
+            <Fact key={f.key} label={f.label} value={plural(rules[f.key], f.unit)} />
+          ))}
+        </dl>
+      )}
+    </>
+  );
+}
+
 function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
@@ -309,6 +419,7 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
       </div>
       {m.payouts && <Withdrawals m={m} payouts={m.payouts} onSaved={onSaved} />}
       {m.delivery && <DeliveryRates m={m} delivery={m.delivery} onSaved={onSaved} />}
+      {m.eventRules && <EventRulesForm m={m} rules={m.eventRules} onSaved={onSaved} />}
     </Card>
   );
 }

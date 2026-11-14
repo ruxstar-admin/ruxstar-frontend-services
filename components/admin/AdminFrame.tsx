@@ -20,6 +20,7 @@ const SECTIONS: { href: string; label: string; icon: IconName; need: Need }[] = 
   { href: "/admin/users", label: "People", icon: "user", need: "users.view" },
   { href: "/admin/staff", label: "Staff", icon: "shield", need: "admin" },
   { href: "/admin/businesses", label: "Businesses", icon: "store", need: "businesses.view" },
+  { href: "/admin/events", label: "Events", icon: "calendar", need: "businesses.view" },
   { href: "/admin/modules", label: "Modules", icon: "stack", need: "modules.view" },
   { href: "/admin/payouts", label: "Payouts", icon: "wallet", need: "payouts.view" },
   { href: "/admin/coupons", label: "Coupons", icon: "ticket", need: "coupons.view" },

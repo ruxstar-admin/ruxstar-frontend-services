@@ -27,7 +27,11 @@ const WORK_AREAS: { title: string; line: string; icon: IconName; allowed: (permi
   { title: "Coupons", line: "Discounts for this shop", icon: "ticket", allowed: has("coupons.manage"), path: "coupons" },
   { title: "Reviews", line: "What customers said, and the shop’s replies", icon: "star", allowed: has("reviews.reply"), path: "reviews" },
   { title: "Post as the business", line: "It goes out under the owner’s name", icon: "edit", allowed: has("posts.create"), path: "post" },
+  { title: "Scan tickets", line: "Check people in at this business’s events", icon: "ticket", allowed: has("tickets.scan"), path: "/gate" },
 ];
+
+/** Areas whose `path` starts with "/" live outside Work: the gate serves owners and gate keepers alike. */
+const areaHref = (placeId: string, path: string) => (path.startsWith("/") ? path : `/work/${placeId}/${path}`);
 
 function Head({ business, owner }: { business: WorkPlace["business"]; owner: string }) {
   return (
@@ -102,7 +106,7 @@ function Place({ place, catalog }: { place: WorkPlace; catalog: PermissionInfo[]
         <ul className={styles.rows}>
           {areas.map((area) => (
             <li key={area.path}>
-              <Link href={`/work/${place.id}/${area.path}`} className={styles.row}>
+              <Link href={areaHref(place.id, area.path)} className={styles.row}>
                 <Icon name={area.icon} size={20} />
                 <span className={styles.rowText}>
                   <span className={styles.rowTitle}>{area.title}</span>
