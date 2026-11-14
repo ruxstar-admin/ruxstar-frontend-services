@@ -105,6 +105,48 @@
   border-top: 1px solid var(--line);
 }
 
+.facts[data-bare] {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Delivery partner cases: "Licence and vehicle", then "Their identity". */
+.section {
+  padding-top: var(--space-4);
+  font: 700 12px/16px var(--font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  border-top: 1px solid var(--line);
+}
+
+.photos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  max-width: 520px;
+}
+
+.photo {
+  display: grid;
+  gap: var(--space-1);
+  font: var(--type-caption);
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+.photo img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--raised);
+  border-radius: var(--radius-control);
+}
+
+.photo:hover img {
+  opacity: 0.85;
+}
+
 .fact dt {
   font: var(--type-caption);
   color: var(--ink-2);

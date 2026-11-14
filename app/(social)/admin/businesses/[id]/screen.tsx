@@ -33,6 +33,7 @@ const MISSING: Record<Business["missing"][number], string> = {
   products: "print products",
   area: "a service area",
   pricing: "prices for every product",
+  gstin: "a GSTIN",
 };
 
 const rupees = (paise: number) => `₹${(paise / 100).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;

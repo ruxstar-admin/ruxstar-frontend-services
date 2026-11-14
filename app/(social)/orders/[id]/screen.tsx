@@ -5,7 +5,7 @@ import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { RateOrder } from "@/components/reviews/Reviews";
-import { FileItem, PriceList, ProblemCard, Progress } from "@/components/shop/OrderParts";
+import { FileItem, PriceList, ProblemCard, Progress, RiderCard } from "@/components/shop/OrderParts";
 import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import {
@@ -224,6 +224,9 @@ function OrderDetails({ order, onChanged }: { order: Order; onChanged: (order: O
       </div>
 
       <News order={order} />
+      {order.delivery?.rider && order.delivery.status !== "cancelled" && !isClosed(order.status) && (
+        <RiderCard delivery={order.delivery} code={order.delivery.dropCode} />
+      )}
       {error && (
         <p className={styles.error} role="alert">
           {error}

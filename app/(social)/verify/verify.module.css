@@ -83,6 +83,40 @@
   color: var(--danger);
 }
 
+.note[data-tone="brand"] > svg {
+  color: var(--accent-soft);
+}
+
+/* Delivery partner: a photo of the licence or the vehicle. */
+.photo {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.photoHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: var(--type-small);
+}
+
+.photoHead > svg {
+  flex: none;
+  color: var(--ink-2);
+}
+
+.photoHead[data-added] > svg {
+  color: var(--success);
+}
+
+.photoActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 .steps {
   display: grid;
   margin: 0;

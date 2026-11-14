@@ -288,8 +288,8 @@ export function ProfileChecklist() {
   );
 }
 
-/** Beside the username: Edit profile on yours, Follow and More on someone else's, Join for signed-out visitors. */
-export function ProfileActions() {
+/** Beside the username: Edit profile and Delivery partner on yours, Follow and More on someone else's, Join for signed-out visitors. */
+export function ProfileActions({ delivery = false }: { delivery?: boolean }) {
   const me = useMe();
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
@@ -310,10 +310,21 @@ export function ProfileActions() {
         () => toast(url),
       );
     };
+    // Approval happens on the server, so the profile's badge counts before the session's roles catch up.
+    const partner = me.roles.delivery || delivery;
     return (
       <div className={styles.actions}>
         <ButtonLink href="/account" variant="secondary">
           Edit profile
+        </ButtonLink>
+        <ButtonLink
+          href="/verify/delivery"
+          variant={partner ? "primary" : "secondary"}
+          className={styles.iconAction}
+          aria-label={partner ? "Delivery partner: use the Ruxstar Delivery app" : "Become a delivery partner"}
+          title={partner ? "Delivery partner: use the Ruxstar Delivery app" : "Become a delivery partner"}
+        >
+          <Icon name="bicycle" size={22} />
         </ButtonLink>
         <Button variant="secondary" icon={<Icon name="share" size={18} />} onClick={() => void share()}>
           Share profile

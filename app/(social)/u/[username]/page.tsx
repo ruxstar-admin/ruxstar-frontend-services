@@ -85,7 +85,7 @@ export default async function ProfilePage({ params }: Props) {
           </div>
           <div className={styles.top}>
             <h1 className={styles.username}>{profile.username}</h1>
-            <ProfileActions />
+            <ProfileActions delivery={profile.badges.delivery} />
           </div>
           <ProfileStats posts={postCount} />
           <div className={styles.about}>

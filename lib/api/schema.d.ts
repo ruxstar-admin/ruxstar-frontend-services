@@ -388,6 +388,8 @@ export interface paths {
                                         base: string;
                                         /** @description none, pending, approved or rejected */
                                         vendor: string;
+                                        /** @description Delivery partner verification: none, pending, approved or rejected. Details at GET /v1/kyc */
+                                        delivery: string;
                                     };
                                     card: {
                                         /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
@@ -520,6 +522,8 @@ export interface paths {
                                         base: string;
                                         /** @description none, pending, approved or rejected */
                                         vendor: string;
+                                        /** @description Delivery partner verification: none, pending, approved or rejected. Details at GET /v1/kyc */
+                                        delivery: string;
                                     };
                                     card: {
                                         /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
@@ -653,6 +657,8 @@ export interface paths {
                                         base: string;
                                         /** @description none, pending, approved or rejected */
                                         vendor: string;
+                                        /** @description Delivery partner verification: none, pending, approved or rejected. Details at GET /v1/kyc */
+                                        delivery: string;
                                     };
                                     card: {
                                         /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
@@ -1052,6 +1058,8 @@ export interface paths {
                                     base: string;
                                     /** @description none, pending, approved or rejected */
                                     vendor: string;
+                                    /** @description Delivery partner verification: none, pending, approved or rejected. Details at GET /v1/kyc */
+                                    delivery: string;
                                 };
                                 card: {
                                     /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
@@ -1216,6 +1224,8 @@ export interface paths {
                                     base: string;
                                     /** @description none, pending, approved or rejected */
                                     vendor: string;
+                                    /** @description Delivery partner verification: none, pending, approved or rejected. Details at GET /v1/kyc */
+                                    delivery: string;
                                 };
                                 card: {
                                     /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
@@ -1317,6 +1327,8 @@ export interface paths {
                                     base: string;
                                     /** @description none, pending, approved or rejected */
                                     vendor: string;
+                                    /** @description Delivery partner verification: none, pending, approved or rejected. Details at GET /v1/kyc */
+                                    delivery: string;
                                 };
                                 card: {
                                     /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
@@ -1406,6 +1418,8 @@ export interface paths {
                                     base: string;
                                     /** @description none, pending, approved or rejected */
                                     vendor: string;
+                                    /** @description Delivery partner verification: none, pending, approved or rejected. Details at GET /v1/kyc */
+                                    delivery: string;
                                 };
                                 card: {
                                     /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
@@ -1766,6 +1780,8 @@ export interface paths {
                                     base: string;
                                     /** @description none, pending, approved or rejected */
                                     vendor: string;
+                                    /** @description Delivery partner verification: none, pending, approved or rejected. Details at GET /v1/kyc */
+                                    delivery: string;
                                 };
                                 card: {
                                     /** @description For example RUX-1A2B-3C4D. The full card is at GET /v1/kyc/card */
@@ -2160,6 +2176,350 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/kyc/delivery/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Add your driving licence number and your vehicle
+         * @description Needs identity verification approved first. Send only what changes. Bikes and scooters only. One licence can verify only one account.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Spaces and dashes are fine */
+                        licenceNumber?: string;
+                        /** @description Bikes and scooters only */
+                        vehicleType?: "bike" | "scooter";
+                        /** @description The number plate; spaces and dashes are fine */
+                        vehicleNumber?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                delivery: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    /** @description Identity verification comes first; this track opens once it is approved */
+                                    identityVerified: boolean;
+                                    licence: {
+                                        number: string | null;
+                                        /** @description A photo was added */
+                                        photo: boolean;
+                                    };
+                                    vehicle: {
+                                        type: ("bike" | "scooter") | null;
+                                        number: string | null;
+                                        photo: boolean;
+                                    };
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/kyc/delivery/photos/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Add the photo of your driving licence, or of your vehicle with its number plate
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. It is kept privately for the Ruxstar team, upright and without the camera's location, and replaces the one before.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description `licence` is the front of the driving licence; `vehicle` shows the bike or scooter with its number plate */
+                    kind: "licence" | "vehicle";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                delivery: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    /** @description Identity verification comes first; this track opens once it is approved */
+                                    identityVerified: boolean;
+                                    licence: {
+                                        number: string | null;
+                                        /** @description A photo was added */
+                                        photo: boolean;
+                                    };
+                                    vehicle: {
+                                        type: ("bike" | "scooter") | null;
+                                        number: string | null;
+                                        photo: boolean;
+                                    };
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/kyc/delivery/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send delivery verification for review
+         * @description Needs the licence number and photo, and the vehicle's type, number and photo. The Ruxstar team checks the photos.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                base: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    steps: {
+                                        aadhaar: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            name: string | null;
+                                            last4: string | null;
+                                        };
+                                        pan: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                            masked: string | null;
+                                        };
+                                        face: {
+                                            status: "not_started" | "pending" | "verified" | "failed";
+                                            reason: string | null;
+                                        };
+                                    };
+                                };
+                                delivery: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    /** @description Identity verification comes first; this track opens once it is approved */
+                                    identityVerified: boolean;
+                                    licence: {
+                                        number: string | null;
+                                        /** @description A photo was added */
+                                        photo: boolean;
+                                    };
+                                    vehicle: {
+                                        type: ("bike" | "scooter") | null;
+                                        number: string | null;
+                                        photo: boolean;
+                                    };
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/kyc/": {
         parameters: {
             query?: never;
@@ -2209,6 +2569,27 @@ export interface paths {
                                             status: "not_started" | "pending" | "verified" | "failed";
                                             reason: string | null;
                                         };
+                                    };
+                                };
+                                delivery: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    /** @description Identity verification comes first; this track opens once it is approved */
+                                    identityVerified: boolean;
+                                    licence: {
+                                        number: string | null;
+                                        /** @description A photo was added */
+                                        photo: boolean;
+                                    };
+                                    vehicle: {
+                                        type: ("bike" | "scooter") | null;
+                                        number: string | null;
+                                        photo: boolean;
                                     };
                                 };
                             };
@@ -2367,6 +2748,27 @@ export interface paths {
                                         };
                                     };
                                 };
+                                delivery: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    /** @description Identity verification comes first; this track opens once it is approved */
+                                    identityVerified: boolean;
+                                    licence: {
+                                        number: string | null;
+                                        /** @description A photo was added */
+                                        photo: boolean;
+                                    };
+                                    vehicle: {
+                                        type: ("bike" | "scooter") | null;
+                                        number: string | null;
+                                        photo: boolean;
+                                    };
+                                };
                             };
                             meta: {
                                 requestId: string;
@@ -2463,6 +2865,27 @@ export interface paths {
                                         };
                                     };
                                 };
+                                delivery: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    /** @description Identity verification comes first; this track opens once it is approved */
+                                    identityVerified: boolean;
+                                    licence: {
+                                        number: string | null;
+                                        /** @description A photo was added */
+                                        photo: boolean;
+                                    };
+                                    vehicle: {
+                                        type: ("bike" | "scooter") | null;
+                                        number: string | null;
+                                        photo: boolean;
+                                    };
+                                };
                             };
                             meta: {
                                 requestId: string;
@@ -2552,6 +2975,27 @@ export interface paths {
                                         };
                                     };
                                 };
+                                delivery: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    /** @description Identity verification comes first; this track opens once it is approved */
+                                    identityVerified: boolean;
+                                    licence: {
+                                        number: string | null;
+                                        /** @description A photo was added */
+                                        photo: boolean;
+                                    };
+                                    vehicle: {
+                                        type: ("bike" | "scooter") | null;
+                                        number: string | null;
+                                        photo: boolean;
+                                    };
+                                };
                             };
                             meta: {
                                 requestId: string;
@@ -2639,6 +3083,27 @@ export interface paths {
                                             status: "not_started" | "pending" | "verified" | "failed";
                                             reason: string | null;
                                         };
+                                    };
+                                };
+                                delivery: {
+                                    /** @description `locked` follows the third rejection; support reopens it. */
+                                    status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                    rejectionReason: string | null;
+                                    /** @description Rejections before the case locks */
+                                    rejectionsLeft: number;
+                                    submittedAt: string | null;
+                                    decidedAt: string | null;
+                                    /** @description Identity verification comes first; this track opens once it is approved */
+                                    identityVerified: boolean;
+                                    licence: {
+                                        number: string | null;
+                                        /** @description A photo was added */
+                                        photo: boolean;
+                                    };
+                                    vehicle: {
+                                        type: ("bike" | "scooter") | null;
+                                        number: string | null;
+                                        photo: boolean;
                                     };
                                 };
                             };
@@ -7379,12 +7844,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed";
+                                type: "post.like" | "post.comment" | "post.removed" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen, `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business) and `work_reviews` the reviews of a shop you work at (`id` is the place on the team); `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team) and `delivery_job` a delivery in the Ruxstar Delivery app; `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job";
                                     id: string;
                                 };
                                 read: boolean;
@@ -8042,6 +8507,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -8124,14 +8593,18 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number;
                                     /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
+                                    /** @description Amount in paise. Items and delivery less commission, and less the discount when the coupon is yours. */
                                     payout: number;
-                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    /** @description Amount in paise. The payout less partial refunds and a Ruxstar partner's pay; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
                                 };
                                 /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
@@ -8139,6 +8612,31 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                             }[];
                             meta: {
                                 requestId: string;
@@ -8237,6 +8735,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -8319,14 +8821,18 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number;
                                     /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
+                                    /** @description Amount in paise. Items and delivery less commission, and less the discount when the coupon is yours. */
                                     payout: number;
-                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    /** @description Amount in paise. The payout less partial refunds and a Ruxstar partner's pay; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
                                 };
                                 /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
@@ -8334,6 +8840,31 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                             };
                             meta: {
                                 requestId: string;
@@ -8444,6 +8975,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -8526,14 +9061,18 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number;
                                     /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
+                                    /** @description Amount in paise. Items and delivery less commission, and less the discount when the coupon is yours. */
                                     payout: number;
-                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    /** @description Amount in paise. The payout less partial refunds and a Ruxstar partner's pay; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
                                 };
                                 /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
@@ -8541,6 +9080,31 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                             };
                             meta: {
                                 requestId: string;
@@ -8650,6 +9214,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -8732,14 +9300,18 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number;
                                     /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
+                                    /** @description Amount in paise. Items and delivery less commission, and less the discount when the coupon is yours. */
                                     payout: number;
-                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    /** @description Amount in paise. The payout less partial refunds and a Ruxstar partner's pay; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
                                 };
                                 /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
@@ -8747,6 +9319,31 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                             };
                             meta: {
                                 requestId: string;
@@ -8775,6 +9372,536 @@ export interface paths {
             };
         };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/orders/{id}/delivery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who can deliver an order: your team, or a Ruxstar partner and what they'd be paid
+         * @description Delivering it yourself needs nothing here: mark it out for delivery and delivered as usual.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                orderStatus: string;
+                                /** @description The order is ready and nobody has it, so a rider can be picked now */
+                                canAssign: boolean;
+                                reason: string | null;
+                                /** @description People on the team with "Deliver orders" */
+                                team: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    placeId: string;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                    vehicle: {
+                                        type: "bike" | "scooter";
+                                        /** @description The number plate */
+                                        number: string;
+                                    } | null;
+                                    /** @description Delivery verified, so they can take it in the Ruxstar Delivery app */
+                                    ready: boolean;
+                                }[];
+                                partner: {
+                                    available: boolean;
+                                    reason: string | null;
+                                    /** @description Amount in paise */
+                                    pay: number;
+                                    distanceKm: number | null;
+                                    /** @description Partners online in the shop's city now */
+                                    online: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Send a ready order with someone on your team, or offer it to Ruxstar partners
+         * @description Someone on the team needs "Deliver orders" and delivery verification, and accepts it in the Ruxstar Delivery app. A partner offer goes to the partners online in your city; the first to accept gets it, and their pay comes out of your share at delivery.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        carrier: "team";
+                        /** @description MongoDB ObjectId as hex */
+                        placeId: string;
+                    } | {
+                        /** @enum {string} */
+                        carrier: "partner";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
+                                    total: number;
+                                    commissionBps: number;
+                                    /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
+                                    commission: number;
+                                    /** @description Amount in paise. Items and delivery less commission, and less the discount when the coupon is yours. */
+                                    payout: number;
+                                    /** @description Amount in paise. The payout less partial refunds and a Ruxstar partner's pay; 0 once the order is refunded, turned down or cancelled. */
+                                    payoutLeft: number;
+                                };
+                                /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
+                                refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /** Cancel a delivery before it is picked up */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
+                                    total: number;
+                                    commissionBps: number;
+                                    /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
+                                    commission: number;
+                                    /** @description Amount in paise. Items and delivery less commission, and less the discount when the coupon is yours. */
+                                    payout: number;
+                                    /** @description Amount in paise. The payout less partial refunds and a Ruxstar partner's pay; 0 once the order is refunded, turned down or cancelled. */
+                                    payoutLeft: number;
+                                };
+                                /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
+                                refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -9238,7 +10365,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -9255,11 +10382,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver") | null;
                                 }[];
                                 /** @description People the team can hold, invites included */
                                 max: number;
@@ -9310,7 +10437,7 @@ export interface paths {
                     "application/json": {
                         /** @description Their Ruxstar username, without the @ */
                         username: string;
-                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                         pay?: {
                             /** @description In paise, at least ₹1 */
                             amount: number;
@@ -9342,7 +10469,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -9475,7 +10602,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                         /** @description Only while they're invited: the offer can't change once they accept */
                         pay?: {
                             /** @description In paise, at least ₹1 */
@@ -9508,7 +10635,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -9951,6 +11078,8 @@ export interface paths {
                                     live: boolean;
                                     /** @description Whether new businesses can be created in it */
                                     signupsOpen: boolean;
+                                    /** @description Publishing needs a verified GSTIN */
+                                    gstinRequired: boolean;
                                     types: {
                                         /**
                                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
@@ -9987,6 +11116,13 @@ export interface paths {
                                     cities: number;
                                     turnaroundDays: number;
                                     tiers: number;
+                                    /** @description The most a shop can charge to deliver */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 };
                             };
                             meta: {
@@ -10121,6 +11257,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -10128,7 +11273,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -10299,6 +11444,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -10306,7 +11460,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -10457,6 +11611,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -10464,7 +11627,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -10686,6 +11849,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -10693,7 +11865,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -10800,6 +11972,14 @@ export interface paths {
                                 unitPrice: number;
                             }[];
                         }[];
+                        /** @description Up to the most Ruxstar allows, in the catalog's limits */
+                        deliveryFee?: {
+                            /** @description Paise */
+                            base: number;
+                            includedKm: number;
+                            /** @description Paise */
+                            perKm: number;
+                        };
                     };
                 };
             };
@@ -10885,6 +12065,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -10892,7 +12081,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -11044,6 +12233,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -11051,7 +12249,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -11209,6 +12407,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -11216,7 +12423,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -11371,6 +12578,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -11378,7 +12594,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -11534,6 +12750,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -11541,7 +12766,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -11697,6 +12922,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -11704,7 +12938,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -11866,6 +13100,17 @@ export interface paths {
                         couponCode?: string;
                         /** @description Documents are priced by their pages; none counts as 1 page */
                         fileIds: string[];
+                        /** @description Where it goes, as far as the customer has filled it in, to price delivery by distance */
+                        address?: {
+                            line?: string;
+                            city?: string;
+                            pincode?: string;
+                            /** @description From the phone's location. Without it the address is looked up on the map, which is less exact. */
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        };
                     };
                 };
             };
@@ -11897,7 +13142,11 @@ export interface paths {
                                 } | null;
                                 /** @description Amount in paise */
                                 platformFee: number;
-                                /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                /** @description Amount in paise. The shop's delivery fee. */
+                                delivery: number;
+                                /** @description Road km the delivery fee was worked out on; null when not known */
+                                deliveryKm: number | null;
+                                /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                 total: number;
                                 /** @description Pages in the files, for documents */
                                 pages: number;
@@ -12011,6 +13260,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -12093,9 +13346,33 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                 };
+                                /** @description Null while the shop delivers it itself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    dropCode: string | null;
+                                } | null;
                             }[];
                             meta: {
                                 requestId: string;
@@ -12162,6 +13439,11 @@ export interface paths {
                             line: string;
                             city: string;
                             pincode: string;
+                            /** @description From the phone's location. Without it the address is looked up on the map, which is less exact. */
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
                         };
                         /** @description For the shop */
                         note?: string;
@@ -12214,6 +13496,10 @@ export interface paths {
                                         line: string;
                                         city: string;
                                         pincode: string;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
                                     };
                                     note: string | null;
                                     /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -12296,9 +13582,33 @@ export interface paths {
                                         } | null;
                                         /** @description Amount in paise */
                                         platformFee: number;
-                                        /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                        /** @description Amount in paise. The shop's delivery fee. */
+                                        delivery: number;
+                                        /** @description Road km the delivery fee was worked out on; null when not known */
+                                        deliveryKm: number | null;
+                                        /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                         total: number;
                                     };
+                                    /** @description Null while the shop delivers it itself */
+                                    delivery: {
+                                        /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                        carrier: "team" | "partner";
+                                        /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                        status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                        /** @description Once someone accepted it */
+                                        rider: {
+                                            name: string;
+                                            avatarUrl: string | null;
+                                            /** @description To call them about the delivery */
+                                            phone: string;
+                                            vehicle: {
+                                                type: "bike" | "scooter";
+                                                /** @description The number plate */
+                                                number: string;
+                                            };
+                                        } | null;
+                                        dropCode: string | null;
+                                    } | null;
                                 };
                                 /** @description Open it to pay */
                                 checkoutUrl: string;
@@ -12471,6 +13781,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -12553,9 +13867,33 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                 };
+                                /** @description Null while the shop delivers it itself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    dropCode: string | null;
+                                } | null;
                             };
                             meta: {
                                 requestId: string;
@@ -12658,6 +13996,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -12740,9 +14082,33 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                 };
+                                /** @description Null while the shop delivers it itself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    dropCode: string | null;
+                                } | null;
                             };
                             meta: {
                                 requestId: string;
@@ -12920,6 +14286,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -13002,9 +14372,33 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                 };
+                                /** @description Null while the shop delivers it itself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    dropCode: string | null;
+                                } | null;
                             };
                             meta: {
                                 requestId: string;
@@ -13105,6 +14499,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -13187,9 +14585,33 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                 };
+                                /** @description Null while the shop delivers it itself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    dropCode: string | null;
+                                } | null;
                             };
                             meta: {
                                 requestId: string;
@@ -13845,6 +15267,15 @@ export interface paths {
                                         values: string[];
                                     }[];
                                 }[];
+                                /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                deliveryFee: {
+                                    /** @description Amount in paise */
+                                    base: number;
+                                    /** @description Km the base covers */
+                                    includedKm: number;
+                                    /** @description Amount in paise */
+                                    perKm: number;
+                                };
                             };
                             meta: {
                                 requestId: string;
@@ -13950,6 +15381,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -14032,7 +15467,11 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number | null;
                                     commission: number | null;
@@ -14043,10 +15482,35 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 without permission to refund, or once the shop's share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                             }[];
                             meta: {
                                 requestId: string;
@@ -14145,6 +15609,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -14227,7 +15695,11 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number | null;
                                     commission: number | null;
@@ -14238,10 +15710,35 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 without permission to refund, or once the shop's share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                             };
                             meta: {
                                 requestId: string;
@@ -14352,6 +15849,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -14434,7 +15935,11 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number | null;
                                     commission: number | null;
@@ -14445,10 +15950,35 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 without permission to refund, or once the shop's share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                             };
                             meta: {
                                 requestId: string;
@@ -14558,6 +16088,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -14640,7 +16174,11 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number | null;
                                     commission: number | null;
@@ -14651,10 +16189,35 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 without permission to refund, or once the shop's share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                             };
                             meta: {
                                 requestId: string;
@@ -14683,6 +16246,539 @@ export interface paths {
             };
         };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/employment/orders/{id}/delivery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who can deliver an order to a shop you work at
+         * @description Needs "Accept and move orders". The same choices as the owner.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                orderStatus: string;
+                                /** @description The order is ready and nobody has it, so a rider can be picked now */
+                                canAssign: boolean;
+                                reason: string | null;
+                                /** @description People on the team with "Deliver orders" */
+                                team: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    placeId: string;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                    vehicle: {
+                                        type: "bike" | "scooter";
+                                        /** @description The number plate */
+                                        number: string;
+                                    } | null;
+                                    /** @description Delivery verified, so they can take it in the Ruxstar Delivery app */
+                                    ready: boolean;
+                                }[];
+                                partner: {
+                                    available: boolean;
+                                    reason: string | null;
+                                    /** @description Amount in paise */
+                                    pay: number;
+                                    distanceKm: number | null;
+                                    /** @description Partners online in the shop's city now */
+                                    online: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Send a ready order with someone on the team, or offer it to Ruxstar partners
+         * @description Needs "Accept and move orders". A partner's pay comes out of the shop's share at delivery.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        carrier: "team";
+                        /** @description MongoDB ObjectId as hex */
+                        placeId: string;
+                    } | {
+                        /** @enum {string} */
+                        carrier: "partner";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
+                                    total: number;
+                                    commissionBps: number | null;
+                                    commission: number | null;
+                                    payout: number | null;
+                                    payoutLeft: number | null;
+                                };
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 without permission to refund, or once the shop's share is released. */
+                                refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                placeId: string;
+                                /** @description What you may do at this shop */
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Cancel a delivery before it is picked up
+         * @description Needs "Accept and move orders".
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                shop: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @enum {unknown} */
+                                product: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
+                                productLabel: string;
+                                pricing: "per_unit" | "per_page";
+                                options: {
+                                    [key: string]: string;
+                                };
+                                colour: ("bw" | "color") | null;
+                                quantity: number;
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: "application/pdf" | "image/jpeg" | "image/png";
+                                    bytes: number;
+                                    /** @description PDF pages; 1 for a photo */
+                                    pages: number;
+                                }[];
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                note: string | null;
+                                /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                timeline: {
+                                    /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
+                                    status: "awaiting_payment" | "placed" | "accepted" | "printing" | "ready" | "out_for_delivery" | "delivered" | "rejected" | "cancelled" | "refunded";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                paidAt: string | null;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Partial refunds come out of the shop's share */
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                reason: string | null;
+                                /** @description While placed: cancelled and refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                /** @description When the shop promised it ready: accepted plus the ready-in days */
+                                readyBy: string | null;
+                                deliveredAt: string | null;
+                                /** @description The customer can report a problem now */
+                                canReport: boolean;
+                                /** @description The last moment to report a problem after delivery */
+                                reportUntil: string | null;
+                                /** @description The last moment the customer can write or change a review: 30 days after delivery. Null when it can't be reviewed now */
+                                reviewUntil: string | null;
+                                problem: {
+                                    kind: "not_received" | "wrong_item" | "poor_quality" | "damaged" | "other";
+                                    note: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Opens the photo without signing in; works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    status: "open" | "resolved";
+                                    /** Format: date-time */
+                                    reportedAt: string;
+                                    resolution: {
+                                        outcome: "refunded" | "partial" | "dismissed";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        /** @description Ruxstar's answer, shown to the customer and the shop */
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                price: {
+                                    /** @description Pieces, or pages times copies for documents */
+                                    units: number;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Amount in paise */
+                                    extrasPerUnit: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise. Taken off the items by the coupon. */
+                                    discount: number;
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
+                                    total: number;
+                                    commissionBps: number | null;
+                                    commission: number | null;
+                                    payout: number | null;
+                                    payoutLeft: number | null;
+                                };
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                                /** @description Amount in paise. The most you can refund now; 0 without permission to refund, or once the shop's share is released. */
+                                refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                placeId: string;
+                                /** @description What you may do at this shop */
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -14861,6 +16957,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -14868,7 +16973,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -15037,6 +17142,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -15044,7 +17158,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -15151,6 +17265,14 @@ export interface paths {
                                 unitPrice: number;
                             }[];
                         }[];
+                        /** @description Up to the most Ruxstar allows, in the catalog's limits */
+                        deliveryFee?: {
+                            /** @description Paise */
+                            base: number;
+                            includedKm: number;
+                            /** @description Paise */
+                            perKm: number;
+                        };
                     };
                 };
             };
@@ -15236,6 +17358,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -15243,7 +17374,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -15395,6 +17526,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -15402,7 +17542,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -15560,6 +17700,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -15567,7 +17716,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -15722,6 +17871,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -15729,7 +17887,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -15885,6 +18043,15 @@ export interface paths {
                                     }[];
                                     /** @description Chosen products still without a price */
                                     unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
                                 } | null;
                                 status: "draft" | "live";
                                 /** @description A live business takes orders and bookings only while open */
@@ -15892,7 +18059,7 @@ export interface paths {
                                 /** @description False while the Ruxstar team has paused this module */
                                 moduleLive: boolean;
                                 /** @description What is still needed before it can be published */
-                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                 suspension: {
                                     reason: string;
                                     /** Format: date-time */
@@ -16619,7 +18786,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -16652,7 +18819,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                                     /** @description The pay they accepted */
                                     pay: {
                                         /** @description In paise, at least ₹1 */
@@ -16669,11 +18836,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver") | null;
                                 }[];
                             };
                             meta: {
@@ -16760,7 +18927,7 @@ export interface paths {
                                 owner: {
                                     name: string;
                                 };
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                                 /** @description The pay they accepted */
                                 pay: {
                                     /** @description In paise, at least ₹1 */
@@ -16940,6 +19107,1437 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/delivery/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** You as a rider: online or not, the trip under way, and today */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                name: string;
+                                avatarUrl: string | null;
+                                vehicle: {
+                                    type: "bike" | "scooter";
+                                    /** @description The number plate */
+                                    number: string;
+                                } | null;
+                                online: boolean;
+                                city: string | null;
+                                /** @description Ruxstar partner offers are on. Offers from shops you deliver for come either way */
+                                partnerOffers: boolean;
+                                /** @description The job under way; one at a time */
+                                active: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    shop: {
+                                        name: string;
+                                        phone: string | null;
+                                        line: string | null;
+                                        /** @description City, and the pincode for drops */
+                                        area: string;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                    };
+                                    drop: {
+                                        name: string;
+                                        phone: string | null;
+                                        line: string | null;
+                                        /** @description City, and the pincode for drops */
+                                        area: string;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                    };
+                                    /** @description What is being carried, for example Business cards × 200 */
+                                    item: string;
+                                    distanceKm: number | null;
+                                    /** @description Amount in paise */
+                                    pay: number;
+                                    offerUntil: string | null;
+                                    /** @description A photo at the door was added */
+                                    proof: boolean;
+                                    cancel: {
+                                        by: string;
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    timeline: {
+                                        /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                        status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                        /** Format: date-time */
+                                        at: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                } | null;
+                                today: {
+                                    trips: number;
+                                    /** @description Amount in paise */
+                                    earned: number;
+                                };
+                                /** @description Shops where you have "Deliver orders" */
+                                teams: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    placeId: string;
+                                    business: string;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/online": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Go online for Ruxstar partner offers in your city, or go offline
+         * @description Going online needs your location, or the city you are in. Offers from shops you deliver for come either way.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        online: boolean;
+                        point?: {
+                            lat: number;
+                            lng: number;
+                        };
+                        /** @description When the phone's location isn't shared */
+                        city?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                name: string;
+                                avatarUrl: string | null;
+                                vehicle: {
+                                    type: "bike" | "scooter";
+                                    /** @description The number plate */
+                                    number: string;
+                                } | null;
+                                online: boolean;
+                                city: string | null;
+                                /** @description Ruxstar partner offers are on. Offers from shops you deliver for come either way */
+                                partnerOffers: boolean;
+                                /** @description The job under way; one at a time */
+                                active: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    shop: {
+                                        name: string;
+                                        phone: string | null;
+                                        line: string | null;
+                                        /** @description City, and the pincode for drops */
+                                        area: string;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                    };
+                                    drop: {
+                                        name: string;
+                                        phone: string | null;
+                                        line: string | null;
+                                        /** @description City, and the pincode for drops */
+                                        area: string;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                    };
+                                    /** @description What is being carried, for example Business cards × 200 */
+                                    item: string;
+                                    distanceKm: number | null;
+                                    /** @description Amount in paise */
+                                    pay: number;
+                                    offerUntil: string | null;
+                                    /** @description A photo at the door was added */
+                                    proof: boolean;
+                                    cancel: {
+                                        by: string;
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    timeline: {
+                                        /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                        status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                        /** Format: date-time */
+                                        at: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                } | null;
+                                today: {
+                                    trips: number;
+                                    /** @description Amount in paise */
+                                    earned: number;
+                                };
+                                /** @description Shops where you have "Deliver orders" */
+                                teams: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    placeId: string;
+                                    business: string;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Deliveries you can take now, newest first
+         * @description Ruxstar partner offers in your city while you are online (the first to accept gets it), and offers from shops you deliver for.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                carrier: "team" | "partner";
+                                /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                shop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                drop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                /** @description What is being carried, for example Business cards × 200 */
+                                item: string;
+                                distanceKm: number | null;
+                                /** @description Amount in paise */
+                                pay: number;
+                                offerUntil: string | null;
+                                /** @description A photo at the door was added */
+                                proof: boolean;
+                                cancel: {
+                                    by: string;
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                timeline: {
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your deliveries, newest activity first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description `active` (the default) is under way */
+                    view?: "active" | "past";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                carrier: "team" | "partner";
+                                /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                shop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                drop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                /** @description What is being carried, for example Business cards × 200 */
+                                item: string;
+                                distanceKm: number | null;
+                                /** @description Amount in paise */
+                                pay: number;
+                                offerUntil: string | null;
+                                /** @description A photo at the door was added */
+                                proof: boolean;
+                                cancel: {
+                                    by: string;
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                timeline: {
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/jobs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One delivery */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                carrier: "team" | "partner";
+                                /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                shop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                drop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                /** @description What is being carried, for example Business cards × 200 */
+                                item: string;
+                                distanceKm: number | null;
+                                /** @description Amount in paise */
+                                pay: number;
+                                offerUntil: string | null;
+                                /** @description A photo at the door was added */
+                                proof: boolean;
+                                cancel: {
+                                    by: string;
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                timeline: {
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/jobs/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a delivery
+         * @description One at a time. A Ruxstar partner offer goes to whoever accepts first; you need to be online for those.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                carrier: "team" | "partner";
+                                /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                shop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                drop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                /** @description What is being carried, for example Business cards × 200 */
+                                item: string;
+                                distanceKm: number | null;
+                                /** @description Amount in paise */
+                                pay: number;
+                                offerUntil: string | null;
+                                /** @description A photo at the door was added */
+                                proof: boolean;
+                                cancel: {
+                                    by: string;
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                timeline: {
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/jobs/{id}/pass": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Skip an offer
+         * @description A Ruxstar partner offer stops showing to you. One from a shop you deliver for goes back to the shop to pick someone else.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                carrier: "team" | "partner";
+                                /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                shop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                drop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                /** @description What is being carried, for example Business cards × 200 */
+                                item: string;
+                                distanceKm: number | null;
+                                /** @description Amount in paise */
+                                pay: number;
+                                offerUntil: string | null;
+                                /** @description A photo at the door was added */
+                                proof: boolean;
+                                cancel: {
+                                    by: string;
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                timeline: {
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/jobs/{id}/pickup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Picked up from the shop
+         * @description The order is out for delivery, and the customer is sent the code to give you at the door.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                carrier: "team" | "partner";
+                                /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                shop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                drop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                /** @description What is being carried, for example Business cards × 200 */
+                                item: string;
+                                distanceKm: number | null;
+                                /** @description Amount in paise */
+                                pay: number;
+                                offerUntil: string | null;
+                                /** @description A photo at the door was added */
+                                proof: boolean;
+                                cancel: {
+                                    by: string;
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                timeline: {
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/jobs/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * A photo of the parcel at the door
+         * @description Needed before the code. Send the image with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. Kept privately for 30 days.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                carrier: "team" | "partner";
+                                /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                shop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                drop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                /** @description What is being carried, for example Business cards × 200 */
+                                item: string;
+                                distanceKm: number | null;
+                                /** @description Amount in paise */
+                                pay: number;
+                                offerUntil: string | null;
+                                /** @description A photo at the door was added */
+                                proof: boolean;
+                                cancel: {
+                                    by: string;
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                timeline: {
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/jobs/{id}/deliver": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Delivered: the customer's code
+         * @description Needs the photo at the door. Five wrong codes stop it; then call the customer or hand the delivery back.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The customer's 4-digit code */
+                        code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                carrier: "team" | "partner";
+                                /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                shop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                drop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                /** @description What is being carried, for example Business cards × 200 */
+                                item: string;
+                                distanceKm: number | null;
+                                /** @description Amount in paise */
+                                pay: number;
+                                offerUntil: string | null;
+                                /** @description A photo at the door was added */
+                                proof: boolean;
+                                cancel: {
+                                    by: string;
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                timeline: {
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/jobs/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Hand a delivery back to the shop
+         * @description The shop is told why and picks another way to deliver it. After pickup, take the parcel back to the shop.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The shop sees it */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
+                                carrier: "team" | "partner";
+                                /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                shop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                drop: {
+                                    name: string;
+                                    phone: string | null;
+                                    line: string | null;
+                                    /** @description City, and the pincode for drops */
+                                    area: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                /** @description What is being carried, for example Business cards × 200 */
+                                item: string;
+                                distanceKm: number | null;
+                                /** @description Amount in paise */
+                                pay: number;
+                                offerUntil: string | null;
+                                /** @description A photo at the door was added */
+                                proof: boolean;
+                                cancel: {
+                                    by: string;
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                timeline: {
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/earnings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What you earned as a Ruxstar partner
+         * @description Pay for each delivery is added when it is delivered. Withdrawals open later; shops pay their own team outside Ruxstar.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Amount in paise */
+                                balance: number;
+                                /** @description Amount in paise */
+                                today: number;
+                                /** @description Amount in paise */
+                                week: number;
+                                trips: number;
+                                /** @description Newest first, up to 20 */
+                                recent: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    orderNo: number;
+                                    /** @description Amount in paise */
+                                    pay: number;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description False until withdrawals open for delivery partners */
+                                withdrawals: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/access": {
         parameters: {
             query?: never;
@@ -17043,6 +20641,8 @@ export interface paths {
                             data: {
                                 kyc: {
                                     waiting: number;
+                                    /** @description Of those waiting, delivery partner cases */
+                                    delivery: number;
                                 } | null;
                                 reports: {
                                     posts: number;
@@ -17116,8 +20716,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Identity verification cases, waiting for review first by default
-         * @description Newest activity first. `status` defaults to `submitted`.
+         * Verification cases, waiting for review first by default
+         * @description Newest activity first. `status` defaults to `submitted`, `track` to `base` (identity); `delivery` is delivery partners.
          */
         get: {
             parameters: {
@@ -17125,6 +20725,7 @@ export interface paths {
                     cursor?: string;
                     limit?: number;
                     status?: "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                    track?: "base" | "delivery";
                 };
                 header?: never;
                 path?: never;
@@ -17142,6 +20743,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
+                                /** @description `base` is identity; `delivery` is a delivery partner's licence and vehicle */
+                                track: "base" | "delivery";
                                 /** @description `locked` follows the third rejection; support reopens it. */
                                 status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
                                 rejections: number;
@@ -17164,6 +20767,13 @@ export interface paths {
                                     livenessScore: number | null;
                                     faceMatchScore: number | null;
                                 };
+                                delivery: {
+                                    licenceNumber: string | null;
+                                    licencePhotoUrl: string | null;
+                                    vehicleType: ("bike" | "scooter") | null;
+                                    vehicleNumber: string | null;
+                                    vehiclePhotoUrl: string | null;
+                                } | null;
                                 submittedAt: string | null;
                                 review: {
                                     decision: "approved" | "rejected";
@@ -17237,6 +20847,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
+                                /** @description `base` is identity; `delivery` is a delivery partner's licence and vehicle */
+                                track: "base" | "delivery";
                                 /** @description `locked` follows the third rejection; support reopens it. */
                                 status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
                                 rejections: number;
@@ -17259,6 +20871,13 @@ export interface paths {
                                     livenessScore: number | null;
                                     faceMatchScore: number | null;
                                 };
+                                delivery: {
+                                    licenceNumber: string | null;
+                                    licencePhotoUrl: string | null;
+                                    vehicleType: ("bike" | "scooter") | null;
+                                    vehicleNumber: string | null;
+                                    vehiclePhotoUrl: string | null;
+                                } | null;
                                 submittedAt: string | null;
                                 review: {
                                     decision: "approved" | "rejected";
@@ -17336,6 +20955,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
+                                /** @description `base` is identity; `delivery` is a delivery partner's licence and vehicle */
+                                track: "base" | "delivery";
                                 /** @description `locked` follows the third rejection; support reopens it. */
                                 status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
                                 rejections: number;
@@ -17358,6 +20979,13 @@ export interface paths {
                                     livenessScore: number | null;
                                     faceMatchScore: number | null;
                                 };
+                                delivery: {
+                                    licenceNumber: string | null;
+                                    licencePhotoUrl: string | null;
+                                    vehicleType: ("bike" | "scooter") | null;
+                                    vehicleNumber: string | null;
+                                    vehiclePhotoUrl: string | null;
+                                } | null;
                                 submittedAt: string | null;
                                 review: {
                                     decision: "approved" | "rejected";
@@ -17440,6 +21068,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
+                                /** @description `base` is identity; `delivery` is a delivery partner's licence and vehicle */
+                                track: "base" | "delivery";
                                 /** @description `locked` follows the third rejection; support reopens it. */
                                 status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
                                 rejections: number;
@@ -17462,6 +21092,13 @@ export interface paths {
                                     livenessScore: number | null;
                                     faceMatchScore: number | null;
                                 };
+                                delivery: {
+                                    licenceNumber: string | null;
+                                    licencePhotoUrl: string | null;
+                                    vehicleType: ("bike" | "scooter") | null;
+                                    vehicleNumber: string | null;
+                                    vehiclePhotoUrl: string | null;
+                                } | null;
                                 submittedAt: string | null;
                                 review: {
                                     decision: "approved" | "rejected";
@@ -18468,6 +22105,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -18550,14 +22191,18 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number;
                                     /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
+                                    /** @description Amount in paise. Items and delivery less commission, and less the discount when the coupon is yours. */
                                     payout: number;
-                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    /** @description Amount in paise. The payout less partial refunds and a Ruxstar partner's pay; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
                                 };
                                 /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
@@ -18565,6 +22210,31 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                                 customer: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -18674,6 +22344,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -18756,14 +22430,18 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number;
                                     /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
+                                    /** @description Amount in paise. Items and delivery less commission, and less the discount when the coupon is yours. */
                                     payout: number;
-                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    /** @description Amount in paise. The payout less partial refunds and a Ruxstar partner's pay; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
                                 };
                                 /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
@@ -18771,6 +22449,31 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                                 customer: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -18895,6 +22598,10 @@ export interface paths {
                                     line: string;
                                     city: string;
                                     pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
                                 };
                                 note: string | null;
                                 /** @description `placed` is paid and waiting for the shop; `rejected` and `cancelled` after payment are refunded. `refunded` is an accepted order Ruxstar refunded in full. */
@@ -18977,14 +22684,18 @@ export interface paths {
                                     } | null;
                                     /** @description Amount in paise */
                                     platformFee: number;
-                                    /** @description Amount in paise. The items less the discount, plus the platform fee. */
+                                    /** @description Amount in paise. The shop's delivery fee. */
+                                    delivery: number;
+                                    /** @description Road km the delivery fee was worked out on; null when not known */
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise. The items less the discount, plus delivery and the platform fee. */
                                     total: number;
                                     commissionBps: number;
                                     /** @description Amount in paise. On the items, or on the items less the discount when the coupon is yours. */
                                     commission: number;
-                                    /** @description Amount in paise. Items less commission, and less the discount when the coupon is yours. */
+                                    /** @description Amount in paise. Items and delivery less commission, and less the discount when the coupon is yours. */
                                     payout: number;
-                                    /** @description Amount in paise. The payout less partial refunds; 0 once the order is refunded, turned down or cancelled. */
+                                    /** @description Amount in paise. The payout less partial refunds and a Ruxstar partner's pay; 0 once the order is refunded, turned down or cancelled. */
                                     payoutLeft: number;
                                 };
                                 /** @description When your share becomes available: 48 hours after delivery, later while a problem is open */
@@ -18992,6 +22703,31 @@ export interface paths {
                                 releasedAt: string | null;
                                 /** @description Amount in paise. The most you can refund now; 0 once your share is released. */
                                 refundable: number;
+                                /** @description Null while the shop delivers it itself. The last job stays here after it is cancelled */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        /** @description To call them about the delivery */
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Amount in paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
                                 customer: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -20619,6 +24355,15 @@ export interface paths {
                                         }[];
                                         /** @description Chosen products still without a price */
                                         unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                        /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                        deliveryFee: {
+                                            /** @description Amount in paise */
+                                            base: number;
+                                            /** @description Km the base covers */
+                                            includedKm: number;
+                                            /** @description Amount in paise */
+                                            perKm: number;
+                                        };
                                     } | null;
                                     status: "draft" | "live";
                                     /** @description A live business takes orders and bookings only while open */
@@ -20626,7 +24371,7 @@ export interface paths {
                                     /** @description False while the Ruxstar team has paused this module */
                                     moduleLive: boolean;
                                     /** @description What is still needed before it can be published */
-                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                     suspension: {
                                         reason: string;
                                         /** Format: date-time */
@@ -20794,6 +24539,15 @@ export interface paths {
                                         }[];
                                         /** @description Chosen products still without a price */
                                         unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                        /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                        deliveryFee: {
+                                            /** @description Amount in paise */
+                                            base: number;
+                                            /** @description Km the base covers */
+                                            includedKm: number;
+                                            /** @description Amount in paise */
+                                            perKm: number;
+                                        };
                                     } | null;
                                     status: "draft" | "live";
                                     /** @description A live business takes orders and bookings only while open */
@@ -20801,7 +24555,7 @@ export interface paths {
                                     /** @description False while the Ruxstar team has paused this module */
                                     moduleLive: boolean;
                                     /** @description What is still needed before it can be published */
-                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                     suspension: {
                                         reason: string;
                                         /** Format: date-time */
@@ -20991,6 +24745,15 @@ export interface paths {
                                         }[];
                                         /** @description Chosen products still without a price */
                                         unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                        /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                        deliveryFee: {
+                                            /** @description Amount in paise */
+                                            base: number;
+                                            /** @description Km the base covers */
+                                            includedKm: number;
+                                            /** @description Amount in paise */
+                                            perKm: number;
+                                        };
                                     } | null;
                                     status: "draft" | "live";
                                     /** @description A live business takes orders and bookings only while open */
@@ -20998,7 +24761,7 @@ export interface paths {
                                     /** @description False while the Ruxstar team has paused this module */
                                     moduleLive: boolean;
                                     /** @description What is still needed before it can be published */
-                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                     suspension: {
                                         reason: string;
                                         /** Format: date-time */
@@ -21179,6 +24942,15 @@ export interface paths {
                                         }[];
                                         /** @description Chosen products still without a price */
                                         unpriced: ("tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents")[];
+                                        /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                        deliveryFee: {
+                                            /** @description Amount in paise */
+                                            base: number;
+                                            /** @description Km the base covers */
+                                            includedKm: number;
+                                            /** @description Amount in paise */
+                                            perKm: number;
+                                        };
                                     } | null;
                                     status: "draft" | "live";
                                     /** @description A live business takes orders and bookings only while open */
@@ -21186,7 +24958,7 @@ export interface paths {
                                     /** @description False while the Ruxstar team has paused this module */
                                     moduleLive: boolean;
                                     /** @description What is still needed before it can be published */
-                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing")[];
+                                    missing: ("photo" | "phone" | "location" | "products" | "area" | "pricing" | "gstin")[];
                                     suspension: {
                                         reason: string;
                                         /** Format: date-time */
@@ -21301,7 +25073,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -21318,11 +25090,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver") | null;
                                 }[];
                                 /** @description People the team can hold, invites included */
                                 max: number;
@@ -21574,6 +25346,24 @@ export interface paths {
                                     minimum: number;
                                 } | null;
                                 deliveryEnabled: boolean;
+                                gstinRequired: boolean | null;
+                                delivery: {
+                                    /** @description What a Ruxstar delivery partner is paid for one trip, out of the shop's share */
+                                    riderRate: {
+                                        /** @description Paise for the first `includedKm` */
+                                        base: number;
+                                        includedKm: number;
+                                        /** @description Paise for each km after */
+                                        perKm: number;
+                                    };
+                                    /** @description The most a shop can charge, in paise */
+                                    shopFeeMax: {
+                                        base: number;
+                                        perKm: number;
+                                    };
+                                    /** @description A Ruxstar partner offer nobody accepts is cancelled after this */
+                                    offerMinutes: number;
+                                } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
                                 updatedAt: string;
@@ -21649,6 +25439,21 @@ export interface paths {
                         /** @description Ledger only. Paise, at least ₹1 more than the payout fee */
                         minPayout?: number;
                         deliveryEnabled?: boolean;
+                        /** @description Business modules only. Live businesses without a GSTIN stay live. */
+                        gstinRequired?: boolean;
+                        /** @description What a Ruxstar delivery partner is paid for one trip, out of the shop's share */
+                        riderRate?: {
+                            /** @description Paise for the first `includedKm` */
+                            base: number;
+                            includedKm: number;
+                            /** @description Paise for each km after */
+                            perKm: number;
+                        };
+                        shopFeeMax?: {
+                            base: number;
+                            perKm: number;
+                        };
+                        offerMinutes?: number;
                     };
                 };
             };
@@ -21675,6 +25480,24 @@ export interface paths {
                                     minimum: number;
                                 } | null;
                                 deliveryEnabled: boolean;
+                                gstinRequired: boolean | null;
+                                delivery: {
+                                    /** @description What a Ruxstar delivery partner is paid for one trip, out of the shop's share */
+                                    riderRate: {
+                                        /** @description Paise for the first `includedKm` */
+                                        base: number;
+                                        includedKm: number;
+                                        /** @description Paise for each km after */
+                                        perKm: number;
+                                    };
+                                    /** @description The most a shop can charge, in paise */
+                                    shopFeeMax: {
+                                        base: number;
+                                        perKm: number;
+                                    };
+                                    /** @description A Ruxstar partner offer nobody accepts is cancelled after this */
+                                    offerMinutes: number;
+                                } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
                                 updatedAt: string;
@@ -21713,7 +25536,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "PAYOUT_METHOD_REQUIRED" | "PAYOUT_TOO_SMALL" | "PAYOUT_IN_PROGRESS" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "COUPON_INVALID" | "ORDER_STATE" | "REPORT_CLOSED" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "PAYOUT_METHOD_REQUIRED" | "PAYOUT_TOO_SMALL" | "PAYOUT_IN_PROGRESS" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "COUPON_INVALID" | "ORDER_STATE" | "DROP_CODE_INVALID" | "JOB_TAKEN" | "REPORT_CLOSED" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
                 message: string;
                 details: ({
                     path?: string;

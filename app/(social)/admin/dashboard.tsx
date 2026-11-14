@@ -78,7 +78,11 @@ export function Dashboard() {
           <div className={styles.tiles}>
             {overview.kyc && (
               <Tile href="/admin/kyc" icon="verified" label="Verification to review" number={overview.kyc.waiting}>
-                {overview.kyc.waiting === 0 ? "Nothing waiting." : "Identity checks waiting for a decision"}
+                {overview.kyc.waiting === 0
+                  ? "Nothing waiting."
+                  : overview.kyc.delivery
+                    ? `Waiting for a decision, ${overview.kyc.delivery} of them delivery partners`
+                    : "Identity checks waiting for a decision"}
               </Tile>
             )}
             {overview.businesses && (

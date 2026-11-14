@@ -328,6 +328,166 @@ button.file:hover {
   font: 500 14px/20px var(--font);
 }
 
+/* Rider */
+.rider {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.riderHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.riderHead > svg {
+  flex: none;
+  color: var(--ink-2);
+}
+
+.riderHead[data-live] > svg {
+  color: var(--accent-soft);
+}
+
+.riderStatus {
+  flex: 1;
+  font: 600 15px/22px var(--font);
+}
+
+.riderPerson {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.call {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--on-action);
+  background: var(--action);
+  border-radius: 50%;
+}
+
+.call:hover {
+  opacity: 0.85;
+}
+
+.dropCode {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--raised);
+  border-radius: 12px;
+}
+
+.digits {
+  font: 700 32px/40px var(--font);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 8px;
+}
+
+/* Who delivers */
+.picker {
+  gap: var(--space-3);
+}
+
+.choices {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  background: var(--raised);
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  cursor: pointer;
+}
+
+.choice:hover:not(:disabled) {
+  border-color: var(--ink-3);
+}
+
+.choice:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.choiceIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  color: var(--accent-soft);
+}
+
+.choice > svg:last-child {
+  flex: none;
+  color: var(--ink-3);
+}
+
+.spinner {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--accent-soft);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Use my location */
+.locate {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: var(--type-caption);
+  color: var(--ink-2);
+}
+
+.locate > svg:first-child {
+  flex: none;
+  color: var(--success);
+}
+
+.locateClear {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--ink-2);
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.locateClear:hover {
+  background: var(--raised);
+}
+
+.locateNote {
+  font: var(--type-caption);
+  color: var(--warning);
+}
+
 /* Rows */
 .rows {
   display: grid;
@@ -428,7 +588,8 @@ button.file:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .totalLoading {
+  .totalLoading,
+  .spinner {
     animation-duration: 2.4s;
   }
 }

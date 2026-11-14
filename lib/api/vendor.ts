@@ -215,6 +215,7 @@ export const MISSING_LABEL: Record<BusinessMissing, string> = {
   products: "the products you print",
   area: "where you deliver",
   pricing: "prices for every product",
+  gstin: "a GSTIN, in the business details",
 };
 
 /** Only a live business that is not on hold, in a module Ruxstar has not paused, can open and close. */

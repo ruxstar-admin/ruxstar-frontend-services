@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Needs, useCan } from "@/components/admin/AdminFrame";
 import { Avatar } from "@/components/profile/Avatar";
@@ -7,9 +8,14 @@ import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { Button, Icon, Segmented, Skeleton, Tag, useToast, type TagTone } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { approveCase, rejectCase, reviewQueue, type ReviewCase, type ReviewStatus } from "@/lib/api/kyc";
+import { approveCase, rejectCase, reviewQueue, type ReviewCase, type ReviewStatus, type ReviewTrack } from "@/lib/api/kyc";
 import { ago, exact } from "@/lib/time";
 import styles from "./review.module.css";
+
+const TRACKS: { value: ReviewTrack; label: string }[] = [
+  { value: "base", label: "Identity" },
+  { value: "delivery", label: "Delivery partners" },
+];
 
 const TABS: { value: ReviewStatus; label: string }[] = [
   { value: "submitted", label: "To review" },
@@ -46,6 +52,35 @@ function Fact({ label, value, warn }: { label: string; value: string; warn?: boo
   );
 }
 
+/** Opens the full photo in a new tab to zoom in. The link works for 10 minutes; reload the page for a new one. */
+function Photo({ label, url }: { label: string; url: string | null }) {
+  if (!url) return <Fact label={label} value="No photo" warn />;
+  return (
+    <a href={url} target="_blank" rel="noreferrer" className={styles.photo} aria-label={`Open the ${label.toLowerCase()}`}>
+      <img src={url} alt="" />
+      <span>{label}</span>
+    </a>
+  );
+}
+
+function DeliveryFacts({ d }: { d: NonNullable<ReviewCase["delivery"]> }) {
+  return (
+    <>
+      <h3 className={styles.section}>Licence and vehicle</h3>
+      <dl className={styles.facts} data-bare>
+        <Fact label="Licence number" value={d.licenceNumber ?? "—"} />
+        <Fact label="Vehicle" value={d.vehicleType ? `${d.vehicleType === "bike" ? "Bike" : "Scooter"} · ${d.vehicleNumber ?? "—"}` : "—"} />
+      </dl>
+      <p className={styles.muted}>Check the licence photo matches the number, and the plate in the vehicle photo matches the vehicle number.</p>
+      <div className={styles.photos}>
+        <Photo label="Licence" url={d.licencePhotoUrl} />
+        <Photo label="Vehicle" url={d.vehiclePhotoUrl} />
+      </div>
+      <h3 className={styles.section}>Their identity</h3>
+    </>
+  );
+}
+
 function Detail({ c, onDecided }: { c: ReviewCase; onDecided: (c: ReviewCase, verb: string) => void }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
@@ -71,7 +106,8 @@ function Detail({ c, onDecided }: { c: ReviewCase; onDecided: (c: ReviewCase, ve
 
   return (
     <div className={styles.detail}>
-      <dl className={styles.facts}>
+      {c.delivery && <DeliveryFacts d={c.delivery} />}
+      <dl className={styles.facts} data-bare={c.delivery ? true : undefined}>
         <Fact label="Phone" value={c.user.phone} />
         <Fact label="Member since" value={new Date(c.user.memberSince).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })} />
         <Fact label="Name on Aadhaar" value={id.aadhaarName ?? "—"} warn={!!id.aadhaarName && id.aadhaarName.toLowerCase() !== c.user.name.toLowerCase()} />
@@ -104,7 +140,7 @@ function Detail({ c, onDecided }: { c: ReviewCase; onDecided: (c: ReviewCase, ve
               onChange={(e) => setReason(e.target.value)}
               maxLength={300}
               rows={3}
-              placeholder="For example: your selfie is blurry. Retake it in good light."
+              placeholder={c.track === "delivery" ? "For example: the number plate is not readable. Retake the vehicle photo." : "For example: your selfie is blurry. Retake it in good light."}
               autoFocus
             />
             <div className={styles.actions}>
@@ -133,7 +169,12 @@ function Detail({ c, onDecided }: { c: ReviewCase; onDecided: (c: ReviewCase, ve
 }
 
 export function ReviewScreen() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const track: ReviewTrack = params.get("track") === "delivery" ? "delivery" : "base";
   const [status, setStatus] = useState<ReviewStatus>("submitted");
+  const pickTrack = (next: ReviewTrack) => router.replace(next === "base" ? pathname : `${pathname}?track=${next}`);
   return (
     <Needs need="kyc.view">
       <div className={styles.page}>
@@ -141,7 +182,8 @@ export function ReviewScreen() {
           <h1 className={styles.title}>Verification review</h1>
           <Segmented label="Show" options={TABS} value={status} onChange={setStatus} />
         </div>
-        <Queue key={status} status={status} />
+        <Segmented label="Track" options={TRACKS} value={track} onChange={pickTrack} />
+        <Queue key={`${track}:${status}`} status={status} track={track} />
       </div>
     </Needs>
   );
@@ -157,11 +199,11 @@ function QueueSkeleton() {
   );
 }
 
-function Queue({ status }: { status: ReviewStatus }) {
+function Queue({ status, track }: { status: ReviewStatus; track: ReviewTrack }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
   const [open, setOpen] = useState<string | null>(null);
-  const load = useCallback((cursor?: string) => reviewQueue(status, cursor), [status]);
+  const load = useCallback((cursor?: string) => reviewQueue(status, track, cursor), [status, track]);
   const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
@@ -181,7 +223,7 @@ function Queue({ status }: { status: ReviewStatus }) {
           </Button>
         </div>
       ) : items.length === 0 ? (
-        <p className={styles.empty}>{status === "submitted" ? "Nothing waiting. Nice." : "No cases here."}</p>
+        <p className={styles.empty}>{status !== "submitted" ? "No cases here." : track === "delivery" ? "Nothing waiting. New delivery partner requests show up here." : "Nothing waiting. Nice."}</p>
       ) : (
         <ul className={styles.list}>
           {items.map((c) => {

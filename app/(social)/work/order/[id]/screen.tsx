@@ -7,7 +7,16 @@ import { useOnSignedOut } from "@/components/social/session";
 import { ShopOrderDetails, type OrderDesk } from "@/app/(social)/vendor/orders/[id]/screen";
 import { formError } from "@/lib/api/account";
 import { ApiError } from "@/lib/api/client";
-import { getTeamOrder, moveTeamOrder, refundTeamOrder, teamOrderFileLink, type TeamOrder } from "@/lib/api/orders";
+import {
+  assignTeamDelivery,
+  cancelTeamDelivery,
+  getTeamOrder,
+  moveTeamOrder,
+  refundTeamOrder,
+  teamDeliveryOptions,
+  teamOrderFileLink,
+  type TeamOrder,
+} from "@/lib/api/orders";
 import shopStyles from "@/components/shop/shop.module.css";
 import vendor from "@/components/vendor/vendor.module.css";
 
@@ -22,6 +31,9 @@ export function TeamOrderScreen({ id }: { id: string }) {
       move: moveTeamOrder,
       fileLink: teamOrderFileLink,
       refund: refundTeamOrder,
+      deliveryOptions: teamDeliveryOptions,
+      assign: assignTeamDelivery,
+      cancelDelivery: cancelTeamDelivery,
       back: placeId ? { href: `/work/${placeId}/orders`, label: "Orders" } : { href: "/work", label: "Work" },
     }),
     [placeId],

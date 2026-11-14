@@ -24,6 +24,17 @@ export type ShopStatus = paths["/v1/vendor/orders/{id}/status"]["post"]["request
 export type OrderRefund = Order["refunds"][number];
 export type OrderProblem = NonNullable<Order["problem"]>;
 export type ProblemKind = OrderProblem["kind"];
+export type GeoPoint = NonNullable<OrderAddress["point"]>;
+/** The customer's: who is bringing it, and the code to give at the door. Null while the shop delivers it itself. */
+export type CustomerDelivery = NonNullable<Order["delivery"]>;
+/** The shop's: the same, plus the job, the partner's pay and how long an offer waits. */
+export type ShopDelivery = NonNullable<ShopOrder["delivery"]>;
+export type OrderDelivery = Pick<CustomerDelivery, "carrier" | "status" | "rider">;
+export type DeliveryStatus = CustomerDelivery["status"];
+export type VehicleType = NonNullable<CustomerDelivery["rider"]>["vehicle"]["type"];
+/** GET …/orders/:id/delivery: who can take a ready order. The shop can always deliver it itself. */
+export type DeliveryOptions = Json<"/v1/vendor/orders/{id}/delivery", "get">;
+export type AssignChoice = paths["/v1/vendor/orders/{id}/delivery"]["post"]["requestBody"]["content"]["application/json"];
 type CreateBody = paths["/v1/pod/orders"]["post"]["requestBody"]["content"]["application/json"];
 
 export const PRINT_FILE_MAX_BYTES = 25 * 1024 * 1024;
@@ -127,6 +138,21 @@ export const refundShopOrder = async (id: string, amount: number, reason: string
     )
   ).data;
 
+export const shopDeliveryOptions = async (id: string) =>
+  (await signedIn(() => unwrap(api.GET("/v1/vendor/orders/{id}/delivery", { params: { path: { id } } })))).data;
+
+/** A ready order, with someone on the team or offered to Ruxstar partners in the shop's city. */
+export const assignShopDelivery = async (id: string, choice: AssignChoice, idempotencyKey: string) =>
+  (
+    await signedIn(() =>
+      unwrap(api.POST("/v1/vendor/orders/{id}/delivery", { params: { path: { id } }, body: choice, headers: { "Idempotency-Key": idempotencyKey } })),
+    )
+  ).data;
+
+/** Before pickup only. */
+export const cancelShopDelivery = async (id: string) =>
+  (await signedIn(() => unwrap(api.DELETE("/v1/vendor/orders/{id}/delivery", { params: { path: { id } } })))).data;
+
 /** A shop's orders for someone on its team; `placeId` is their place there. */
 export const teamOrders = async (placeId: string, view: ShopOrderView, cursor?: string): Promise<Page<TeamOrder>> => {
   const envelope = await signedIn(() => unwrap(api.GET("/v1/employment/{id}/orders", { params: { path: { id: placeId }, query: { view, cursor } } })));
@@ -159,6 +185,20 @@ export const refundTeamOrder = async (id: string, amount: number, reason: string
       unwrap(api.POST("/v1/employment/orders/{id}/refund", { params: { path: { id } }, body: { amount, reason }, headers: { "Idempotency-Key": idempotencyKey } })),
     )
   ).data;
+
+/** `orders.move`, like the owner's. */
+export const teamDeliveryOptions = async (id: string) =>
+  (await signedIn(() => unwrap(api.GET("/v1/employment/orders/{id}/delivery", { params: { path: { id } } })))).data;
+
+export const assignTeamDelivery = async (id: string, choice: AssignChoice, idempotencyKey: string) =>
+  (
+    await signedIn(() =>
+      unwrap(api.POST("/v1/employment/orders/{id}/delivery", { params: { path: { id } }, body: choice, headers: { "Idempotency-Key": idempotencyKey } })),
+    )
+  ).data;
+
+export const cancelTeamDelivery = async (id: string) =>
+  (await signedIn(() => unwrap(api.DELETE("/v1/employment/orders/{id}/delivery", { params: { path: { id } } })))).data;
 
 // Words and lines, the same as the app.
 
@@ -239,7 +279,7 @@ export function choiceLine(order: Pick<Order, "options" | "colour">) {
 export const quantityLine = (order: Pick<Order, "pricing" | "quantity" | "productLabel">) =>
   order.pricing === "per_page" ? `${order.quantity} ${order.quantity === 1 ? "copy" : "copies"}` : `${order.productLabel} × ${order.quantity}`;
 
-type Price = Pick<Quote, "units" | "unitPrice" | "extrasPerUnit" | "platformFee" | "discount" | "coupon">;
+type Price = Pick<Quote, "units" | "unitPrice" | "extrasPerUnit" | "platformFee" | "discount" | "coupon" | "delivery" | "deliveryKm">;
 export type CouponOffer = Quote["offers"][number];
 export type AppliedCoupon = NonNullable<Quote["coupon"]>;
 
@@ -252,14 +292,32 @@ export function priceLines(price: Price, pricing: "per_unit" | "per_page") {
   if (price.extrasPerUnit) lines.push({ label: `Extras, ${money(price.extrasPerUnit)} each`, amount: price.units * price.extrasPerUnit });
   if (price.discount && price.coupon) lines.push({ label: `Coupon ${price.coupon.code} · ${price.coupon.label}`, amount: price.discount, negative: true });
   if (price.platformFee) lines.push({ label: "Platform fee", amount: price.platformFee });
+  if (price.delivery) lines.push({ label: price.deliveryKm ? `Delivery · ${price.deliveryKm} km` : "Delivery", amount: price.delivery });
   return lines;
 }
+
+/** A rider has the order or it is offered to one: only they move it on, until it is delivered or handed back. */
+export const tripActive = (delivery: Pick<OrderDelivery, "status"> | null | undefined) =>
+  !!delivery && (delivery.status === "offered" || delivery.status === "accepted" || delivery.status === "picked_up");
+
+export const DELIVERY_STATUS_LABEL: Record<DeliveryStatus, string> = {
+  offered: "Waiting for a rider",
+  accepted: "Rider on the way to the shop",
+  picked_up: "Rider has it",
+  delivered: "Delivered",
+  cancelled: "Delivery cancelled",
+};
+
+/** "Bike TS09AB1234" */
+export const vehicleLine = (vehicle: { type: VehicleType; number: string }) => `${vehicle.type === "scooter" ? "Scooter" : "Bike"} ${vehicle.number}`;
 
 /** Size, or paper size for documents: an order can't be priced without it. */
 export const requiredOption = (product: ShopProduct) => (product.pricing === "per_page" ? "paperSize" : "size");
 
-export function nextSteps(status: OrderStatus): ShopStatus[] {
-  switch (status) {
+/** What the shop can move a paid order to next. Turning down is only before accepting; a rider's trip is theirs to move. */
+export function nextSteps(order: Pick<ShopOrder, "status"> & { delivery?: Pick<OrderDelivery, "status"> | null }): ShopStatus[] {
+  if (tripActive(order.delivery)) return [];
+  switch (order.status) {
     case "placed":
       return ["accepted", "rejected"];
     case "accepted":

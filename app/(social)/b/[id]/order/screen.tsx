@@ -6,6 +6,7 @@ import { Empty } from "@/components/social/PostList";
 import { useBack } from "@/components/social/Shell";
 import { useOnSignedOut } from "@/components/social/session";
 import { CheckoutCoupons } from "@/components/coupons/CheckoutCoupons";
+import { DropLocation } from "@/components/shop/DropLocation";
 import { FileItem, PriceList } from "@/components/shop/OrderParts";
 import { formError, getMe } from "@/lib/api/account";
 import { newIdempotencyKey } from "@/lib/api/client";
@@ -105,7 +106,7 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
   const [quantity, setQuantity] = useState(() => String(perPage ? 1 : product.minQuantity));
   const [files, setFiles] = useState<PrintFile[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [address, setAddress] = useState<OrderAddress>({ name: "", phone: "", line: "", city: shop.city, pincode: "" });
+  const [address, setAddress] = useState<OrderAddress>({ name: "", phone: "", line: "", city: shop.city, pincode: "", point: null });
   const [note, setNote] = useState("");
   const [couponCode, setCouponCode] = useState<string | null>(null);
   const [priced, setPriced] = useState<{ key: string; quote: Quote | null; error: string | null } | null>(null);
@@ -129,7 +130,7 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
       setAddress((now) =>
         now.name || now.phone || now.line
           ? now
-          : (last ?? { name: me?.name ?? "", phone: (me?.phone ?? "").replace(/\D/g, "").slice(-10), line: "", city: me?.city || shop.city, pincode: "" }),
+          : (last ?? { name: me?.name ?? "", phone: (me?.phone ?? "").replace(/\D/g, "").slice(-10), line: "", city: me?.city || shop.city, pincode: "", point: null }),
       );
     });
     return () => {
@@ -137,7 +138,11 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
     };
   }, [shop.city]);
 
-  const choiceKey = JSON.stringify([productId, options, colour, qty, fileIds, couponCode]);
+  // Only a per-km fee depends on where it goes; then the address counts once it can be found on the map.
+  const byDistance = shop.deliveryFee.perKm > 0;
+  const findable = !!address.point || (/^[1-9]\d{5}$/.test(address.pincode) && address.line.trim().length >= 5);
+  const drop = byDistance && findable ? { line: address.line.trim(), city: address.city.trim(), pincode: address.pincode, point: address.point ?? null } : undefined;
+  const choiceKey = JSON.stringify([productId, options, colour, qty, fileIds, couponCode, drop]);
   const priceable = !missing && qty >= 1 && !(perPage && !colour);
   const current = priceable && priced?.key === choiceKey ? priced : null;
   const quote = current?.quote ?? null;
@@ -149,7 +154,7 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
     if (!priceable) return;
     let live = true;
     const timer = setTimeout(() => {
-      quoteOrder({ shopId: shop.id, product: productId, options, colour, quantity: qty, fileIds, couponCode: couponCode ?? undefined })
+      quoteOrder({ shopId: shop.id, product: productId, options, colour, quantity: qty, fileIds, couponCode: couponCode ?? undefined, address: drop })
         .then((q) => live && setPriced({ key: choiceKey, quote: q, error: null }))
         .catch((err) => live && setPriced({ key: choiceKey, quote: null, error: formError(err).message }));
     }, QUOTE_DELAY_MS);
@@ -361,6 +366,17 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
           maxLength={300}
           autoComplete="street-address"
           error={show(fieldErrors.line)}
+        />
+        <DropLocation
+          point={address.point ?? null}
+          onLocated={(point, found) =>
+            setAddress((now) => ({
+              ...now,
+              point,
+              city: found.city && !now.city.trim() ? found.city : now.city,
+            }))
+          }
+          onClear={() => setAddress((now) => ({ ...now, point: null }))}
         />
         <div className={styles.pair}>
           <Input

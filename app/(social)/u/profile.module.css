@@ -71,6 +71,11 @@
   gap: var(--space-2);
 }
 
+.actions .iconAction {
+  width: var(--size-touch);
+  padding: 0;
+}
+
 /* Your own profile only: photo, bio and city still to add. */
 .checklist {
   display: grid;

@@ -34,6 +34,9 @@ function Form({ id, team, business, catalog }: { id: string; team: boolean; busi
   const [turnaround, setTurnaround] = useState(pod.turnaroundDays);
   const [minOrder, setMinOrder] = useState(pod.minOrder ? rupeesText(pod.minOrder) : "");
   const [notes, setNotes] = useState(pod.notes ?? "");
+  const [feeBase, setFeeBase] = useState(pod.deliveryFee.base ? rupeesText(pod.deliveryFee.base) : "");
+  const [feeKm, setFeeKm] = useState(pod.deliveryFee.includedKm);
+  const [feePerKm, setFeePerKm] = useState(pod.deliveryFee.perKm ? rupeesText(pod.deliveryFee.perKm) : "");
   const [problem, setProblem] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -42,6 +45,9 @@ function Form({ id, team, business, catalog }: { id: string; team: boolean; busi
   const suggestions = stateCities.filter((c) => !cities.includes(c.toLowerCase()));
   const limit = catalog.limits.cities;
   const maxDays = catalog.limits.turnaroundDays;
+  const feeMax = catalog.limits.deliveryFee;
+  const base = paiseOf(feeBase) ?? 0;
+  const perKm = paiseOf(feePerKm) ?? 0;
 
   const toggle = (product: PodProduct, on: boolean) => {
     setProducts((list) => (on ? [...list, product] : list.filter((p) => p !== product)));
@@ -65,10 +71,22 @@ function Form({ id, team, business, catalog }: { id: string; team: boolean; busi
     setFailure(null);
     if (!products.length) return setProblem("Choose at least one product.");
     if (!serveAll && !cities.length) return setProblem("Add a city you deliver to, or turn on every city.");
+    if (base > feeMax.base || perKm > feeMax.perKm) {
+      return setProblem(`Ruxstar allows a delivery charge of up to ₹${rupeesText(feeMax.base)}, plus ₹${rupeesText(feeMax.perKm)} a km.`);
+    }
+    setProblem(null);
     setSaving(true);
     try {
       const desk = shopDesk(team);
-      const saved = await desk.updatePod(id, { products, serveAll, cities, turnaroundDays: turnaround, minOrder: paiseOf(minOrder) ?? 0, notes: notes.trim() || null });
+      const saved = await desk.updatePod(id, {
+        products,
+        serveAll,
+        cities,
+        turnaroundDays: turnaround,
+        minOrder: paiseOf(minOrder) ?? 0,
+        deliveryFee: { base, includedKm: perKm ? feeKm : 0, perKm },
+        notes: notes.trim() || null,
+      });
       // A product just switched on has no price yet, and customers can't see it until it has one.
       const added = saved.pod?.unpriced.some((p) => !pod.products.includes(p));
       router.push(added ? `${desk.home(id)}/prices` : desk.home(id));
@@ -154,6 +172,41 @@ function Form({ id, team, business, catalog }: { id: string; team: boolean; busi
             </div>
           )}
         </>
+      )}
+
+      <h2 className={styles.overline}>Delivery charge</h2>
+      <Input
+        label="Base charge (₹)"
+        value={feeBase}
+        onChange={(e) => setFeeBase(rupeeInput(e.target.value))}
+        inputMode="decimal"
+        placeholder="0"
+        hint={`Up to ₹${rupeesText(feeMax.base)}. Leave both at 0 for free delivery.`}
+      />
+      <Input
+        label="Per km (₹, optional)"
+        value={feePerKm}
+        onChange={(e) => setFeePerKm(rupeeInput(e.target.value))}
+        inputMode="decimal"
+        placeholder="0"
+        hint={`Up to ₹${rupeesText(feeMax.perKm)} a km. Customers then share their location at checkout.`}
+      />
+      {perKm > 0 && (
+        <div className={styles.spread}>
+          <span className={styles.identity}>
+            <span className={styles.label}>Km in the base charge</span>
+            <span className={styles.faint}>{feeKm === 0 ? `₹${rupeesText(perKm)} for every km` : `₹${rupeesText(perKm)} a km after the first ${feeKm} km`}</span>
+          </span>
+          <span className={styles.stepper} role="group" aria-label="Km the base charge covers">
+            <button type="button" className={styles.iconButton} aria-label="One km less" disabled={feeKm <= 0} onClick={() => setFeeKm((k) => k - 1)}>
+              <Icon name="minus" size={18} />
+            </button>
+            <output aria-live="polite">{feeKm}</output>
+            <button type="button" className={styles.iconButton} aria-label="One km more" disabled={feeKm >= 50} onClick={() => setFeeKm((k) => k + 1)}>
+              <Icon name="plus" size={18} />
+            </button>
+          </span>
+        </div>
       )}
 
       <h2 className={styles.overline}>Orders</h2>

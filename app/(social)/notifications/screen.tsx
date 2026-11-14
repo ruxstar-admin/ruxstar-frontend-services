@@ -29,12 +29,16 @@ const ICONS: Record<Notification["type"], IconName> = {
   "review.posted": "star",
   "review.replied": "reply",
   "review.removed": "flag",
+  "delivery.offer": "bicycle",
+  "delivery.updated": "bicycle",
 };
 
 function hrefOf(link: Notification["link"]) {
   switch (link.screen) {
     case "verification":
-      return "/verify";
+      return link.id === "delivery" ? "/verify/delivery" : "/verify";
+    case "delivery_job":
+      return "/verify/delivery";
     case "business":
       return `/vendor/businesses/${link.id}`;
     case "order":

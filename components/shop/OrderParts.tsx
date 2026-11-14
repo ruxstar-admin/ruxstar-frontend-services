@@ -1,8 +1,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Avatar } from "@/components/profile/Avatar";
 import { Icon, Tag } from "@/components/ui";
 import { ago, exact } from "@/lib/time";
 import {
+  DELIVERY_STATUS_LABEL,
   fileSize,
   priceLines,
   PROBLEM_LABEL,
@@ -10,7 +12,10 @@ import {
   progressOf,
   resolutionLine,
   STATUS_TONE,
+  tripActive,
+  vehicleLine,
   type Order,
+  type OrderDelivery,
   type OrderProblem,
   type OrderStatus,
   type PrintFile,
@@ -27,7 +32,7 @@ export function PriceList({
   pricing,
   after = [],
 }: {
-  price: Pick<Quote, "units" | "unitPrice" | "extrasPerUnit" | "platformFee" | "discount" | "coupon" | "total">;
+  price: Pick<Quote, "units" | "unitPrice" | "extrasPerUnit" | "platformFee" | "discount" | "coupon" | "delivery" | "deliveryKm" | "total">;
   pricing: "per_unit" | "per_page";
   after?: Line[];
 }) {
@@ -137,6 +142,44 @@ export function ProblemCard({ problem, forShop = false, onAddPhoto, adding }: { 
         </div>
       )}
       <p className={open ? styles.small : undefined}>{resolutionLine(problem, forShop)}</p>
+    </div>
+  );
+}
+
+/** Who is bringing the order: the rider's name, photo and vehicle, Call, and for the customer the code to give at the door. Same as the app. */
+export function RiderCard({ delivery, code, note }: { delivery: OrderDelivery; code?: string | null; note?: string }) {
+  const { rider } = delivery;
+  const live = tripActive(delivery);
+  return (
+    <div className={styles.rider}>
+      <div className={styles.riderHead} data-live={live || undefined}>
+        <Icon name="bicycle" size={20} />
+        <strong className={styles.riderStatus}>{DELIVERY_STATUS_LABEL[delivery.status]}</strong>
+        <span className={styles.faint}>{delivery.carrier === "partner" ? "Ruxstar partner" : "Shop team"}</span>
+      </div>
+      {note && <p className={styles.small}>{note}</p>}
+      {rider && (
+        <div className={styles.riderPerson}>
+          <Avatar name={rider.name} url={rider.avatarUrl} size={44} />
+          <span className={styles.fileText}>
+            <strong>{rider.name}</strong>
+            <span className={styles.small}>{vehicleLine(rider.vehicle)}</span>
+          </span>
+          {live && (
+            <a href={`tel:${rider.phone}`} className={styles.call} aria-label={`Call ${rider.name}`}>
+              <Icon name="phone" size={20} />
+            </a>
+          )}
+        </div>
+      )}
+      {code && live && (
+        <div className={styles.dropCode}>
+          <span className={styles.small}>Give this code to the rider at the door</span>
+          <span className={styles.digits} aria-label={`Delivery code ${code.split("").join(" ")}`}>
+            {code}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

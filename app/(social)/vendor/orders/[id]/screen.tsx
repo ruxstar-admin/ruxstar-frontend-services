@@ -4,11 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink, Icon, Input, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
+import { DeliverySection, type DeliveryDesk } from "@/components/shop/DeliverySection";
 import { FileItem, PriceList, ProblemCard, Progress } from "@/components/shop/OrderParts";
 import { Back } from "@/components/vendor/parts";
 import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import {
+  assignShopDelivery,
+  cancelShopDelivery,
   choiceLine,
   getShopOrder,
   isClosed,
@@ -17,6 +20,7 @@ import {
   quantityLine,
   refundShopOrder,
   SHOP_STATUS_LABEL,
+  shopDeliveryOptions,
   shopOrderFileLink,
   STATUS_TONE,
   STEP_ACTION,
@@ -33,7 +37,7 @@ import styles from "@/components/shop/order.module.css";
 import vendor from "@/components/vendor/vendor.module.css";
 
 /** The owner's order calls or the team's, and where Back goes. */
-export interface OrderDesk<T extends ShopOrder | TeamOrder> {
+export interface OrderDesk<T extends ShopOrder | TeamOrder> extends DeliveryDesk<T> {
   move: (id: string, status: ShopStatus, reason: string | undefined, idempotencyKey: string) => Promise<T>;
   fileLink: (id: string, fileId: string) => Promise<{ url: string }>;
   refund: (id: string, amount: number, reason: string, idempotencyKey: string) => Promise<T>;
@@ -44,6 +48,9 @@ const SHOP_DESK: OrderDesk<ShopOrder> = {
   move: moveShopOrder,
   fileLink: shopOrderFileLink,
   refund: refundShopOrder,
+  deliveryOptions: shopDeliveryOptions,
+  assign: assignShopDelivery,
+  cancelDelivery: cancelShopDelivery,
   back: { href: "/vendor/orders", label: "Orders" },
 };
 
@@ -114,7 +121,7 @@ export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk,
     }
   };
 
-  const steps = nextSteps(order.status).filter((status) => can(status === "rejected" ? "orders.reject" : "orders.move"));
+  const steps = nextSteps(order).filter((status) => can(status === "rejected" ? "orders.reject" : "orders.move"));
   const closed = isClosed(order.status);
   const { address } = order;
   const partials = order.refunds.filter((r) => r.kind === "partial");
@@ -222,6 +229,8 @@ export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk,
           </div>
         )
       )}
+
+      <DeliverySection order={order} desk={desk} canManage={can("orders.move")} onChanged={onChanged} />
 
       {!closed && (
         <section className={styles.section}>
