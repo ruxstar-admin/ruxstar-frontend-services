@@ -60,7 +60,9 @@ function PayoutDetail({ payout, onChecked }: { payout: StaffPayout; onChecked: (
         {payout.paidAt && <Fact label="Paid" value={exact(payout.paidAt)} />}
         <Fact label="Transfer id" value={payout.transferId} />
       </dl>
-      {payout.failure && <p className={styles.note}>{`${payout.failure.text} (${payout.failure.code}) The money went back to the vendor's balance.`}</p>}
+      {payout.failure && (
+        <p className={styles.note}>{`${payout.failure.text} (${payout.failure.code}) The money went back to the ${payout.payee === "partner" ? "partner's" : "vendor's"} balance.`}</p>
+      )}
       {payout.status === "pending" &&
         (canManage ? (
           <div className={styles.actions}>
@@ -106,6 +108,7 @@ function Payouts({ status }: { status: PayoutStatus }) {
                 <span className={styles.name}>{`${money(p.amount)} · ${p.vendor.name}`}</span>
                 <span className={`${styles.muted} ${styles.line}`}>{p.to}</span>
               </span>
+              {p.payee === "partner" && <Tag tone="neutral">Partner</Tag>}
               <Tag tone={STATUS[p.status].tone}>{STATUS[p.status].label}</Tag>
               <time className={styles.time} dateTime={when} title={exact(when)}>
                 {ago(when)}
@@ -167,6 +170,14 @@ function HeldDetail({ order, onReleased }: { order: HeldOrder; onReleased: () =>
         <Fact label="Vendor" value={order.vendor.name} />
         {order.deliveredAt && <Fact label="Delivered" value={exact(order.deliveredAt)} />}
         <Fact label="Available on its own" value={order.problemOpen ? "After the problem is settled" : exact(order.releaseAt)} />
+        {order.partner && <Fact label={`Partner pay · ${order.partner.rider.name}`} value={money(order.partner.amount)} />}
+        {order.partner && (
+          <Fact
+            label="Partner can withdraw it"
+            value={order.partner.held ? "After the “never arrived” report is settled" : exact(order.partner.releaseAt)}
+            warn={order.partner.held}
+          />
+        )}
       </dl>
       {order.problemOpen ? (
         <p className={styles.note}>A customer reported a problem. Settle it in Reports first, so a refund can still come out of the share.</p>
@@ -275,7 +286,7 @@ function Held() {
   );
 }
 
-/** Vendors' withdrawals by status, and order shares still on hold that the team can release early. Same as the app. */
+/** Vendors' and delivery partners' withdrawals by status, and order shares still on hold that the team can release early. Same as the app. */
 export function PayoutsScreen() {
   const [tab, setTab] = useState<Tab>("pending");
   return (

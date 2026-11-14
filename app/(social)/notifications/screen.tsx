@@ -38,6 +38,7 @@ function hrefOf(link: Notification["link"]) {
     case "verification":
       return link.id === "delivery" ? "/verify/delivery" : "/verify";
     case "delivery_job":
+    case "delivery_earnings":
       return "/verify/delivery";
     case "business":
       return `/vendor/businesses/${link.id}`;

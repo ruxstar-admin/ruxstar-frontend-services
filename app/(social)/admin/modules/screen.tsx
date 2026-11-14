@@ -17,9 +17,10 @@ const MAX_PAYOUT_FEE_RUPEES = 100;
 const MAX_MIN_PAYOUT_RUPEES = 100_000;
 const paiseOf = (rupees: string) => (rupees.trim() === "" ? NaN : Math.round(Number(rupees) * 100));
 
-/** Ledger only: the fee taken from each vendor withdrawal and the least they can withdraw. Same as the app. */
+/** The fee taken from each withdrawal and the least that can be withdrawn: vendors' on the ledger, Ruxstar partners' on delivery. Same as the app. */
 function Withdrawals({ m, payouts, onSaved }: { m: ModuleSettings; payouts: NonNullable<ModuleSettings["payouts"]>; onSaved: (m: ModuleSettings) => void }) {
   const toast = useToast();
+  const who = m.module === "delivery" ? "partner" : "vendor";
   const onSignedOut = useOnSignedOut();
   const canManage = useCan("modules.manage");
   const [fee, setFee] = useState(rupeesOf(payouts.fee));
@@ -63,11 +64,11 @@ function Withdrawals({ m, payouts, onSaved }: { m: ModuleSettings; payouts: NonN
         value={fee}
         onChange={(e) => setFee(e.target.value.replace(/[^\d.]/g, ""))}
         disabled={!canManage}
-        hint="Covers Cashfree's charge. The vendor gets the rest. 0 for none."
+        hint={`Covers Cashfree's charge. The ${who} gets the rest. 0 for none.`}
         error={feeError}
       />
       <Input
-        label="Least a vendor can withdraw"
+        label={`Least a ${who} can withdraw`}
         inputMode="decimal"
         prefix="₹"
         value={minimum}

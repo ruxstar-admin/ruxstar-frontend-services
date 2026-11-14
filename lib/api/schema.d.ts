@@ -7848,8 +7848,8 @@ export interface paths {
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team) and `delivery_job` a delivery in the Ruxstar Delivery app; `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout); `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings";
                                     id: string;
                                 };
                                 read: boolean;
@@ -20464,8 +20464,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * What you earned as a Ruxstar partner
-         * @description Pay for each delivery is added when it is delivered. Withdrawals open later; shops pay their own team outside Ruxstar.
+         * What you earned as a Ruxstar partner, and your withdrawals
+         * @description Pay for each delivery is added when it is delivered and can be withdrawn 48 hours later. It waits longer only while the customer's report that it never arrived is open. Shops pay their own team outside Ruxstar.
          */
         get: {
             parameters: {
@@ -20484,8 +20484,14 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                /** @description Amount in paise */
-                                balance: number;
+                                balance: {
+                                    /** @description Paise you can withdraw now */
+                                    available: number;
+                                    /** @description Paise on hold: each delivery's pay can be withdrawn 48 hours after it */
+                                    pending: number;
+                                    /** @description Paise withdrawn to your account so far */
+                                    paidOut: number;
+                                };
                                 /** @description Amount in paise */
                                 today: number;
                                 /** @description Amount in paise */
@@ -20501,8 +20507,50 @@ export interface paths {
                                     /** Format: date-time */
                                     at: string;
                                 }[];
-                                /** @description False until withdrawals open for delivery partners */
-                                withdrawals: boolean;
+                                /** @description Pay still on hold, soonest first, up to 20 */
+                                upcoming: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    orderId: string;
+                                    orderNo: number;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    availableAt: string;
+                                    /** @description The customer said it never arrived; it waits until Ruxstar settles that */
+                                    held: boolean;
+                                }[];
+                                /** @description The least that can be withdrawn and the fee taken from each withdrawal, both set by Ruxstar on the delivery module */
+                                withdrawal: {
+                                    /** @description Amount in paise */
+                                    minimum: number;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                };
+                                payoutMethod: {
+                                    kind: "bank" | "upi";
+                                    /** @description For example YES BANK ••1191, or asha@upi */
+                                    label: string;
+                                    holderName: string | null;
+                                    ifsc: string | null;
+                                    /** Format: date-time */
+                                    verifiedAt: string;
+                                } | null;
+                                /** @description Your latest 20 withdrawals */
+                                payouts: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    /** @description Paise taken from the amount; the bank gets amount - fee */
+                                    fee: number;
+                                    status: "pending" | "paid" | "failed";
+                                    to: string;
+                                    utr: string | null;
+                                    paidAt: string | null;
+                                    failure: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                }[];
                             };
                             meta: {
                                 requestId: string;
@@ -20531,6 +20579,305 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/payouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw everything available to your payout account
+         * @description Takes the whole available balance, at least the minimum, and sends it less the payout fee. One withdrawal at a time, counting one from your shop earnings if you have a shop too. Until Cashfree confirms it, it shows as pending; if it fails, the amount is back in your balance. Send an Idempotency-Key.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description Amount in paise */
+                                amount: number;
+                                /** @description Paise taken from the amount; the bank gets amount - fee */
+                                fee: number;
+                                status: "pending" | "paid" | "failed";
+                                to: string;
+                                utr: string | null;
+                                paidAt: string | null;
+                                failure: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/earnings/statement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every change to your delivery earnings, newest first
+         * @description One line per money movement: a delivery's pay arriving (on hold), its hold ending, withdrawals, and failed withdrawals coming back.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description earned: pay for a delivery, on hold for 48 hours. available: the hold ended and it can be withdrawn. withdrawal: you withdrew it. returned: a withdrawal failed and came back. */
+                                kind: "earned" | "available" | "withdrawal" | "returned";
+                                /** @description Paise; negative for withdrawals */
+                                amount: number;
+                                /** Format: date-time */
+                                at: string;
+                                /** @description Set on delivery lines */
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                } | null;
+                                /** @description Set on withdrawal lines */
+                                payout: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    to: string;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/delivery/payout-method": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Where your delivery earnings are paid */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                kind: "bank" | "upi";
+                                /** @description For example YES BANK ••1191, or asha@upi */
+                                label: string;
+                                holderName: string | null;
+                                ifsc: string | null;
+                                /** Format: date-time */
+                                verifiedAt: string;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set the bank account or UPI ID your delivery earnings are paid to
+         * @description Checked with Cashfree before it is saved, and it must be in the name on your Aadhaar. Replaces the one you had; the account your shop is paid to doesn't change. Only the last 4 digits of a bank account are ever shown again.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind: "bank";
+                        accountNumber: string;
+                        /** @description 11 characters, like YESB0000262 */
+                        ifsc: string;
+                    } | {
+                        /** @enum {string} */
+                        kind: "upi";
+                        /** @description For example asha@okhdfc */
+                        vpa: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                kind: "bank" | "upi";
+                                /** @description For example YES BANK ••1191, or asha@upi */
+                                label: string;
+                                holderName: string | null;
+                                ifsc: string | null;
+                                /** Format: date-time */
+                                verifiedAt: string;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -22780,8 +23127,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Vendors' withdrawals, newest first
-         * @description `pending` is on the way, `failed` came back to the vendor's balance, `paid` reached their account.
+         * Vendors' and delivery partners' withdrawals, newest first
+         * @description `pending` is on the way, `failed` came back to the payee's balance, `paid` reached their account. `payee` says whose it is.
          */
         get: {
             parameters: {
@@ -22806,12 +23153,14 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
+                                /** @description `partner` is a Ruxstar delivery partner's withdrawal */
+                                payee: "vendor" | "partner";
                                 vendor: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
                                 };
-                                /** @description Paise taken from the vendor's balance */
+                                /** @description Paise taken from the payee's balance */
                                 amount: number;
                                 /** @description Paise kept by Ruxstar; the bank gets amount - fee */
                                 fee: number;
@@ -22822,7 +23171,7 @@ export interface paths {
                                 utr: string | null;
                                 failure: {
                                     code: string;
-                                    /** @description What the vendor was told */
+                                    /** @description What the payee was told */
                                     text: string;
                                 } | null;
                                 /** @description Times it was sent to Cashfree */
@@ -22902,12 +23251,14 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
+                                /** @description `partner` is a Ruxstar delivery partner's withdrawal */
+                                payee: "vendor" | "partner";
                                 vendor: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
                                 };
-                                /** @description Paise taken from the vendor's balance */
+                                /** @description Paise taken from the payee's balance */
                                 amount: number;
                                 /** @description Paise kept by Ruxstar; the bank gets amount - fee */
                                 fee: number;
@@ -22918,7 +23269,7 @@ export interface paths {
                                 utr: string | null;
                                 failure: {
                                     code: string;
-                                    /** @description What the vendor was told */
+                                    /** @description What the payee was told */
                                     text: string;
                                 } | null;
                                 /** @description Times it was sent to Cashfree */
@@ -22969,7 +23320,7 @@ export interface paths {
         };
         /**
          * Delivered orders whose share is still on hold, latest release date first
-         * @description Print orders wait 48 hours after delivery, and while a reported problem is open.
+         * @description Print orders wait 48 hours after delivery, and while a reported problem is open. A Ruxstar partner's pay for the delivery waits 48 hours too, and longer only while a report that it never arrived is open.
          */
         get: {
             parameters: {
@@ -23014,6 +23365,19 @@ export interface paths {
                                 releaseAt: string;
                                 /** @description A customer's reported problem waits for a decision; it can't be released until then */
                                 problemOpen: boolean;
+                                partner: {
+                                    rider: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    /** @description Paise, the partner's pay; already out of the shop's share */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    releaseAt: string;
+                                    /** @description The customer said it never arrived; the pay waits until that is settled */
+                                    held: boolean;
+                                } | null;
                             }[];
                             meta: {
                                 requestId: string;
@@ -25340,9 +25704,9 @@ export interface paths {
                                 /** @description Paise the customer pays Ruxstar on each order */
                                 platformFee: number;
                                 payouts: {
-                                    /** @description Paise taken from each vendor withdrawal */
+                                    /** @description Paise taken from each withdrawal */
                                     fee: number;
-                                    /** @description Paise, the least a vendor can withdraw */
+                                    /** @description Paise, the least that can be withdrawn */
                                     minimum: number;
                                 } | null;
                                 deliveryEnabled: boolean;
@@ -25416,7 +25780,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Switch a module on or off, or change its signups, commission, platform fee or delivery; on the ledger, the payout fee and minimum */
+        /** Switch a module on or off, or change its signups, commission, platform fee or delivery; the payout fee and minimum on the ledger (vendors) and delivery (partners) */
         patch: {
             parameters: {
                 query?: never;
@@ -25434,9 +25798,9 @@ export interface paths {
                         commissionBps?: number;
                         /** @description Paise, up to ₹500 */
                         platformFee?: number;
-                        /** @description Ledger only. Paise taken from each withdrawal, up to ₹100 */
+                        /** @description Ledger (vendors) or delivery (partners) only. Paise taken from each withdrawal, up to ₹100 */
                         payoutFee?: number;
-                        /** @description Ledger only. Paise, at least ₹1 more than the payout fee */
+                        /** @description Ledger (vendors) or delivery (partners) only. Paise, at least ₹1 more than the payout fee */
                         minPayout?: number;
                         deliveryEnabled?: boolean;
                         /** @description Business modules only. Live businesses without a GSTIN stay live. */
@@ -25474,9 +25838,9 @@ export interface paths {
                                 /** @description Paise the customer pays Ruxstar on each order */
                                 platformFee: number;
                                 payouts: {
-                                    /** @description Paise taken from each vendor withdrawal */
+                                    /** @description Paise taken from each withdrawal */
                                     fee: number;
-                                    /** @description Paise, the least a vendor can withdraw */
+                                    /** @description Paise, the least that can be withdrawn */
                                     minimum: number;
                                 } | null;
                                 deliveryEnabled: boolean;
