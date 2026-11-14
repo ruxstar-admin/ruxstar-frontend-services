@@ -21001,7 +21001,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -21061,9 +21061,9 @@ export interface paths {
                         category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
                         subject: string;
                         text: string;
-                        /** @description What it is about: an order, business, coupon or post by id, or verification by track (base or delivery). It must be yours, except a post. */
+                        /** @description What it is about: an order, business, coupon or post by id, verification by track (base or delivery), or a delivery job by id. It must be yours, except a post; a delivery must be one you are or were the rider on. */
                         context?: {
-                            type: "order" | "business" | "verification" | "post" | "coupon";
+                            type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                             id: string;
                         };
                     };
@@ -21088,7 +21088,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -21189,7 +21189,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -21300,7 +21300,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -21405,7 +21405,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -21508,7 +21508,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -26418,7 +26418,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     label: string;
                                     state: string | null;
@@ -26654,7 +26654,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     label: string;
                                     state: string | null;
@@ -26781,7 +26781,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     label: string;
                                     state: string | null;
@@ -26914,7 +26914,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
                                     id: string;
                                     label: string;
                                     state: string | null;

@@ -9,6 +9,7 @@ import support from "@/components/support/support.module.css";
 import { Button, ButtonLink, Card, Icon, Segmented, Skeleton, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
 import { newIdempotencyKey } from "@/lib/api/client";
+import { DELIVERY_STATUS_LABEL } from "@/lib/api/orders";
 import {
   getStaffTicket,
   reopenKycCase,
@@ -295,7 +296,8 @@ export function SupportTicketScreen({ id }: { id: string }) {
   }, [id, attempt, onSignedOut]);
 
   const ctx = t?.context ?? null;
-  const ctxState = ctx?.state ? (ctx.type === "verification" ? (KYC_LABEL[ctx.state] ?? ctx.state) : ctx.state) : null;
+  const ctxLabels: Record<string, string> | null = ctx?.type === "verification" ? KYC_LABEL : ctx?.type === "delivery" ? DELIVERY_STATUS_LABEL : null;
+  const ctxState = ctx?.state ? (ctxLabels?.[ctx.state] ?? ctx.state) : null;
   const from = t
     ? `${t.requester.name || "No name"}${t.requester.username ? ` (@${t.requester.username})` : ""}${t.requester.status === "locked" ? ", on hold" : t.requester.status === "deleted" ? ", deleted" : ""}`
     : "";
