@@ -16,12 +16,11 @@ import styles from "@/components/vendor/vendor.module.css";
 const MAX_BUSINESSES = 10;
 
 function subtitleOf(b: Business) {
-  if (b.status === "draft") return "Draft · Finish setup";
-  if (canOpen(b)) return b.open ? "Open · Taking orders" : "Closed";
-  return `${MODULE_LABEL[b.module]} · ${statusOf(b).label}`;
+  if (b.status === "draft") return "Finish setup";
+  return [MODULE_LABEL[b.module], b.location?.city].filter(Boolean).join(" · ");
 }
 
-/** Every business, each with its own Open switch, and Add a business. Same as the app. */
+/** Every business as a card, each with its own Open switch, and Add business at the top. Same as the app. */
 export function BusinessesScreen() {
   const onSignedOut = useOnSignedOut();
   const { data, error, reload, setData } = useLoad(myBusinesses);
@@ -55,29 +54,47 @@ export function BusinessesScreen() {
     }
   };
 
+  const canAdd = data.length < MAX_BUSINESSES;
+
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Businesses</h1>
+      <div className={styles.head}>
+        <h1 className={styles.title}>Businesses</h1>
+        {canAdd && data.length > 0 && (
+          <ButtonLink href="/vendor/businesses/new" icon={<Icon name="plus" size={18} />}>
+            Add business
+          </ButtonLink>
+        )}
+      </div>
+      {failure && (
+        <p className={styles.error} role="alert">
+          {failure}
+        </p>
+      )}
       {data.length ? (
-        <ul className={styles.businesses}>
+        <ul className={styles.businessGrid}>
           {data.map((b) => {
             const status = statusOf(b);
             const switchable = canOpen(b);
             return (
-              <li key={b.id} className={styles.business}>
-                <Link href={`/vendor/businesses/${b.id}`}>
-                  <Cover business={b} />
-                  <span className={styles.rowText}>
-                    <span className={styles.rowTitle}>{b.name}</span>
-                    <span className={styles.rowLine} data-open={(switchable && b.open) || undefined}>
-                      {subtitleOf(b)}
+              <li key={b.id} className={styles.businessCard}>
+                <Link href={`/vendor/businesses/${b.id}`} aria-label={`${b.name}, ${status.label}`}>
+                  <span className={styles.businessCover}>
+                    <Cover business={b} />
+                    <span className={styles.businessBadge}>
+                      <Tag tone={status.tone}>{status.label}</Tag>
                     </span>
                   </span>
+                  <span className={styles.businessBody}>
+                    <span className={styles.businessName}>{b.name}</span>
+                    <span className={styles.rowLine}>{subtitleOf(b)}</span>
+                  </span>
                 </Link>
-                {switchable ? (
-                  <Toggle checked={b.open} disabled={busy.has(b.id)} label={`${b.name} open`} onChange={(on) => void toggle(b, on)} />
-                ) : (
-                  <Tag tone={status.tone}>{status.label}</Tag>
+                {switchable && (
+                  <div className={styles.businessToggle}>
+                    <span data-open={b.open || undefined}>{b.open ? "Open" : "Closed"}</span>
+                    <Toggle checked={b.open} disabled={busy.has(b.id)} label={`${b.name} open`} onChange={(on) => void toggle(b, on)} />
+                  </div>
                 )}
               </li>
             );
@@ -86,22 +103,12 @@ export function BusinessesScreen() {
       ) : (
         <Empty title="Open your first business">
           <p>Each business runs in one category: print on demand, events, coaching or stays. You can have several.</p>
+          <ButtonLink href="/vendor/businesses/new" icon={<Icon name="plus" size={18} />}>
+            Add business
+          </ButtonLink>
         </Empty>
       )}
-      {failure && (
-        <p className={styles.error} role="alert">
-          {failure}
-        </p>
-      )}
-      {data.length < MAX_BUSINESSES ? (
-        <div>
-          <ButtonLink href="/vendor/businesses/new" icon={<Icon name="plus" size={18} />}>
-            Add a business
-          </ButtonLink>
-        </div>
-      ) : (
-        <p className={styles.faint}>{`You have the most businesses one vendor can run (${MAX_BUSINESSES}).`}</p>
-      )}
+      {!canAdd && <p className={styles.faint}>{`You have the most businesses one vendor can run (${MAX_BUSINESSES}).`}</p>}
     </div>
   );
 }

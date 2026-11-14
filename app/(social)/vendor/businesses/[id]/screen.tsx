@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { Button, ButtonLink, Icon, Segmented, Tag } from "@/components/ui";
+import { Button, ButtonLink, Icon, Segmented, Tag, type IconName } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
@@ -36,17 +36,27 @@ function Fact({ label, value }: { label: string; value: string | null }) {
   );
 }
 
-function SetupStep({ href, title, subtitle, done, disabled }: { href: string; title: string; subtitle: string; done: boolean; disabled?: boolean }) {
+/** `done` marks a setup step; leave it out for places that are never "done". */
+function Tile({ href, icon, title, subtitle, done, disabled }: { href: string; icon: IconName; title: string; subtitle: string; done?: boolean; disabled?: boolean }) {
+  const step = done !== undefined;
   return (
     <li>
-      <Link href={href} className={styles.row} aria-disabled={disabled || undefined} tabIndex={disabled ? -1 : undefined}>
-        <Icon name={done ? "check" : "edit"} size={20} className={done ? styles.done : undefined} />
-        <span className={styles.rowText}>
-          <span className={styles.rowTitle}>{title}</span>
-          <span className={styles.rowLine}>{subtitle}</span>
+      <Link
+        href={href}
+        className={styles.tile}
+        data-todo={(step && !done) || undefined}
+        aria-disabled={disabled || undefined}
+        tabIndex={disabled ? -1 : undefined}
+        aria-label={step ? `${title}, ${done ? "done" : "to do"}` : undefined}
+      >
+        <span className={styles.tileTop}>
+          <span className={styles.tileIcon}>
+            <Icon name={icon} size={24} />
+          </span>
+          {step && (done ? <Icon name="check" size={18} className={styles.done} /> : <span className={styles.tileTodo}>To do</span>)}
         </span>
-        <span className={styles.faint}>{done ? "Done" : "To do"}</span>
-        <Icon name="chevron-right" size={18} />
+        <span className={styles.tileTitle}>{title}</span>
+        <span className={styles.tileLine}>{subtitle}</span>
       </Link>
     </li>
   );
@@ -139,7 +149,7 @@ function Details({
         </p>
       ) : null}
 
-      {canOpen(b) && can("shop.open") && (
+      {team && canOpen(b) && can("shop.open") && (
         <div className={styles.openCard} data-open={b.open || undefined}>
           <Segmented
             label="Open or closed"
@@ -193,19 +203,26 @@ function Details({
           </li>
         )}
       </ul>
+      {editable && can("shop.details") && (
+        <ButtonLink href={`${home}/details`} variant="secondary" icon={<Icon name="edit" size={16} />}>
+          Edit details
+        </ButtonLink>
+      )}
 
       {(catalogRows || !team) && (
-        <ul className={styles.rows}>
+        <ul className={styles.tiles}>
           {catalogRows && b.pod && (
             <>
-              <SetupStep
+              <Tile
                 href={`${home}/products`}
+                icon="stack"
                 title="Products & delivery"
                 subtitle={b.pod.products.length ? `${b.pod.products.length} products · ${areaLine(b.pod)}` : "Choose what you print and where you deliver"}
                 done={!b.missing.includes("products") && !b.missing.includes("area")}
               />
-              <SetupStep
+              <Tile
                 href={`${home}/prices`}
+                icon="tag"
                 title="Prices"
                 subtitle={
                   !b.pod.products.length
@@ -220,41 +237,10 @@ function Details({
             </>
           )}
           {!team && b.pod && editable && (
-            <li>
-              <Link href={`/vendor/businesses/${id}/team`} className={styles.row}>
-                <Icon name="users" size={20} />
-                <span className={styles.rowText}>
-                  <span className={styles.rowTitle}>Team</span>
-                  <span className={styles.rowLine}>Invite people to help with orders, the shop and posts</span>
-                </span>
-                <Icon name="chevron-right" size={18} />
-              </Link>
-            </li>
+            <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team" subtitle="Invite people to help with orders, the shop and posts" />
           )}
-          {!team && b.pod && b.status === "live" && (
-            <li>
-              <Link href={`/vendor/businesses/${id}/reviews`} className={styles.row}>
-                <Icon name="star" size={20} />
-                <span className={styles.rowText}>
-                  <span className={styles.rowTitle}>Reviews</span>
-                  <span className={styles.rowLine}>{ratingLine(b.rating)}</span>
-                </span>
-                <Icon name="chevron-right" size={18} />
-              </Link>
-            </li>
-          )}
-          {!team && (
-            <li>
-              <Link href={`/vendor/businesses/${id}/activity`} className={styles.row}>
-                <Icon name="clock" size={20} />
-                <span className={styles.rowText}>
-                  <span className={styles.rowTitle}>Activity</span>
-                  <span className={styles.rowLine}>Who did what: you, your team, customers and Ruxstar</span>
-                </span>
-                <Icon name="chevron-right" size={18} />
-              </Link>
-            </li>
-          )}
+          {!team && b.pod && b.status === "live" && <Tile href={`/vendor/businesses/${id}/reviews`} icon="star" title="Reviews" subtitle={ratingLine(b.rating)} />}
+          {!team && <Tile href={`/vendor/businesses/${id}/activity`} icon="clock" title="Activity" subtitle="Who did what: you, your team, customers and Ruxstar" />}
         </ul>
       )}
 
@@ -265,13 +251,6 @@ function Details({
           <Fact label="Location" value={addressOf(b.location)} />
           <Fact label="GSTIN" value={b.gstin ? `${b.gstin.number}${b.gstin.legalName ? ` · ${b.gstin.legalName}` : ""}` : null} />
         </dl>
-        {editable && can("shop.details") && (
-          <div>
-            <ButtonLink href={`${home}/details`} variant="secondary" icon={<Icon name="edit" size={16} />}>
-              Edit details
-            </ButtonLink>
-          </div>
-        )}
       </section>
 
       {b.status === "draft" && editable && !team && (

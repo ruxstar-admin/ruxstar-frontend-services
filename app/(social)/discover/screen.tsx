@@ -107,9 +107,16 @@ export function DiscoverScreen() {
           <h1 className={styles.title}>Discover</h1>
           <p className={styles.subtitle}>Businesses on Ruxstar</p>
         </div>
-        <ButtonLink href="/orders" variant="secondary">
-          Your orders
-        </ButtonLink>
+        <div className={styles.headActions}>
+          <ButtonLink href="/orders" variant="secondary">
+            <Icon name="receipt" size={18} />
+            Your orders
+          </ButtonLink>
+          <ButtonLink href="/payments" variant="secondary">
+            <Icon name="wallet" size={18} />
+            Payments
+          </ButtonLink>
+        </div>
       </div>
       <label className={social.searchBox}>
         <Icon name="search" size={20} />

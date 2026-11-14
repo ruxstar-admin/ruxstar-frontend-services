@@ -286,6 +286,19 @@ export function AccountScreen() {
           )}
 
           {user && (
+            <Setting id="payments" title="Payments" description="What you paid and any refunds">
+              <div className={`${styles.panel} ${styles.devices}`}>
+                <div className={styles.device}>
+                  <p className={styles.muted}>Every payment, with its payment ID and the order it was for.</p>
+                  <ButtonLink href="/payments" variant="secondary">
+                    Open
+                  </ButtonLink>
+                </div>
+              </div>
+            </Setting>
+          )}
+
+          {user && (
             <Setting id="work" title="Work" description="Team invites and businesses you help run">
               <div className={`${styles.panel} ${styles.devices}`}>
                 <div className={styles.device}>

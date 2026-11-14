@@ -560,6 +560,62 @@ button.file:hover {
   border-color: var(--ink-3);
 }
 
+button.row {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.payment {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.paymentBack {
+  font: 600 13px/18px var(--font);
+  color: var(--success);
+}
+
+.paymentDetails {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.paymentFacts {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.paymentFacts dt {
+  font: var(--type-caption);
+  color: var(--ink-3);
+}
+
+.paymentFacts dd {
+  margin: 2px 0 0;
+  font: 500 15px/22px var(--font);
+  overflow-wrap: anywhere;
+}
+
+.paymentId {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.paymentRefund {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .rowIcon {
   display: grid;
   flex: none;

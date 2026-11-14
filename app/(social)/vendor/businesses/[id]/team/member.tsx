@@ -30,6 +30,7 @@ import team from "@/components/team/team.module.css";
 import styles from "@/components/vendor/vendor.module.css";
 
 const retryable = (err: unknown) => err instanceof ApiError && err.status === 0;
+const dayText = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
 function Invite({ businessId, data }: { businessId: string; data: Team }) {
   const router = useRouter();
@@ -147,21 +148,60 @@ function Member({ businessId, data, member }: { businessId: string; data: Team; 
   return (
     <div className={styles.page}>
       <Back href={back}>Team</Back>
-      <div className={styles.head}>
-        <div className={team.inviteHead}>
-          <Avatar name={member.person.name} url={member.person.avatar} size={56} />
-          <div className={styles.identity}>
-            <h1 className={styles.name}>{member.person.name}</h1>
-            {member.person.username && <p className={styles.muted}>@{member.person.username}</p>}
-          </div>
+      <section className={team.hero}>
+        <Avatar name={member.person.name} url={member.person.avatar} size={88} />
+        <div className={team.heroText}>
+          <h1 className={styles.name}>{member.person.name}</h1>
+          {member.person.username && <p className={styles.muted}>@{member.person.username}</p>}
         </div>
         <Tag tone={status.tone}>{status.label}</Tag>
-      </div>
+        <dl className={team.stats}>
+          <div>
+            <dt>{invited ? "Invited" : "Joined"}</dt>
+            <dd>{dayText(invited || !member.joinedAt ? member.invitedAt : member.joinedAt)}</dd>
+          </div>
+          <div>
+            <dt>Can do</dt>
+            <dd>{`${permissions.length} of ${data.permissions.length}`}</dd>
+          </div>
+          <div>
+            <dt>Pay</dt>
+            <dd>{agreed ?? "Not set"}</dd>
+          </div>
+        </dl>
+      </section>
       {member.status === "waiting" ? (
-        <p className={styles.muted}>They joined, but nothing works for them until their identity verification is approved.</p>
+        <p className={styles.note}>
+          <Icon name="clock" size={20} />
+          <span>They joined, but nothing works for them until their identity verification is approved.</span>
+        </p>
       ) : invited && member.expiresAt ? (
-        <p className={styles.muted}>{inviteEnds(member.expiresAt)}. You can change what they&apos;ll be able to do and the pay before they accept.</p>
+        <p className={styles.note}>
+          <Icon name="info" size={20} />
+          <span>{inviteEnds(member.expiresAt)}. You can change what they&apos;ll be able to do and the pay before they accept.</span>
+        </p>
       ) : null}
+      <div className={team.quick}>
+        <Link href={`/messages/with/${member.person.id}`} className={team.quickAction}>
+          <Icon name="chat" size={22} />
+          Message
+        </Link>
+        {member.person.username && (
+          <Link href={`/u/${member.person.username}`} className={team.quickAction}>
+            <Icon name="user" size={22} />
+            Profile
+          </Link>
+        )}
+        {!invited && (
+          <Link
+            href={`/vendor/businesses/${businessId}/activity?${new URLSearchParams({ by: member.person.id, name: member.person.name })}`}
+            className={team.quickAction}
+          >
+            <Icon name="clock" size={22} />
+            Activity
+          </Link>
+        )}
+      </div>
       <h2 className={team.section}>What they can do</h2>
       <PermissionPicker catalog={data.permissions} value={permissions} onChange={setPermissions} disabled={!!busy} />
       {permissions.length === 0 && <p className={styles.warn}>Pick at least one, or remove them from the team.</p>}
@@ -210,17 +250,9 @@ function Member({ businessId, data, member }: { businessId: string; data: Team; 
           >
             Save changes
           </Button>
-          {!invited && (
-            <Link
-              href={`/vendor/businesses/${businessId}/activity?${new URLSearchParams({ by: member.person.id, name: member.person.name })}`}
-              className={styles.link}
-            >
-              See what they did
-            </Link>
-          )}
-          <button type="button" className={styles.link} data-muted onClick={() => setConfirming(true)}>
+          <Button variant="secondary" size="lg" disabled={!!busy} icon={<Icon name="trash" size={18} />} onClick={() => setConfirming(true)}>
             {invited ? "Cancel this invite" : "Remove from the team"}
-          </button>
+          </Button>
         </div>
       )}
     </div>
