@@ -436,12 +436,29 @@ function TypingLine({ people, isGroup }: { people: Typist[]; isGroup: boolean })
   );
 }
 
-/** A chat: newest at the bottom, live while the page is in view. Tap a photo to see it full screen; hold, right-click or ⋯ for a message's menu. */
-export function ThreadScreen({ id }: { id: string }) {
+export function ThreadSkeleton() {
+  return (
+    <div className={styles.thread} aria-busy>
+      <div className={styles.messages}>
+        {[70, 50, 60].map((w, i) => (
+          <div key={i} className={styles.line} data-mine={i % 2 ? true : undefined} style={{ width: `${w}%` }}>
+            <Skeleton height={44} radius={20} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A chat: newest at the bottom, live while the page is in view. Tap a photo to see it full screen; hold, right-click or ⋯ for a message's menu.
+ * `initial` is the chat's details when the page already has them.
+ */
+export function ThreadScreen({ id, initial }: { id: string; initial?: ChatDetail }) {
   const router = useRouter();
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
-  const thread = useThread(id);
+  const thread = useThread(id, initial);
   const { chat, messages } = thread;
   const [menuFor, setMenuFor] = useState<ShownMessage | null>(null);
   const [viewing, setViewing] = useState<number | null>(null);
@@ -509,19 +526,7 @@ export function ThreadScreen({ id }: { id: string }) {
     }
   };
 
-  if (thread.loading) {
-    return (
-      <div className={styles.thread} aria-busy>
-        <div className={styles.messages}>
-          {[70, 50, 60].map((w, i) => (
-            <div key={i} className={styles.line} data-mine={i % 2 ? true : undefined} style={{ width: `${w}%` }}>
-              <Skeleton height={44} radius={20} />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  if (thread.loading) return <ThreadSkeleton />;
   if (thread.error || !chat) {
     return (
       <div className={social.column}>

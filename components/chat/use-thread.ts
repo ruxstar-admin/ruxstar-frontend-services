@@ -41,9 +41,10 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
  * One chat: its details and messages. While the page is in view it keeps one /updates call open, which answers
  * the moment anything changes (new messages, unsent ones, reactions, typing, Seen, changes to a group). Sends
  * at once on screen: a failed send stays with Retry, which reuses its idempotency key, so nothing is sent twice.
+ * `initial` is the chat's details when the caller already has them, so the first load only fetches messages.
  */
-export function useThread(chatId: string) {
-  const [chat, setChat] = useState<ChatDetail | null>(null);
+export function useThread(chatId: string, initial?: ChatDetail) {
+  const [chat, setChat] = useState<ChatDetail | null>(initial ?? null);
   const [messages, setMessages] = useState<ShownMessage[]>([]);
   const [typing, setTyping] = useState<Typist[]>([]);
   const [olderCursor, setOlderCursor] = useState<string | null>(null);
@@ -72,7 +73,8 @@ export function useThread(chatId: string) {
   useEffect(() => {
     let live = true;
     since.current = null;
-    Promise.all([getChat(chatId), chatMessages(chatId)])
+    const known = attempt === 0 && initial?.id === chatId ? initial : undefined;
+    Promise.all([known ?? getChat(chatId), chatMessages(chatId)])
       .then(([detail, page]) => {
         if (!live) return;
         setChat(detail);
@@ -91,7 +93,7 @@ export function useThread(chatId: string) {
     return () => {
       live = false;
     };
-  }, [chatId, attempt, markRead]);
+  }, [chatId, attempt, markRead, initial]);
 
   const apply = useCallback(
     (update: ChatUpdates) => {
