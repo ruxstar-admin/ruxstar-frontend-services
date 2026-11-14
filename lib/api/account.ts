@@ -148,6 +148,7 @@ export function formError(err: unknown): FormError {
   const field = detail?.path?.replace(/^body\//, "");
   if (code === "VALIDATION_FAILED" && detail) return { message: detail.message, field, code };
   if (code === "OTP_INVALID" && detail) return { message: `${err.message} ${detail.message}`, field: "code", code };
+  if (code === "ACCOUNT_ON_HOLD") return { message: "This account is on hold. You can still message Ruxstar support.", code };
   if (code === "ACCOUNT_LOCKED") return { message: `Too many wrong passwords. Try again in ${waitCopy(err)}, or sign in with a code.`, code };
   if (code === "OTP_LIMIT") return { message: `Too many codes or tries. Try again in ${waitCopy(err)}.`, code };
   if (code === "RATE_LIMITED") return { message: `Too many attempts. Try again in ${waitCopy(err)}.`, code };

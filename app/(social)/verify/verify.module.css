@@ -75,6 +75,13 @@
   margin-top: -1px;
 }
 
+.note a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
 .note[data-tone="info"] > svg {
   color: var(--warning);
 }

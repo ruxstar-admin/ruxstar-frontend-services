@@ -31,6 +31,7 @@ import {
 } from "@/lib/api/orders";
 import { money } from "@/lib/api/shops";
 import { shrinkPhoto } from "@/lib/photo";
+import { contactSupport } from "@/lib/support";
 import { exact } from "@/lib/time";
 import shopStyles from "@/components/shop/shop.module.css";
 import styles from "@/components/shop/order.module.css";
@@ -336,6 +337,14 @@ function OrderDetails({ order, onChanged }: { order: Order; onChanged: (order: O
             Cancel order
           </Button>
         ))}
+
+      <ButtonLink
+        href={contactSupport("orders", { type: "order", id: order.id, label: `Order #${order.orderNo}` })}
+        variant="ghost"
+        icon={<Icon name="chat" size={16} />}
+      >
+        Get help with this order
+      </ButtonLink>
     </div>
   );
 }

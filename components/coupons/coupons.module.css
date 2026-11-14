@@ -159,6 +159,13 @@
   color: var(--warning);
 }
 
+.note a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

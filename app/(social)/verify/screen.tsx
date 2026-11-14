@@ -21,6 +21,7 @@ import {
   type RuxstarCard as Card,
   type StepStatus,
 } from "@/lib/api/kyc";
+import { contactSupport } from "@/lib/support";
 import { SelfieCapture } from "./selfie";
 import styles from "./verify.module.css";
 
@@ -74,7 +75,12 @@ function CaseNote({ c, what }: { c: BaseCase; what: string }) {
   if (c.status === "locked") {
     return (
       <p className={styles.note} data-tone="danger">
-        <Icon name="alert" size={20} /> Verification is on hold after several rejections. Contact Ruxstar support to continue.
+        <Icon name="alert" size={20} />
+        <span>
+          Verification is on hold after several rejections.{" "}
+          <Link href={contactSupport("verification", { type: "verification", id: "base", label: "Identity verification" })}>Message support</Link> to
+          continue.
+        </span>
       </p>
     );
   }

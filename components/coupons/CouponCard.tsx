@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, Icon, Tag, useToast } from "@/components/ui";
@@ -7,6 +8,7 @@ import { formError } from "@/lib/api/account";
 import type { CouponPatch, ManagedCoupon } from "@/lib/api/admin";
 import { money } from "@/lib/api/shops";
 import { dayText, draftErrors, draftOf, patchOf, perCustomerLine, shopsChanged, STATE, todayKey, usesLine } from "@/lib/coupons";
+import { contactSupport } from "@/lib/support";
 import { CouponFields } from "./CouponFields";
 import styles from "./coupons.module.css";
 
@@ -94,7 +96,15 @@ export function CouponCard({ coupon: c, canEdit, canSwitch, shops, forTeam, save
           )}
           {c.stoppedByRuxstar && (
             <p className={styles.note}>
-              {forTeam ? "Ruxstar switched this off. The vendor can't switch it back on." : "Ruxstar switched this coupon off. Contact Ruxstar support to use it again."}
+              {forTeam ? (
+                "Ruxstar switched this off. The vendor can't switch it back on."
+              ) : (
+                <>
+                  Ruxstar switched this coupon off.{" "}
+                  <Link href={contactSupport("business", { type: "coupon", id: c.id, label: `Coupon ${c.code}` })}>Message support</Link> to use it
+                  again.
+                </>
+              )}
             </p>
           )}
           {editing ? (

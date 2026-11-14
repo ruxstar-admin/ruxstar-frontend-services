@@ -16,6 +16,7 @@ import {
   type DeviceSession,
   type User,
 } from "@/lib/api/account";
+import { contactSupport } from "@/lib/support";
 import { DeletePanel } from "./delete";
 import { PasswordPanel } from "./password";
 import { ProfilePanel } from "./profile";
@@ -323,6 +324,25 @@ export function AccountScreen() {
                   <p className={styles.muted}>See who you blocked, and unblock them.</p>
                   <ButtonLink href="/blocked" variant="secondary">
                     Open
+                  </ButtonLink>
+                </div>
+              </div>
+            </Setting>
+          )}
+
+          {user && (
+            <Setting id="support" title="Help & support" description="Questions about orders, payments, verification or your account.">
+              <div className={`${styles.panel} ${styles.devices}`}>
+                <div className={styles.device}>
+                  <p className={styles.muted}>Message the Ruxstar team and see your tickets.</p>
+                  <ButtonLink href="/support" variant="secondary">
+                    Open
+                  </ButtonLink>
+                </div>
+                <div className={styles.device}>
+                  <p className={styles.muted}>Your phone number can only be changed by the Ruxstar team.</p>
+                  <ButtonLink href={contactSupport("account")} variant="secondary">
+                    Change number
                   </ButtonLink>
                 </div>
               </div>

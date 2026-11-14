@@ -85,6 +85,18 @@ export function Dashboard() {
                     : "Identity checks waiting for a decision"}
               </Tile>
             )}
+            {overview.support && (
+              <Tile href="/admin/support" icon="chat" label="Help tickets" number={overview.support.open}>
+                {overview.support.open === 0
+                  ? "Nothing waiting."
+                  : [
+                      overview.support.overdue > 0 ? `${overview.support.overdue} past reply-by` : null,
+                      overview.support.unassigned > 0 ? `${overview.support.unassigned} with nobody on them` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") || "Waiting for a reply from Ruxstar"}
+              </Tile>
+            )}
             {overview.businesses && (
               <Tile href="/admin/businesses" icon="store" label="Businesses" number={overview.businesses.total}>
                 {overview.businesses.live} live

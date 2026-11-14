@@ -462,7 +462,7 @@ export interface paths {
         put?: never;
         /**
          * Sign in with number and password
-         * @description 5 wrong passwords lock the account for 15 minutes.
+         * @description 5 wrong passwords lock the account for 15 minutes. An account Ruxstar put on hold gets ACCOUNT_ON_HOLD instead of a session; its detail has a `supportToken` for /v1/support, good for 2 hours.
          */
         post: {
             parameters: {
@@ -596,7 +596,7 @@ export interface paths {
         put?: never;
         /**
          * Sign in with the code texted by POST /otp (purpose login)
-         * @description The code's own limits apply: five wrong codes lock that number's codes for 5 minutes.
+         * @description The code's own limits apply: five wrong codes lock that number's codes for 5 minutes. An account on hold gets ACCOUNT_ON_HOLD with a support pass, as with POST /login.
          */
         post: {
             parameters: {
@@ -7922,12 +7922,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated";
+                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout); `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets; `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support";
                                     id: string;
                                 };
                                 read: boolean;
@@ -20963,6 +20963,611 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/support/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your help tickets, latest activity first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    /** @description For example Order #1042 */
+                                    label: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                /** @description Ruxstar replied since you last opened it */
+                                unread: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Ask Ruxstar for help
+         * @description Up to 5 tickets open at once. Add photos to the first message with POST /tickets/{id}/messages/{messageId}/photos.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                        category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                        subject: string;
+                        text: string;
+                        /** @description What it is about: an order, business, coupon or post by id, or verification by track (base or delivery). It must be yours, except a post. */
+                        context?: {
+                            type: "order" | "business" | "verification" | "post" | "coupon";
+                            id: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    /** @description For example Order #1042 */
+                                    label: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                unread: boolean;
+                                messages: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    from: "customer" | "staff";
+                                    text: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    mine: boolean;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/support/tickets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One of your tickets and its replies
+         * @description Opening it marks Ruxstar's replies read.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    /** @description For example Order #1042 */
+                                    label: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                unread: boolean;
+                                messages: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    from: "customer" | "staff";
+                                    text: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    mine: boolean;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/support/tickets/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reply on your ticket
+         * @description Replying to a resolved ticket reopens it, for 7 days after it was resolved. A closed ticket needs a new one.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        text: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    /** @description For example Order #1042 */
+                                    label: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                unread: boolean;
+                                messages: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    from: "customer" | "staff";
+                                    text: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    mine: boolean;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/support/tickets/{id}/messages/{messageId}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a photo to your message
+         * @description Send a JPEG, PNG or WebP up to 8 MB as the body, with its Content-Type. Up to 3 photos on a message, within 30 minutes of sending it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    /** @description For example Order #1042 */
+                                    label: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                unread: boolean;
+                                messages: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    from: "customer" | "staff";
+                                    text: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    mine: boolean;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/support/tickets/{id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark your ticket solved
+         * @description You can still reply to reopen it for 7 days.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    /** @description For example Order #1042 */
+                                    label: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                unread: boolean;
+                                messages: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    from: "customer" | "staff";
+                                    text: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    mine: boolean;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/access": {
         parameters: {
             query?: never;
@@ -20994,10 +21599,10 @@ export interface paths {
                                 /** @description Admins have every permission and manage staff */
                                 admin: boolean;
                                 title: string | null;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view")[];
                                 /** @description Every permission staff can be given */
                                 catalog: {
-                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view";
+                                    key: "kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view";
                                     label: string;
                                 }[];
                             };
@@ -21094,6 +21699,13 @@ export interface paths {
                                 orders: {
                                     /** @description Order problems waiting for a decision */
                                     problems: number;
+                                } | null;
+                                support: {
+                                    /** @description Tickets waiting for a reply from Ruxstar */
+                                    open: number;
+                                    /** @description Of those, past their reply-by time */
+                                    overdue: number;
+                                    unassigned: number;
                                 } | null;
                                 staff: {
                                     active: number;
@@ -21482,6 +22094,112 @@ export interface paths {
                     };
                 };
             };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description `base` is identity; `delivery` is a delivery partner's licence and vehicle */
+                                track: "base" | "delivery";
+                                /** @description `locked` follows the third rejection; support reopens it. */
+                                status: "not_started" | "in_progress" | "submitted" | "approved" | "rejected" | "locked";
+                                rejections: number;
+                                user: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    phone: string;
+                                    avatarUrl: string | null;
+                                    /** Format: date-time */
+                                    memberSince: string;
+                                };
+                                identity: {
+                                    aadhaarName: string | null;
+                                    aadhaarLast4: string | null;
+                                    panMasked: string | null;
+                                    panName: string | null;
+                                    nameMatch: string | null;
+                                    livenessScore: number | null;
+                                    faceMatchScore: number | null;
+                                };
+                                delivery: {
+                                    licenceNumber: string | null;
+                                    licencePhotoUrl: string | null;
+                                    vehicleType: ("bike" | "scooter") | null;
+                                    vehicleNumber: string | null;
+                                    vehiclePhotoUrl: string | null;
+                                } | null;
+                                submittedAt: string | null;
+                                review: {
+                                    decision: "approved" | "rejected";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/kyc/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Give a locked verification case one more try
+         * @description For a case locked after 3 rejections, usually from a help ticket. It goes back to rejected, so the person can fix it and send it again; another rejection locks it again.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
             responses: {
                 /** @description Default Response */
                 200: {
@@ -24079,7 +24797,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -24201,7 +24919,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -24311,7 +25029,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -24421,7 +25139,7 @@ export interface paths {
                                 openReports: number;
                                 staff: {
                                     title: string;
-                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
+                                    permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view")[];
                                     status: "active" | "revoked";
                                 } | null;
                             };
@@ -24491,7 +25209,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -24560,7 +25278,7 @@ export interface paths {
                     "application/json": {
                         /** @description For example Support lead */
                         title: string;
-                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
+                        permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view")[];
                     };
                 };
             };
@@ -24582,7 +25300,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -24649,7 +25367,7 @@ export interface paths {
                                     avatarUrl: string | null;
                                 };
                                 title: string;
-                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "audit.view")[];
+                                permissions: ("kyc.view" | "kyc.review" | "reports.view" | "reports.act" | "users.view" | "users.manage" | "modules.view" | "modules.manage" | "businesses.view" | "businesses.manage" | "orders.view" | "orders.manage" | "payouts.view" | "payouts.manage" | "coupons.view" | "coupons.manage" | "support.view" | "support.manage" | "audit.view")[];
                                 status: "active" | "revoked";
                                 /** Format: date-time */
                                 grantedAt: string;
@@ -25652,6 +26370,769 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/support/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Help tickets, latest activity first
+         * @description `status` defaults to open (waiting for Ruxstar). `assignee` is `me` or `none`; `q` finds a ticket by number.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description `resolved` includes closed tickets */
+                    status?: "open" | "waiting" | "resolved";
+                    /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                    category?: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                    assignee?: "me" | "none";
+                    /** @description A ticket number, with or without RX- */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    label: string;
+                                    state: string | null;
+                                    kycCaseId: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                priority: "urgent" | "high" | "normal" | "low";
+                                assignee: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                requester: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    /** @description The account's status */
+                                    status: "active" | "locked" | "deleted";
+                                };
+                                slaDueAt: string | null;
+                                /** @description Waiting for Ruxstar past its reply-by time */
+                                overdue: boolean;
+                                lastFrom: "customer" | "staff";
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/support/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Counts for the help desk */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                open: number;
+                                /** @description Waiting on the customer */
+                                waiting: number;
+                                overdue: number;
+                                /** @description Open with nobody on it */
+                                unassigned: number;
+                                /** @description Open and assigned to you */
+                                mine: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/support/agents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** People a ticket can be assigned to */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                title: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/support/tickets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One ticket with every message and note */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    label: string;
+                                    state: string | null;
+                                    kycCaseId: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                priority: "urgent" | "high" | "normal" | "low";
+                                assignee: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                requester: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    /** @description The account's status */
+                                    status: "active" | "locked" | "deleted";
+                                };
+                                slaDueAt: string | null;
+                                /** @description Waiting for Ruxstar past its reply-by time */
+                                overdue: boolean;
+                                lastFrom: "customer" | "staff";
+                                messages: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    from: "customer" | "staff";
+                                    text: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description A staff note the customer never sees */
+                                    internal: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change a ticket's status, priority, topic or who is on it
+         * @description A new priority moves the reply-by time. Resolving tells the customer, who can reply to reopen it for 7 days.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        status?: "open" | "waiting" | "resolved";
+                        priority?: "urgent" | "high" | "normal" | "low";
+                        /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                        category?: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                        assigneeId?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    label: string;
+                                    state: string | null;
+                                    kycCaseId: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                priority: "urgent" | "high" | "normal" | "low";
+                                assignee: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                requester: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    /** @description The account's status */
+                                    status: "active" | "locked" | "deleted";
+                                };
+                                slaDueAt: string | null;
+                                /** @description Waiting for Ruxstar past its reply-by time */
+                                overdue: boolean;
+                                lastFrom: "customer" | "staff";
+                                messages: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    from: "customer" | "staff";
+                                    text: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description A staff note the customer never sees */
+                                    internal: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/ruxstar/support/tickets/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer a ticket, or add a note only staff see
+         * @description A reply tells the customer and moves the ticket to `status` (`waiting` on them unless you say otherwise). A note changes nothing unless `status` is sent. Answering an unassigned ticket assigns it to you.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        text: string;
+                        /** @default false */
+                        internal?: boolean;
+                        /** @description Where the ticket goes after a reply. Defaults to `waiting` (on the customer); notes leave it as it is. */
+                        status?: "open" | "waiting" | "resolved";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description For example RX-1042 */
+                                number: string;
+                                /** @description Orders & payments, Refunds, Verification, My business, Delivery, Account & sign-in, Safety & reports, App problem, Other */
+                                category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
+                                subject: string;
+                                /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
+                                status: "open" | "waiting" | "resolved" | "closed";
+                                context: {
+                                    type: "order" | "business" | "verification" | "post" | "coupon";
+                                    id: string;
+                                    label: string;
+                                    state: string | null;
+                                    kycCaseId: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                lastAt: string;
+                                resolvedAt: string | null;
+                                reopenUntil: string | null;
+                                priority: "urgent" | "high" | "normal" | "low";
+                                assignee: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                requester: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    /** @description The account's status */
+                                    status: "active" | "locked" | "deleted";
+                                };
+                                slaDueAt: string | null;
+                                /** @description Waiting for Ruxstar past its reply-by time */
+                                overdue: boolean;
+                                lastFrom: "customer" | "staff";
+                                messages: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    from: "customer" | "staff";
+                                    text: string;
+                                    photos: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description Works for 10 minutes */
+                                        url: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description A staff note the customer never sees */
+                                    internal: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/support/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reply-by times by priority */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Hours Ruxstar has to answer, by priority */
+                                hours: {
+                                    urgent: number;
+                                    high: number;
+                                    normal: number;
+                                    low: number;
+                                };
+                                updatedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Change the reply-by times
+         * @description Applies to tickets from their next customer message or priority change; deadlines already set stay.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Hours Ruxstar has to answer, by priority */
+                        hours: {
+                            urgent: number;
+                            high: number;
+                            normal: number;
+                            low: number;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Hours Ruxstar has to answer, by priority */
+                                hours: {
+                                    urgent: number;
+                                    high: number;
+                                    normal: number;
+                                    low: number;
+                                };
+                                updatedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/audit": {
         parameters: {
             query?: never;
@@ -25978,7 +27459,7 @@ export interface components {
     schemas: {
         Error: {
             error: {
-                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "PAYOUT_METHOD_REQUIRED" | "PAYOUT_TOO_SMALL" | "PAYOUT_IN_PROGRESS" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "COUPON_INVALID" | "ORDER_STATE" | "DROP_CODE_INVALID" | "JOB_TAKEN" | "REPORT_CLOSED" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
+                code: "VALIDATION_FAILED" | "BAD_REQUEST" | "CLIENT_HEADER_REQUIRED" | "IDEMPOTENCY_KEY_REQUIRED" | "UNAUTHENTICATED" | "FORBIDDEN" | "KYC_REQUIRED" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_IN_PROGRESS" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE" | "IDEMPOTENCY_KEY_REUSED" | "UPGRADE_REQUIRED" | "RATE_LIMITED" | "INTERNAL" | "MODULE_OFF" | "NOT_READY" | "PHONE_TAKEN" | "USERNAME_TAKEN" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_LIMIT" | "VERIFICATION_INVALID" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "PASSWORD_REUSED" | "SMS_UNAVAILABLE" | "LOCATION_UNAVAILABLE" | "EMAIL_TAKEN" | "EMAIL_UNAVAILABLE" | "PHOTO_INVALID" | "PHOTO_UNAVAILABLE" | "ACCOUNT_ON_HOLD" | "KYC_CHECK_FAILED" | "KYC_STEP_ORDER" | "KYC_LOCKED" | "KYC_UNAVAILABLE" | "SIGNUPS_CLOSED" | "BUSINESS_INCOMPLETE" | "BUSINESS_SUSPENDED" | "PAYOUTS_UNAVAILABLE" | "PAYOUT_METHOD_REQUIRED" | "PAYOUT_TOO_SMALL" | "PAYOUT_IN_PROGRESS" | "FILE_INVALID" | "FILES_UNAVAILABLE" | "ORDER_INVALID" | "SHOP_CLOSED" | "COUPON_INVALID" | "ORDER_STATE" | "DROP_CODE_INVALID" | "JOB_TAKEN" | "REPORT_CLOSED" | "PAYMENTS_UNAVAILABLE" | "CHAT_REQUEST_PENDING" | "CHAT_GROUP_FULL";
                 message: string;
                 details: ({
                     path?: string;

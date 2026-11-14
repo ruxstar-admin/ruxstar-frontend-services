@@ -17,6 +17,7 @@ const AREA: Record<string, string> = {
   modules: "Modules",
   businesses: "Businesses",
   orders: "Print orders",
+  support: "Help tickets",
   audit: "Audit log",
 };
 

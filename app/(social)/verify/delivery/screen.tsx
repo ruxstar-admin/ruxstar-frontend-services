@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useMe, useOnSignedOut, useSetMe } from "@/components/social/session";
 import { Button, ButtonLink, Icon, Input, Segmented, Skeleton, Tag, type IconName } from "@/components/ui";
@@ -19,6 +20,7 @@ import {
   type VehicleType,
 } from "@/lib/api/kyc";
 import { shrinkPhoto } from "@/lib/photo";
+import { contactSupport } from "@/lib/support";
 import styles from "../verify.module.css";
 
 const EDITABLE: CaseStatus[] = ["not_started", "in_progress", "rejected"];
@@ -58,7 +60,9 @@ function StatusNote({ c }: { c: DeliveryCase }) {
   if (c.status === "locked") {
     return (
       <Note icon="alert" tone="danger">
-        Delivery verification is on hold after several rejections. Contact Ruxstar support to continue.
+        Delivery verification is on hold after several rejections.{" "}
+        <Link href={contactSupport("delivery", { type: "verification", id: "delivery", label: "Delivery verification" })}>Message support</Link> to
+        continue.
       </Note>
     );
   }

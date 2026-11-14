@@ -11,6 +11,7 @@ import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
 import { ApiError } from "@/lib/api/client";
 import { shrinkPhoto } from "@/lib/photo";
+import { contactSupport } from "@/lib/support";
 import { ratingLine } from "@/lib/api/reviews";
 import { MODULE_LABEL } from "@/lib/api/shops";
 import { getWork, type TeamPermission } from "@/lib/api/team";
@@ -126,7 +127,9 @@ function Details({
           <Icon name="alert" size={20} />
           <span>
             <strong>On hold by Ruxstar: </strong>
-            {b.suspension.reason} Customers can&apos;t see it and it can&apos;t be changed. Contact support to continue.
+            {b.suspension.reason} Customers can&apos;t see it and it can&apos;t be changed.{" "}
+            <Link href={team ? contactSupport("business") : contactSupport("business", { type: "business", id, label: b.name })}>Message support</Link> to
+            continue.
           </span>
         </p>
       ) : !b.moduleLive ? (

@@ -7,6 +7,7 @@ import { PasswordField, PhoneField, validPhone } from "@/components/auth/fields"
 import { VerifyPhone } from "@/components/auth/VerifyPhone";
 import { Button } from "@/components/ui";
 import { formError, homeFor, nextPath, RESET_DONE_KEY, signIn, signInWithCode } from "@/lib/api/account";
+import { holdPassOf, setSupportPass } from "@/lib/api/support";
 import styles from "../auth.module.css";
 
 export function SignInForm() {
@@ -37,9 +38,19 @@ export function SignInForm() {
       const user = await signIn(phone, password);
       router.replace(nextPath(homeFor(user)));
     } catch (err) {
+      if (toHold(err)) return;
       setError(formError(err));
       setBusy(false);
     }
+  }
+
+  /** An account on hold can't sign in, but its pass opens help tickets. */
+  function toHold(err: unknown) {
+    const pass = holdPassOf(err);
+    if (!pass) return false;
+    setSupportPass(pass);
+    router.push("/hold");
+    return true;
   }
 
   const foot = (
@@ -57,8 +68,12 @@ export function SignInForm() {
         lede="We'll text a 6-digit code to your mobile number."
         initialPhone={validPhone(phone) ? phone : ""}
         submitCode={async (number, code) => {
-          const user = await signInWithCode(number, code);
-          router.replace(nextPath(homeFor(user)));
+          try {
+            const user = await signInWithCode(number, code);
+            router.replace(nextPath(homeFor(user)));
+          } catch (err) {
+            if (!toHold(err)) throw err;
+          }
         }}
         foot={
           <>

@@ -14,6 +14,11 @@ import { ago, exact } from "@/lib/time";
 const ACTIONS: Record<string, string> = {
   "kyc.approve": "Approved verification",
   "kyc.reject": "Sent verification back",
+  "kyc.reopen": "Reopened verification",
+  "support.reply": "Replied to a help ticket",
+  "support.note": "Added a note to a help ticket",
+  "support.update": "Changed a help ticket",
+  "support.settings": "Changed help reply-by times",
   "report.keep": "Kept a reported post",
   "post.remove": "Removed a post",
   "user_report.dismiss": "Dismissed reports about someone",
@@ -51,6 +56,7 @@ const MODULES: { value: string; label: string }[] = [
   { value: "stays", label: "Stays" },
   { value: "delivery", label: "Delivery" },
   { value: "ledger", label: "Payments and ledger" },
+  { value: "support", label: "Help desk" },
 ];
 
 const show = (value: unknown) => (value === undefined || value === null ? "—" : typeof value === "string" ? value : JSON.stringify(value));

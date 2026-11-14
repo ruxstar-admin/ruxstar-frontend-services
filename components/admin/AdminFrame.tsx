@@ -15,6 +15,7 @@ type Need = Permission | "admin" | null | readonly Permission[];
 const SECTIONS: { href: string; label: string; icon: IconName; need: Need }[] = [
   { href: "/admin", label: "Dashboard", icon: "grid", need: null },
   { href: "/admin/kyc", label: "Verification", icon: "verified", need: "kyc.view" },
+  { href: "/admin/support", label: "Help tickets", icon: "chat", need: "support.view" },
   { href: "/admin/reports", label: "Reports", icon: "flag", need: ["reports.view", "orders.view"] },
   { href: "/admin/users", label: "People", icon: "user", need: "users.view" },
   { href: "/admin/staff", label: "Staff", icon: "shield", need: "admin" },
