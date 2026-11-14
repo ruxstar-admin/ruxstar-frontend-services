@@ -2,20 +2,19 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Avatar } from "@/components/profile/Avatar";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { PermissionPicker } from "@/components/team/PermissionPicker";
-import { Button, ButtonLink, Icon, Input, Tag } from "@/components/ui";
+import { PersonSearch } from "@/components/team/PersonSearch";
+import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
-import { formError } from "@/lib/api/account";
+import { formError, type PublicProfile } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import {
   MEMBER_STATUS,
-  USERNAME,
-  cleanUsername,
   getTeam,
   inviteEnds,
   inviteToTeam,
@@ -33,19 +32,20 @@ const retryable = (err: unknown) => err instanceof ApiError && err.status === 0;
 function Invite({ businessId, data }: { businessId: string; data: Team }) {
   const router = useRouter();
   const onSignedOut = useOnSignedOut();
-  const [username, setUsername] = useState("");
+  const [person, setPerson] = useState<PublicProfile | null>(null);
   const [permissions, setPermissions] = useState<TeamPermission[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ field?: string; banner?: string } | null>(null);
   const key = useRef(newIdempotencyKey());
-  const clean = cleanUsername(username);
-  const ready = USERNAME.test(clean) && permissions.length > 0;
+  const taken = useMemo(() => new Set(data.members.map((m) => m.person.id)), [data.members]);
+  const ready = !!person && permissions.length > 0;
 
   const send = async () => {
+    if (!person) return;
     setBusy(true);
     setError(null);
     try {
-      await inviteToTeam(businessId, clean, permissions, key.current);
+      await inviteToTeam(businessId, person.username, permissions, key.current);
       router.push(`/vendor/businesses/${businessId}/team`);
     } catch (err) {
       setBusy(false);
@@ -67,20 +67,14 @@ function Invite({ businessId, data }: { businessId: string; data: Team }) {
           if (ready && !busy) void send();
         }}
       >
-        <Input
-          label="Their Ruxstar username"
-          value={username}
-          onChange={(e) => {
-            setUsername(e.target.value);
+        <PersonSearch
+          picked={person}
+          onPick={(next) => {
+            setPerson(next);
             if (error?.field) setError(null);
           }}
-          placeholder="@username"
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck={false}
-          maxLength={21}
+          taken={taken}
           error={error?.field}
-          hint="They get a notification and have 7 days to accept."
         />
         <h2 className={team.section}>What they can do</h2>
         <PermissionPicker catalog={data.permissions} value={permissions} onChange={setPermissions} />
