@@ -96,7 +96,21 @@ export function ReviewCard({ review, extra, children }: { review: Review; extra?
   );
 }
 
-function WriteForm({ orderOf, review, start, onSaved, onClose }: { orderOf: Order; review: MyReview | null; start: number; onSaved: (r: MyReview) => void; onClose: () => void }) {
+function WriteForm({
+  orderOf,
+  review,
+  start,
+  onSaved,
+  onClose,
+  onDelete,
+}: {
+  orderOf: Order;
+  review: MyReview | null;
+  start: number;
+  onSaved: (r: MyReview) => void;
+  onClose: () => void;
+  onDelete: () => void;
+}) {
   const [rating, setRating] = useState(start);
   const [text, setText] = useState(review?.text ?? "");
   const [saving, setSaving] = useState(false);
@@ -145,12 +159,17 @@ function WriteForm({ orderOf, review, start, onSaved, onClose }: { orderOf: Orde
         <Button variant="ghost" disabled={saving} onClick={onClose}>
           Not now
         </Button>
+        {review && (
+          <Button variant="secondary" icon={<Icon name="trash" size={16} />} disabled={saving} onClick={onDelete}>
+            Delete review
+          </Button>
+        )}
       </div>
     </div>
   );
 }
 
-/** On a delivered order: "Rate your order" until it's reviewed, then the review, changeable for 30 days after delivery. Same as the app. */
+/** On a delivered order: "Rate your order" until it's reviewed, then just the stars given, changeable for 30 days after delivery. Same as the app. */
 export function RateOrder({ order: o }: { order: Order }) {
   const [review, setReview] = useState<MyReview | null | undefined>(undefined);
   const [writing, setWriting] = useState<number | null>(null);
@@ -197,6 +216,10 @@ export function RateOrder({ order: o }: { order: Order }) {
           setWriting(null);
           setReview(next);
         }}
+        onDelete={() => {
+          setWriting(null);
+          setDeleting(true);
+        }}
       />
     );
   }
@@ -226,28 +249,28 @@ export function RateOrder({ order: o }: { order: Order }) {
 
   return (
     <section className={order.section}>
-      <h2 className={order.overline}>Your review</h2>
-      <ReviewCard review={review}>
-        {open &&
-          (deleting ? (
-            <div className={order.actions}>
-              <Button variant="danger" loading={busy} onClick={() => void remove()}>
-                Delete review
-              </Button>
-              <Button variant="ghost" disabled={busy} onClick={() => setDeleting(false)}>
-                Keep it
-              </Button>
-            </div>
-          ) : (
-            <div className={styles.actions}>
-              <TextAction onClick={() => setWriting(review.rating)}>Edit</TextAction>
-              <TextAction muted onClick={() => setDeleting(true)}>
-                Delete
-              </TextAction>
-              <span className={styles.faint}>{`Until ${exact(o.reviewUntil!)}`}</span>
-            </div>
-          ))}
-      </ReviewCard>
+      <div className={styles.rated}>
+        <span className={styles.ratedText}>
+          <strong>{`You rated it ${review.rating} ${review.rating === 1 ? "star" : "stars"}`}</strong>
+          <Stars value={review.rating} size={16} />
+          {open && <span className={styles.faint}>{`You can change it until ${exact(o.reviewUntil!)}`}</span>}
+        </span>
+        {open && !deleting && (
+          <Button variant="secondary" icon={<Icon name="edit" size={16} />} onClick={() => setWriting(review.rating)}>
+            Change
+          </Button>
+        )}
+      </div>
+      {deleting && (
+        <div className={order.actions}>
+          <Button variant="danger" loading={busy} onClick={() => void remove()}>
+            Delete review
+          </Button>
+          <Button variant="ghost" disabled={busy} onClick={() => setDeleting(false)}>
+            Keep it
+          </Button>
+        </div>
+      )}
       {error && (
         <p className={order.error} role="alert">
           {error}

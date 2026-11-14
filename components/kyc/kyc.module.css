@@ -13,7 +13,7 @@
   --u: calc(100cqw / 340);
   --champagne: #c4b49a;
   --faint: #52525b;
-  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --card-muted: #71717a;
   container-type: inline-size;
   width: 100%;
   max-width: 440px;
@@ -89,8 +89,8 @@
   display: inline-flex;
   align-items: center;
   gap: calc(6 * var(--u));
-  font: 500 calc(14 * var(--u)) / 1.2 var(--font);
-  letter-spacing: calc(3.9 * var(--u));
+  font: 700 calc(14 * var(--u)) / 1.2 var(--font);
+  letter-spacing: calc(4 * var(--u));
 }
 
 .cardStar {
@@ -104,7 +104,7 @@
   align-items: center;
   gap: calc(6 * var(--u));
   padding: calc(4 * var(--u)) calc(10 * var(--u));
-  font: 500 calc(9 * var(--u)) / 1.3 var(--font);
+  font: 600 calc(9 * var(--u)) / 1.3 var(--font);
   letter-spacing: calc(1.2 * var(--u));
   color: var(--champagne);
   white-space: nowrap;
@@ -159,9 +159,10 @@
 
 .cardNumber {
   overflow: hidden;
-  font: 400 calc(18 * var(--u)) / 1.2 var(--mono);
-  letter-spacing: calc(2.5 * var(--u));
-  color: rgb(196 180 154 / 90%);
+  font: 600 calc(19 * var(--u)) / 1.2 var(--font);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: calc(2 * var(--u));
+  color: rgb(196 180 154 / 95%);
   white-space: pre;
 }
 
@@ -177,17 +178,18 @@
 }
 
 .cardLabel {
-  font: 500 calc(8 * var(--u)) / 1.3 var(--font);
-  letter-spacing: calc(2 * var(--u));
+  font: 600 calc(8 * var(--u)) / 1.3 var(--font);
+  letter-spacing: calc(1.6 * var(--u));
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--card-muted);
 }
 
 .cardValue {
   overflow: hidden;
   margin-top: 3px;
-  font: 500 calc(13 * var(--u)) / 1.3 var(--font);
-  letter-spacing: calc(1 * var(--u));
+  font: 600 calc(13 * var(--u)) / 1.3 var(--font);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: calc(0.8 * var(--u));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -233,8 +235,9 @@
 .cardMono {
   overflow: hidden;
   margin-top: 3px;
-  font: 400 calc(12 * var(--u)) / 1.3 var(--mono);
-  letter-spacing: calc(1 * var(--u));
+  font: 500 calc(12 * var(--u)) / 1.3 var(--font);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: calc(1.2 * var(--u));
   color: #a1a1aa;
   text-overflow: ellipsis;
   white-space: nowrap;
