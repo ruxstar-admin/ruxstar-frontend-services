@@ -15,6 +15,7 @@ const SECTIONS: { href: string; label: string; icon: IconName; fills?: true }[] 
   { href: "/vendor/orders", label: "Orders", icon: "print" },
   { href: "/vendor/posts", label: "Posts", icon: "image" },
   { href: "/vendor/payments", label: "Payments", icon: "wallet" },
+  { href: "/vendor/invoices", label: "GST invoices", icon: "receipt" },
   { href: "/vendor/card", label: "Ruxstar Card", icon: "card" },
 ];
 
