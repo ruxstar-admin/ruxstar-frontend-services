@@ -121,7 +121,7 @@ export function SharePostDialog({ postId, open, onClose, onShareLink }: { postId
                   <span className={social.rowText}>
                     <span className={social.rowTitle}>{t.title}</span>
                     <span className={styles.shareStatus} data-tone={state === "failed" ? "danger" : undefined}>
-                      {state === "waiting" ? "Waiting for them to accept your request" : state === "failed" ? "Not sent. Try again." : t.subtitle}
+                      {state === "waiting" ? "Waiting for them to accept your request" : state === "failed" ? "Not sent. Tap Send to try again." : t.subtitle}
                     </span>
                   </span>
                   <Button

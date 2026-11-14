@@ -4897,7 +4897,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                /** @description Sent since `since`, oldest first. Includes a few seconds before it, so merge by id. */
+                                /** @description Sent since `since`, oldest first, up to 100. Includes a few seconds before it, so merge by id. When 100 come back, `now` is set so the next call picks up the rest. */
                                 messages: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -5065,7 +5065,10 @@ export interface paths {
                                 }[];
                                 /** @description The chat's name, people or admins changed. Fetch it again. */
                                 changed: boolean;
-                                /** Format: date-time */
+                                /**
+                                 * Format: date-time
+                                 * @description Send it as the next call's `since`.
+                                 */
                                 now: string;
                             };
                             meta: {

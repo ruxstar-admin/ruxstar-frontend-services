@@ -461,6 +461,15 @@
   border-color: var(--danger);
 }
 
+.line[data-state="failed"] .hold {
+  cursor: pointer;
+}
+
+.line[data-mine]:not([data-state="failed"]) .bubbleLink {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .photo {
   display: block;
   overflow: hidden;

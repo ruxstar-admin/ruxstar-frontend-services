@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChatAvatar } from "@/components/chat/ChatAvatar";
+import { VerifiedTick } from "@/components/kyc/VerifiedTick";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd } from "@/components/social/use-pages";
@@ -84,13 +85,22 @@ function useChatList(box: ChatBox) {
 
 function ChatRow({ chat: c }: { chat: Chat }) {
   const unread = c.unread > 0;
-  const preview = c.last ? `${c.last.mine && c.last.kind !== "event" ? "You: " : ""}${c.last.text}` : c.state === "request" ? "Wants to message you" : "No messages yet";
+  const preview = c.last
+    ? `${c.last.mine && c.last.kind !== "event" ? "You: " : ""}${c.last.text}`
+    : c.state === "request"
+      ? "Wants to message you"
+      : c.kind === "group"
+        ? `${c.members} people`
+        : "No messages yet";
   return (
     <li>
       <Link href={`/messages/${c.id}`} className={styles.row}>
         <ChatAvatar chat={c} />
         <span className={styles.rowText}>
-          <span className={styles.rowTitle}>{c.title}</span>
+          <span className={styles.rowTitle}>
+            {c.title}
+            {c.peer?.verified && <> <VerifiedTick size={14} /></>}
+          </span>
           <span className={chat.preview} data-unread={unread || undefined}>
             {preview}
           </span>

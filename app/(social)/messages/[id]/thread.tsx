@@ -13,6 +13,7 @@ import { VoiceNote } from "@/components/chat/VoiceNote";
 import { Avatar } from "@/components/profile/Avatar";
 import { Lightbox } from "@/components/social/Lightbox";
 import { Empty } from "@/components/social/PostList";
+import { PostText } from "@/components/social/PostText";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, Icon, Skeleton, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
@@ -164,7 +165,7 @@ function Content({ message, onOpenPhoto }: { message: ShownMessage; onOpenPhoto:
   }
   if (message.kind === "post") {
     const post = message.post;
-    if (!post?.available || !post.author) return <span className={`${styles.post} ${styles.postGone}`}>This post isn&apos;t available.</span>;
+    if (!post?.available || !post.author) return <span className={`${styles.post} ${styles.postGone}`}>Post unavailable</span>;
     return (
       <Link href={`/p/${post.id}`} className={styles.post}>
         <span className={styles.postAuthor}>
@@ -176,7 +177,7 @@ function Content({ message, onOpenPhoto }: { message: ShownMessage; onOpenPhoto:
       </Link>
     );
   }
-  return <span className={styles.bubble}>{message.text}</span>;
+  return <PostText inline text={message.text} className={styles.bubble} linkClassName={styles.bubbleLink} />;
 }
 
 function RecordingBar({ durationMs, live, onCancel, onSend }: { durationMs: number; live: number[]; onCancel: () => void; onSend: () => void }) {
@@ -376,7 +377,13 @@ function Line({ row, isGroup, seen, fresh, canRespond, onMenu, onReact, onReply,
         <span className={styles.swipeHint} style={{ opacity: Math.min(1, shift / REPLY_AT_PX) }} aria-hidden>
           <Icon name="reply" size={18} />
         </span>
-        <span className={styles.hold} style={shift ? { transform: `translateX(${shift}px)` } : undefined} data-swiping={shift > 0 || undefined} {...handlers}>
+        <span
+          className={styles.hold}
+          style={shift ? { transform: `translateX(${shift}px)` } : undefined}
+          data-swiping={shift > 0 || undefined}
+          onClick={m.sendState === "failed" ? () => onRetry(m) : undefined}
+          {...handlers}
+        >
           <Content message={m} onOpenPhoto={() => onOpenPhoto(m)} />
         </span>
         {!pending && (
@@ -404,9 +411,10 @@ function Line({ row, isGroup, seen, fresh, canRespond, onMenu, onReact, onReply,
           {total > 1 && <span className={styles.reactionCount}>{total}</span>}
         </button>
       )}
+      {m.sendState === "sending" && <span className={styles.note}>Sending…</span>}
       {m.sendState === "failed" && (
         <button type="button" className={styles.retry} onClick={() => onRetry(m)}>
-          Not sent. Retry
+          Not sent · tap to retry
         </button>
       )}
       {seen && <span className={styles.note}>Seen</span>}
@@ -499,10 +507,11 @@ export function ThreadScreen({ id, initial }: { id: string; initial?: ChatDetail
     if (thread.typing.length && nearBottom()) toBottom();
   }, [thread.typing.length]);
 
+  // The layout effect above restores the position once the older page renders, and clears it.
   const loadOlder = () => {
     keepFrom.current = document.documentElement.scrollHeight - window.scrollY;
-    thread.loadOlder().finally(() => {
-      keepFrom.current = null;
+    thread.loadOlder().then((added) => {
+      if (!added) keepFrom.current = null;
     });
   };
 
@@ -530,7 +539,7 @@ export function ThreadScreen({ id, initial }: { id: string; initial?: ChatDetail
   if (thread.error || !chat) {
     return (
       <div className={social.column}>
-        <Empty title="Could not open this chat">
+        <Empty title="Could not load this chat">
           <p>{formError(thread.error).message}</p>
           <Button variant="secondary" onClick={thread.reload}>
             Try again
@@ -649,7 +658,7 @@ export function ThreadScreen({ id, initial }: { id: string; initial?: ChatDetail
           <div className={styles.request}>
             <p>
               {isGroup
-                ? `You were invited to ${chat.title}. Join to read and reply.`
+                ? `You were invited to ${chat.title}. Join to reply.`
                 : `${chat.title} wants to message you. They won't know you've seen it until you accept.`}
             </p>
             <div className={styles.requestButtons}>

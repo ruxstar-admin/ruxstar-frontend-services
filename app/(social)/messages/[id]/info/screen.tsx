@@ -190,7 +190,7 @@ export function ChatInfoScreen({ id }: { id: string }) {
       <div className={styles.infoHead}>
         <ChatAvatar chat={chat} size={88} />
         <h1 className={social.title}>{chat.title}</h1>
-        <p className={social.subtitle}>{isGroup ? `${chat.members} of ${GROUP_MAX} people` : chat.peer ? `@${chat.peer.username}` : ""}</p>
+        <p className={social.subtitle}>{isGroup ? `${chat.members} people` : chat.peer ? `@${chat.peer.username}` : ""}</p>
         {!isGroup && chat.peer && (
           <ButtonLink href={`/u/${chat.peer.username}`} variant="secondary" icon={<Icon name="user" size={18} />}>
             View profile
@@ -199,7 +199,7 @@ export function ChatInfoScreen({ id }: { id: string }) {
       </div>
 
       <div className={styles.panel}>
-        <Switch checked={chat.muted} onChange={setMuted} description="No unread count on the Messages tab for this chat.">
+        <Switch checked={chat.muted} onChange={setMuted} description="Its messages don't add to your badge">
           Mute
         </Switch>
       </div>

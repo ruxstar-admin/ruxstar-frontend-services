@@ -299,15 +299,17 @@ export function useThread(chatId: string, initial?: ChatDetail) {
     }
   };
 
-  const loadOlder = () => {
-    if (!olderCursor || loadingOlder) return Promise.resolve();
+  /** True once the older page is in `messages`; false when nothing was added. */
+  const loadOlder = (): Promise<boolean> => {
+    if (!olderCursor || loadingOlder) return Promise.resolve(false);
     setLoadingOlder(true);
     return chatMessages(chatId, olderCursor)
       .then((page) => {
         setMessages((prev) => mergeOlder(prev, page.items));
         setOlderCursor(page.nextCursor);
+        return true;
       })
-      .catch(() => undefined)
+      .catch(() => false)
       .finally(() => setLoadingOlder(false));
   };
 
