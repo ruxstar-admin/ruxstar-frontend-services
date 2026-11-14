@@ -10018,7 +10018,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                /** @description Opens the file without signing in; works for 10 minutes */
+                                /** @description Opens the file without signing in; works for 10 minutes. Add `download=1` to save it instead */
                                 url: string;
                                 /** Format: date-time */
                                 expiresAt: string;
@@ -14253,7 +14253,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                /** @description Opens the file without signing in; works for 10 minutes */
+                                /** @description Opens the file without signing in; works for 10 minutes. Add `download=1` to save it instead */
                                 url: string;
                                 /** Format: date-time */
                                 expiresAt: string;
@@ -16895,7 +16895,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                /** @description Opens the file without signing in; works for 10 minutes */
+                                /** @description Opens the file without signing in; works for 10 minutes. Add `download=1` to save it instead */
                                 url: string;
                                 /** Format: date-time */
                                 expiresAt: string;

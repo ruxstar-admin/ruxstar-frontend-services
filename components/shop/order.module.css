@@ -150,6 +150,53 @@ button.file:hover {
   border-color: var(--ink-3);
 }
 
+.fileView {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.fileView > svg:first-child {
+  flex: none;
+  color: var(--accent-soft);
+}
+
+.fileView:hover .fileName {
+  color: var(--accent-soft);
+}
+
+.fileDownload {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 6px var(--space-3);
+  font: 600 13px/18px var(--font);
+  color: var(--accent-soft);
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+}
+
+.fileDownload:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent-soft) 10%, transparent);
+}
+
+.fileDownload:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
 .fileText {
   display: grid;
   flex: 1;

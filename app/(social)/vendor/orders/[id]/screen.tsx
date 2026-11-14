@@ -13,6 +13,7 @@ import {
   assignShopDelivery,
   cancelShopDelivery,
   choiceLine,
+  filesKept,
   getShopOrder,
   isClosed,
   moveShopOrder,
@@ -70,6 +71,7 @@ export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk,
   const [refundReason, setRefundReason] = useState("");
   const [refunding, setRefunding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState<string | null>(null);
   const keys = useRef<Partial<Record<ShopStatus, string>>>({});
   const refundKey = useRef(newIdempotencyKey());
 
@@ -102,6 +104,19 @@ export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk,
     }
   };
 
+  const downloadFile = async (file: PrintFile) => {
+    setError(null);
+    setDownloading(file.id);
+    try {
+      const { url } = await desk.fileLink(order.id, file.id);
+      window.location.assign(`${url}&download=1`);
+    } catch (err) {
+      setError(formError(err).message);
+    } finally {
+      setDownloading(null);
+    }
+  };
+
   const refundPaise = Math.round(Number(refundAmount || "0") * 100);
   const refundValid = refundPaise >= 100 && refundPaise <= order.refundable && refundReason.trim().length >= 5;
 
@@ -124,6 +139,7 @@ export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk,
 
   const steps = nextSteps(order).filter((status) => can(status === "rejected" ? "orders.reject" : "orders.move"));
   const closed = isClosed(order.status);
+  const kept = filesKept(order);
   const { address } = order;
   const partials = order.refunds.filter((r) => r.kind === "partial");
   const balance = team ? "the shop's available balance" : "your available balance";
@@ -248,8 +264,15 @@ export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk,
           {order.note && <p>{`Note: ${order.note}`}</p>}
         </div>
         {order.files.map((file) => (
-          <FileItem key={file.id} file={file} onOpen={closed ? undefined : () => void openFile(file)} />
+          <FileItem
+            key={file.id}
+            file={file}
+            onOpen={kept ? () => void openFile(file) : undefined}
+            onDownload={kept ? () => void downloadFile(file) : undefined}
+            downloading={downloading === file.id}
+          />
         ))}
+        {!kept && order.status === "delivered" && <p className={styles.small}>Files are kept for 30 days after delivery.</p>}
       </section>
 
       <section className={styles.section}>

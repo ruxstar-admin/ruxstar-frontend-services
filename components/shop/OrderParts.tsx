@@ -58,7 +58,19 @@ export function PriceList({
   );
 }
 
-export function FileItem({ file, onOpen, action }: { file: PrintFile; onOpen?: () => void; action?: ReactNode }) {
+export function FileItem({
+  file,
+  onOpen,
+  onDownload,
+  downloading,
+  action,
+}: {
+  file: PrintFile;
+  onOpen?: () => void;
+  onDownload?: () => void;
+  downloading?: boolean;
+  action?: ReactNode;
+}) {
   const body = (
     <>
       <Icon name={file.contentType === "application/pdf" ? "book" : "image"} size={20} />
@@ -68,6 +80,19 @@ export function FileItem({ file, onOpen, action }: { file: PrintFile; onOpen?: (
       </span>
     </>
   );
+  if (onOpen && onDownload) {
+    return (
+      <div className={styles.file}>
+        <button type="button" className={styles.fileView} onClick={onOpen} aria-label={`View ${file.name}`}>
+          {body}
+        </button>
+        <button type="button" className={styles.fileDownload} onClick={onDownload} disabled={downloading} aria-busy={downloading}>
+          <Icon name="download" size={16} />
+          {downloading ? "Downloading…" : "Download"}
+        </button>
+      </div>
+    );
+  }
   if (onOpen) {
     return (
       <button type="button" className={styles.file} onClick={onOpen}>

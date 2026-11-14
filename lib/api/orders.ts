@@ -234,6 +234,11 @@ export const isFinished = (status: OrderStatus) => ["delivered", "rejected", "ca
 /** Turned down, cancelled or refunded in full: nothing left to make. */
 export const isClosed = (status: OrderStatus) => status === "rejected" || status === "cancelled" || status === "refunded";
 
+/** Ruxstar deletes an order's files 30 days after delivery; until then the shop can reprint. */
+const FILES_KEPT_MS = 30 * 24 * 60 * 60_000;
+export const filesKept = (order: Pick<Order, "status" | "deliveredAt">, now = Date.now()) =>
+  !isClosed(order.status) && !(order.status === "delivered" && order.deliveredAt && now > Date.parse(order.deliveredAt) + FILES_KEPT_MS);
+
 export const PROBLEM_LABEL: Record<ProblemKind, string> = {
   not_received: "It didn't arrive",
   wrong_item: "Wrong print",
