@@ -411,6 +411,45 @@ button.file:hover {
   font: 700 20px/26px var(--font);
 }
 
+.totalLoading {
+  width: 22px;
+  height: 22px;
+  margin: 2px 0;
+  border: 2px solid var(--accent-soft);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .totalLoading {
+    animation-duration: 2.4s;
+  }
+}
+
+.label[data-invalid] {
+  color: var(--danger);
+}
+
+.invalidNote {
+  font: var(--type-caption);
+  color: var(--danger);
+}
+
+.drop[data-invalid] {
+  border-color: var(--danger);
+}
+
+.drop[data-invalid] svg {
+  color: var(--danger);
+}
+
 @media (max-width: 640px) {
   .bar {
     bottom: calc(72px + env(safe-area-inset-bottom));

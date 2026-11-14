@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Icon, Input } from "@/components/ui";
+import { Icon, Input } from "@/components/ui";
 import type { AppliedCoupon, CouponOffer } from "@/lib/api/orders";
 import { money } from "@/lib/api/shops";
 import { cleanCode } from "@/lib/coupons";
@@ -44,25 +44,27 @@ export function CheckoutCoupons({ offers, applied, discount, problem, onApply, o
           </button>
         </div>
       ) : (
-        <>
-          <form
-            className={styles.codeRow}
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (text) onApply(text);
-            }}
-          >
-            <Input label="Coupon code" value={text} onChange={(e) => setText(cleanCode(e.target.value))} autoComplete="off" spellCheck={false} />
-            <Button type="submit" variant="secondary" disabled={!text}>
-              Apply
-            </Button>
-          </form>
-          {problem && (
-            <p className={styles.error} role="alert">
-              {problem}
-            </p>
-          )}
-        </>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (text) onApply(text);
+          }}
+        >
+          <Input
+            label="Coupon code"
+            value={text}
+            onChange={(e) => setText(cleanCode(e.target.value))}
+            autoComplete="off"
+            spellCheck={false}
+            maxLength={16}
+            error={problem ?? undefined}
+            suffix={
+              <button type="submit" className={styles.apply} disabled={!text}>
+                Apply
+              </button>
+            }
+          />
+        </form>
       )}
 
       {others.map((offer) => (

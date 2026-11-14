@@ -63,7 +63,21 @@ function Chips<K extends string>({ options, value, onChange, small }: { options:
   );
 }
 
-function OptionPicker({ product, option, values, value, onChange }: { product: ShopProduct; option: string; values: string[]; value: string; onChange: (v: string) => void }) {
+function OptionPicker({
+  product,
+  option,
+  values,
+  value,
+  invalid,
+  onChange,
+}: {
+  product: ShopProduct;
+  option: string;
+  values: string[];
+  value: string;
+  invalid?: boolean;
+  onChange: (v: string) => void;
+}) {
   const required = option === requiredOption(product);
   const extra = (v: string) => product.extras.find((x) => x.option === option && x.value === v)?.price;
   const choices = [
@@ -72,9 +86,9 @@ function OptionPicker({ product, option, values, value, onChange }: { product: S
   ];
   return (
     <div className={styles.section}>
-      <span className={styles.label}>
+      <span className={styles.label} data-invalid={invalid || undefined}>
         {OPTION_LABELS[option] ?? option}
-        {required && <span className={styles.faint}> · required</span>}
+        {invalid ? <span className={styles.invalidNote}> · choose one</span> : required && <span className={styles.faint}> · required</span>}
       </span>
       <Chips small options={choices} value={value} onChange={onChange} />
     </div>
@@ -97,6 +111,8 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
   const [priced, setPriced] = useState<{ key: string; quote: Quote | null; error: string | null } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
+  // Set on the first Pay with something missing; from then on the missing fields show in red.
+  const [checked, setChecked] = useState(false);
   const attempt = useRef(newIdempotencyKey());
 
   const qty = Number(quantity) || 0;
@@ -177,17 +193,27 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
   const set = (field: keyof OrderAddress) => (text: string) =>
     setAddress((now) => ({ ...now, [field]: field === "phone" ? digits(text, 10) : field === "pincode" ? digits(text, 6) : text }));
   const cityOk = deliversTo(shop, address.city);
-  const addressOk =
-    address.name.trim().length >= 2 &&
-    /^[6-9]\d{9}$/.test(address.phone) &&
-    address.line.trim().length >= 5 &&
-    address.city.trim().length >= 2 &&
-    cityOk &&
-    /^[1-9]\d{5}$/.test(address.pincode);
-  const ready = !!quote && files.length > 0 && addressOk && shop.open && !uploading;
+  const fieldErrors: Partial<Record<keyof OrderAddress, string>> = {
+    ...(address.name.trim().length < 2 ? { name: "Enter the name to deliver to" } : {}),
+    ...(!/^[6-9]\d{9}$/.test(address.phone) ? { phone: "Enter a 10-digit mobile number" } : {}),
+    ...(address.line.trim().length < 5 ? { line: "Enter the house, street and area" } : {}),
+    ...(address.city.trim().length < 2 ? { city: "Enter the city" } : {}),
+    ...(!/^[1-9]\d{5}$/.test(address.pincode) ? { pincode: "Enter the 6-digit pincode" } : {}),
+  };
+  const addressOk = Object.keys(fieldErrors).length === 0 && cityOk;
+  const filled = files.length > 0 && !missing && qty >= 1 && !(perPage && !colour) && addressOk;
+  const ready = !!quote && filled && shop.open && !uploading;
+  const show = (message: string | undefined) => (checked ? message : undefined);
 
   const place = async () => {
-    if (!ready) return;
+    if (!filled) {
+      setChecked(true);
+      return;
+    }
+    if (!ready) {
+      if (quoteError) setError(quoteError);
+      return;
+    }
     setPlacing(true);
     setError(null);
     try {
@@ -239,6 +265,7 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
           option={option}
           values={values}
           value={options[option] ?? ""}
+          invalid={checked && option === needs && missing}
           onChange={(v) =>
             setOptions((now) => {
               const next = { ...now };
@@ -252,7 +279,10 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
 
       {perPage && (
         <div className={styles.section}>
-          <span className={styles.label}>Print in</span>
+          <span className={styles.label} data-invalid={(checked && !colour) || undefined}>
+            Print in
+            {checked && !colour && <span className={styles.invalidNote}> · choose one</span>}
+          </span>
           <Chips
             small
             value={colour ?? ""}
@@ -270,6 +300,7 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
         inputMode="numeric"
         value={quantity}
         onChange={(e) => setQuantity(String(Math.min(MAX_QUANTITY, Number(digits(e.target.value, 5)) || 0) || ""))}
+        error={show(qty < 1 ? `Enter how many ${perPage ? "copies" : "you want"}` : undefined)}
         hint={product.minQuantity > 1 ? `Minimum ${product.minQuantity}${perPage ? " pages" : ""}` : perPage ? "Every page of your files, this many times" : undefined}
       />
 
@@ -287,11 +318,15 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
           />
         ))}
         {files.length < MAX_FILES && (
-          <label className={styles.drop} data-busy={uploading || undefined}>
+          <label className={styles.drop} data-busy={uploading || undefined} data-invalid={(checked && !files.length) || undefined}>
             <Icon name="plus" size={20} />
             <span className={styles.fileText}>
               <span className={styles.fileName}>{uploading ? "Uploading…" : files.length ? "Add another file" : "Add a file"}</span>
-              <span className={styles.faint}>PDF, JPG or PNG, up to 25 MB. Only this shop can open it.</span>
+              {checked && !files.length ? (
+                <span className={styles.invalidNote}>Add the file you want printed.</span>
+              ) : (
+                <span className={styles.faint}>PDF, JPG or PNG, up to 25 MB. Only this shop can open it.</span>
+              )}
             </span>
             <input
               type="file"
@@ -308,9 +343,25 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
 
       <section className={styles.section}>
         <h2 className={styles.overline}>Deliver to</h2>
-        <Input label="Name" value={address.name} onChange={(e) => set("name")(e.target.value)} maxLength={80} autoComplete="name" />
-        <Input label="Phone" prefix="+91" value={address.phone} onChange={(e) => set("phone")(e.target.value)} inputMode="tel" maxLength={10} autoComplete="tel-national" />
-        <Input label="House, street and area" value={address.line} onChange={(e) => set("line")(e.target.value)} maxLength={300} autoComplete="street-address" />
+        <Input label="Name" value={address.name} onChange={(e) => set("name")(e.target.value)} maxLength={80} autoComplete="name" error={show(fieldErrors.name)} />
+        <Input
+          label="Phone"
+          prefix="+91"
+          value={address.phone}
+          onChange={(e) => set("phone")(e.target.value)}
+          inputMode="tel"
+          maxLength={10}
+          autoComplete="tel-national"
+          error={show(fieldErrors.phone)}
+        />
+        <Input
+          label="House, street and area"
+          value={address.line}
+          onChange={(e) => set("line")(e.target.value)}
+          maxLength={300}
+          autoComplete="street-address"
+          error={show(fieldErrors.line)}
+        />
         <div className={styles.pair}>
           <Input
             label="City"
@@ -318,9 +369,17 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
             onChange={(e) => set("city")(e.target.value)}
             maxLength={60}
             autoComplete="address-level2"
-            error={cityOk ? undefined : `${shop.name} delivers to ${shop.cities.map(titleCase).join(", ") || shop.city} only`}
+            error={cityOk ? show(fieldErrors.city) : `${shop.name} delivers to ${shop.cities.map(titleCase).join(", ") || shop.city} only`}
           />
-          <Input label="Pincode" value={address.pincode} onChange={(e) => set("pincode")(e.target.value)} inputMode="numeric" maxLength={6} autoComplete="postal-code" />
+          <Input
+            label="Pincode"
+            value={address.pincode}
+            onChange={(e) => set("pincode")(e.target.value)}
+            inputMode="numeric"
+            maxLength={6}
+            autoComplete="postal-code"
+            error={show(fieldErrors.pincode)}
+          />
         </div>
         <label className={styles.label} htmlFor="order-note">
           Note for the shop
@@ -362,17 +421,23 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
         </div>
       </section>
 
-      {error && (
+      {(error || (checked && !filled)) && (
         <p className={styles.error} role="alert">
-          {error}
+          {error ?? "Fill in the fields marked in red to pay."}
         </p>
       )}
       <div className={styles.bar}>
         <span className={styles.barText}>
-          <strong>{quote ? money(quote.total) : "—"}</strong>
+          {quote ? (
+            <strong>{money(quote.total)}</strong>
+          ) : priceable && !quoteError ? (
+            <span className={styles.totalLoading} role="status" aria-label="Working out the price" />
+          ) : (
+            <strong>—</strong>
+          )}
           <span className={styles.faint}>{!shop.open ? "This shop is closed right now" : (hint ?? readyLine(quote?.turnaroundDays ?? product.turnaroundDays))}</span>
         </span>
-        <Button size="lg" onClick={place} loading={placing} disabled={!ready}>
+        <Button size="lg" onClick={place} loading={placing} disabled={!shop.open || uploading}>
           Pay
         </Button>
       </div>
