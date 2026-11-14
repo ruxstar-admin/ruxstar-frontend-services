@@ -5,6 +5,7 @@ import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { RateOrder } from "@/components/reviews/Reviews";
+import { OrderBusiness, OrderPayment } from "@/components/shop/OrderLinks";
 import { FileItem, PriceList, ProblemCard, Progress, RiderCard } from "@/components/shop/OrderParts";
 import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
@@ -219,10 +220,11 @@ function OrderDetails({ order, onChanged }: { order: Order; onChanged: (order: O
       <div className={styles.titleRow}>
         <div>
           <h1 className={styles.title}>{`Order #${order.orderNo}`}</h1>
-          <p className={styles.small}>{inHand && order.readyBy ? `${order.shop.name} · ready by ${dayLabel(order.readyBy)}` : order.shop.name}</p>
+          <p className={styles.small}>{inHand && order.readyBy ? `Ready by ${dayLabel(order.readyBy)}` : order.productLabel}</p>
         </div>
         <Tag tone={STATUS_TONE[order.status]}>{STATUS_LABEL[order.status]}</Tag>
       </div>
+      <OrderBusiness label="From" name={order.shop.name} href={`/b/${order.shop.id}`} />
 
       <News order={order} />
       {order.delivery?.rider && order.delivery.status !== "cancelled" && !isClosed(order.status) && (
@@ -316,6 +318,7 @@ function OrderDetails({ order, onChanged }: { order: Order; onChanged: (order: O
         <div className={styles.panel}>
           <PriceList price={order.price} pricing={order.pricing} />
         </div>
+        {order.paidAt && <OrderPayment paidAt={order.paidAt} paymentId={order.paymentId} href={`/payments?open=${order.id}`} linkLabel="View payment" />}
       </section>
 
       {cancellable &&

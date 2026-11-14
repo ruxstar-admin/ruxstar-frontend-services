@@ -7,8 +7,10 @@ import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { SkeletonRows } from "@/app/(social)/notifications/screen";
 import { OrderRow } from "@/components/shop/OrderParts";
+import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
 import { SHOP_STATUS_LABEL, shopOrders, type ShopOrderView } from "@/lib/api/orders";
+import { myBusinesses, titleCase } from "@/lib/api/vendor";
 import social from "@/components/social/social.module.css";
 import styles from "@/components/shop/order.module.css";
 import vendor from "@/components/vendor/vendor.module.css";
@@ -25,9 +27,9 @@ const EMPTY: Record<ShopOrderView, { title: string; message: string }> = {
   past: { title: "No past orders", message: "Delivered, turned down and cancelled orders show here." },
 };
 
-function SalesList({ view }: { view: ShopOrderView }) {
+function SalesList({ view, business }: { view: ShopOrderView; business?: string }) {
   const onSignedOut = useOnSignedOut();
-  const { items, loading, loadingMore, hasMore, error, more, reload } = usePages((cursor) => shopOrders(view, cursor));
+  const { items, loading, loadingMore, hasMore, error, more, reload } = usePages((cursor) => shopOrders(view, cursor, business));
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ function SalesList({ view }: { view: ShopOrderView }) {
   return (
     <ul className={styles.rows}>
       {items.map((o) => (
-        <OrderRow key={o.id} href={`/vendor/orders/${o.id}`} order={o} subtitle={o.shop.name} amount={o.price.payout} labels={SHOP_STATUS_LABEL} />
+        <OrderRow key={o.id} href={`/vendor/orders/${o.id}`} order={o} subtitle={`${o.shop.name} · ${titleCase(o.address.city)}`} amount={o.price.payout} labels={SHOP_STATUS_LABEL} />
       ))}
       {hasMore && <li ref={sentinel} className={social.sentinel} aria-hidden />}
       {loadingMore && <SkeletonRows count={1} />}
@@ -63,14 +65,26 @@ function SalesList({ view }: { view: ShopOrderView }) {
   );
 }
 
-/** Paid orders to every shop you run: new ones to accept, ones being made, and past ones. Same as the app's vendor Orders tab. */
+/** Paid orders to every shop you run, each marked with its shop: new ones to accept, ones being made, and past ones. Same as the app's vendor Orders tab. */
 export function SalesScreen() {
   const [view, setView] = useState<ShopOrderView>("new");
+  const [business, setBusiness] = useState<string | undefined>();
+  const { data: businesses } = useLoad(myBusinesses);
+  const shops = (businesses ?? []).filter((b) => b.module === "pod");
   return (
     <div className={vendor.page}>
       <h1 className={vendor.title}>Orders</h1>
       <Segmented options={VIEWS} value={view} onChange={setView} label="Which orders" />
-      <SalesList key={view} view={view} />
+      {shops.length > 1 && (
+        <div className={vendor.chips} role="group" aria-label="Which business">
+          {[{ id: undefined, name: "All businesses" }, ...shops].map((b) => (
+            <button key={b.id ?? "all"} type="button" className={vendor.chip} aria-pressed={business === b.id} onClick={() => setBusiness(b.id)}>
+              {b.name}
+            </button>
+          ))}
+        </div>
+      )}
+      <SalesList key={`${view}:${business ?? "all"}`} view={view} business={business} />
     </div>
   );
 }

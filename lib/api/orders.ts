@@ -106,8 +106,8 @@ async function postProblemPhoto(id: string, photo: Blob, key: string): Promise<O
 
 export const addProblemPhoto = (id: string, photo: Blob, key: string) => signedIn(() => postProblemPhoto(id, photo, key));
 
-export const shopOrders = async (view: ShopOrderView, cursor?: string): Promise<Page<ShopOrder>> => {
-  const envelope = await signedIn(() => unwrap(api.GET("/v1/vendor/orders", { params: { query: { view, cursor } } })));
+export const shopOrders = async (view: ShopOrderView, cursor?: string, business?: string): Promise<Page<ShopOrder>> => {
+  const envelope = await signedIn(() => unwrap(api.GET("/v1/vendor/orders", { params: { query: { view, cursor, business } } })));
   return { items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null };
 };
 

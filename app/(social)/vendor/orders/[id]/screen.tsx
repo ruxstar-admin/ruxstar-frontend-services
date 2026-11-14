@@ -5,6 +5,7 @@ import { Button, ButtonLink, Icon, Input, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { DeliverySection, type DeliveryDesk } from "@/components/shop/DeliverySection";
+import { OrderBusiness, OrderPayment } from "@/components/shop/OrderLinks";
 import { FileItem, PriceList, ProblemCard, Progress } from "@/components/shop/OrderParts";
 import { Back } from "@/components/vendor/parts";
 import { formError } from "@/lib/api/account";
@@ -172,10 +173,11 @@ export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk,
       <div className={styles.titleRow}>
         <div>
           <h1 className={styles.title}>{`Order #${order.orderNo}`}</h1>
-          <p className={styles.small}>{`${order.shop.name}${order.paidAt ? ` · paid ${ago(order.paidAt)}` : ""}`}</p>
+          <p className={styles.small}>{order.paidAt ? `Paid ${ago(order.paidAt)}` : order.productLabel}</p>
         </div>
         <Tag tone={STATUS_TONE[order.status]}>{SHOP_STATUS_LABEL[order.status]}</Tag>
       </div>
+      <OrderBusiness label="For your business" name={order.shop.name} href={team ? undefined : `/vendor/businesses/${order.shop.id}`} />
 
       {order.status === "rejected" && (
         <div className={styles.news}>
@@ -330,6 +332,13 @@ export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk,
           </div>
         )}
       </section>
+
+      {!team && order.paidAt && (
+        <section className={styles.section}>
+          <h2 className={styles.overline}>Payment</h2>
+          <OrderPayment paidAt={order.paidAt} paymentId={order.paymentId} payer={address.name} href="/vendor/payments" linkLabel="View in Payments" />
+        </section>
+      )}
 
       {!team && (
         <ButtonLink

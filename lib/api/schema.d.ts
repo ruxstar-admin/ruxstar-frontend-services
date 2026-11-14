@@ -257,6 +257,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/account/payments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One of your payments
+         * @description A payment has the same ID as the order it paid for.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description pod is print on demand */
+                                module: "pod" | "events" | "coaching" | "stays";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description What was bought */
+                                    label: string;
+                                };
+                                /** @description Amount in paise */
+                                amount: number;
+                                /** Format: date-time */
+                                paidAt: string;
+                                /** @description The payment gateway's ID for it, once it confirmed the payment */
+                                paymentId: string | null;
+                                /** @description `refund_pending` while money is on its way back; `part_refunded` once some came back */
+                                status: "paid" | "refund_pending" | "part_refunded" | "refunded";
+                                /** @description Amount in paise */
+                                refunded: number;
+                                /** @description Oldest first */
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    kind: "full" | "partial";
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/account/otp": {
         parameters: {
             query?: never;
@@ -8725,6 +8827,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -8953,6 +9056,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -9193,6 +9297,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -9432,6 +9537,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -9751,6 +9857,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -9963,6 +10070,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -13478,6 +13586,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -13714,6 +13823,7 @@ export interface paths {
                                         at: string;
                                     }[];
                                     paidAt: string | null;
+                                    paymentId: string | null;
                                     /** @description Oldest first */
                                     refunds: {
                                         /** @description Amount in paise */
@@ -13999,6 +14109,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -14214,6 +14325,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -14504,6 +14616,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -14717,6 +14830,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -15678,6 +15792,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -15906,6 +16021,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -16146,6 +16262,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -16385,6 +16502,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -16704,6 +16822,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -16919,6 +17038,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -23467,6 +23587,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -23706,6 +23827,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */
@@ -23960,6 +24082,7 @@ export interface paths {
                                     at: string;
                                 }[];
                                 paidAt: string | null;
+                                paymentId: string | null;
                                 /** @description Oldest first */
                                 refunds: {
                                     /** @description Amount in paise */

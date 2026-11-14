@@ -12,6 +12,10 @@ export const myPayments = async (cursor?: string): Promise<Page<Payment>> => {
   return { items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null };
 };
 
+/** One payment. It has the same ID as the order it paid for. */
+export const myPayment = async (id: string): Promise<Payment> =>
+  (await signedIn(() => unwrap(api.GET("/v1/account/payments/{id}", { params: { path: { id } } })))).data;
+
 export const PAYMENT_STATUS: Record<PaymentStatus, { label: string; tone: "success" | "warning" | "neutral" | "solid" }> = {
   paid: { label: "Paid", tone: "success" },
   refund_pending: { label: "Refund on its way", tone: "warning" },

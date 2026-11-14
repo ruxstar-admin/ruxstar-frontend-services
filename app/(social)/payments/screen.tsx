@@ -7,7 +7,7 @@ import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { SkeletonRows } from "@/app/(social)/notifications/screen";
 import { formError } from "@/lib/api/account";
-import { myPayments, PAYMENT_STATUS, type Payment } from "@/lib/api/payments";
+import { myPayment, myPayments, PAYMENT_STATUS, type Payment } from "@/lib/api/payments";
 import { money, type BusinessModule } from "@/lib/api/shops";
 import { ago, exact } from "@/lib/time";
 import social from "@/components/social/social.module.css";
@@ -97,16 +97,28 @@ function PaymentItem({ payment, open, onToggle }: { payment: Payment; open: bool
   );
 }
 
-/** What you paid, at every business, and what came back. Same as the app's Your payments. */
-export function PaymentsScreen() {
+/** What you paid, at every business, and what came back. `openId` (an order ID) shows that payment first, open. Same as the app's Your payments. */
+export function PaymentsScreen({ openId }: { openId?: string }) {
   const onSignedOut = useOnSignedOut();
   const { items, loading, loadingMore, hasMore, error, more, reload, moreFailed } = usePages(myPayments);
   const sentinel = useNearEnd(more, hasMore && !error);
-  const [open, setOpen] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(openId ?? null);
+  const [picked, setPicked] = useState<Payment | null>(null);
 
   useEffect(() => {
     if (error) onSignedOut(error);
   }, [error, onSignedOut]);
+
+  useEffect(() => {
+    if (!openId) return;
+    let live = true;
+    myPayment(openId)
+      .then((payment) => live && setPicked(payment))
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [openId]);
 
   return (
     <div className={styles.page}>
@@ -129,7 +141,8 @@ export function PaymentsScreen() {
         </Empty>
       ) : (
         <ul className={styles.rows}>
-          {items.map((p) => (
+          {picked && <PaymentItem payment={picked} open={open === picked.id} onToggle={() => setOpen(open === picked.id ? null : picked.id)} />}
+          {items.filter((p) => p.id !== picked?.id).map((p) => (
             <PaymentItem key={p.id} payment={p} open={open === p.id} onToggle={() => setOpen(open === p.id ? null : p.id)} />
           ))}
           {hasMore && !moreFailed && <li ref={sentinel} className={social.sentinel} aria-hidden />}
