@@ -118,7 +118,7 @@ export function DiscoverScreen() {
           type="search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Search businesses"
+          placeholder="Shop, what they print, or a city"
           aria-label="Search businesses"
           autoComplete="off"
           spellCheck={false}

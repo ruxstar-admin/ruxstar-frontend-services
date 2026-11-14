@@ -15053,7 +15053,7 @@ export interface paths {
         };
         /**
          * Print shops customers can order from, newest first
-         * @description Live shops that are not on hold, open ones first in each page. Empty while Ruxstar has print on demand switched off.
+         * @description Live shops that are not on hold. In each page, shops in your city (from your profile) come first, then open ones. Empty while Ruxstar has print on demand switched off.
          */
         get: {
             parameters: {
@@ -15063,7 +15063,7 @@ export interface paths {
                     /** @description Shops in or delivering to this city */
                     city?: string;
                     product?: "tshirts" | "hoodies" | "jerseys" | "business_cards" | "posters" | "flex_banners" | "stickers" | "invitations" | "photo_prints" | "documents";
-                    /** @description Part of the shop name */
+                    /** @description Part of the shop name, what it prints ("banner", "visiting cards", "xerox") or its city or area */
                     q?: string;
                 };
                 header?: never;
