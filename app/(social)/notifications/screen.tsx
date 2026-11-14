@@ -15,6 +15,8 @@ const ICONS: Record<Notification["type"], IconName> = {
   "post.like": "heart",
   "post.comment": "comment",
   "post.removed": "flag",
+  "post.mention": "at",
+  "report.resolved": "shield",
   "kyc.approved": "verified",
   "kyc.rejected": "alert",
   "business.suspended": "alert",
