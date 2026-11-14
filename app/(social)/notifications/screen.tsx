@@ -101,7 +101,7 @@ export function NotificationsScreen() {
         </div>
       ) : items.length === 0 ? (
         <Empty title="You are all caught up">
-          <p>Likes and comments on your posts show up here.</p>
+          <p>Likes, comments, mentions and news about your orders show up here.</p>
         </Empty>
       ) : (
         <ul className={styles.rows}>

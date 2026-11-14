@@ -7565,6 +7565,8 @@ export interface paths {
                                 text: string;
                                 /** Format: date-time */
                                 createdAt: string;
+                                /** @description When the author last changed the text */
+                                editedAt: string | null;
                                 mine: boolean;
                             }[];
                             meta: {
@@ -7637,6 +7639,8 @@ export interface paths {
                                 text: string;
                                 /** Format: date-time */
                                 createdAt: string;
+                                /** @description When the author last changed the text */
+                                editedAt: string | null;
                                 mine: boolean;
                             };
                             meta: {
@@ -7733,7 +7737,81 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Change the text of your comment
+         * @description Only the person who wrote it. People newly @mentioned are told; those already in it aren't told again.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        text: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                };
+                                text: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description When the author last changed the text */
+                                editedAt: string | null;
+                                mine: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/v1/social/posts/{id}/report": {

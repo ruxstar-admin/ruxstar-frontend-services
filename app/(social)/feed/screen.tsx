@@ -5,7 +5,7 @@ import { Composer } from "@/components/social/Composer";
 import { Empty, PostList } from "@/components/social/PostList";
 import { useMe, useOnSignedOut } from "@/components/social/session";
 import { usePages } from "@/components/social/use-pages";
-import { ButtonLink, Segmented } from "@/components/ui";
+import { Button, ButtonLink, Icon, Segmented } from "@/components/ui";
 import { feed, type FeedTab, type Post } from "@/lib/api/social";
 import styles from "@/components/social/social.module.css";
 
@@ -53,13 +53,26 @@ export function FeedScreen() {
   const me = useMe();
   const [tab, setTab] = useState<FeedTab>("for_you");
   const [posted, setPosted] = useState<Post | null>(null);
+  const [loads, setLoads] = useState(0);
 
   return (
     <div className={styles.column}>
       <h1 className="sr-only">Feed</h1>
       {me && <Composer me={me} onPosted={setPosted} />}
-      <Segmented label="Feed" options={TABS} value={tab} onChange={setTab} />
-      <Tab key={tab} tab={tab} posted={posted} />
+      <div className={styles.feedBar}>
+        <Segmented label="Feed" options={TABS} value={tab} onChange={setTab} />
+        <Button
+          variant="ghost"
+          aria-label="Refresh feed"
+          onClick={() => {
+            setPosted(null);
+            setLoads((n) => n + 1);
+          }}
+        >
+          <Icon name="refresh" size={18} />
+        </Button>
+      </div>
+      <Tab key={`${tab}-${loads}`} tab={tab} posted={posted} />
     </div>
   );
 }

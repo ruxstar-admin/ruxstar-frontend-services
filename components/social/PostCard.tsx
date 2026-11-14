@@ -10,6 +10,7 @@ import { formError } from "@/lib/api/account";
 import { deletePost, editPost, POST_TEXT_MAX, REPORT_REASONS, reportPost, setLike, setSave, type Post } from "@/lib/api/social";
 import { ago, compact, exact } from "@/lib/time";
 import { PostPhotos } from "./PostPhotos";
+import { PostText } from "./PostText";
 import { useMe, useOnSignedOut, useSignInFirst } from "./session";
 import styles from "./PostCard.module.css";
 
@@ -279,7 +280,7 @@ export const PostCard = memo(function PostCard({ post, onChange, onRemove, eager
           }}
         />
       ) : (
-        post.text && <p className={styles.text}>{post.text}</p>
+        post.text && <PostText text={post.text} className={styles.text} />
       )}
 
       <PostPhotos photos={post.media} eager={eager} onDoubleLike={() => !post.likedByMe && toggle("like")} />

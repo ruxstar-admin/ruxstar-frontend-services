@@ -49,6 +49,7 @@ function Tab({ ownerId, username, kind, initial, mine }: { ownerId: string; user
 /** A profile's posts as a grid. Vendors also have a Business tab, filled from the vendor portal. */
 export function ProfilePosts({ ownerId, username, vendor, initial }: { ownerId: string; username: string; vendor: boolean; initial: Page<Post> }) {
   const me = useMe();
+  const mine = me?.id === ownerId;
   const [kind, setKind] = useState<PostKind>("personal");
   const tabs = vendor ? TABS : TABS.slice(0, 1);
 
@@ -84,7 +85,15 @@ export function ProfilePosts({ ownerId, username, vendor, initial }: { ownerId: 
         ))}
       </div>
       <div id="profile-posts" role="tabpanel" aria-labelledby={`tab-${kind}`}>
-        <Tab key={kind} ownerId={ownerId} username={username} kind={kind} initial={kind === "personal" ? initial : undefined} mine={me?.id === ownerId} />
+        {/* The server's first page is cached for a short while, so your own grid loads fresh to show what you just posted. */}
+        <Tab
+          key={`${kind}-${mine}`}
+          ownerId={ownerId}
+          username={username}
+          kind={kind}
+          initial={kind === "personal" && !mine ? initial : undefined}
+          mine={mine}
+        />
       </div>
     </section>
   );

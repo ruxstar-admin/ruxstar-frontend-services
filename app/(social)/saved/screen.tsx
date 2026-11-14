@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ButtonLink } from "@/components/ui";
+import { Button, ButtonLink, Icon } from "@/components/ui";
 import { Empty, PostList } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { usePages } from "@/components/social/use-pages";
@@ -12,7 +12,7 @@ import styles from "@/components/social/social.module.css";
 export function SavedScreen() {
   const onSignedOut = useOnSignedOut();
   const pages = usePages(savedPosts);
-  const { error } = pages;
+  const { error, reload } = pages;
 
   useEffect(() => {
     if (error) onSignedOut(error);
@@ -25,6 +25,9 @@ export function SavedScreen() {
           <h1 className={styles.title}>Saved</h1>
           <p className={styles.subtitle}>Only you can see what you save.</p>
         </div>
+        <Button variant="ghost" aria-label="Refresh saved posts" onClick={reload}>
+          <Icon name="refresh" size={18} />
+        </Button>
       </div>
       <PostList
         pages={pages}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Composer } from "@/components/social/Composer";
 import { Empty } from "@/components/social/PostList";
 import { useMe } from "@/components/social/session";
@@ -12,6 +13,7 @@ import styles from "@/components/vendor/vendor.module.css";
 /** Posting for the business someone works at. It goes out under the owner's name, on the business's tab. Same as the app. */
 export function TeamPostScreen({ placeId }: { placeId: string }) {
   const me = useMe();
+  const router = useRouter();
   const { data, error, reload } = useLoad(() => getWork(), placeId);
   if (error && !data) return <Failed error={error} onRetry={reload} />;
   if (!data || !me) return <Loading rows={2} />;
@@ -36,7 +38,7 @@ export function TeamPostScreen({ placeId }: { placeId: string }) {
         <Icon name="info" size={20} />
         <span>{`Posts for ${place.business.name}, under ${place.owner.name}’s name. It shows on the business tab and in the feed.`}</span>
       </p>
-      <Composer me={me} kind="business" businessId={place.business.id} onPosted={() => undefined} />
+      <Composer me={me} kind="business" businessId={place.business.id} onPosted={() => router.push(`/work/${placeId}`)} />
     </div>
   );
 }

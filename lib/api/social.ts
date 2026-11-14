@@ -112,6 +112,9 @@ export const comments = async (postId: string, cursor?: string) =>
 export const addComment = async (postId: string, text: string) =>
   (await signedIn(() => unwrap(api.POST("/v1/social/posts/{id}/comments", { ...id(postId), body: { text } })))).data;
 
+export const editComment = async (commentId: string, text: string) =>
+  (await signedIn(() => unwrap(api.PATCH("/v1/social/comments/{id}", { ...id(commentId), body: { text } })))).data;
+
 export const deleteComment = (commentId: string) => signedIn(() => unwrap(api.DELETE("/v1/social/comments/{id}", id(commentId))));
 
 export const notifications = async (cursor?: string) =>
