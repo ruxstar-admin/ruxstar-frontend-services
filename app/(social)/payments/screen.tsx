@@ -122,7 +122,12 @@ export function PaymentsScreen({ openId }: { openId?: string }) {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Your payments</h1>
+      <div className={styles.titleRow}>
+        <h1 className={styles.title}>Your payments</h1>
+        <ButtonLink href="/invoices" variant="secondary" icon={<Icon name="receipt" size={18} />}>
+          Invoices
+        </ButtonLink>
+      </div>
       {loading ? (
         <SkeletonRows />
       ) : error && items.length === 0 ? (

@@ -299,6 +299,19 @@ export function AccountScreen() {
           )}
 
           {user && (
+            <Setting id="invoices" title="Invoices" description="GST invoices and credit notes">
+              <div className={`${styles.panel} ${styles.devices}`}>
+                <div className={styles.device}>
+                  <p className={styles.muted}>The invoice for every paid order and booking, and a credit note for each refund, as PDFs.</p>
+                  <ButtonLink href="/invoices" variant="secondary">
+                    Open
+                  </ButtonLink>
+                </div>
+              </div>
+            </Setting>
+          )}
+
+          {user && (
             <Setting id="work" title="Work" description="Team invites and businesses you help run">
               <div className={`${styles.panel} ${styles.devices}`}>
                 <div className={styles.device}>

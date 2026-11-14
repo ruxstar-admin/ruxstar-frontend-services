@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink, Icon, Input, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
+import { InvoiceLinks } from "@/components/invoices/InvoiceLinks";
 import { DeliverySection, type DeliveryDesk } from "@/components/shop/DeliverySection";
 import { OrderBusiness, OrderPayment } from "@/components/shop/OrderLinks";
 import { FileItem, PriceList, ProblemCard, Progress } from "@/components/shop/OrderParts";
@@ -339,6 +340,8 @@ export function ShopOrderDetails<T extends ShopOrder | TeamOrder>({ order, desk,
           <OrderPayment paidAt={order.paidAt} paymentId={order.paymentId} payer={address.name} href="/vendor/payments" linkLabel="View in Payments" />
         </section>
       )}
+
+      {!team && <InvoiceLinks refs={order.invoices} audience="vendor" />}
 
       {!team && (
         <ButtonLink

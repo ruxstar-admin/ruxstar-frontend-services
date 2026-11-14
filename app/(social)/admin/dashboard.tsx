@@ -134,9 +134,14 @@ export function Dashboard() {
             <Card as="section" padding="lg">
               <div className={styles.groupHead}>
                 <h2 className={styles.subtitle}>Modules</h2>
-                <Link href="/admin/modules" className={styles.muted}>
-                  Settings
-                </Link>
+                <span className={styles.tags}>
+                  <Link href="/admin/gst" className={styles.muted}>
+                    GST
+                  </Link>
+                  <Link href="/admin/modules" className={styles.muted}>
+                    Settings
+                  </Link>
+                </span>
               </div>
               <div className={styles.tags}>
                 {overview.modules.map((m) => (
@@ -145,6 +150,18 @@ export function Dashboard() {
                   </Tag>
                 ))}
               </div>
+            </Card>
+          )}
+
+          {(access.admin || access.permissions.includes("orders.view")) && (
+            <Card as="section" padding="lg">
+              <div className={styles.groupHead}>
+                <h2 className={styles.subtitle}>GST invoices</h2>
+                <Link href="/admin/invoices" className={styles.muted}>
+                  Find one
+                </Link>
+              </div>
+              <p className={styles.muted}>Every invoice, bill of supply and credit note, by document or order number.</p>
             </Card>
           )}
         </>

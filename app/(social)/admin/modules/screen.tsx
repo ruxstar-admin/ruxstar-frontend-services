@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Needs, useCan } from "@/components/admin/AdminFrame";
 import { Failed, Fact, Rows, styles } from "@/components/admin/parts";
@@ -445,11 +446,16 @@ export function ModulesScreen() {
   return (
     <Needs need="modules.view">
       <div className={styles.page}>
-        <div>
-          <h1 className={styles.title}>Modules</h1>
-          <p className={styles.muted}>
-            {canManage ? "Changes apply at once and are written to the audit log." : "You can see these settings. Ask an admin to change them."}
-          </p>
+        <div className={styles.head}>
+          <div>
+            <h1 className={styles.title}>Modules</h1>
+            <p className={styles.muted}>
+              {canManage ? "Changes apply at once and are written to the audit log." : "You can see these settings. Ask an admin to change them."}
+            </p>
+          </div>
+          <Link href="/admin/gst" className={styles.muted}>
+            GST settings
+          </Link>
         </div>
         {error ? (
           <Failed

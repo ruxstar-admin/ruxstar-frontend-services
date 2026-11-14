@@ -6,6 +6,7 @@ import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { TicketPass } from "@/components/events/TicketPass";
+import { InvoiceLinks } from "@/components/invoices/InvoiceLinks";
 import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import { cancelTickets, getTicketOrder, payTickets, type TicketOrder } from "@/lib/api/events";
@@ -136,6 +137,8 @@ function OrderView({ booking, fresh, onChanged }: { booking: TicketOrder; fresh:
         </span>
         <span className={order.faint}>{`By ${booking.business.name}`}</span>
       </div>
+
+      <InvoiceLinks refs={booking.invoices} audience="customer" />
 
       {booking.canCancel &&
         valid.length > 0 &&

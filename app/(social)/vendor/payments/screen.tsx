@@ -20,6 +20,7 @@ import {
   type PayoutMethod,
   type StatementLine,
 } from "@/lib/api/vendor";
+import { INVOICE_KIND, invoiceHref } from "@/lib/invoices";
 import { ago, exact } from "@/lib/time";
 import styles from "@/components/vendor/vendor.module.css";
 
@@ -315,11 +316,18 @@ function LineDetails({ line }: { line: StatementLine }) {
           </>
         )}
       </dl>
-      {order && (
-        <div>
-          <ButtonLink href={`/vendor/orders/${order.id}`} variant="secondary">
-            View order
-          </ButtonLink>
+      {(order || line.invoice) && (
+        <div className={styles.actions}>
+          {order && (
+            <ButtonLink href={`/vendor/orders/${order.id}`} variant="secondary">
+              View order
+            </ButtonLink>
+          )}
+          {line.invoice && (
+            <ButtonLink href={invoiceHref("vendor", line.invoice.id)} variant="secondary" icon={<Icon name="receipt" size={16} />}>
+              {`${INVOICE_KIND[line.invoice.kind]} ${line.invoice.number}`}
+            </ButtonLink>
+          )}
         </div>
       )}
     </div>
@@ -450,7 +458,12 @@ export function PaymentsScreen() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Payments</h1>
+      <div className={styles.head}>
+        <h1 className={styles.title}>Payments</h1>
+        <ButtonLink href="/vendor/invoices" variant="secondary" icon={<Icon name="receipt" size={18} />}>
+          Invoices
+        </ButtonLink>
+      </div>
       <div className={styles.balance}>
         <div data-tone="success">
           <span className={styles.balanceLabel}>

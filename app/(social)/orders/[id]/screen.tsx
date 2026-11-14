@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
+import { InvoiceLinks } from "@/components/invoices/InvoiceLinks";
 import { RateOrder } from "@/components/reviews/Reviews";
 import { OrderBusiness, OrderPayment } from "@/components/shop/OrderLinks";
 import { FileItem, PriceList, ProblemCard, Progress, RiderCard } from "@/components/shop/OrderParts";
@@ -320,6 +321,8 @@ function OrderDetails({ order, onChanged }: { order: Order; onChanged: (order: O
         </div>
         {order.paidAt && <OrderPayment paidAt={order.paidAt} paymentId={order.paymentId} href={`/payments?open=${order.id}`} linkLabel="View payment" />}
       </section>
+
+      <InvoiceLinks refs={order.invoices} audience="customer" />
 
       {cancellable &&
         (confirming ? (
