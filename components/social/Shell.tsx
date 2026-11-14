@@ -8,6 +8,7 @@ import { Avatar } from "@/components/profile/Avatar";
 import { ButtonLink, Icon, ToastProvider, type IconName } from "@/components/ui";
 import { homeFor } from "@/lib/api/account";
 import { unreadCount } from "@/lib/api/social";
+import { getWork } from "@/lib/api/team";
 import { SessionProvider, useMe } from "./session";
 import styles from "./Shell.module.css";
 
@@ -17,6 +18,7 @@ const TABS: { href: string; label: string; icon: IconName }[] = [
   { href: "/search", label: "Search", icon: "search" },
   { href: "/messages", label: "Messages", icon: "chat" },
   { href: "/saved", label: "Saved", icon: "bookmark" },
+  { href: "/work", label: "Work", icon: "briefcase" },
   { href: "/notifications", label: "Notifications", icon: "bell" },
 ];
 
@@ -69,15 +71,17 @@ function PortalSwitch() {
   );
 }
 
+const offerCount = () => getWork().then((work) => work.invites.length);
+
 /** Polls gently: on every page change and when the tab comes back into view. */
-function useUnread(signedIn: boolean) {
+function useCount(signedIn: boolean, fetch: () => Promise<number>) {
   const pathname = usePathname();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!signedIn) return;
     let live = true;
-    const load = () => unreadCount().then((n) => live && setCount(n), () => undefined);
+    const load = () => fetch().then((n) => live && setCount(n), () => undefined);
     load();
     const onVisible = () => document.visibilityState === "visible" && load();
     document.addEventListener("visibilitychange", onVisible);
@@ -85,7 +89,7 @@ function useUnread(signedIn: boolean) {
       live = false;
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [signedIn, pathname]);
+  }, [signedIn, pathname, fetch]);
 
   return signedIn ? count : 0;
 }
@@ -93,7 +97,8 @@ function useUnread(signedIn: boolean) {
 function Nav() {
   const me = useMe();
   const pathname = usePathname();
-  const unread = useUnread(!!me);
+  const unread = useCount(!!me, unreadCount);
+  const offers = useCount(!!me, offerCount);
   const chats = useChatUnread(!!me);
   const profileHref = me ? `/u/${me.username}` : "/signin";
   const team = !!me && (me.roles.admin || me.roles.ruxstarStaff);
@@ -102,16 +107,18 @@ function Nav() {
   const tab = (t: (typeof tabs)[number]) => {
     const active =
       pathname === t.href ||
-      ((t.href === CONSOLE_TAB.href || t.href === "/messages") && pathname.startsWith(`${t.href}/`)) ||
+      ((t.href === CONSOLE_TAB.href || t.href === "/messages" || t.href === "/work") && pathname.startsWith(`${t.href}/`)) ||
       (t.href === "/discover" && pathname.startsWith("/b/"));
-    const count = t.href === "/notifications" ? unread : t.href === "/messages" ? chats.unread + chats.requests : 0;
+    const count =
+      t.href === "/notifications" ? unread : t.href === "/messages" ? chats.unread + chats.requests : t.href === "/work" ? offers : 0;
     const badge = count > 0 ? (count > 9 ? "9+" : String(count)) : null;
+    const badgeLabel = t.href === "/work" ? `${badge} job ${count === 1 ? "offer" : "offers"}` : `${badge} unread`;
     return (
       <Link key={t.href} href={t.href} className={styles.tab} aria-current={active ? "page" : undefined}>
         <span className={styles.icon}>
           <Icon name={t.icon} filled={active && t.icon !== "search"} size={24} />
           {badge && (
-            <span className={styles.badge} aria-label={`${badge} unread`}>
+            <span className={styles.badge} aria-label={badgeLabel}>
               {badge}
             </span>
           )}

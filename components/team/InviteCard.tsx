@@ -5,7 +5,7 @@ import { Avatar } from "@/components/profile/Avatar";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { acceptInvite, declineInvite, inviteEnds, permissionsLine, type PermissionInfo, type WorkInvite } from "@/lib/api/team";
+import { acceptInvite, declineInvite, inviteEnds, payLine, permissionsLine, type PermissionInfo, type WorkInvite } from "@/lib/api/team";
 import styles from "./team.module.css";
 
 /** A team invite with Accept and Decline. `onAnswered` runs after either succeeds. Same as the app. */
@@ -37,6 +37,17 @@ export function InviteCard({ invite, catalog, onAnswered }: { invite: WorkInvite
             {invite.owner.name} invited you{invite.business.city ? ` · ${invite.business.city}` : ""}
           </span>
         </span>
+      </div>
+      <div className={styles.pay}>
+        <span className={styles.muted}>Pay</span>
+        {invite.pay ? (
+          <>
+            <strong className={styles.amount}>{payLine(invite.pay)}</strong>
+            {invite.pay.note && <span>{invite.pay.note}</span>}
+          </>
+        ) : (
+          <span>Not mentioned. Ask {invite.owner.name} before you accept.</span>
+        )}
       </div>
       <p>You&apos;d be able to: {permissionsLine(catalog, invite.permissions)}</p>
       <p className={styles.muted}>{inviteEnds(invite.expiresAt)}</p>

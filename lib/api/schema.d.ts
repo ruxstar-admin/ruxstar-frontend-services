@@ -9239,6 +9239,14 @@ export interface paths {
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                     status: "invited" | "waiting" | "active";
                                     permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                    pay: {
+                                        /** @description In paise, at least ₹1 */
+                                        amount: number;
+                                        /** @description `order` is per order or delivery */
+                                        per: "month" | "week" | "day" | "hour" | "order";
+                                        /** @description For example: plus petrol allowance */
+                                        note: string | null;
+                                    } | null;
                                     /** Format: date-time */
                                     invitedAt: string;
                                     /** @description When the invite runs out; null once accepted */
@@ -9285,7 +9293,7 @@ export interface paths {
         put?: never;
         /**
          * Invite someone to the team by their username
-         * @description They get a notification and have 7 days to accept. Nothing works for them until their identity verification is approved. A team holds up to 20 people, invites included. Permissions that need "See orders" bring it with them. Withdrawals, payment details, publishing, deleting and the team itself stay with the owner.
+         * @description They get a notification and have 7 days to accept. Nothing works for them until their identity verification is approved. A team holds up to 20 people, invites included. Permissions that need "See orders" bring it with them. Pay is optional and shown to them with the invite, so they can compare offers. Withdrawals, payment details, publishing, deleting and the team itself stay with the owner.
          */
         post: {
             parameters: {
@@ -9303,6 +9311,14 @@ export interface paths {
                         /** @description Their Ruxstar username, without the @ */
                         username: string;
                         permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                        pay?: {
+                            /** @description In paise, at least ₹1 */
+                            amount: number;
+                            /** @description `order` is per order or delivery */
+                            per: "month" | "week" | "day" | "hour" | "order";
+                            /** @description For example: plus petrol allowance */
+                            note: string | null;
+                        } | null;
                     };
                 };
             };
@@ -9327,6 +9343,14 @@ export interface paths {
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                 status: "invited" | "waiting" | "active";
                                 permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                pay: {
+                                    /** @description In paise, at least ₹1 */
+                                    amount: number;
+                                    /** @description `order` is per order or delivery */
+                                    per: "month" | "week" | "day" | "hour" | "order";
+                                    /** @description For example: plus petrol allowance */
+                                    note: string | null;
+                                } | null;
                                 /** Format: date-time */
                                 invitedAt: string;
                                 /** @description When the invite runs out; null once accepted */
@@ -9433,8 +9457,8 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Change what a team member, or someone invited, may do
-         * @description Replaces their permissions. It applies on their next request.
+         * Change what a team member, or someone invited, may do, and the pay on an open invite
+         * @description Replaces what you send: permissions apply on their next request. Pay changes only while they're invited; null takes it off the offer. Ruxstar only shows the pay; the shop pays its team outside Ruxstar.
          */
         patch: {
             parameters: {
@@ -9451,7 +9475,16 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                        /** @description Only while they're invited: the offer can't change once they accept */
+                        pay?: {
+                            /** @description In paise, at least ₹1 */
+                            amount: number;
+                            /** @description `order` is per order or delivery */
+                            per: "month" | "week" | "day" | "hour" | "order";
+                            /** @description For example: plus petrol allowance */
+                            note: string | null;
+                        } | null;
                     };
                 };
             };
@@ -9476,6 +9509,14 @@ export interface paths {
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                 status: "invited" | "waiting" | "active";
                                 permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                pay: {
+                                    /** @description In paise, at least ₹1 */
+                                    amount: number;
+                                    /** @description `order` is per order or delivery */
+                                    per: "month" | "week" | "day" | "hour" | "order";
+                                    /** @description For example: plus petrol allowance */
+                                    note: string | null;
+                                } | null;
                                 /** Format: date-time */
                                 invitedAt: string;
                                 /** @description When the invite runs out; null once accepted */
@@ -16579,6 +16620,14 @@ export interface paths {
                                         name: string;
                                     };
                                     permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                    pay: {
+                                        /** @description In paise, at least ₹1 */
+                                        amount: number;
+                                        /** @description `order` is per order or delivery */
+                                        per: "month" | "week" | "day" | "hour" | "order";
+                                        /** @description For example: plus petrol allowance */
+                                        note: string | null;
+                                    } | null;
                                     /** Format: date-time */
                                     invitedAt: string;
                                     /** Format: date-time */
@@ -16604,6 +16653,15 @@ export interface paths {
                                         name: string;
                                     };
                                     permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                    /** @description The pay they accepted */
+                                    pay: {
+                                        /** @description In paise, at least ₹1 */
+                                        amount: number;
+                                        /** @description `order` is per order or delivery */
+                                        per: "month" | "week" | "day" | "hour" | "order";
+                                        /** @description For example: plus petrol allowance */
+                                        note: string | null;
+                                    } | null;
                                     /** Format: date-time */
                                     joinedAt: string;
                                     /** @description `verify`: get verified before anything works; `on_hold`: Ruxstar put the business on hold */
@@ -16703,6 +16761,15 @@ export interface paths {
                                     name: string;
                                 };
                                 permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                /** @description The pay they accepted */
+                                pay: {
+                                    /** @description In paise, at least ₹1 */
+                                    amount: number;
+                                    /** @description `order` is per order or delivery */
+                                    per: "month" | "week" | "day" | "hour" | "order";
+                                    /** @description For example: plus petrol allowance */
+                                    note: string | null;
+                                } | null;
                                 /** Format: date-time */
                                 joinedAt: string;
                                 /** @description `verify`: get verified before anything works; `on_hold`: Ruxstar put the business on hold */
@@ -21235,6 +21302,14 @@ export interface paths {
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so nothing works for them yet */
                                     status: "invited" | "waiting" | "active";
                                     permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply")[];
+                                    pay: {
+                                        /** @description In paise, at least ₹1 */
+                                        amount: number;
+                                        /** @description `order` is per order or delivery */
+                                        per: "month" | "week" | "day" | "hour" | "order";
+                                        /** @description For example: plus petrol allowance */
+                                        note: string | null;
+                                    } | null;
                                     /** Format: date-time */
                                     invitedAt: string;
                                     /** @description When the invite runs out; null once accepted */

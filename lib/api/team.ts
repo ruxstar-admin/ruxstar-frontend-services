@@ -1,6 +1,7 @@
 import { signedIn } from "./account";
 import { api, newIdempotencyKey, unwrap } from "./client";
 import type { paths } from "./schema";
+import { money } from "./shops";
 import type { Page } from "./social";
 
 type Data<T> = T extends { content: { "application/json": { data: infer D } } } ? D : never;
@@ -10,6 +11,9 @@ export type Team = Data<paths["/v1/vendor/businesses/{id}/team"]["get"]["respons
 export type TeamMember = Team["members"][number];
 export type PermissionInfo = Team["permissions"][number];
 export type TeamPermission = PermissionInfo["key"];
+/** Pay offered with an invite, in paise. Ruxstar only shows it; the shop pays its team outside Ruxstar. */
+export type Pay = NonNullable<TeamMember["pay"]>;
+export type PayPer = Pay["per"];
 /** GET /v1/employment: your invites and the businesses you work at. */
 export type Work = Data<paths["/v1/employment/"]["get"]["responses"][200]>;
 export type WorkInvite = Work["invites"][number];
@@ -26,15 +30,16 @@ const place = (id: string) => ({ params: { path: { id } } });
 export const getTeam = async (businessId: string) => (await signedIn(() => unwrap(api.GET("/v1/vendor/businesses/{id}/team", team(businessId))))).data;
 
 /** Pass the same key when retrying the same click. */
-export const inviteToTeam = async (businessId: string, username: string, permissions: TeamPermission[], key = newIdempotencyKey()) =>
+export const inviteToTeam = async (businessId: string, username: string, permissions: TeamPermission[], pay: Pay | null, key = newIdempotencyKey()) =>
   (
     await signedIn(() =>
-      unwrap(api.POST("/v1/vendor/businesses/{id}/team", { ...team(businessId), body: { username, permissions }, headers: { "Idempotency-Key": key } })),
+      unwrap(api.POST("/v1/vendor/businesses/{id}/team", { ...team(businessId), body: { username, permissions, pay }, headers: { "Idempotency-Key": key } })),
     )
   ).data;
 
-export const setMemberPermissions = async (businessId: string, memberId: string, permissions: TeamPermission[]) =>
-  (await signedIn(() => unwrap(api.PATCH("/v1/vendor/businesses/{id}/team/{memberId}", { ...member(businessId, memberId), body: { permissions } })))).data;
+/** Pay changes only while they're invited. */
+export const updateMember = async (businessId: string, memberId: string, body: { permissions?: TeamPermission[]; pay?: Pay | null }) =>
+  (await signedIn(() => unwrap(api.PATCH("/v1/vendor/businesses/{id}/team/{memberId}", { ...member(businessId, memberId), body })))).data;
 
 /** Removes a member or cancels an invite. */
 export const removeMember = async (businessId: string, memberId: string) => {
@@ -64,6 +69,22 @@ export const leaveTeam = async (id: string) => {
 // Words, the same as the app.
 
 const DAY_MS = 24 * 60 * 60_000;
+
+export const PAY_NOTE_MAX = 120;
+
+export const PAY_PER: { key: PayPer; label: string; suffix: string }[] = [
+  { key: "month", label: "Month", suffix: "a month" },
+  { key: "week", label: "Week", suffix: "a week" },
+  { key: "day", label: "Day", suffix: "a day" },
+  { key: "hour", label: "Hour", suffix: "an hour" },
+  { key: "order", label: "Order", suffix: "per order or delivery" },
+];
+
+/** "₹15,000 a month", or null when there's no pay on the offer. */
+export function payLine(pay: Pay | null | undefined): string | null {
+  if (!pay) return null;
+  return `${money(pay.amount)} ${PAY_PER.find((p) => p.key === pay.per)?.suffix ?? ""}`.trim();
+}
 
 /**
  * Switches one permission. Turning one on brings what it needs; turning one off drops what needs it, so

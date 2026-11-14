@@ -6,6 +6,7 @@ import { useMemo, useRef, useState } from "react";
 import { Avatar } from "@/components/profile/Avatar";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
+import { PayFields, payDraft, payDraftOk, payOfDraft, type PayDraft } from "@/components/team/PayFields";
 import { PermissionPicker } from "@/components/team/PermissionPicker";
 import { PersonSearch } from "@/components/team/PersonSearch";
 import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
@@ -18,8 +19,9 @@ import {
   getTeam,
   inviteEnds,
   inviteToTeam,
+  payLine,
   removeMember,
-  setMemberPermissions,
+  updateMember,
   type Team,
   type TeamMember,
   type TeamPermission,
@@ -34,25 +36,32 @@ function Invite({ businessId, data }: { businessId: string; data: Team }) {
   const onSignedOut = useOnSignedOut();
   const [person, setPerson] = useState<PublicProfile | null>(null);
   const [permissions, setPermissions] = useState<TeamPermission[]>([]);
+  const [pay, setPay] = useState<PayDraft>(() => payDraft(null));
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<{ field?: string; banner?: string } | null>(null);
+  const [error, setError] = useState<{ field?: string; pay?: string; banner?: string } | null>(null);
   const key = useRef(newIdempotencyKey());
   const taken = useMemo(() => new Set(data.members.map((m) => m.person.id)), [data.members]);
-  const ready = !!person && permissions.length > 0;
+  const ready = !!person && permissions.length > 0 && payDraftOk(pay);
 
   const send = async () => {
     if (!person) return;
     setBusy(true);
     setError(null);
     try {
-      await inviteToTeam(businessId, person.username, permissions, key.current);
+      await inviteToTeam(businessId, person.username, permissions, payOfDraft(pay), key.current);
       router.push(`/vendor/businesses/${businessId}/team`);
     } catch (err) {
       setBusy(false);
       if (onSignedOut(err)) return;
       if (!retryable(err)) key.current = newIdempotencyKey();
       const problem = formError(err);
-      setError(problem.field === "username" ? { field: problem.message } : { banner: problem.message });
+      setError(
+        problem.field === "username"
+          ? { field: problem.message }
+          : problem.field?.startsWith("pay")
+            ? { pay: problem.message }
+            : { banner: problem.message },
+      );
     }
   };
 
@@ -78,6 +87,14 @@ function Invite({ businessId, data }: { businessId: string; data: Team }) {
         />
         <h2 className={team.section}>What they can do</h2>
         <PermissionPicker catalog={data.permissions} value={permissions} onChange={setPermissions} />
+        <PayFields
+          value={pay}
+          onChange={(next) => {
+            setPay(next);
+            if (error?.pay) setError(null);
+          }}
+          error={error?.pay}
+        />
         {error?.banner && (
           <p className={styles.error} role="alert">
             {error.banner}
@@ -97,11 +114,15 @@ function Member({ businessId, data, member }: { businessId: string; data: Team; 
   const router = useRouter();
   const onSignedOut = useOnSignedOut();
   const [permissions, setPermissions] = useState(member.permissions);
+  const [pay, setPay] = useState<PayDraft>(() => payDraft(member.pay));
   const [busy, setBusy] = useState<"save" | "remove" | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const invited = member.status === "invited";
-  const changed = permissions.join() !== member.permissions.join();
+  const permissionsChanged = permissions.join() !== member.permissions.join();
+  const payChanged = invited && JSON.stringify(payOfDraft(pay)) !== JSON.stringify(member.pay);
+  const changed = permissionsChanged || payChanged;
+  const agreed = payLine(member.pay);
   const status = MEMBER_STATUS[member.status];
   const back = `/vendor/businesses/${businessId}/team`;
 
@@ -109,7 +130,11 @@ function Member({ businessId, data, member }: { businessId: string; data: Team; 
     setBusy(kind);
     setError(null);
     try {
-      if (kind === "save") await setMemberPermissions(businessId, member.id, permissions);
+      if (kind === "save")
+        await updateMember(businessId, member.id, {
+          ...(permissionsChanged && { permissions }),
+          ...(payChanged && { pay: payOfDraft(pay) }),
+        });
       else await removeMember(businessId, member.id);
       router.push(back);
     } catch (err) {
@@ -135,11 +160,23 @@ function Member({ businessId, data, member }: { businessId: string; data: Team; 
       {member.status === "waiting" ? (
         <p className={styles.muted}>They joined, but nothing works for them until their identity verification is approved.</p>
       ) : invited && member.expiresAt ? (
-        <p className={styles.muted}>{inviteEnds(member.expiresAt)}. You can change what they&apos;ll be able to do before they accept.</p>
+        <p className={styles.muted}>{inviteEnds(member.expiresAt)}. You can change what they&apos;ll be able to do and the pay before they accept.</p>
       ) : null}
       <h2 className={team.section}>What they can do</h2>
       <PermissionPicker catalog={data.permissions} value={permissions} onChange={setPermissions} disabled={!!busy} />
       {permissions.length === 0 && <p className={styles.warn}>Pick at least one, or remove them from the team.</p>}
+      {invited ? (
+        <PayFields value={pay} onChange={setPay} disabled={!!busy} />
+      ) : (
+        <>
+          <h2 className={team.section}>Pay</h2>
+          <div className={team.pay}>
+            {agreed ? <strong className={team.amount}>{agreed}</strong> : <span>Not mentioned in the offer</span>}
+            {member.pay?.note && <span>{member.pay.note}</span>}
+          </div>
+          <p className={team.muted}>This is what they accepted, so it can&apos;t change here.</p>
+        </>
+      )}
       {error && (
         <p className={styles.error} role="alert">
           {error}
@@ -165,7 +202,12 @@ function Member({ businessId, data, member }: { businessId: string; data: Team; 
         </div>
       ) : (
         <div className={styles.actions}>
-          <Button size="lg" loading={busy === "save"} disabled={!changed || permissions.length === 0 || !!busy} onClick={() => void run("save")}>
+          <Button
+            size="lg"
+            loading={busy === "save"}
+            disabled={!changed || permissions.length === 0 || !payDraftOk(pay) || !!busy}
+            onClick={() => void run("save")}
+          >
             Save changes
           </Button>
           {!invited && (

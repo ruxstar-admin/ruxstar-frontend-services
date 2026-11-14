@@ -131,6 +131,18 @@ button.member:hover .name {
   border-radius: var(--radius-card);
 }
 
+.pay {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--raised);
+  border-radius: var(--radius-control);
+}
+
+.amount {
+  font: 700 20px/26px var(--font);
+}
+
 .inviteHead {
   display: flex;
   align-items: center;

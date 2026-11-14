@@ -8,7 +8,7 @@ import { InviteCard } from "@/components/team/InviteCard";
 import { Icon, Tag } from "@/components/ui";
 import { Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
-import { ACCESS, getWork, permissionsLine } from "@/lib/api/team";
+import { ACCESS, getWork, payLine, permissionsLine } from "@/lib/api/team";
 import team from "@/components/team/team.module.css";
 import styles from "@/components/vendor/vendor.module.css";
 
@@ -31,7 +31,8 @@ export function WorkScreen() {
         <>
           {data.invites.length > 0 && (
             <>
-              <h2 className={team.section}>Invites</h2>
+              <h2 className={team.section}>{data.invites.length === 1 ? "Job offer" : `${data.invites.length} job offers`}</h2>
+              {data.invites.length > 1 && <p className={team.muted}>Compare the pay and what you&apos;d do at each. You can accept more than one.</p>}
               {data.invites.map((invite) => (
                 <InviteCard
                   key={invite.id}
@@ -57,7 +58,9 @@ export function WorkScreen() {
                         <Avatar name={place.business.name} url={place.business.photo} size={40} />
                         <span className={team.text}>
                           <span className={team.name}>{place.business.name}</span>
-                          <span className={team.line}>{permissionsLine(data.permissions, place.permissions)}</span>
+                          <span className={team.line}>
+                            {[payLine(place.pay), permissionsLine(data.permissions, place.permissions)].filter(Boolean).join(" · ")}
+                          </span>
                         </span>
                         <Tag tone={access.tone}>{access.label}</Tag>
                         <Icon name="chevron-right" size={18} />
