@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Needs, useCan } from "@/components/admin/AdminFrame";
-import { Failed, Rows, styles } from "@/components/admin/parts";
+import { Failed, MoreFailed, Rows, styles } from "@/components/admin/parts";
 import { CouponCard } from "@/components/coupons/CouponCard";
 import list from "@/components/coupons/coupons.module.css";
 import { useOnSignedOut } from "@/components/social/session";
@@ -20,7 +20,7 @@ function Coupons({ funder, code }: { funder: CouponFunder; code: string | undefi
   const onSignedOut = useOnSignedOut();
   const canManage = useCan("coupons.manage");
   const load = useCallback((cursor?: string) => listCoupons(funder, code, cursor), [funder, code]);
-  const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
+  const { items, setItems, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -53,6 +53,7 @@ function Coupons({ funder, code }: { funder: CouponFunder; code: string | undefi
           />
         ))}
         {hasMore && <li ref={sentinel} aria-hidden />}
+        {moreFailed && <MoreFailed onRetry={more} />}
         {loadingMore && <Skeleton height={64} radius={16} />}
       </ul>
     </>

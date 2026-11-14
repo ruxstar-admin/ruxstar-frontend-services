@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Needs } from "@/components/admin/AdminFrame";
-import { Failed, Rows, styles } from "@/components/admin/parts";
+import { Failed, MoreFailed, Rows, styles } from "@/components/admin/parts";
 import { Avatar } from "@/components/profile/Avatar";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
@@ -24,7 +24,7 @@ const FILTERS: { value: Filter; label: string }[] = [
 function Results({ q, filter }: { q: string; filter: Filter }) {
   const onSignedOut = useOnSignedOut();
   const load = useCallback((cursor?: string) => findUsers(q, filter === "all" ? undefined : filter, cursor), [q, filter]);
-  const { items, loading, loadingMore, hasMore, error, more, reload } = usePages<UserRow>(load);
+  const { items, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages<UserRow>(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -60,6 +60,7 @@ function Results({ q, filter }: { q: string; filter: Filter }) {
         </li>
       ))}
       {hasMore && <li ref={sentinel} aria-hidden />}
+      {moreFailed && <MoreFailed onRetry={more} />}
       {loadingMore && <Skeleton height={72} radius={14} />}
     </ul>
   );

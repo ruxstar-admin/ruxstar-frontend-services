@@ -226,7 +226,7 @@ function Member({ m, onChanged }: { m: StaffMember; onChanged: (m: StaffMember, 
                 const done = await saveStaff(m.user.id, title, permissions, keys.current.save);
                 keys.current.save = crypto.randomUUID();
                 setOpen(false);
-                onChanged(done, active ? "Saved." : `${m.user.name || "They"} are back on staff.`);
+                onChanged(done, active ? "Saved." : m.user.name ? `${m.user.name} is back on staff.` : "Back on staff.");
               } catch (err) {
                 if (!onSignedOut(err)) toast(formError(err).message, "danger");
               }

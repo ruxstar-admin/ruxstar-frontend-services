@@ -37,6 +37,17 @@ export function Failed({ error, onRetry }: { error: unknown; onRetry: () => void
   );
 }
 
+/** The last row of a paged list when its next page didn't load. */
+export function MoreFailed({ onRetry }: { onRetry: () => void }) {
+  return (
+    <li className={styles.moreFailed} role="alert">
+      <Button variant="ghost" onClick={onRetry}>
+        Couldn&apos;t load more. Try again
+      </Button>
+    </li>
+  );
+}
+
 /** A 5 to 300 character reason that the person affected will read. */
 export function ReasonForm({
   prompt,

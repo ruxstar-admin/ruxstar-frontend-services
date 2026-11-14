@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Needs } from "@/components/admin/AdminFrame";
-import { Failed, Rows, styles } from "@/components/admin/parts";
+import { Failed, MoreFailed, Rows, styles } from "@/components/admin/parts";
 import { Avatar } from "@/components/profile/Avatar";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
@@ -27,7 +27,7 @@ const MODULES: Business["module"][] = ["pod", "events", "coaching", "stays"];
 function Results({ filter }: { filter: BusinessFilter }) {
   const onSignedOut = useOnSignedOut();
   const load = useCallback((cursor?: string) => findBusinesses(filter, cursor), [filter]);
-  const { items, loading, loadingMore, hasMore, error, more, reload } = usePages<BusinessRow>(load);
+  const { items, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages<BusinessRow>(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -61,6 +61,7 @@ function Results({ filter }: { filter: BusinessFilter }) {
         </li>
       ))}
       {hasMore && <li ref={sentinel} aria-hidden />}
+      {moreFailed && <MoreFailed onRetry={more} />}
       {loadingMore && <Skeleton height={72} radius={14} />}
     </ul>
   );

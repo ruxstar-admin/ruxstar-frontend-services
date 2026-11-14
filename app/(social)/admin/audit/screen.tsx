@@ -4,21 +4,18 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Needs, useCan } from "@/components/admin/AdminFrame";
-import { Failed, Rows, styles } from "@/components/admin/parts";
+import { Failed, MoreFailed, Rows, styles } from "@/components/admin/parts";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { Button, Icon, Skeleton, Tag } from "@/components/ui";
 import { auditLog, type AuditEntry, type AuditFilter } from "@/lib/api/admin";
 import { ago, exact } from "@/lib/time";
+import { MODULE_LABEL } from "../modules/labels";
 
 const ACTIONS: Record<string, string> = {
   "kyc.approve": "Approved verification",
   "kyc.reject": "Sent verification back",
   "kyc.reopen": "Reopened verification",
-  "support.reply": "Replied to a help ticket",
-  "support.note": "Added a note to a help ticket",
-  "support.update": "Changed a help ticket",
-  "support.settings": "Changed help reply-by times",
   "report.keep": "Kept a reported post",
   "post.remove": "Removed a post",
   "user_report.dismiss": "Dismissed reports about someone",
@@ -41,23 +38,48 @@ const ACTIONS: Record<string, string> = {
   "pod_order.problem": "Reported a problem with a print order",
   "pod_order.refund": "Refunded part of a print order",
   "pod_order.settle": "Settled a print order problem",
+  "pod_order.release": "Released a shop's share early",
+  "delivery.assign": "Sent an order for delivery",
+  "delivery.cancel": "Cancelled a delivery",
+  "payout.request": "Asked for a withdrawal",
+  "payout.check": "Checked a withdrawal with Cashfree",
+  "coupon.create": "Created a coupon",
+  "coupon.update": "Changed a coupon",
+  "review.create": "Reviewed an order",
+  "review.update": "Changed a review",
+  "review.delete": "Deleted a review",
+  "review.reply": "Replied to a review",
+  "review.reply_delete": "Took down a reply to a review",
+  "review_report.keep": "Kept a reported review",
+  "review.remove": "Removed a review",
+  "post.create": "Posted",
+  "business.update": "Changed a business's details",
+  "business.catalog": "Changed a shop's products and prices",
+  "business.photo_add": "Added a business photo",
+  "business.photo_remove": "Removed a business photo",
+  "business.open": "Opened a shop",
+  "business.close": "Closed a shop",
+  "team.invite": "Invited someone to a team",
+  "team.update": "Changed a team member's access",
+  "team.remove": "Removed someone from a team",
+  "team.leave": "Left a team",
+  "team.join": "Joined a team",
+  "team.decline": "Turned down a team invite",
+  "support.reply": "Replied to a help ticket",
+  "support.note": "Added a note to a help ticket",
+  "support.update": "Changed a help ticket",
+  "support.settings": "Changed help reply-by times",
 };
 
-const MODULES: { value: string; label: string }[] = [
-  { value: "", label: "Every area" },
-  { value: "account", label: "Accounts" },
-  { value: "kyc", label: "Verification" },
-  { value: "social", label: "Posts" },
-  { value: "ruxstar", label: "Staff" },
-  { value: "vendor", label: "Vendor" },
-  { value: "pod", label: "Print on demand" },
-  { value: "events", label: "Events" },
-  { value: "coaching", label: "Coaching" },
-  { value: "stays", label: "Stays" },
-  { value: "delivery", label: "Delivery" },
-  { value: "ledger", label: "Payments and ledger" },
-  { value: "support", label: "Help desk" },
-];
+const AREA_LABEL: Record<string, string> = {
+  account: "Accounts",
+  kyc: "Verification",
+  social: "Posts",
+  ruxstar: "Staff",
+  vendor: "Vendor",
+  support: "Help desk",
+  ...MODULE_LABEL,
+};
 
 const show = (value: unknown) => (value === undefined || value === null ? "—" : typeof value === "string" ? value : JSON.stringify(value));
 
@@ -82,7 +104,7 @@ function Entry({ e }: { e: AuditEntry }) {
           <span className={styles.name}>{ACTIONS[e.action] ?? e.action}</span>
           <span className={`${styles.muted} ${styles.line}`}>
             {who}
-            {e.actor.username ? ` (@${e.actor.username})` : ""} · {e.module}
+            {e.actor.username ? ` (@${e.actor.username})` : ""} · {AREA_LABEL[e.module] ?? e.module}
           </span>
         </span>
         {e.actor.kind !== "user" && <Tag tone={e.actor.kind === "admin" ? "solid" : "neutral"}>{e.actor.kind === "admin" ? "Admin" : e.actor.kind === "staff" ? "Staff" : "System"}</Tag>}
@@ -120,7 +142,7 @@ function Entry({ e }: { e: AuditEntry }) {
 function Log({ filter }: { filter: AuditFilter }) {
   const onSignedOut = useOnSignedOut();
   const load = useCallback((cursor?: string) => auditLog(filter, cursor), [filter]);
-  const { items, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
+  const { items, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -137,6 +159,7 @@ function Log({ filter }: { filter: AuditFilter }) {
         <Entry key={e.id} e={e} />
       ))}
       {hasMore && <li ref={sentinel} aria-hidden />}
+      {moreFailed && <MoreFailed onRetry={more} />}
       {loadingMore && <Skeleton height={72} radius={14} />}
     </ul>
   );
@@ -175,9 +198,10 @@ export function AuditScreen() {
         </div>
         <div className={styles.toolbar}>
           <select className={styles.select} aria-label="Area" value={area} onChange={(e) => setParam("module", e.target.value)}>
-            {MODULES.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
+            <option value="">Every area</option>
+            {Object.entries(AREA_LABEL).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>

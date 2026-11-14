@@ -6,6 +6,7 @@ import type { Page } from "@/lib/api/social";
 /**
  * A cursor-paged list. Starts from `initial` when the server already rendered the first page,
  * otherwise loads it. One request at a time, so a fast scroll never asks for a page twice.
+ * `moreFailed` is true while the last next-page load failed; `more()` tries it again.
  */
 export function usePages<T>(load: (cursor?: string) => Promise<Page<T>>, initial?: Page<T>) {
   const loadRef = useRef(load);
@@ -16,6 +17,7 @@ export function usePages<T>(load: (cursor?: string) => Promise<Page<T>>, initial
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(initial ? initial.nextCursor !== null : false);
   const [error, setError] = useState<unknown>(null);
+  const [moreFailed, setMoreFailed] = useState(false);
   const [attempt, setAttempt] = useState(initial ? -1 : 0);
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export function usePages<T>(load: (cursor?: string) => Promise<Page<T>>, initial
         setItems(page.items);
         setHasMore(page.nextCursor !== null);
         setError(null);
+        setMoreFailed(false);
       })
       .catch((err) => live && setError(err))
       .finally(() => {
@@ -49,6 +52,8 @@ export function usePages<T>(load: (cursor?: string) => Promise<Page<T>>, initial
     if (busy.current || cursor.current === null) return;
     busy.current = true;
     setLoadingMore(true);
+    setMoreFailed(false);
+    setError(null);
     loadRef
       .current(cursor.current)
       .then((page) => {
@@ -56,7 +61,10 @@ export function usePages<T>(load: (cursor?: string) => Promise<Page<T>>, initial
         setItems((prev) => [...prev, ...page.items]);
         setHasMore(page.nextCursor !== null);
       })
-      .catch(setError)
+      .catch((err) => {
+        setMoreFailed(true);
+        setError(err);
+      })
       .finally(() => {
         busy.current = false;
         setLoadingMore(false);
@@ -69,7 +77,7 @@ export function usePages<T>(load: (cursor?: string) => Promise<Page<T>>, initial
     setAttempt((n) => Math.max(n, 0) + 1);
   }, []);
 
-  return { items, setItems, loading, loadingMore, hasMore, error, more, reload };
+  return { items, setItems, loading, loadingMore, hasMore, moreFailed, error, more, reload };
 }
 
 /** Calls `onVisible` when the returned element scrolls near the viewport. */

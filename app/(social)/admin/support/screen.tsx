@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Needs } from "@/components/admin/AdminFrame";
-import { Failed, Rows, styles } from "@/components/admin/parts";
+import { Failed, MoreFailed, Rows, styles } from "@/components/admin/parts";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { ButtonLink, Icon, Input, Segmented, Skeleton, Tag } from "@/components/ui";
@@ -37,7 +37,7 @@ function Flag({ t }: { t: StaffTicket }) {
 function Results({ filter }: { filter: QueueFilter }) {
   const onSignedOut = useOnSignedOut();
   const load = useCallback((cursor?: string) => supportQueue(filter, cursor), [filter]);
-  const { items, loading, loadingMore, hasMore, error, more, reload } = usePages<StaffTicket>(load);
+  const { items, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages<StaffTicket>(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -72,6 +72,7 @@ function Results({ filter }: { filter: QueueFilter }) {
         </li>
       ))}
       {hasMore && <li ref={sentinel} aria-hidden />}
+      {moreFailed && <MoreFailed onRetry={more} />}
       {loadingMore && <Skeleton height={72} radius={14} />}
     </ul>
   );

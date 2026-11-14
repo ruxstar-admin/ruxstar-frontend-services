@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useCan } from "@/components/admin/AdminFrame";
-import { Failed, Fact, ReasonForm, Rows, date, styles } from "@/components/admin/parts";
+import { Failed, Fact, MoreFailed, ReasonForm, Rows, date, styles } from "@/components/admin/parts";
 import { Avatar } from "@/components/profile/Avatar";
 import { Stars } from "@/components/reviews/Reviews";
 import { useOnSignedOut } from "@/components/social/session";
@@ -110,7 +110,7 @@ export function ReviewReportsQueue({ status }: { status: ReportStatus }) {
   const onSignedOut = useOnSignedOut();
   const [open, setOpen] = useState<string | null>(null);
   const load = useCallback((cursor?: string) => reviewReports(status, cursor), [status]);
-  const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
+  const { items, setItems, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -162,6 +162,7 @@ export function ReviewReportsQueue({ status }: { status: ReportStatus }) {
         );
       })}
       {hasMore && <li ref={sentinel} aria-hidden />}
+      {moreFailed && <MoreFailed onRetry={more} />}
       {loadingMore && <Skeleton height={72} radius={14} />}
     </ul>
   );

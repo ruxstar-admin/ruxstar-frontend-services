@@ -179,6 +179,7 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
   const [busy, setBusy] = useState<keyof ModulePatch | null>(null);
   const [commission, setCommission] = useState(percentOf(m.commissionBps));
   const [fee, setFee] = useState(rupeesOf(m.platformFee));
+  const [turningOff, setTurningOff] = useState(false);
 
   const bps = Math.round(Number(commission) * 100);
   const commissionValid = commission.trim() !== "" && Number.isFinite(bps) && bps >= 0 && bps <= 10000;
@@ -212,9 +213,30 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
         <Tag tone={m.live ? "success" : "neutral"}>{m.live ? "Live" : "Off"}</Tag>
       </div>
       <div className={styles.group}>
-        <Switch checked={m.live} onChange={(live) => save({ live })} disabled={locked} description="Off hides it everywhere, for everyone.">
+        <Switch
+          checked={m.live}
+          onChange={(live) => (live ? void save({ live }) : setTurningOff(true))}
+          disabled={locked || turningOff}
+          description="Off hides it everywhere, for everyone."
+        >
           Live
         </Switch>
+        {turningOff && (
+          <div className={styles.note}>
+            <span className={styles.whoRow}>
+              <strong>Turn {MODULE_LABEL[m.module]} off?</strong>
+              <span className={styles.muted}>It&apos;s hidden everywhere, for everyone, at once. You can turn it back on any time.</span>
+            </span>
+            <div className={styles.actions}>
+              <Button variant="ghost" disabled={busy === "live"} onClick={() => setTurningOff(false)}>
+                Cancel
+              </Button>
+              <Button variant="danger" loading={busy === "live"} onClick={() => void save({ live: false }).then(() => setTurningOff(false))}>
+                Turn off
+              </Button>
+            </div>
+          </div>
+        )}
         <Switch
           checked={m.signupsOpen}
           onChange={(signupsOpen) => save({ signupsOpen })}

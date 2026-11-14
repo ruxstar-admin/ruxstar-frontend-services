@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Needs, useCan } from "@/components/admin/AdminFrame";
+import { MoreFailed } from "@/components/admin/parts";
 import { Avatar } from "@/components/profile/Avatar";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
@@ -179,7 +180,7 @@ export function ReviewScreen() {
     <Needs need="kyc.view">
       <div className={styles.page}>
         <div className={styles.head}>
-          <h1 className={styles.title}>Verification review</h1>
+          <h1 className={styles.title}>Verification</h1>
           <Segmented label="Show" options={TABS} value={status} onChange={setStatus} />
         </div>
         <Segmented label="Track" options={TRACKS} value={track} onChange={pickTrack} />
@@ -204,7 +205,7 @@ function Queue({ status, track }: { status: ReviewStatus; track: ReviewTrack }) 
   const onSignedOut = useOnSignedOut();
   const [open, setOpen] = useState<string | null>(null);
   const load = useCallback((cursor?: string) => reviewQueue(status, track, cursor), [status, track]);
-  const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
+  const { items, setItems, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -259,6 +260,7 @@ function Queue({ status, track }: { status: ReviewStatus; track: ReviewTrack }) 
             );
           })}
           {hasMore && <li ref={sentinel} aria-hidden />}
+          {moreFailed && <MoreFailed onRetry={more} />}
           {loadingMore && <Skeleton height={72} radius={14} />}
         </ul>
       )}

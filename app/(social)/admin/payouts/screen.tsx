@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Needs, useCan } from "@/components/admin/AdminFrame";
-import { Failed, Fact, ReasonForm, Rows, styles } from "@/components/admin/parts";
+import { Failed, Fact, MoreFailed, ReasonForm, Rows, styles } from "@/components/admin/parts";
 import { Avatar } from "@/components/profile/Avatar";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
@@ -82,7 +82,7 @@ function Payouts({ status }: { status: PayoutStatus }) {
   const onSignedOut = useOnSignedOut();
   const [open, setOpen] = useState<string | null>(null);
   const load = useCallback((cursor?: string) => listPayouts(status, cursor), [status]);
-  const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
+  const { items, setItems, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -137,6 +137,7 @@ function Payouts({ status }: { status: PayoutStatus }) {
         );
       })}
       {hasMore && <li ref={sentinel} aria-hidden />}
+      {moreFailed && <MoreFailed onRetry={more} />}
       {loadingMore && <Skeleton height={72} radius={14} />}
     </ul>
   );
@@ -208,7 +209,7 @@ function HeldList({ orderNo }: { orderNo: number | undefined }) {
   const onSignedOut = useOnSignedOut();
   const [open, setOpen] = useState<string | null>(null);
   const load = useCallback((cursor?: string) => heldOrders(orderNo, cursor), [orderNo]);
-  const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
+  const { items, setItems, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -256,6 +257,7 @@ function HeldList({ orderNo }: { orderNo: number | undefined }) {
         );
       })}
       {hasMore && <li ref={sentinel} aria-hidden />}
+      {moreFailed && <MoreFailed onRetry={more} />}
       {loadingMore && <Skeleton height={72} radius={14} />}
     </ul>
   );

@@ -32,6 +32,7 @@ function Actions({ user, onChanged }: { user: UserDetail; onChanged: (u: UserDet
   const access = useAccess();
   const canManage = useCan("users.manage");
   const [suspending, setSuspending] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const [busy, setBusy] = useState<Busy>(null);
   const keys = useRef({ suspend: crypto.randomUUID(), unlock: crypto.randomUUID(), signOut: crypto.randomUUID() });
 
@@ -55,6 +56,7 @@ function Actions({ user, onChanged }: { user: UserDetail; onChanged: (u: UserDet
       const done = kind === "suspend" ? await suspendUser(user.id, reason, k) : kind === "unlock" ? await unlockUser(user.id, k) : await signOutUser(user.id, k);
       keys.current[kind] = crypto.randomUUID();
       setSuspending(false);
+      setSigningOut(false);
       onChanged(done, kind === "suspend" ? "Account put on hold." : kind === "unlock" ? "Account unlocked." : "Signed out of every device.");
     } catch (err) {
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
@@ -64,6 +66,27 @@ function Actions({ user, onChanged }: { user: UserDetail; onChanged: (u: UserDet
   }
 
   const locked = user.status === "locked" || !!user.signInLockedUntil;
+
+  if (signingOut) {
+    return (
+      <div className={styles.note}>
+        <span className={styles.whoRow}>
+          <strong>Sign out everywhere?</strong>
+          <span className={styles.muted}>
+            {user.name || "This person"} is signed out of {user.sessions === 1 ? "their device" : `all ${user.sessions} devices`} and has to sign in again.
+          </span>
+        </span>
+        <div className={styles.actions}>
+          <Button variant="ghost" disabled={busy === "signOut"} onClick={() => setSigningOut(false)}>
+            Cancel
+          </Button>
+          <Button loading={busy === "signOut"} onClick={() => void run("signOut")}>
+            Sign out everywhere
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (suspending) {
     return (
@@ -80,7 +103,7 @@ function Actions({ user, onChanged }: { user: UserDetail; onChanged: (u: UserDet
 
   return (
     <div className={styles.actions}>
-      <Button variant="secondary" onClick={() => run("signOut")} loading={busy === "signOut"} disabled={!!busy || user.sessions === 0}>
+      <Button variant="secondary" onClick={() => setSigningOut(true)} disabled={!!busy || user.sessions === 0}>
         Sign out everywhere
       </Button>
       {locked && (

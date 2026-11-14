@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useCan } from "@/components/admin/AdminFrame";
-import { Failed, Fact, Rows, date, styles } from "@/components/admin/parts";
+import { Failed, Fact, MoreFailed, Rows, date, styles } from "@/components/admin/parts";
 import { Avatar } from "@/components/profile/Avatar";
 import { ProblemCard } from "@/components/shop/OrderParts";
 import { useOnSignedOut } from "@/components/social/session";
@@ -137,7 +137,7 @@ export function OrderProblemsQueue({ status }: { status: ProblemStatus }) {
   const onSignedOut = useOnSignedOut();
   const [open, setOpen] = useState<string | null>(null);
   const load = useCallback((cursor?: string) => orderProblems(status, cursor), [status]);
-  const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
+  const { items, setItems, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages(load);
   const sentinel = useNearEnd(more, hasMore && !error);
 
   useEffect(() => {
@@ -186,6 +186,7 @@ export function OrderProblemsQueue({ status }: { status: ProblemStatus }) {
         );
       })}
       {hasMore && <li ref={sentinel} aria-hidden />}
+      {moreFailed && <MoreFailed onRetry={more} />}
       {loadingMore && <Skeleton height={72} radius={14} />}
     </ul>
   );

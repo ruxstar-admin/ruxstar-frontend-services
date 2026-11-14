@@ -59,7 +59,7 @@ function Manage({ t, onChanged }: { t: StaffTicketDetail; onChanged: (next: Staf
     let live = true;
     supportAgents().then(
       (list) => live && setAgents(list),
-      () => live && setAgents([]),
+      () => undefined,
     );
     return () => {
       live = false;
