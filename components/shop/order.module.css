@@ -58,6 +58,40 @@
   border-radius: var(--radius-card);
 }
 
+.terms {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-4);
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.terms > li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font: var(--type-small);
+  line-height: 20px;
+}
+
+.terms > li > span:last-child {
+  padding-top: 6px;
+}
+
+.termIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--accent-soft);
+  background: var(--raised);
+  border-radius: 10px;
+}
+
 .news {
   display: grid;
   gap: var(--space-1);

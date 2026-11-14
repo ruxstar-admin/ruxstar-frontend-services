@@ -15495,6 +15495,85 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/pod/terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Payment conditions for print orders and print shops
+         * @description What customers see before paying and vendors before opening a shop. The commission and fees are Ruxstar's current settings.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Ruxstar's commission on the items, in basis points. 1000 = 10% */
+                                commissionBps: number;
+                                /** @description Amount in paise. What the customer pays Ruxstar on each order, on top of the price. */
+                                platformFee: number;
+                                /** @description A paid order the shop hasn't accepted in this long is cancelled and fully refunded */
+                                acceptHours: number;
+                                /** @description After delivery, the customer has this long to report a problem; the shop's share waits for it */
+                                reportHours: number;
+                                /** @description Days a delivered order's print files are kept */
+                                filesDays: number;
+                                /** @description Days a bank can take to show a refund */
+                                refundDays: number;
+                                /** @description Amount in paise. Taken from each withdrawal. */
+                                payoutFee: number;
+                                /** @description Amount in paise. The least a vendor can withdraw. */
+                                minPayout: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/employment/{id}/orders": {
         parameters: {
             query?: never;

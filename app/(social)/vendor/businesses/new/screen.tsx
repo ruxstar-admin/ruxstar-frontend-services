@@ -4,11 +4,13 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Button, Icon } from "@/components/ui";
 import { useOnSignedOut } from "@/components/social/session";
+import { PaymentTerms } from "@/components/shop/PaymentTerms";
 import { BusinessFields } from "@/components/vendor/BusinessFields";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { getPodTerms, vendorTerms } from "@/lib/api/terms";
 import {
   checkProfile,
   createBusiness,
@@ -42,6 +44,8 @@ export function CreateBusinessScreen() {
   const [saving, setSaving] = useState(false);
   // One key per attempt to create, so a retry after a dropped connection can't make two.
   const attempt = useRef(newIdempotencyKey());
+  const terms = useLoad(getPodTerms);
+  const [agreed, setAgreed] = useState(false);
 
   if (catalog.error && !catalog.data) return <Failed error={catalog.error} onRetry={catalog.reload} />;
   if (!catalog.data) return <Loading />;
@@ -91,6 +95,7 @@ export function CreateBusinessScreen() {
   };
 
   const step = !category ? "category" : !typeInfo ? "type" : "profile";
+  const needsTerms = module === "pod";
 
   return (
     <div className={styles.page}>
@@ -173,13 +178,36 @@ export function CreateBusinessScreen() {
             detailHint={typeInfo.detailHint}
           />
           <p className={styles.faint}>{`You add photos${module === "pod" ? ", products and prices" : ""} next, then publish it.`}</p>
+          {needsTerms && (
+            <section className={styles.form}>
+              <h2 className={styles.section}>Payment terms</h2>
+              {terms.data ? (
+                <>
+                  <PaymentTerms terms={vendorTerms(terms.data)} />
+                  <label className={styles.agree}>
+                    <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+                    <span>I agree to these payment terms</span>
+                  </label>
+                </>
+              ) : terms.error ? (
+                <div className={styles.actions}>
+                  <p className={styles.error}>Could not load the payment terms. Check your connection.</p>
+                  <Button variant="secondary" onClick={terms.reload}>
+                    Try again
+                  </Button>
+                </div>
+              ) : (
+                <p className={styles.faint}>Loading the payment terms…</p>
+              )}
+            </section>
+          )}
           {failure && (
             <p className={styles.error} role="alert">
               {failure}
             </p>
           )}
           <div>
-            <Button type="submit" size="lg" loading={saving}>
+            <Button type="submit" size="lg" loading={saving} disabled={needsTerms && (!terms.data || !agreed)}>
               Create business
             </Button>
           </div>

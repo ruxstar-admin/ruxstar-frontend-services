@@ -8,6 +8,8 @@ import { useOnSignedOut } from "@/components/social/session";
 import { CheckoutCoupons } from "@/components/coupons/CheckoutCoupons";
 import { DropLocation } from "@/components/shop/DropLocation";
 import { FileItem, PriceList } from "@/components/shop/OrderParts";
+import { PaymentTerms } from "@/components/shop/PaymentTerms";
+import { customerTerms, getPodTerms, type PodTerms } from "@/lib/api/terms";
 import { formError, getMe } from "@/lib/api/account";
 import { newIdempotencyKey } from "@/lib/api/client";
 import {
@@ -115,6 +117,17 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
   // Set on the first Pay with something missing; from then on the missing fields show in red.
   const [checked, setChecked] = useState(false);
   const attempt = useRef(newIdempotencyKey());
+  const [terms, setTerms] = useState<PodTerms | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    getPodTerms()
+      .then((t) => live && setTerms(t))
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, []);
 
   const qty = Number(quantity) || 0;
   const fileIds = files.map((f) => f.id);
@@ -436,6 +449,14 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
           )}
         </div>
       </section>
+
+      {terms && (
+        <section className={styles.section}>
+          <h2 className={styles.overline}>Before you pay</h2>
+          <PaymentTerms terms={customerTerms(terms)} />
+          <p className={styles.faint}>By paying, you agree to these.</p>
+        </section>
+      )}
 
       {(error || (checked && !filled)) && (
         <p className={styles.error} role="alert">

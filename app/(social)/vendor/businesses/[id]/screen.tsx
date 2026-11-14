@@ -240,6 +240,9 @@ function Details({
             <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team" subtitle="Invite people to help with orders, the shop and posts" />
           )}
           {!team && b.pod && b.status === "live" && <Tile href={`/vendor/businesses/${id}/reviews`} icon="star" title="Reviews" subtitle={ratingLine(b.rating)} />}
+          {!team && b.pod && (
+            <Tile href={`/vendor/businesses/${id}/terms`} icon="receipt" title="Payment terms" subtitle="Commission, fees and when you're paid" />
+          )}
           {!team && <Tile href={`/vendor/businesses/${id}/activity`} icon="clock" title="Activity" subtitle="Who did what: you, your team, customers and Ruxstar" />}
         </ul>
       )}
