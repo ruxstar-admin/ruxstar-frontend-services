@@ -841,65 +841,224 @@ a.row:hover .rowTitle {
 
 /* Payments. */
 
-.method {
+.balance {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.balance > * {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid;
+  border-radius: var(--radius-card);
+  color: var(--ink);
+  text-align: left;
+}
+
+.balance [data-tone="success"] {
+  background: rgba(52, 199, 89, 0.08);
+  border-color: rgba(52, 199, 89, 0.35);
+  --tone: var(--success);
+}
+
+.balance [data-tone="warning"] {
+  background: rgba(255, 176, 32, 0.08);
+  border-color: rgba(255, 176, 32, 0.35);
+  --tone: var(--warning);
+}
+
+.balance [data-tone="accent"] {
+  background: rgba(180, 92, 242, 0.08);
+  border-color: rgba(180, 92, 242, 0.35);
+  --tone: var(--accent-soft);
+}
+
+.balance button {
+  cursor: pointer;
+}
+
+.balance button:hover,
+.balance button[aria-expanded="true"] {
+  border-color: var(--tone);
+}
+
+.balanceLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: 600 12px/16px var(--font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tone);
+}
+
+.balanceLabel > span {
+  flex: 1;
+}
+
+.balanceBig {
+  font: 700 36px/44px var(--font);
+  font-variant-numeric: tabular-nums;
+}
+
+.balanceValue {
+  font: 700 22px/28px var(--font);
+  font-variant-numeric: tabular-nums;
+}
+
+.methodRow {
   display: flex;
   align-items: center;
   gap: var(--space-3);
 }
 
-.method strong {
+.methodRow > .identity {
   flex: 1;
 }
 
-.payouts {
+.payIcon {
   display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  background: var(--raised);
+  color: var(--ink);
+}
+
+.payIcon[data-kind="paid"] {
+  background: rgba(255, 176, 32, 0.14);
+  color: var(--warning);
+}
+
+.payIcon:is([data-kind="available"], [data-kind="returned"]) {
+  background: rgba(52, 199, 89, 0.14);
+  color: var(--success);
+}
+
+.payIcon[data-kind="refund"] {
+  background: rgba(255, 69, 58, 0.14);
+  color: var(--danger);
+}
+
+.payIcon[data-kind="delivery"] {
+  background: rgba(158, 156, 176, 0.14);
+  color: var(--ink-2);
+}
+
+.payIcon[data-kind="withdrawal"] {
+  background: rgba(180, 92, 242, 0.16);
+  color: var(--accent-soft);
+}
+
+.payRows {
+  display: grid;
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.payouts li {
+.payRows > li {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.payRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  color: var(--ink);
+  text-align: left;
+}
+
+button.payRow {
+  cursor: pointer;
+}
+
+button.payRow:hover {
+  background: var(--raised);
+  border-radius: var(--radius-card);
+}
+
+.payRow > .identity {
+  flex: 1;
+}
+
+.payAmount {
+  font: 700 15px/20px var(--font);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.payAmount:is([data-kind="available"], [data-kind="returned"]) {
+  color: var(--success);
+}
+
+.payAmount[data-kind="refund"] {
+  color: var(--danger);
+}
+
+.payAmount[data-kind="delivery"] {
+  color: var(--ink-2);
+}
+
+.payAmount[data-kind="withdrawal"] {
+  color: var(--accent-soft);
+}
+
+.payDetails {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.payFacts {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--bg);
+}
+
+.payFacts > div {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  padding: var(--space-3) 0;
 }
 
-.payouts li + li {
-  border-top: 1px solid var(--line);
+.payFacts dt {
+  font: var(--type-caption);
+  color: var(--ink-2);
 }
 
-.statement li {
-  padding: 0;
-}
-
-.statement li > :is(a, div) {
+.payFacts dd {
   display: flex;
-  flex: 1;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  margin: 0;
   min-width: 0;
-  padding: var(--space-3) 0;
-  color: var(--ink);
-  text-decoration: none;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
-.statement a:hover > .identity > :first-child {
-  text-decoration: underline;
-}
+@media (max-width: 720px) {
+  .balance {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
 
-.statement li > :is(a, div) > .identity {
-  flex: 1;
-}
-
-.statement [data-kind="available"] > :is(svg, strong),
-.statement [data-kind="returned"] > :is(svg, strong) {
-  color: var(--success);
-}
-
-.statement [data-kind="refund"] > :is(svg, strong) {
-  color: var(--danger);
+  .balance > :first-child {
+    grid-column: 1 / -1;
+  }
 }
 
 /* Posts. */

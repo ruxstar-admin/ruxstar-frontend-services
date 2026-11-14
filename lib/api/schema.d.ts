@@ -8429,9 +8429,9 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description paid: an order's share arrived, pending until its hold ends. available: the hold ended and it can be withdrawn. refund: money went back to the customer out of your share. withdrawal: you withdrew it. returned: a withdrawal failed and came back. */
-                                kind: "paid" | "available" | "refund" | "withdrawal" | "returned";
-                                /** @description Paise; negative for refunds and withdrawals */
+                                /** @description paid: an order's share arrived, pending until its hold ends. available: the hold ended and it can be withdrawn. refund: money went back to the customer out of your share. delivery: a Ruxstar delivery partner's pay for the order, out of your share. withdrawal: you withdrew it. returned: a withdrawal failed and came back. */
+                                kind: "paid" | "available" | "refund" | "delivery" | "withdrawal" | "returned";
+                                /** @description Paise; negative for refunds, delivery pay and withdrawals */
                                 amount: number;
                                 /** Format: date-time */
                                 at: string;
@@ -8446,12 +8446,31 @@ export interface paths {
                                         id: string;
                                         name: string;
                                     } | null;
+                                    /** @description What was ordered, for example T-Shirts */
+                                    label: string;
+                                    /** @description The name it was delivered to */
+                                    customer: string;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    paymentId: string | null;
+                                    paidAt: string | null;
+                                } | null;
+                                /** @description Set on refund lines */
+                                refund: {
+                                    /** @description The gateway's refund ID */
+                                    id: string;
+                                    reason: string | null;
+                                    by: "customer" | "vendor" | "staff" | "system";
                                 } | null;
                                 /** @description Set on withdrawal lines */
                                 payout: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     to: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    status: "pending" | "paid" | "failed";
+                                    utr: string | null;
                                 } | null;
                             }[];
                             meta: {
