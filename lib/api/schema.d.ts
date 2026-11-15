@@ -49952,6 +49952,8 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
+                                    /** @description `print` is a print order; `shop` is a local shop's order */
+                                    kind?: "print" | "shop";
                                     /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                     carrier: "team" | "partner";
                                     /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -49980,6 +49982,8 @@ export interface paths {
                                     };
                                     /** @description What is being carried, for example Business cards × 200 */
                                     item: string;
+                                    /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                    itemCount?: number;
                                     distanceKm: number | null;
                                     /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                     dropNear: {
@@ -50110,6 +50114,8 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
+                                    /** @description `print` is a print order; `shop` is a local shop's order */
+                                    kind?: "print" | "shop";
                                     /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                     carrier: "team" | "partner";
                                     /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -50138,6 +50144,8 @@ export interface paths {
                                     };
                                     /** @description What is being carried, for example Business cards × 200 */
                                     item: string;
+                                    /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                    itemCount?: number;
                                     distanceKm: number | null;
                                     /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                     dropNear: {
@@ -50239,6 +50247,8 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
+                                /** @description `print` is a print order; `shop` is a local shop's order */
+                                kind?: "print" | "shop";
                                 /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                 carrier: "team" | "partner";
                                 /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -50267,6 +50277,8 @@ export interface paths {
                                 };
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
+                                /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                itemCount?: number;
                                 distanceKm: number | null;
                                 /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                 dropNear: {
@@ -50361,6 +50373,8 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
+                                /** @description `print` is a print order; `shop` is a local shop's order */
+                                kind?: "print" | "shop";
                                 /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                 carrier: "team" | "partner";
                                 /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -50389,6 +50403,8 @@ export interface paths {
                                 };
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
+                                /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                itemCount?: number;
                                 distanceKm: number | null;
                                 /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                 dropNear: {
@@ -50481,6 +50497,8 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
+                                /** @description `print` is a print order; `shop` is a local shop's order */
+                                kind?: "print" | "shop";
                                 /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                 carrier: "team" | "partner";
                                 /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -50509,6 +50527,8 @@ export interface paths {
                                 };
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
+                                /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                itemCount?: number;
                                 distanceKm: number | null;
                                 /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                 dropNear: {
@@ -50605,6 +50625,8 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
+                                /** @description `print` is a print order; `shop` is a local shop's order */
+                                kind?: "print" | "shop";
                                 /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                 carrier: "team" | "partner";
                                 /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -50633,6 +50655,8 @@ export interface paths {
                                 };
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
+                                /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                itemCount?: number;
                                 distanceKm: number | null;
                                 /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                 dropNear: {
@@ -50727,6 +50751,8 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
+                                /** @description `print` is a print order; `shop` is a local shop's order */
+                                kind?: "print" | "shop";
                                 /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                 carrier: "team" | "partner";
                                 /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -50755,6 +50781,8 @@ export interface paths {
                                 };
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
+                                /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                itemCount?: number;
                                 distanceKm: number | null;
                                 /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                 dropNear: {
@@ -50849,6 +50877,8 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
+                                /** @description `print` is a print order; `shop` is a local shop's order */
+                                kind?: "print" | "shop";
                                 /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                 carrier: "team" | "partner";
                                 /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -50877,6 +50907,8 @@ export interface paths {
                                 };
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
+                                /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                itemCount?: number;
                                 distanceKm: number | null;
                                 /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                 dropNear: {
@@ -50970,6 +51002,8 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
+                                /** @description `print` is a print order; `shop` is a local shop's order */
+                                kind?: "print" | "shop";
                                 /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                 carrier: "team" | "partner";
                                 /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -50998,6 +51032,8 @@ export interface paths {
                                 };
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
+                                /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                itemCount?: number;
                                 distanceKm: number | null;
                                 /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                 dropNear: {
@@ -51100,6 +51136,8 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
+                                /** @description `print` is a print order; `shop` is a local shop's order */
+                                kind?: "print" | "shop";
                                 /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                 carrier: "team" | "partner";
                                 /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -51128,6 +51166,8 @@ export interface paths {
                                 };
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
+                                /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                itemCount?: number;
                                 distanceKm: number | null;
                                 /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                 dropNear: {
@@ -51229,6 +51269,8 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
+                                /** @description `print` is a print order; `shop` is a local shop's order */
+                                kind?: "print" | "shop";
                                 /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                 carrier: "team" | "partner";
                                 /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
@@ -51257,6 +51299,8 @@ export interface paths {
                                 };
                                 /** @description What is being carried, for example Business cards × 200 */
                                 item: string;
+                                /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                itemCount?: number;
                                 distanceKm: number | null;
                                 /** @description Roughly where the drop is, to about 1 km, for the map before the job is yours */
                                 dropNear: {
@@ -51364,6 +51408,10 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     jobId: string;
                                     orderNo: number;
+                                    /** @description `print` is a print order; `shop` is a local shop's order */
+                                    kind?: "print" | "shop";
+                                    /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                    itemCount?: number;
                                     /** @description `team` is someone on the shop's team; `partner` is a Ruxstar delivery partner, paid out of the shop's share */
                                     carrier: "team" | "partner";
                                     shop: string;
@@ -51377,6 +51425,10 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     orderId: string;
                                     orderNo: number;
+                                    /** @description `print` is a print order; `shop` is a local shop's order */
+                                    kind?: "print" | "shop";
+                                    /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                    itemCount?: number;
                                     /** @description Amount in paise */
                                     amount: number;
                                     /** Format: date-time */
@@ -51571,6 +51623,10 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
+                                    /** @description `print` is a print order; `shop` is a local shop's order */
+                                    kind?: "print" | "shop";
+                                    /** @description Pieces to carry: a print order's quantity, or every unit across a shop order's lines. Missing when not known */
+                                    itemCount?: number;
                                 } | null;
                                 /** @description Set on withdrawal lines */
                                 payout: {
