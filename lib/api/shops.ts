@@ -28,9 +28,9 @@ export const MODULE_LABEL: Record<BusinessModule, string> = {
   pod: "Print on demand",
   events: "Events",
   coaching: "Coaching",
-  stays: "PG & hostels",
-  turf: "Sports",
-  shop: "Shops",
+  stays: "Stays",
+  turf: "Sports & turf",
+  shop: "Local shops",
 };
 
 let catalog: Promise<Pick<Catalog, "categories" | "podProducts">> | null = null;

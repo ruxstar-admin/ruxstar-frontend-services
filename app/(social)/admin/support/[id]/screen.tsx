@@ -416,6 +416,7 @@ function Ticket({ t, onChanged, onReload }: { t: StaffTicketDetail; onChanged: (
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState(false);
   const [reopening, setReopening] = useState(false);
+  const [resolving, setResolving] = useState(false);
   const [full, setFull] = useState(false);
   const [mode, setMode] = useState<Mode>("reply");
   const field = useRef<HTMLTextAreaElement>(null);
@@ -557,9 +558,31 @@ function Ticket({ t, onChanged, onReload }: { t: StaffTicketDetail; onChanged: (
               Ticket status
             </h2>
             {canManage ? (
-              <Segmented label="Ticket status" options={STATUSES} value={status} onChange={(next) => next !== t.status && void save({ status: next })} />
+              <Segmented
+                label="Ticket status"
+                options={STATUSES}
+                value={status}
+                onChange={(next) => {
+                  if (next === status) return;
+                  if (next === "resolved") setResolving(true);
+                  else void save({ status: next });
+                }}
+              />
             ) : (
               <p className={styles.muted}>{DESK_STATUS[t.status].label}</p>
+            )}
+            {canManage && resolving && status !== "resolved" && (
+              <div role="group" aria-label="Resolve this ticket?">
+                <p>{`Resolve this ticket? ${requester.name || "They"} will be told it is resolved. They can reply to reopen it for 7 days.`}</p>
+                <div className={styles.tags}>
+                  <Button loading={busy} onClick={() => void save({ status: "resolved" }).then(() => setResolving(false))}>
+                    Resolve
+                  </Button>
+                  <Button variant="ghost" onClick={() => setResolving(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
             )}
             {t.status === "closed" && <p className={styles.muted}>Closed: the customer can no longer reply to reopen it.</p>}
           </section>
