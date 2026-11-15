@@ -1,11 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Button, ButtonLink, Icon } from "@/components/ui";
+import { Button, Icon, type IconName } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
+import { FilterRow, FilterSelect } from "@/components/shop/FilterSelect";
 import { ShopCard, ShopCardSkeleton } from "@/components/shop/ShopCard";
 import { formError } from "@/lib/api/account";
 import { discoverCatalog, MODULE_LABEL, shops, type BusinessModule, type Category, type PodProduct, type ShopFilters } from "@/lib/api/shops";
@@ -54,6 +56,15 @@ const PropertyResults = dynamic(() => import("@/components/stays/PropertyResults
 });
 
 const StoreResults = dynamic(() => import("@/components/store/StoreResults"), {
+  loading: () => (
+    <div className={styles.grid} aria-busy>
+      <ShopCardSkeleton />
+      <ShopCardSkeleton />
+    </div>
+  ),
+});
+
+const AllBusinesses = dynamic(() => import("@/components/discover/AllBusinesses"), {
   loading: () => (
     <div className={styles.grid} aria-busy>
       <ShopCardSkeleton />
@@ -118,14 +129,37 @@ function Results({ filters }: { filters: ShopFilters }) {
   );
 }
 
-/** Businesses customers can order from: a category first, then what it offers. Same as the app's Discover tab. */
+function Shortcut({ href, icon, label, spoken }: { href: string; icon: IconName; label: string; spoken: string }) {
+  return (
+    <Link href={href} className={styles.shortcut} aria-label={spoken}>
+      <span className={styles.shortcutIcon}>
+        <Icon name={icon} size={20} />
+      </span>
+      <span className={styles.shortcutLabel}>{label}</span>
+    </Link>
+  );
+}
+
+const SEARCH_HINT: Partial<Record<BusinessModule, { placeholder: string; label: string }>> = {
+  pod: { placeholder: "Shop, what they print, or a city", label: "Search print shops" },
+  events: { placeholder: "Event, organiser or city", label: "Search events" },
+  coaching: { placeholder: "Course or institute", label: "Search courses" },
+  turf: { placeholder: "Ground or business", label: "Search grounds" },
+  stays: { placeholder: "PG, hostel or business", label: "Search PGs and hostels" },
+  shop: { placeholder: "Shop name", label: "Search shops" },
+};
+
+/** Businesses customers can order from: every kind at once, until they pick a type and then what it offers. Same as the app's Discover tab. */
 export function DiscoverScreen({ initialCategory = null }: { initialCategory?: BusinessModule | null }) {
+  const onSignedOut = useOnSignedOut();
   const [text, setText] = useState("");
   const [q, setQ] = useState("");
   const [category, setCategory] = useState<BusinessModule | null>(initialCategory);
-  const [product, setProduct] = useState<PodProduct | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [product, setProduct] = useState<PodProduct | "">("");
+  const [categories, setCategories] = useState<Category[] | null>(null);
   const [products, setProducts] = useState<{ id: PodProduct; label: string }[]>([]);
+  const [catalogError, setCatalogError] = useState<unknown>(null);
+  const [catalogTry, setCatalogTry] = useState(0);
 
   useEffect(() => {
     const t = setTimeout(() => setQ(text.trim()), DEBOUNCE_MS);
@@ -133,79 +167,51 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
   }, [text]);
 
   useEffect(() => {
-    discoverCatalog().then((c) => {
-      setCategories(c.categories);
-      setProducts(c.podProducts);
-    }, () => undefined);
-  }, []);
+    let live = true;
+    discoverCatalog().then(
+      (c) => {
+        if (!live) return;
+        setCategories(c.categories);
+        setProducts(c.podProducts);
+        setCatalogError(null);
+      },
+      (err) => {
+        if (live && !onSignedOut(err)) setCatalogError(err);
+      },
+    );
+    return () => {
+      live = false;
+    };
+  }, [catalogTry, onSignedOut]);
 
-  const picked = categories.find((c) => c.module === category);
+  const known = categories ?? [];
+  const isLive = (module: BusinessModule) => known.some((c) => c.module === module && c.live);
+  const browsable = known.filter((c) => c.live && OPEN_ON_WEB.includes(c.module)).map((c) => c.module);
+  const types = categories ? known.map((c) => c.module) : category ? [category] : [];
+  const picked = known.find((c) => c.module === category);
   const comingSoon = picked ? !picked.live || !OPEN_ON_WEB.includes(picked.module) : false;
-  const printOpen = categories.some((c) => c.module === "pod" && c.live) && category !== "pod";
-  const eventsOpen = categories.some((c) => c.module === "events" && c.live);
-  const coachingOpen = categories.some((c) => c.module === "coaching" && c.live);
-  const turfOpen = categories.some((c) => c.module === "turf" && c.live);
-  const showEvents = category === "events" && !comingSoon;
-  const showCourses = category === "coaching" && !comingSoon;
-  const staysOpen = categories.some((c) => c.module === "stays" && c.live);
-  const showGrounds = category === "turf" && !comingSoon;
-  const showStays = category === "stays" && !comingSoon;
-  const showStores = category === "shop" && !comingSoon;
+  const printOpen = isLive("pod") && category !== "pod";
+  const shown = comingSoon ? null : category;
+  const hint = (shown && SEARCH_HINT[shown]) || { placeholder: "Search all businesses", label: "Search businesses" };
   const filters: ShopFilters = { ...(q ? { q } : {}), ...(category === "pod" && product ? { product } : {}) };
 
   const pickCategory = (next: BusinessModule | null) => {
     setCategory(next);
-    setProduct(null);
+    setProduct("");
   };
 
   return (
     <div className={styles.page}>
-      <div className={styles.headRow}>
-        <div className={styles.head}>
-          <h1 className={styles.title}>Discover</h1>
-          <p className={styles.subtitle}>Businesses on Ruxstar</p>
-        </div>
-        <div className={styles.headActions}>
-          {eventsOpen && (
-            <ButtonLink href="/tickets" variant="secondary">
-              <Icon name="ticket" size={18} />
-              Your tickets
-            </ButtonLink>
-          )}
-          {coachingOpen && (
-            <ButtonLink href="/classes" variant="secondary">
-              <Icon name="book" size={18} />
-              Your classes
-            </ButtonLink>
-          )}
-          {turfOpen && (
-            <ButtonLink href="/bookings" variant="secondary">
-              <Icon name="ball" size={18} />
-              Your bookings
-            </ButtonLink>
-          )}
-          {staysOpen && (
-            <ButtonLink href="/reservations" variant="secondary">
-              <Icon name="home" size={18} />
-              Your stays
-            </ButtonLink>
-          )}
-          {showStores && (
-            <ButtonLink href="/cart" variant="secondary">
-              <Icon name="bag" size={18} />
-              Cart
-            </ButtonLink>
-          )}
-          <ButtonLink href={showStores ? "/orders?tab=shops" : "/orders"} variant="secondary">
-            <Icon name="receipt" size={18} />
-            Your orders
-          </ButtonLink>
-          <ButtonLink href="/payments" variant="secondary">
-            <Icon name="wallet" size={18} />
-            Payments
-          </ButtonLink>
-        </div>
-      </div>
+      <h1 className="sr-only">Discover</h1>
+      <nav className={styles.shortcuts} aria-label="Your bookings and orders">
+        {isLive("events") && <Shortcut href="/tickets" icon="ticket" label="Tickets" spoken="Your tickets" />}
+        {isLive("coaching") && <Shortcut href="/classes" icon="book" label="Classes" spoken="Your classes" />}
+        {isLive("turf") && <Shortcut href="/bookings" icon="ball" label="Grounds" spoken="Your ground bookings" />}
+        {isLive("stays") && <Shortcut href="/reservations" icon="home" label="Stays" spoken="Your stays" />}
+        {shown === "shop" && <Shortcut href="/cart" icon="bag" label="Cart" spoken="Your cart" />}
+        <Shortcut href={shown === "shop" ? "/orders?tab=shops" : "/orders"} icon="receipt" label="Orders" spoken="Your orders" />
+        <Shortcut href="/payments" icon="wallet" label="Payments" spoken="Your payments" />
+      </nav>
       <label className={social.searchBox}>
         <Icon name="search" size={20} />
         <input
@@ -213,60 +219,33 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
           type="search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={
-            showEvents
-              ? "Event, organiser or city"
-              : showCourses
-                ? "Course or institute"
-                : showGrounds
-                  ? "Ground or business"
-                  : showStays
-                    ? "PG, hostel or business"
-                    : showStores
-                      ? "Shop name"
-                      : "Shop, what they print, or a city"
-          }
-          aria-label={
-            showEvents
-              ? "Search events"
-              : showCourses
-                ? "Search courses"
-                : showGrounds
-                  ? "Search grounds"
-                  : showStays
-                    ? "Search PGs and hostels"
-                    : showStores
-                      ? "Search shops"
-                      : "Search businesses"
-          }
+          placeholder={hint.placeholder}
+          aria-label={hint.label}
           autoComplete="off"
           spellCheck={false}
         />
       </label>
-      <div className={styles.filters}>
-        <div className={styles.chips} role="group" aria-label="Category">
-          <button type="button" className={styles.chip} aria-pressed={category === null} onClick={() => pickCategory(null)}>
-            All
-          </button>
-          {categories.map((c) => (
-            <button key={c.module} type="button" className={styles.chip} aria-pressed={category === c.module} onClick={() => pickCategory(c.module)}>
-              {MODULE_LABEL[c.module]}
-            </button>
-          ))}
-        </div>
-        {category === "pod" && !comingSoon && (
-          <div className={styles.chips} role="group" aria-label="What they print">
-            <button type="button" className={styles.subChip} aria-pressed={product === null} onClick={() => setProduct(null)}>
-              All print
-            </button>
-            {products.map((p) => (
-              <button key={p.id} type="button" className={styles.subChip} aria-pressed={product === p.id} onClick={() => setProduct(p.id)}>
-                {p.label}
-              </button>
-            ))}
-          </div>
+      <FilterRow label="Filters">
+        <FilterSelect
+          label="Type of business"
+          value={category ?? ""}
+          onChange={(next) => pickCategory(next || null)}
+          options={[{ value: "", label: "All businesses" }, ...types.map((m) => ({ value: m, label: MODULE_LABEL[m] }))]}
+        />
+        {shown === "pod" && (
+          <FilterSelect
+            label="What they print"
+            value={product}
+            onChange={setProduct}
+            options={[{ value: "", label: "All print" }, ...products.map((p) => ({ value: p.id, label: p.label }))]}
+          />
         )}
-      </div>
+        {category !== null && (
+          <button type="button" className={`${styles.mutedLink} ${styles.clear}`} aria-label="Clear type of business" onClick={() => pickCategory(null)}>
+            Clear
+          </button>
+        )}
+      </FilterRow>
       {comingSoon && picked ? (
         <Empty title={`${MODULE_LABEL[picked.module]} coming soon`}>
           <p>
@@ -278,18 +257,39 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
             </Button>
           )}
         </Empty>
-      ) : showEvents ? (
+      ) : shown === "events" ? (
         <EventResults q={q} />
-      ) : showCourses ? (
+      ) : shown === "coaching" ? (
         <CourseResults q={q} />
-      ) : showGrounds ? (
+      ) : shown === "turf" ? (
         <GroundResults q={q} />
-      ) : showStays ? (
+      ) : shown === "stays" ? (
         <PropertyResults q={q} />
-      ) : showStores ? (
+      ) : shown === "shop" ? (
         <StoreResults q={q} />
+      ) : shown === "pod" ? (
+        <Results key={`${q}|${product}`} filters={filters} />
+      ) : categories ? (
+        <AllBusinesses key={q} modules={browsable} q={q} onPick={pickCategory} />
+      ) : catalogError ? (
+        <div className={social.failed} role="alert">
+          <p>{formError(catalogError).message}</p>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setCatalogError(null);
+              setCatalogTry((n) => n + 1);
+            }}
+          >
+            Try again
+          </Button>
+        </div>
       ) : (
-        <Results key={`${q}|${category ?? ""}|${product ?? ""}`} filters={filters} />
+        <div className={styles.grid} aria-busy>
+          <ShopCardSkeleton />
+          <ShopCardSkeleton />
+          <ShopCardSkeleton />
+        </div>
       )}
     </div>
   );

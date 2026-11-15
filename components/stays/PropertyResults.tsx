@@ -5,6 +5,7 @@ import { Button, Icon } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
+import { FilterRow, FilterSelect } from "@/components/shop/FilterSelect";
 import { ShopCardSkeleton } from "@/components/shop/ShopCard";
 import { formError } from "@/lib/api/account";
 import { listFacilities, listProperties, type Facility, type Occupant, type PropertyFilters, type RoomKind, type StayKind } from "@/lib/api/stays";
@@ -108,7 +109,7 @@ function Chips<T extends string | number>({
 /** PGs and hostels taking reservations, for Discover. The search box matches property and business names. */
 export default function PropertyResults({ q }: { q: string }) {
   const [facilities, setFacilities] = useState<Facility[]>([]);
-  const [kind, setKind] = useState<StayKind | null>(null);
+  const [kind, setKind] = useState<StayKind | "">("");
   const [forWhom, setForWhom] = useState<"men" | "women" | null>(null);
   const [room, setRoom] = useState<RoomKind | null>(null);
   const [budget, setBudget] = useState<number | null>(null);
@@ -162,12 +163,9 @@ export default function PropertyResults({ q }: { q: string }) {
 
   return (
     <>
-      <Chips
-        label="Kind of place"
-        value={kind}
-        onChange={setKind}
-        options={[{ value: null, label: "All" }, ...KINDS.map((k) => ({ value: k, label: KIND_LABEL[k] }))]}
-      />
+      <FilterRow label="Stay filters">
+        <FilterSelect label="Kind of place" value={kind} onChange={setKind} options={[{ value: "", label: "All kinds" }, ...KINDS.map((k) => ({ value: k, label: KIND_LABEL[k] }))]} />
+      </FilterRow>
       <label className={social.searchBox}>
         <Icon name="map-pin" size={20} />
         <input

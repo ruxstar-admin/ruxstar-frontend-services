@@ -5,6 +5,7 @@ import { Button, Icon } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
+import { FilterRow, FilterSelect } from "@/components/shop/FilterSelect";
 import { ShopCardSkeleton } from "@/components/shop/ShopCard";
 import { formError } from "@/lib/api/account";
 import { listStores, type StoreFilters } from "@/lib/api/store";
@@ -73,7 +74,7 @@ function Cards({ filters }: { filters: StoreFilters }) {
 
 /** Local shops for Discover: filter by kind and city; the search box matches shop names. Same as the app. */
 export default function StoreResults({ q }: { q: string }) {
-  const [type, setType] = useState<string | null>(null);
+  const [type, setType] = useState("");
   const [cityText, setCityText] = useState("");
   const [city, setCity] = useState("");
 
@@ -85,16 +86,9 @@ export default function StoreResults({ q }: { q: string }) {
   const filters: StoreFilters = { ...(q ? { q: q.slice(0, 60) } : {}), ...(type ? { type } : {}), ...(city.length >= 2 ? { city: city.slice(0, 60) } : {}) };
   return (
     <>
-      <div className={styles.chips} role="group" aria-label="Kind of shop">
-        <button type="button" className={styles.subChip} aria-pressed={type === null} onClick={() => setType(null)}>
-          All shops
-        </button>
-        {TYPES.map(([key, label]) => (
-          <button key={key} type="button" className={styles.subChip} aria-pressed={type === key} onClick={() => setType(key)}>
-            {label}
-          </button>
-        ))}
-      </div>
+      <FilterRow label="Shop filters">
+        <FilterSelect label="Kind of shop" value={type} onChange={setType} options={[{ value: "", label: "All shops" }, ...TYPES.map(([value, label]) => ({ value, label }))]} />
+      </FilterRow>
       <label className={social.searchBox}>
         <Icon name="map-pin" size={20} />
         <input
@@ -108,7 +102,7 @@ export default function StoreResults({ q }: { q: string }) {
           maxLength={60}
         />
       </label>
-      <Cards key={`${filters.q ?? ""}|${type ?? ""}|${filters.city ?? ""}`} filters={filters} />
+      <Cards key={`${filters.q ?? ""}|${type}|${filters.city ?? ""}`} filters={filters} />
     </>
   );
 }

@@ -43,7 +43,7 @@ function PrintOrders() {
   ) : items.length === 0 ? (
     <Empty title="No orders yet">
       <p>Print shops near you are on Discover. Upload your file, pick options and pay.</p>
-      <ButtonLink href="/discover" variant="secondary">
+      <ButtonLink href="/discover?category=pod" variant="secondary">
         Find a print shop
       </ButtonLink>
     </Empty>

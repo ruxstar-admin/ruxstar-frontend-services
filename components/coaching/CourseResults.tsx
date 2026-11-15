@@ -5,6 +5,7 @@ import { Button } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
+import { FilterRow, FilterSelect } from "@/components/shop/FilterSelect";
 import { ShopCardSkeleton } from "@/components/shop/ShopCard";
 import { formError } from "@/lib/api/account";
 import { listCourses, type CourseCategory, type CourseFilters } from "@/lib/api/coaching";
@@ -77,29 +78,16 @@ function Cards({ filters }: { filters: CourseFilters }) {
 
 /** Courses taking students, newest first, for Discover: filter by subject and online or in person; the search box matches titles and institutes. Same as the app. */
 export default function CourseResults({ q }: { q: string }) {
-  const [category, setCategory] = useState<CourseCategory | null>(null);
+  const [category, setCategory] = useState<CourseCategory | "">("");
   const [where, setWhere] = useState<Where>("any");
   const filters: CourseFilters = { ...(q ? { q } : {}), ...(category ? { category } : {}), ...(where === "any" ? {} : { online: where === "online" }) };
   return (
     <>
-      <div className={styles.chips} role="group" aria-label="Subject">
-        <button type="button" className={styles.subChip} aria-pressed={category === null} onClick={() => setCategory(null)}>
-          All subjects
-        </button>
-        {CATEGORIES.map((c) => (
-          <button key={c} type="button" className={styles.subChip} aria-pressed={category === c} onClick={() => setCategory(c)}>
-            {CATEGORY_LABEL[c]}
-          </button>
-        ))}
-      </div>
-      <div className={styles.chips} role="group" aria-label="Online or in person">
-        {WHERE.map((w) => (
-          <button key={w.value} type="button" className={styles.subChip} aria-pressed={where === w.value} onClick={() => setWhere(w.value)}>
-            {w.label}
-          </button>
-        ))}
-      </div>
-      <Cards key={`${q}|${category ?? ""}|${where}`} filters={filters} />
+      <FilterRow label="Course filters">
+        <FilterSelect label="In person or online" value={where} onChange={setWhere} options={WHERE} />
+        <FilterSelect label="Subject" value={category} onChange={setCategory} options={[{ value: "", label: "All subjects" }, ...CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABEL[c] }))]} />
+      </FilterRow>
+      <Cards key={`${q}|${category}|${where}`} filters={filters} />
     </>
   );
 }

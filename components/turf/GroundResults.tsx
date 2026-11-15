@@ -5,6 +5,7 @@ import { Button, Icon } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
+import { FilterRow, FilterSelect } from "@/components/shop/FilterSelect";
 import { ShopCardSkeleton } from "@/components/shop/ShopCard";
 import { formError } from "@/lib/api/account";
 import { listGrounds, listSports, type GroundFilters, type Sport } from "@/lib/api/turf";
@@ -72,7 +73,7 @@ function Cards({ filters }: { filters: GroundFilters }) {
 /** Grounds taking bookings, for Discover: filter by sport and city; the search box matches ground and business names. Same as the app. */
 export default function GroundResults({ q }: { q: string }) {
   const [sports, setSports] = useState<Sport[]>([]);
-  const [sport, setSport] = useState<string | null>(null);
+  const [sport, setSport] = useState("");
   const [cityText, setCityText] = useState("");
   const [city, setCity] = useState("");
 
@@ -88,32 +89,25 @@ export default function GroundResults({ q }: { q: string }) {
   const filters: GroundFilters = { ...(q ? { q: q.slice(0, 60) } : {}), ...(sport ? { sport } : {}), ...(city.length >= 2 ? { city: city.slice(0, 60) } : {}) };
   return (
     <>
-      {sports.length > 0 && (
-        <div className={styles.chips} role="group" aria-label="Sport">
-          <button type="button" className={styles.subChip} aria-pressed={sport === null} onClick={() => setSport(null)}>
-            All sports
-          </button>
-          {sports.map((s) => (
-            <button key={s.key} type="button" className={styles.subChip} aria-pressed={sport === s.key} onClick={() => setSport(s.key)}>
-              {s.name}
-            </button>
-          ))}
-        </div>
-      )}
-      <label className={social.searchBox}>
-        <Icon name="map-pin" size={20} />
-        <input
-          className={social.searchInput}
-          type="search"
-          value={cityText}
-          onChange={(e) => setCityText(e.target.value)}
-          placeholder="Any city"
-          aria-label="City"
-          autoComplete="address-level2"
-          maxLength={60}
-        />
-      </label>
-      <Cards key={`${filters.q ?? ""}|${sport ?? ""}|${filters.city ?? ""}`} filters={filters} />
+      <FilterRow label="Ground filters">
+        <label className={social.searchBox}>
+          <Icon name="map-pin" size={20} />
+          <input
+            className={social.searchInput}
+            type="search"
+            value={cityText}
+            onChange={(e) => setCityText(e.target.value)}
+            placeholder="Any city"
+            aria-label="City"
+            autoComplete="address-level2"
+            maxLength={60}
+          />
+        </label>
+        {sports.length > 0 && (
+          <FilterSelect label="Sport" value={sport} onChange={setSport} options={[{ value: "", label: "All sports" }, ...sports.map((s) => ({ value: s.key, label: s.name }))]} />
+        )}
+      </FilterRow>
+      <Cards key={`${filters.q ?? ""}|${sport}|${filters.city ?? ""}`} filters={filters} />
     </>
   );
 }

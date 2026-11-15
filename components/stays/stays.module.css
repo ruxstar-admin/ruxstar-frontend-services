@@ -38,6 +38,11 @@
   padding: 0 var(--space-4) var(--space-4);
 }
 
+.moreBody > [role="group"] {
+  flex-wrap: wrap;
+  overflow-x: visible;
+}
+
 /* Property page */
 .gallery {
   display: grid;
