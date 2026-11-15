@@ -59,11 +59,12 @@ export default function DeleteAccountPage() {
         law requires, and then deleted. They are used only for tax, accounting and legal reasons.
       </p>
 
-      <h2>If you cannot use the app</h2>
+      <h2>If you cannot use the app, or you deliver with Ruxstar Delivery</h2>
       <p>
         Email <a href="mailto:admin@ruxstar.com?subject=Delete%20my%20Ruxstar%20account">admin@ruxstar.com</a> from the email
         address on your account, or tell us the mobile number you signed up with. We will confirm it is your account and delete
-        it within 30 days.
+        it within 30 days. Delivery partners using the Ruxstar Delivery app can ask the same way; pending earnings are paid out
+        first, and payout records are kept as the law requires.
       </p>
       <p>
         More about how we handle your information is in our <Link href="/privacy">Privacy Policy</Link>.
