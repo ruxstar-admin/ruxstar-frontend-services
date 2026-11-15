@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
@@ -15,7 +15,79 @@ import styles from "./support.module.css";
 /** While the thread is open, it checks for a reply this often. */
 const POLL_MS = 30_000;
 
-function Composer({ ticket, token, hold, onSent }: { ticket: TicketDetail; token: string | undefined; hold: boolean; onSent: (next: TicketDetail) => void }) {
+/** At the top of the reply box while the ticket is with Ruxstar or waiting on you, so it is always in the same place. */
+function Solved({
+  confirming,
+  resolving,
+  failure,
+  onAsk,
+  onCancel,
+  onConfirm,
+}: {
+  confirming: boolean;
+  resolving: boolean;
+  failure: string | null;
+  onAsk: () => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className={styles.solved}>
+      {failure && (
+        <p className={styles.error} role="alert">
+          {failure}
+        </p>
+      )}
+      {confirming ? (
+        <div className={styles.news}>
+          <strong>Mark as solved?</strong>
+          <p className={styles.small}>You can still reply to reopen it for 7 days.</p>
+          <div className={styles.actions}>
+            <Button loading={resolving} onClick={onConfirm} autoFocus>
+              Mark as solved
+            </Button>
+            <Button variant="ghost" disabled={resolving} onClick={onCancel}>
+              Not yet
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <Button
+            variant="secondary"
+            block
+            icon={
+              <span className={styles.tick}>
+                <Icon name="check" size={18} />
+              </span>
+            }
+            aria-describedby="solved-hint"
+            onClick={onAsk}
+          >
+            My problem is solved
+          </Button>
+          <p id="solved-hint" className="sr-only">
+            Asks you to confirm before marking the ticket solved.
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
+function Composer({
+  ticket,
+  token,
+  hold,
+  onSent,
+  action,
+}: {
+  ticket: TicketDetail;
+  token: string | undefined;
+  hold: boolean;
+  onSent: (next: TicketDetail) => void;
+  action?: ReactNode;
+}) {
   const [text, setText] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
@@ -54,6 +126,7 @@ function Composer({ ticket, token, hold, onSent }: { ticket: TicketDetail; token
         void send();
       }}
     >
+      {action}
       <label className={styles.label} htmlFor="support-reply">
         {ticket.status === "resolved" ? "Reply to reopen" : "Reply"}
       </label>
@@ -159,11 +232,6 @@ function Thread({ id, hold, token }: { id: string; hold: boolean; token: string 
         </div>
         <Tag tone={status.tone}>{status.label}</Tag>
       </div>
-      {failure && (
-        <p className={styles.error} role="alert">
-          {failure}
-        </p>
-      )}
 
       <ol className={styles.thread}>
         {ticket.messages.map((m) => (
@@ -174,7 +242,26 @@ function Thread({ id, hold, token }: { id: string; hold: boolean; token: string 
       {ticket.status === "open" && <p className={styles.faint}>The Ruxstar team will reply here. We will let you know when they do.</p>}
       {reopen && <p className={styles.faint}>{reopen}</p>}
 
-      {!closed && <Composer ticket={ticket} token={token} hold={hold} onSent={setTicket} />}
+      {!closed && (
+        <Composer
+          ticket={ticket}
+          token={token}
+          hold={hold}
+          onSent={setTicket}
+          action={
+            live ? (
+              <Solved
+                confirming={confirming}
+                resolving={resolving}
+                failure={failure}
+                onAsk={() => setConfirming(true)}
+                onCancel={() => setConfirming(false)}
+                onConfirm={() => void resolve()}
+              />
+            ) : undefined
+          }
+        />
+      )}
 
       {closed && (
         <ButtonLink
@@ -184,28 +271,6 @@ function Thread({ id, hold, token }: { id: string; hold: boolean; token: string 
           Open a new ticket
         </ButtonLink>
       )}
-
-      {live &&
-        (confirming ? (
-          <div className={styles.news}>
-            <strong>Mark as solved?</strong>
-            <p className={styles.small}>You can still reply to reopen it for 7 days.</p>
-            <div className={styles.actions}>
-              <Button loading={resolving} onClick={() => void resolve()}>
-                Mark as solved
-              </Button>
-              <Button variant="ghost" disabled={resolving} onClick={() => setConfirming(false)}>
-                Not yet
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className={styles.actions}>
-            <Button variant="ghost" icon={<Icon name="check" size={16} />} onClick={() => setConfirming(true)}>
-              My problem is solved
-            </Button>
-          </div>
-        ))}
     </div>
   );
 }

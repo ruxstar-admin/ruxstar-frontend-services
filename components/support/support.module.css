@@ -283,3 +283,16 @@
 .composer .textarea {
   min-height: 88px;
 }
+
+/* "My problem is solved", at the top of the reply box. */
+.solved {
+  display: grid;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.tick {
+  display: inline-flex;
+  color: var(--success);
+}

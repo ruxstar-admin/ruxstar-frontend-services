@@ -22,15 +22,8 @@ import { money } from "@/lib/api/shops";
 import { percent } from "@/lib/invoices";
 import { ago } from "@/lib/time";
 import invoices from "@/components/invoices/invoices.module.css";
+import { GST_MODULE_LABEL as MODULE_LABEL } from "../modules/labels";
 
-const MODULE_LABEL: Record<GstModule, string> = {
-  pod: "Print on demand",
-  events: "Events",
-  coaching: "Coaching",
-  stays: "PG and hostel stays",
-  turf: "Turf",
-  ecommerce: "E-commerce",
-};
 /** Settings are ready for these, but their orders don't exist yet, so nothing is issued. */
 const NOT_INVOICING: readonly GstModule[] = ["coaching", "stays", "turf", "ecommerce"];
 
@@ -523,8 +516,8 @@ function ModuleRules({ m, onSaved }: { m: GstModuleSettings; onSaved: (m: GstMod
   );
 }
 
-/** Ruxstar's own GST details and each module's GST rules. Same as the app. */
-export function GstScreen() {
+/** Ruxstar's own GST details and each module's GST rules. Opened from a module's page (`module`), only that module's rules. Same as the app. */
+export function GstScreen({ module }: { module?: GstModule }) {
   const onSignedOut = useOnSignedOut();
   const canManage = useCan("modules.manage");
   const canSeeInvoices = useCan("orders.view");
@@ -544,32 +537,41 @@ export function GstScreen() {
       },
       (err) => live && !onSignedOut(err) && setError(err),
     );
-    getBusinessCatalog().then(
-      (c) => live && setStates(c.states.map((s) => s.name)),
-      () => live && setStates(Object.values(GST_STATE_CODE).sort()),
-    );
+    if (!module) {
+      getBusinessCatalog().then(
+        (c) => live && setStates(c.states.map((s) => s.name)),
+        () => live && setStates(Object.values(GST_STATE_CODE).sort()),
+      );
+    }
     return () => {
       live = false;
     };
-  }, [attempt, onSignedOut]);
+  }, [module, attempt, onSignedOut]);
 
   return (
     <Needs need="modules.view">
       <div className={styles.page}>
         <div className={styles.head}>
           <div>
-            <h1 className={styles.title}>GST</h1>
+            <h1 className={styles.title}>{module ? `GST · ${MODULE_LABEL[module]}` : "GST"}</h1>
             <p className={styles.muted}>
               {canManage
                 ? "Changes apply to orders paid from now on; documents already issued never change. Every change is written to the audit log."
                 : "You can see these settings. Ask an admin to change them."}
             </p>
           </div>
-          {canSeeInvoices && (
-            <Link href="/admin/invoices" className={styles.muted}>
-              Every invoice
-            </Link>
-          )}
+          <span className={styles.tags}>
+            {module && (
+              <Link href="/admin/gst" className={styles.muted}>
+                All of GST
+              </Link>
+            )}
+            {canSeeInvoices && (
+              <Link href="/admin/invoices" className={styles.muted}>
+                Every invoice
+              </Link>
+            )}
+          </span>
         </div>
         {error ? (
           <Failed
@@ -583,8 +585,8 @@ export function GstScreen() {
           <Rows count={3} height={260} />
         ) : (
           <>
-            <SellerForm seller={seller} states={states} onSaved={setSeller} />
-            {modules.map((m) => (
+            {!module && <SellerForm seller={seller} states={states} onSaved={setSeller} />}
+            {modules.filter((m) => !module || m.module === module).map((m) => (
               <ModuleRules key={m.module} m={m} onSaved={(done) => setModules((list) => list?.map((x) => (x.module === done.module ? done : x)) ?? null)} />
             ))}
           </>

@@ -12,27 +12,53 @@ import styles from "./console.module.css";
 /** `"admin"` sections are for admins only; the rest need the permission named, or any one of a list. */
 type Need = Permission | "admin" | null | readonly Permission[];
 
-const SECTIONS: { href: string; label: string; icon: IconName; need: Need }[] = [
-  { href: "/admin", label: "Dashboard", icon: "grid", need: null },
-  { href: "/admin/kyc", label: "Verification", icon: "verified", need: "kyc.view" },
-  { href: "/admin/support", label: "Help tickets", icon: "chat", need: "support.view" },
-  { href: "/admin/reports", label: "Reports", icon: "flag", need: ["reports.view", "orders.view"] },
-  { href: "/admin/users", label: "People", icon: "user", need: "users.view" },
-  { href: "/admin/staff", label: "Staff", icon: "shield", need: "admin" },
-  { href: "/admin/businesses", label: "Businesses", icon: "store", need: "businesses.view" },
-  { href: "/admin/events", label: "Events", icon: "calendar", need: "businesses.view" },
-  { href: "/admin/courses", label: "Courses", icon: "book", need: "businesses.view" },
-  { href: "/admin/grounds", label: "Grounds", icon: "ball", need: "businesses.view" },
-  { href: "/admin/sports", label: "Sports", icon: "ball", need: "businesses.view" },
-  { href: "/admin/properties", label: "PGs & hostels", icon: "bed", need: "businesses.view" },
-  { href: "/admin/facilities", label: "Facilities", icon: "bed", need: "businesses.view" },
-  { href: "/admin/objections", label: "Tenant objections", icon: "flag", need: "orders.view" },
-  { href: "/admin/modules", label: "Modules", icon: "stack", need: "modules.view" },
-  { href: "/admin/gst", label: "GST", icon: "receipt", need: "modules.view" },
-  { href: "/admin/payouts", label: "Payouts", icon: "wallet", need: "payouts.view" },
-  { href: "/admin/invoices", label: "Invoices", icon: "receipt", need: "orders.view" },
-  { href: "/admin/coupons", label: "Coupons", icon: "ticket", need: "coupons.view" },
-  { href: "/admin/audit", label: "Audit log", icon: "clock", need: "audit.view" },
+type Section = { href: string; label: string; icon: IconName; need: Need };
+
+/** Filled, these lose the lines drawn inside them. */
+const OUTLINE_ONLY: readonly IconName[] = ["clock", "alert", "home"];
+
+/** The same groups as the app's More tab. A group shows only when the person can open something in it. */
+const GROUPS: { title: string | null; sections: Section[] }[] = [
+  { title: null, sections: [{ href: "/admin", label: "Dashboard", icon: "grid", need: null }] },
+  {
+    title: "People & safety",
+    sections: [
+      { href: "/admin/users", label: "People", icon: "user", need: "users.view" },
+      { href: "/admin/staff", label: "Staff", icon: "shield", need: "admin" },
+      { href: "/admin/kyc", label: "Verification", icon: "verified", need: "kyc.view" },
+      { href: "/admin/reports", label: "Reports", icon: "flag", need: ["reports.view", "orders.view"] },
+      { href: "/admin/objections", label: "Tenant objections", icon: "alert", need: "orders.view" },
+      { href: "/admin/support", label: "Help tickets", icon: "chat", need: "support.view" },
+    ],
+  },
+  {
+    title: "Businesses",
+    sections: [
+      { href: "/admin/businesses", label: "Businesses", icon: "store", need: "businesses.view" },
+      { href: "/admin/events", label: "Events", icon: "calendar", need: "businesses.view" },
+      { href: "/admin/courses", label: "Courses", icon: "book", need: "businesses.view" },
+      { href: "/admin/grounds", label: "Grounds", icon: "ball", need: "businesses.view" },
+      { href: "/admin/sports", label: "Sports list", icon: "ball", need: "businesses.view" },
+      { href: "/admin/properties", label: "PGs & hostels", icon: "bed", need: "businesses.view" },
+      { href: "/admin/facilities", label: "Facilities", icon: "home", need: "businesses.view" },
+    ],
+  },
+  {
+    title: "Money",
+    sections: [
+      { href: "/admin/payouts", label: "Payouts", icon: "wallet", need: "payouts.view" },
+      { href: "/admin/invoices", label: "Invoices", icon: "receipt", need: "orders.view" },
+      { href: "/admin/gst", label: "GST", icon: "receipt", need: "modules.view" },
+      { href: "/admin/coupons", label: "Coupons", icon: "ticket", need: "coupons.view" },
+    ],
+  },
+  {
+    title: "Settings",
+    sections: [
+      { href: "/admin/modules", label: "Modules", icon: "stack", need: "modules.view" },
+      { href: "/admin/audit", label: "Audit log", icon: "clock", need: "audit.view" },
+    ],
+  },
 ];
 
 const AccessContext = createContext<Access | null>(null);
@@ -125,8 +151,11 @@ export function AdminFrame({ children }: { children: ReactNode }) {
     );
   }
 
-  const sections = SECTIONS.filter((s) => allows(access, s.need));
-  const current = [...sections].sort((a, b) => b.href.length - a.href.length).find((s) => pathname === s.href || pathname.startsWith(`${s.href}/`));
+  const groups = GROUPS.map((g) => ({ ...g, sections: g.sections.filter((s) => allows(access, s.need)) })).filter((g) => g.sections.length > 0);
+  const current = groups
+    .flatMap((g) => g.sections)
+    .sort((a, b) => b.href.length - a.href.length)
+    .find((s) => pathname === s.href || pathname.startsWith(`${s.href}/`));
 
   return (
     <AccessContext.Provider value={access}>
@@ -137,11 +166,25 @@ export function AdminFrame({ children }: { children: ReactNode }) {
             <span className={styles.role}>{access.title ?? "Staff"}</span>
           </div>
           <nav className={styles.sections} aria-label="Console">
-            {sections.map((s) => (
-              <Link key={s.href} href={s.href} className={styles.section} aria-current={current?.href === s.href ? "page" : undefined}>
-                <Icon name={s.icon} size={20} filled={current?.href === s.href && s.icon !== "clock"} />
-                <span>{s.label}</span>
-              </Link>
+            {groups.map((g) => (
+              <div
+                key={g.title ?? "home"}
+                className={styles.navGroup}
+                role={g.title ? "group" : undefined}
+                aria-labelledby={g.title ? `console-${g.title.replace(/\W+/g, "-")}` : undefined}
+              >
+                {g.title && (
+                  <span id={`console-${g.title.replace(/\W+/g, "-")}`} className={styles.navHeading}>
+                    {g.title}
+                  </span>
+                )}
+                {g.sections.map((s) => (
+                  <Link key={s.href} href={s.href} className={styles.section} aria-current={current?.href === s.href ? "page" : undefined}>
+                    <Icon name={s.icon} size={20} filled={current?.href === s.href && !OUTLINE_ONLY.includes(s.icon)} />
+                    <span>{s.label}</span>
+                  </Link>
+                ))}
+              </div>
             ))}
           </nav>
         </aside>
