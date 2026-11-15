@@ -50589,6 +50589,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/delivery/jobs/{id}/route": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The road to your next stops, for the map
+         * @description Send where you are as lat and lng. Going to the shop: from you to the shop, then the shop to the customer. After pickup: from you to the customer. Roads come from Google's Routes API, or OSRM while testing; when neither answers, a straight line. Only for the rider who has the delivery, while it is under way.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Where you are, with lng */
+                    lat?: number;
+                    /** @description Where you are, with lat */
+                    lng?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description The next leg first. Stops without a pin are left out */
+                                legs: {
+                                    from: "here" | "shop";
+                                    to: "shop" | "drop";
+                                    /** @description [lat, lng] points along the road */
+                                    polyline: number[][];
+                                    distanceM: number;
+                                    durationS: number;
+                                    /** @description `straight` is a straight line timed at 20 km/h, when no road route could be found */
+                                    provider: "google" | "osrm" | "straight";
+                                }[];
+                                /** @description `straight` when any leg is a straight line, or there are none */
+                                provider: "google" | "osrm" | "straight";
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/delivery/jobs/{id}/accept": {
         parameters: {
             query?: never;
