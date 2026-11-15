@@ -13476,7 +13476,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -13674,7 +13677,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -13850,7 +13856,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -14100,7 +14109,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -14277,7 +14289,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -14458,7 +14473,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -14580,7 +14598,10 @@ export interface paths {
                             start: string;
                             minutes: number;
                         }[];
-                        /** @description YYYY-MM-DD, in India */
+                        /**
+                         * Format: date
+                         * @description YYYY-MM-DD, in India
+                         */
                         startDate: string;
                         /** @description How many classes; or null with `endDate` */
                         classes: number | null;
@@ -14669,7 +14690,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -14851,7 +14875,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -14958,7 +14985,10 @@ export interface paths {
                             start: string;
                             minutes: number;
                         }[];
-                        /** @description YYYY-MM-DD, in India */
+                        /**
+                         * Format: date
+                         * @description YYYY-MM-DD, in India
+                         */
                         startDate?: string;
                         /** @description How many classes; or null with `endDate` */
                         classes?: number | null;
@@ -15047,7 +15077,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -15231,7 +15264,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -31492,7 +31528,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -32233,7 +32272,10 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 };
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 date: string;
                                 rooms: {
                                     /** @description MongoDB ObjectId as hex */
@@ -32265,7 +32307,10 @@ export interface paths {
                                             tenantName: string;
                                             /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
                                             status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
-                                            /** @description YYYY-MM-DD, in India */
+                                            /**
+                                             * Format: date
+                                             * @description YYYY-MM-DD, in India
+                                             */
                                             moveIn: string;
                                             until: string | null;
                                         } | null;
@@ -32277,7 +32322,10 @@ export interface paths {
                                             tenantName: string;
                                             /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
                                             status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
-                                            /** @description YYYY-MM-DD, in India */
+                                            /**
+                                             * Format: date
+                                             * @description YYYY-MM-DD, in India
+                                             */
                                             moveIn: string;
                                             until: string | null;
                                         } | null;
@@ -32410,7 +32458,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -32473,7 +32524,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -32615,7 +32669,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -32678,7 +32735,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -32820,7 +32880,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -32883,7 +32946,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -33026,7 +33092,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -33089,7 +33158,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -33175,7 +33247,10 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description YYYY-MM-DD, in India */
+                        /**
+                         * Format: date
+                         * @description YYYY-MM-DD, in India
+                         */
                         on?: string;
                         reason?: string;
                     };
@@ -33238,7 +33313,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -33301,7 +33379,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -33449,7 +33530,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -33512,7 +33596,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -35167,7 +35254,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -35230,7 +35320,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -35389,7 +35482,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -35452,7 +35548,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -35689,7 +35788,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -35752,7 +35854,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -35917,7 +36022,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -35980,7 +36088,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -36123,7 +36234,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -36186,7 +36300,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -36288,7 +36405,10 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description YYYY-MM-DD, in India */
+                        /**
+                         * Format: date
+                         * @description YYYY-MM-DD, in India
+                         */
                         on?: string;
                     };
                 };
@@ -36350,7 +36470,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -36413,7 +36536,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -36534,7 +36660,10 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 };
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 stay: "month" | "night";
                                 /** @description stay=night: the checkout day. stay=month: null, as the bed stays yours until notice */
@@ -36626,7 +36755,10 @@ export interface paths {
                         bedId?: string;
                         /** @description Shared rooms: every bed of the room. Private rooms are always whole */
                         whole?: boolean;
-                        /** @description YYYY-MM-DD, in India */
+                        /**
+                         * Format: date
+                         * @description YYYY-MM-DD, in India
+                         */
                         moveIn: string;
                         /** @default month */
                         stay?: "month" | "night";
@@ -36729,7 +36861,10 @@ export interface paths {
                         bedId?: string;
                         /** @description Shared rooms: every bed of the room. Private rooms are always whole */
                         whole?: boolean;
-                        /** @description YYYY-MM-DD, in India */
+                        /**
+                         * Format: date
+                         * @description YYYY-MM-DD, in India
+                         */
                         moveIn: string;
                         /** @default month */
                         stay?: "month" | "night";
@@ -36801,7 +36936,10 @@ export interface paths {
                                     stay: "month" | "night";
                                     /** @description Months or nights paid */
                                     units: number;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     moveIn: string;
                                     /** Format: date-time */
                                     from: string;
@@ -36864,7 +37002,10 @@ export interface paths {
                                         resolvedAt: string | null;
                                     } | null;
                                     moveOut: {
-                                        /** @description YYYY-MM-DD, in India */
+                                        /**
+                                         * Format: date
+                                         * @description YYYY-MM-DD, in India
+                                         */
                                         on: string;
                                         kind: "notice" | "move_out";
                                         by: "tenant" | "property" | "ruxstar";
@@ -37256,7 +37397,10 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 };
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 date: string;
                                 courts: {
                                     /** @description MongoDB ObjectId as hex */
@@ -39939,7 +40083,10 @@ export interface paths {
                                     /** @description paused: shown but not bookable */
                                     status: "live" | "paused";
                                 };
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 date: string;
                                 /** @description False when the court is closed that day */
                                 open: boolean;
@@ -58613,7 +58760,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -58792,7 +58942,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -58982,7 +59135,10 @@ export interface paths {
                                     }[];
                                     /** @description In words, for example "Mon, Wed 5–6 pm" */
                                     schedule: string;
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     startDate: string;
                                     /** Format: date-time */
                                     firstAt: string;
@@ -60399,7 +60555,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -60462,7 +60621,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";
@@ -60609,7 +60771,10 @@ export interface paths {
                                 stay: "month" | "night";
                                 /** @description Months or nights paid */
                                 units: number;
-                                /** @description YYYY-MM-DD, in India */
+                                /**
+                                 * Format: date
+                                 * @description YYYY-MM-DD, in India
+                                 */
                                 moveIn: string;
                                 /** Format: date-time */
                                 from: string;
@@ -60672,7 +60837,10 @@ export interface paths {
                                     resolvedAt: string | null;
                                 } | null;
                                 moveOut: {
-                                    /** @description YYYY-MM-DD, in India */
+                                    /**
+                                     * Format: date
+                                     * @description YYYY-MM-DD, in India
+                                     */
                                     on: string;
                                     kind: "notice" | "move_out";
                                     by: "tenant" | "property" | "ruxstar";

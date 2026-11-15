@@ -79,11 +79,18 @@ function StayView({ item, fresh, onChanged }: { item: StayReservation; fresh: bo
     setError(null);
   };
 
-  const pay = () =>
-    run("pay", async () => {
+  /** Stays busy on success: the page is leaving for Cashfree. */
+  const pay = async () => {
+    setBusy("pay");
+    setError(null);
+    try {
       const { checkoutUrl } = await payStay(item.id, `${window.location.origin}/reservations`);
       window.location.assign(checkoutUrl);
-    });
+    } catch (err) {
+      setError(formError(err).message);
+      setBusy(null);
+    }
+  };
   const cancel = () => run("cancel", () => cancelStay(item.id, reason.trim() || undefined, keyFor(`cancel|${reason.trim()}`)), true);
   const object = () => run("object", () => objectStay(item.id, reason.trim(), keyFor(`object|${reason.trim()}`)), true);
   const withdraw = () => run("withdraw", () => withdrawObjection(item.id));

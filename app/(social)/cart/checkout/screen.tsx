@@ -11,7 +11,7 @@ import { PriceLine } from "@/components/stays/pieces";
 import { CartLines } from "@/components/store/CartLines";
 import { clearCart, refreshItems, useCart, type Cart } from "@/components/store/cart";
 import { formError, getMe } from "@/lib/api/account";
-import { newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import { myOrders } from "@/lib/api/orders";
 import { money } from "@/lib/api/shops";
 import { getStore, myStoreOrders, placeStoreOrder, quoteCart, type DeliveryAddress, type Method, type Quote, type StoreDetail } from "@/lib/api/store";
@@ -58,7 +58,7 @@ function CheckoutForm({ cart, shop }: { cart: Cart; shop: StoreDetail }) {
   const [error, setError] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
   const [checked, setChecked] = useState(false);
-  const attempt = useRef(newIdempotencyKey());
+  const attempt = useRef<{ sig: string; key: string } | null>(null);
   const delivery = method === "delivery";
 
   // The last shop order's address, then the last print order's, then the account's name, phone and city.
@@ -91,7 +91,6 @@ function CheckoutForm({ cart, shop }: { cart: Cart; shop: StoreDetail }) {
   const offers = priced?.quote?.offers ?? null;
 
   useEffect(() => {
-    attempt.current = newIdempotencyKey();
     let live = true;
     const timer = setTimeout(() => {
       quoteCart(shop.id, { lines, method, ...(drop ? { address: drop } : {}), ...(code ? { code } : {}) })
@@ -136,25 +135,26 @@ function CheckoutForm({ cart, shop }: { cart: Cart; shop: StoreDetail }) {
     }
     setPlacing(true);
     setError(null);
+    const body = {
+      lines,
+      method,
+      ...(delivery ? { address: { ...address, name: address.name.trim(), line: address.line.trim(), city: address.city.trim(), point: address.point ?? null } } : {}),
+      ...(applied ? { coupon: applied.code } : {}),
+      ...(note.trim() ? { note: note.trim() } : {}),
+      returnTo: `${window.location.origin}/orders/shop`,
+    };
+    const sig = JSON.stringify(body);
+    if (attempt.current?.sig !== sig) attempt.current = { sig, key: newIdempotencyKey() };
     try {
-      const { order, checkoutUrl } = await placeStoreOrder(
-        shop.id,
-        {
-          lines,
-          method,
-          ...(delivery ? { address: { ...address, name: address.name.trim(), line: address.line.trim(), city: address.city.trim(), point: address.point ?? null } } : {}),
-          ...(applied ? { coupon: applied.code } : {}),
-          ...(note.trim() ? { note: note.trim() } : {}),
-          returnTo: `${window.location.origin}/orders/shop`,
-        },
-        attempt.current,
-      );
+      const { order, checkoutUrl } = await placeStoreOrder(shop.id, body, attempt.current.key);
       // The order holds what was bought now; unpaid, it can be paid from its page.
       clearCart();
       window.history.replaceState(null, "", `/orders/shop/${order.id}`);
       window.location.assign(checkoutUrl);
     } catch (err) {
       setError(formError(err).message);
+      // The API replays a refused order to the same key, so only a dropped connection keeps it: that order may have been made.
+      if (!(err instanceof ApiError && err.code === "NETWORK")) attempt.current = null;
       setPlacing(false);
     }
   };

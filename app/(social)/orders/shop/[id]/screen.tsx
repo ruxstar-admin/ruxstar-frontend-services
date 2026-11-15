@@ -159,11 +159,18 @@ function OrderView({ o, fresh, onChanged }: { o: StoreOrder; fresh: boolean; onC
     setError(null);
   };
 
-  const pay = () =>
-    run("pay", async () => {
+  /** Stays busy on success: the page is leaving for Cashfree. */
+  const pay = async () => {
+    setBusy("pay");
+    setError(null);
+    try {
       const { checkoutUrl } = await payStoreOrder(o.id, `${window.location.origin}/orders/shop`);
       window.location.assign(checkoutUrl);
-    });
+    } catch (err) {
+      setError(formError(err).message);
+      setBusy(null);
+    }
+  };
   const cancel = () => run("cancel", () => cancelStoreOrder(o.id, reason.trim() || undefined, keyFor(`cancel|${reason.trim()}`)), true);
   const sendReturn = (why: ReturnReason, note: string, picked: Map<string, number>) => {
     const everything = o.lines.every((l) => picked.get(l.id) === l.quantity);

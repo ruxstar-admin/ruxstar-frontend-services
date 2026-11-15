@@ -21,6 +21,8 @@ export function useOffers(load: (code?: string) => Promise<OffersAnswer>, key: s
   const [busy, setBusy] = useState(false);
   const loadRef = useRef(load);
   const appliedCode = useRef<string | null>(null);
+  /** Only the latest request may settle: an older answer, or one sent before Remove, would bring back a stale discount. */
+  const latest = useRef(0);
 
   useEffect(() => {
     loadRef.current = load;
@@ -43,9 +45,18 @@ export function useOffers(load: (code?: string) => Promise<OffersAnswer>, key: s
   useEffect(() => {
     if (key === null) return;
     let live = true;
+    const ask = ++latest.current;
     loadRef.current(appliedCode.current ?? undefined).then(
-      (answer) => live && settle(answer),
-      () => live && setOffers([]),
+      (answer) => {
+        if (!live || ask !== latest.current) return;
+        settle(answer);
+        setBusy(false);
+      },
+      () => {
+        if (!live || ask !== latest.current) return;
+        setOffers([]);
+        setBusy(false);
+      },
     );
     return () => {
       live = false;
@@ -53,20 +64,24 @@ export function useOffers(load: (code?: string) => Promise<OffersAnswer>, key: s
   }, [key, settle]);
 
   const apply = async (code: string) => {
+    const ask = ++latest.current;
     setBusy(true);
     setProblem(null);
     try {
-      settle(await loadRef.current(code));
+      const answer = await loadRef.current(code);
+      if (ask === latest.current) settle(answer);
     } catch (err) {
-      setProblem(formError(err).message);
+      if (ask === latest.current) setProblem(formError(err).message);
     } finally {
-      setBusy(false);
+      if (ask === latest.current) setBusy(false);
     }
   };
 
   const remove = () => {
+    latest.current++;
     setApplied(null);
     setProblem(null);
+    setBusy(false);
   };
 
   return { offers, applied, discount: applied?.discount ?? 0, problem, busy, apply, remove };
