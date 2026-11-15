@@ -55207,7 +55207,7 @@ export interface paths {
         put?: never;
         /**
          * Ask Cashfree about a withdrawal on the way now
-         * @description Settles it if Cashfree knows how it went, and sends it again only if Cashfree never got it. Safe to repeat.
+         * @description Settles it if Cashfree knows how it went, and sends it again only if Cashfree never got it. Safe to repeat; audited only when something changed.
          */
         post: {
             parameters: {
@@ -63998,7 +63998,7 @@ export interface paths {
         };
         /**
          * The audit log
-         * @description Filter by module, action, who did it (`actor`, a user id) or what it was done to (`target`).
+         * @description Filter by module, action, who did it (`actor`, a user id) or what it was done to (`target`), and by when: `from` and `to` are ISO 8601 times; `from` is included and `to` is not, so the next range can start where this one ends.
          */
         get: {
             parameters: {
@@ -64012,6 +64012,8 @@ export interface paths {
                     actor?: string;
                     /** @description The id of what was changed */
                     target?: string;
+                    from?: string;
+                    to?: string;
                 };
                 header?: never;
                 path?: never;
