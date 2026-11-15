@@ -123,6 +123,7 @@ function Details({
   const events = b.module === "events";
   const coaching = b.module === "coaching";
   const turf = b.module === "turf";
+  const stays = b.module === "stays";
 
   return (
     <div className={styles.page}>
@@ -275,6 +276,18 @@ function Details({
               <Tile href="/board" icon="grid" title="Board" subtitle="The day’s bookings, blocks and arrivals, court by court" />
             </>
           )}
+          {!team && stays && (
+            <>
+              <Tile
+                href={`/vendor/businesses/${id}/properties`}
+                icon="bed"
+                title="Properties & rooms"
+                subtitle={b.status === "live" ? "Rooms, beds, prices, food, rules and photos" : "Set up properties now; publish the business to take reservations"}
+                disabled={!editable}
+              />
+              <Tile href="/beds" icon="grid" title="Bed map" subtitle="Every bed for the week, reservations and moving in" />
+            </>
+          )}
           {!team && b.pod && editable && (
             <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team" subtitle="Invite people to help with orders, the shop and posts" />
           )}
@@ -287,7 +300,10 @@ function Details({
           {!team && turf && editable && (
             <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team & ground staff" subtitle="Invite people to run the board, block slots and mark arrivals" />
           )}
-          {!team && (b.pod || events || coaching || turf) && b.status === "live" && (
+          {!team && stays && editable && (
+            <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team & wardens" subtitle="Invite wardens to mark moved in, beds full and see tenants" />
+          )}
+          {!team && (b.pod || events || coaching || turf || stays) && b.status === "live" && (
             <Tile href={`/vendor/businesses/${id}/reviews`} icon="star" title="Reviews" subtitle={ratingLine(b.rating)} />
           )}
           {!team && b.pod && (

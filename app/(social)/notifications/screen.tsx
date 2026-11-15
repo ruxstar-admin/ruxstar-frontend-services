@@ -42,6 +42,8 @@ const ICONS: Record<Notification["type"], IconName> = {
   "coaching.updated": "book",
   "turf.booked": "ball",
   "turf.updated": "ball",
+  "stays.reserved": "bed",
+  "stays.updated": "bed",
 };
 
 function hrefOf(link: Notification["link"]) {
@@ -91,6 +93,12 @@ function hrefOf(link: Notification["link"]) {
       return `/bookings/${link.id}`;
     case "vendor_ground":
       return `/board/${link.id}`;
+    case "stay_property":
+      return `/stays/${link.id}`;
+    case "stay_order":
+      return `/reservations/${link.id}`;
+    case "vendor_property":
+      return `/beds/${link.id}`;
     default:
       return `/p/${link.id}`;
   }

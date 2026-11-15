@@ -506,6 +506,94 @@ function TurfRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: TurfRu
   );
 }
 
+type StaysRules = NonNullable<ModuleSettings["staysRules"]>;
+type StaysKey = keyof StaysRules;
+
+/** The API's limits for each stays rule. */
+const STAYS_RULES: { key: StaysKey; min: number; max: number; label: string; unit: string; hint: string }[] = [
+  { key: "refundDays", min: 0, max: 60, label: "New properties: full refund until", unit: "days", hint: "Days before move-in. Owners can only make it stricter." },
+  { key: "maxRefundDays", min: 0, max: 60, label: "Owners’ refund days, at most", unit: "days", hint: "A property outside new limits is held to them from its next reservation." },
+  { key: "objectionHours", min: 1, max: 168, label: "Tenant can object for", unit: "hours", hint: "After the owner marks Moved in. The owner is paid after this." },
+  { key: "maxMonths", min: 1, max: 12, label: "Months paid with a reservation", unit: "months", hint: "PG and co-living, the first month included." },
+  { key: "maxNights", min: 1, max: 90, label: "Nights in one hostel reservation", unit: "nights", hint: "The most a tenant can pick at once." },
+  { key: "holdMinutes", min: 5, max: 60, label: "Beds held for checkout", unit: "minutes", hint: "Unpaid reservations free their beds after this." },
+  { key: "bookAheadDays", min: 1, max: 180, label: "Tenants can reserve ahead", unit: "days", hint: "How far ahead move-in can be." },
+  { key: "maxProperties", min: 1, max: 100, label: "Properties per business", unit: "", hint: "Drafts count too." },
+  { key: "maxRooms", min: 1, max: 500, label: "Rooms per property", unit: "", hint: "Rooms marked full count too." },
+  { key: "maxBeds", min: 1, max: 24, label: "Beds per room", unit: "", hint: "Shared rooms; a private room is one unit however many beds." },
+];
+
+const staysText = (rules: StaysRules) => Object.fromEntries(STAYS_RULES.map((f) => [f.key, String(rules[f.key])])) as Record<StaysKey, string>;
+
+/** PG and hostels only: the refund rule and its limits, the objection window, months and nights, the checkout hold and limits per business. */
+function StaysRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: StaysRules; onSaved: (m: ModuleSettings) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const [text, setText] = useState(() => staysText(rules));
+  const [busy, setBusy] = useState(false);
+
+  const typed = Object.fromEntries(STAYS_RULES.map((f) => [f.key, wholeOf(text[f.key])])) as Record<StaysKey, number>;
+  const errors = Object.fromEntries(
+    STAYS_RULES.map((f) => [f.key, typed[f.key] >= f.min && typed[f.key] <= f.max ? undefined : `Enter a whole number from ${f.min} to ${f.max.toLocaleString("en-IN")}`]),
+  ) as Record<StaysKey, string | undefined>;
+  if (!errors.refundDays && !errors.maxRefundDays && typed.maxRefundDays < typed.refundDays) errors.maxRefundDays = "At least the refund days for new properties";
+  const invalid = STAYS_RULES.some((f) => errors[f.key]);
+  const changes = Object.fromEntries(STAYS_RULES.filter((f) => typed[f.key] !== rules[f.key]).map((f) => [f.key, typed[f.key]])) as Partial<StaysRules>;
+  const changed = Object.keys(changes).length > 0;
+
+  async function save() {
+    setBusy(true);
+    try {
+      const done = await updateModule(m.module, { staysRules: changes });
+      onSaved(done);
+      if (done.staysRules) setText(staysText(done.staysRules));
+      toast("PG and hostel rules saved.", "success");
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <div className={styles.group}>
+        <h3 className={styles.label}>PG and hostel rules</h3>
+        <p className={styles.muted}>Every property follows these. Reservations already made keep the refund rule they were made with.</p>
+      </div>
+      {canManage ? (
+        <div className={styles.group}>
+          {STAYS_RULES.map((f) => (
+            <Input
+              key={f.key}
+              label={f.label}
+              inputMode="numeric"
+              value={text[f.key]}
+              onChange={(e) => whole((v) => setText((all) => ({ ...all, [f.key]: v })))(e.target.value)}
+              suffix={f.unit || undefined}
+              hint={errors[f.key] ? undefined : f.hint}
+              error={errors[f.key]}
+              maxLength={3}
+            />
+          ))}
+          <div>
+            <Button variant="secondary" disabled={invalid || !changed} loading={busy} onClick={() => void save()}>
+              Save PG and hostel rules
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <dl className={styles.facts}>
+          {STAYS_RULES.map((f) => (
+            <Fact key={f.key} label={f.label} value={plural(rules[f.key], f.unit)} />
+          ))}
+        </dl>
+      )}
+    </>
+  );
+}
+
 function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
@@ -646,6 +734,7 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
       {m.eventRules && <EventRulesForm m={m} rules={m.eventRules} onSaved={onSaved} />}
       {m.coachingRules && <CoachingRulesForm m={m} rules={m.coachingRules} onSaved={onSaved} />}
       {m.turfRules && <TurfRulesForm m={m} rules={m.turfRules} onSaved={onSaved} />}
+      {m.staysRules && <StaysRulesForm m={m} rules={m.staysRules} onSaved={onSaved} />}
     </Card>
   );
 }

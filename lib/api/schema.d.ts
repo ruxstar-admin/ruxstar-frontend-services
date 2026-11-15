@@ -413,7 +413,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -598,7 +598,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -8567,12 +8567,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated" | "coaching.enrolled" | "coaching.updated" | "turf.booked" | "turf.updated";
+                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated" | "coaching.enrolled" | "coaching.updated" | "turf.booked" | "turf.updated" | "stays.reserved" | "stays.updated";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches, `turf_ground` a ground's page, `turf_order` your turf booking, `vendor_ground` a ground's board for its owner or team; `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch" | "turf_ground" | "turf_order" | "vendor_ground";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches, `turf_ground` a ground's page, `turf_order` your turf booking, `vendor_ground` a ground's board for its owner or team, `stay_property` a PG or hostel's page, `stay_order` your PG or hostel reservation, `vendor_property` a property's bed board for its owner or team; `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch" | "turf_ground" | "turf_order" | "vendor_ground" | "stay_property" | "stay_order" | "vendor_property";
                                     id: string;
                                 };
                                 read: boolean;
@@ -9259,7 +9259,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -9508,7 +9508,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -11486,7 +11486,7 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Your print shops, events, coaching and turf businesses it works at */
+                        /** @description Your print shops, events, coaching, turf and stays businesses it works at */
                         businessIds: string[];
                     };
                 };
@@ -11617,7 +11617,7 @@ export interface paths {
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
                         active?: boolean;
-                        /** @description Your print shops, events, coaching and turf businesses it works at */
+                        /** @description Your print shops, events, coaching, turf and stays businesses it works at */
                         businessIds?: string[];
                     };
                 };
@@ -11744,7 +11744,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -11761,11 +11761,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -11818,7 +11818,7 @@ export interface paths {
                     "application/json": {
                         /** @description Their Ruxstar username, without the @ */
                         username: string;
-                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                         pay?: {
                             /** @description In paise, at least ₹1 */
                             amount: number;
@@ -11850,7 +11850,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -11983,7 +11983,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                         /** @description Only while they're invited: the offer can't change once they accept */
                         pay?: {
                             /** @description In paise, at least ₹1 */
@@ -12016,7 +12016,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -17358,6 +17358,2300 @@ export interface paths {
         };
         trace?: never;
     };
+    "/v1/vendor/businesses/{id}/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A stays business's properties, oldest first, with their rooms */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Make a PG, hostel or co-living property as a draft
+         * @description Add photos and rooms next, then publish it. `kind` defaults to the business's type. Facilities come from GET /v1/stays/facilities. Refund days default to Ruxstar's and can only be more (stricter), up to GET /v1/stays/rules' `maxRefundDays`. The deposit is only shown; it's paid to you directly.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                        kind?: "pg" | "hostel" | "coliving";
+                        description?: string | null;
+                        address: {
+                            line: string;
+                            area?: string | null;
+                            city: string;
+                            pincode?: string | null;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        };
+                        /** @description Who can stay */
+                        for: "men" | "women" | "any";
+                        /** @description Empty or left out: anyone */
+                        occupants?: ("students" | "working")[];
+                        food?: {
+                            /** @description non_veg serves veg too; none: no food */
+                            type: "veg" | "non_veg" | "none";
+                            /** @description Meals included in the rent; empty when `type` is none */
+                            meals: ("breakfast" | "lunch" | "dinner")[];
+                        };
+                        facilities?: string[];
+                        rules?: {
+                            /** @description Latest entry time; null for none */
+                            curfew: string | null;
+                            /** @description Visitors allowed */
+                            guests: boolean;
+                            smoking: boolean;
+                            alcohol: boolean;
+                            pets: boolean;
+                            notes: string | null;
+                        };
+                        /** @description Days of notice before moving out. Default 30 */
+                        noticeDays?: number;
+                        /** @description Paise, paid to the owner directly at move-in; Ruxstar only shows it */
+                        deposit?: {
+                            amount: number;
+                            note?: string | null;
+                        };
+                        nearby?: {
+                            kind: "college" | "office" | "metro" | "other";
+                            name: string;
+                            /** @description Distance in kilometres */
+                            km: number;
+                        }[];
+                        /** @description Full refund until this many days before move-in: at least the rules' `refundDays` (stricter means more days), at most `maxRefundDays`. Default: Ruxstar's */
+                        refundDays?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/properties/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of your properties, with its rooms and what it needs to publish */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a draft property, with its rooms, beds and photos
+         * @description Published properties stay; pause their rooms instead.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Change a property's details, food, facilities, house rules, notice, deposit, nearby places or refund days
+         * @description New refund days and notice apply to reservations made from now; earlier ones keep theirs.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                        kind?: "pg" | "hostel" | "coliving";
+                        description?: string | null;
+                        address?: {
+                            line: string;
+                            area?: string | null;
+                            city: string;
+                            pincode?: string | null;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        };
+                        /** @description Who can stay */
+                        for?: "men" | "women" | "any";
+                        /** @description Empty or left out: anyone */
+                        occupants?: ("students" | "working")[];
+                        food?: {
+                            /** @description non_veg serves veg too; none: no food */
+                            type: "veg" | "non_veg" | "none";
+                            /** @description Meals included in the rent; empty when `type` is none */
+                            meals: ("breakfast" | "lunch" | "dinner")[];
+                        };
+                        facilities?: string[];
+                        rules?: {
+                            /** @description Latest entry time; null for none */
+                            curfew: string | null;
+                            /** @description Visitors allowed */
+                            guests: boolean;
+                            smoking: boolean;
+                            alcohol: boolean;
+                            pets: boolean;
+                            notes: string | null;
+                        };
+                        /** @description Days of notice before moving out. Default 30 */
+                        noticeDays?: number;
+                        /** @description Paise, paid to the owner directly at move-in; Ruxstar only shows it */
+                        deposit?: {
+                            amount: number;
+                            note?: string | null;
+                        };
+                        nearby?: {
+                            kind: "college" | "office" | "metro" | "other";
+                            name: string;
+                            /** @description Distance in kilometres */
+                            km: number;
+                        }[];
+                        /** @description Full refund until this many days before move-in: at least the rules' `refundDays` (stricter means more days), at most `maxRefundDays`. Default: Ruxstar's */
+                        refundDays?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/vendor/properties/{id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a photo to the property
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. Up to 10; the first is the cover.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/properties/{id}/photos/{photoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a photo from the property
+         * @description A published property keeps at least one.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    photoId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/properties/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Put a draft property up for reservations
+         * @description Needs the business published, a photo, and a room open for reservations. Everything missing comes back at once. Ruxstar doesn't check listings first; it can take one down.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/properties/{id}/rooms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a room to the property, with its beds
+         * @description A shared room is priced per bed; customers reserve a bed, or every bed together when `wholeRoom`. A private room is priced and reserved whole. Beds are labelled A, B, C… Give a price per month (PG, co-living), per night (hostel), or both.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                        kind: "private" | "shared";
+                        /** @description Up to the rules' `maxBeds`. A private room is one unit however many beds */
+                        beds: number;
+                        /** @description Shared rooms: let customers reserve every bed together. Default true */
+                        wholeRoom?: boolean;
+                        /** @description For each bed of a shared room, or the whole private room. At least one */
+                        prices: {
+                            /** @description Per month; null when not let by the month */
+                            month: number | null;
+                            /** @description Per night; null when not let by the night */
+                            night: number | null;
+                        };
+                        features?: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                        /** @description paused: shown as full, not reservable */
+                        status?: "live" | "paused";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/rooms/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a room
+         * @description Not while it has reservations not cancelled or ended: cancel them or mark the move-out from the desk first.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Change a room: name, kind, beds, prices, features, or pause it
+         * @description Fewer beds only if the beds dropped (from the end) aren't reserved now or later. A room with reservations to come can't change between private and shared. Reservations made keep their prices. Pausing marks it full: no new reservations, existing ones stay.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                        kind?: "private" | "shared";
+                        /** @description Up to the rules' `maxBeds`. A private room is one unit however many beds */
+                        beds?: number;
+                        /** @description Shared rooms: let customers reserve every bed together. Default true */
+                        wholeRoom?: boolean;
+                        /** @description For each bed of a shared room, or the whole private room. At least one */
+                        prices?: {
+                            /** @description Per month; null when not let by the month */
+                            month: number | null;
+                            /** @description Per night; null when not let by the night */
+                            night: number | null;
+                        };
+                        features?: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                        /** @description paused: shown as full, not reservable */
+                        status?: "live" | "paused";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/v1/vendor/businesses/{id}/activity": {
         parameters: {
             query?: never;
@@ -17507,11 +19801,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -17618,11 +19912,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -17703,11 +19997,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -17789,7 +20083,7 @@ export interface paths {
                                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                          * @enum {unknown}
                                          */
-                                        id: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                        id: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                         label: string;
                                         description: string;
                                         examples: string;
@@ -17896,7 +20190,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -18043,7 +20337,7 @@ export interface paths {
                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                          * @enum {unknown}
                          */
-                        type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                        type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                         name: string;
                         /** @description 10-digit mobile number */
                         phone: string;
@@ -18083,7 +20377,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -18250,7 +20544,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -18488,7 +20782,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -18704,7 +20998,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -18872,7 +21166,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -19046,7 +21340,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -19217,7 +21511,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -19389,7 +21683,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -19561,7 +21855,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -21518,11 +23812,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -21612,11 +23906,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -21767,11 +24061,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -21929,7 +24223,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -22030,7 +24324,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -22989,11 +25283,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -23083,11 +25377,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -23238,11 +25532,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -26258,11 +28552,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -26352,11 +28646,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -26507,11 +28801,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -28791,6 +31085,5032 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/stays/desk/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Properties you run: your own, and those whose team gave you stays permissions
+         * @description Team members need to be verified to see them.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                status: "draft" | "live" | "removed";
+                                rooms: number;
+                                beds: number;
+                                owner: boolean;
+                                /** @description The owner has every one */
+                                permissions: string[];
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/properties/{id}/board": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The bed board for a day: every room's beds, free, held, reserved, occupied or marked full, with who has them
+         * @description Today in India when `date` is left out. A free bed shows its next reservation. Team members need stays.reservations.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description YYYY-MM-DD, in India */
+                    date?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description YYYY-MM-DD, in India */
+                                date: string;
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    beds: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        label: string;
+                                        /** @description closed: you marked it full */
+                                        status: "open" | "closed";
+                                        /** @description That day. held: someone is paying now. reserved: paid, not moved in. occupied: moved in */
+                                        state: "free" | "held" | "reserved" | "occupied" | "closed";
+                                        reservation: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            orderNo: number;
+                                            tenantName: string;
+                                            /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                            status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                            /** @description YYYY-MM-DD, in India */
+                                            moveIn: string;
+                                            until: string | null;
+                                        } | null;
+                                        /** @description Free that day: the next reservation of the bed, if any */
+                                        next: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            orderNo: number;
+                                            tenantName: string;
+                                            /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                            status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                            /** @description YYYY-MM-DD, in India */
+                                            moveIn: string;
+                                            until: string | null;
+                                        } | null;
+                                    }[];
+                                }[];
+                                totals: {
+                                    beds: number;
+                                    free: number;
+                                    held: number;
+                                    reserved: number;
+                                    occupied: number;
+                                    closed: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/properties/{id}/reservations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A property's reservations: upcoming ones by move-in, staying tenants, or past and all newest first
+         * @description Team members need stays.reservations.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description upcoming: paid, waiting for move-in. staying: moved in, not moved out. past: moved out or cancelled */
+                    view?: "upcoming" | "staying" | "past" | "all";
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                tenant: {
+                                    name: string;
+                                    phone: string | null;
+                                    /** @description Base KYC approved */
+                                    verified: boolean;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until "Moved in" and the objection window. objection: the tenant objected; Ruxstar decides */
+                                payout: "none" | "waiting" | "objection" | "released" | "refunded";
+                                releaseAt: string | null;
+                                canMoveIn: boolean;
+                                canMoveOut: boolean;
+                                /** @description Paid and the money not released yet; always a full refund */
+                                canCancel: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/properties/{id}/tenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who lives at the property now: tenants moved in and not moved out, by room
+         * @description Each with their phone, whether they're verified, and any notice. Team members need stays.reservations.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                tenant: {
+                                    name: string;
+                                    phone: string | null;
+                                    /** @description Base KYC approved */
+                                    verified: boolean;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until "Moved in" and the objection window. objection: the tenant objected; Ruxstar decides */
+                                payout: "none" | "waiting" | "objection" | "released" | "refunded";
+                                releaseAt: string | null;
+                                canMoveIn: boolean;
+                                canMoveOut: boolean;
+                                /** @description Paid and the money not released yet; always a full refund */
+                                canCancel: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One reservation at your property, with the tenant's phone and whether they're verified
+         * @description Team members need stays.reservations.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                tenant: {
+                                    name: string;
+                                    phone: string | null;
+                                    /** @description Base KYC approved */
+                                    verified: boolean;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until "Moved in" and the objection window. objection: the tenant objected; Ruxstar decides */
+                                payout: "none" | "waiting" | "objection" | "released" | "refunded";
+                                releaseAt: string | null;
+                                canMoveIn: boolean;
+                                canMoveOut: boolean;
+                                /** @description Paid and the money not released yet; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/orders/{id}/moved-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark the tenant moved in
+         * @description From the move-in day. The tenant then has the rules' `objectionHours` to object; your share is released once that passes with no objection. Team members need stays.movein.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                tenant: {
+                                    name: string;
+                                    phone: string | null;
+                                    /** @description Base KYC approved */
+                                    verified: boolean;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until "Moved in" and the objection window. objection: the tenant objected; Ruxstar decides */
+                                payout: "none" | "waiting" | "objection" | "released" | "refunded";
+                                releaseAt: string | null;
+                                canMoveIn: boolean;
+                                canMoveOut: boolean;
+                                /** @description Paid and the money not released yet; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/orders/{id}/move-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark when the tenant moves out
+         * @description Today when `on` is left out; a day already passed ends the stay now, a later one sets the move-out day (a notice from you). The beds open for reservations from that day. A stay can be shortened, never lengthened. Team members need stays.movein.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description YYYY-MM-DD, in India */
+                        on?: string;
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                tenant: {
+                                    name: string;
+                                    phone: string | null;
+                                    /** @description Base KYC approved */
+                                    verified: boolean;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until "Moved in" and the objection window. objection: the tenant objected; Ruxstar decides */
+                                payout: "none" | "waiting" | "objection" | "released" | "refunded";
+                                releaseAt: string | null;
+                                canMoveIn: boolean;
+                                canMoveOut: boolean;
+                                /** @description Paid and the money not released yet; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a reservation, refunding the tenant in full
+         * @description The platform fee comes back too, and the beds are freed. Not once the money has been released. Team members need stays.cancel.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The tenant is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                tenant: {
+                                    name: string;
+                                    phone: string | null;
+                                    /** @description Base KYC approved */
+                                    verified: boolean;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until "Moved in" and the objection window. objection: the tenant objected; Ruxstar decides */
+                                payout: "none" | "waiting" | "objection" | "released" | "refunded";
+                                releaseAt: string | null;
+                                canMoveIn: boolean;
+                                canMoveOut: boolean;
+                                /** @description Paid and the money not released yet; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/beds/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a bed free or full
+         * @description A full bed can't be reserved; reservations already made stand. Team members need stays.beds.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description closed: full or unavailable; reservations made stand */
+                        status: "open" | "closed";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                label: string;
+                                status: "open" | "closed";
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/rooms/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a whole room free or full
+         * @description paused: shown as full and not reservable; reservations already made stand. Team members need stays.beds.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description paused: shown as full, not reservable */
+                        status: "live" | "paused";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/desk/properties/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit the listing: details, food, facilities, house rules, notice, deposit, nearby places or refund days
+         * @description The same as the owner's edit. Team members need stays.listing.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                        kind?: "pg" | "hostel" | "coliving";
+                        description?: string | null;
+                        address?: {
+                            line: string;
+                            area?: string | null;
+                            city: string;
+                            pincode?: string | null;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        };
+                        /** @description Who can stay */
+                        for?: "men" | "women" | "any";
+                        /** @description Empty or left out: anyone */
+                        occupants?: ("students" | "working")[];
+                        food?: {
+                            /** @description non_veg serves veg too; none: no food */
+                            type: "veg" | "non_veg" | "none";
+                            /** @description Meals included in the rent; empty when `type` is none */
+                            meals: ("breakfast" | "lunch" | "dinner")[];
+                        };
+                        facilities?: string[];
+                        rules?: {
+                            /** @description Latest entry time; null for none */
+                            curfew: string | null;
+                            /** @description Visitors allowed */
+                            guests: boolean;
+                            smoking: boolean;
+                            alcohol: boolean;
+                            pets: boolean;
+                            notes: string | null;
+                        };
+                        /** @description Days of notice before moving out. Default 30 */
+                        noticeDays?: number;
+                        /** @description Paise, paid to the owner directly at move-in; Ruxstar only shows it */
+                        deposit?: {
+                            amount: number;
+                            note?: string | null;
+                        };
+                        nearby?: {
+                            kind: "college" | "office" | "metro" | "other";
+                            name: string;
+                            /** @description Distance in kilometres */
+                            km: number;
+                        }[];
+                        /** @description Full refund until this many days before move-in: at least the rules' `refundDays` (stricter means more days), at most `maxRefundDays`. Default: Ruxstar's */
+                        refundDays?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/stays/desk/rooms/{id}/prices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Change a room's prices per month and per night
+         * @description Reservations already made keep what they paid. Team members need stays.listing.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description For each bed of a shared room, or the whole private room. At least one */
+                        prices: {
+                            /** @description Per month; null when not let by the month */
+                            month: number | null;
+                            /** @description Per night; null when not let by the night */
+                            night: number | null;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description The refund days it can pick */
+                                refundLimits: {
+                                    min: number;
+                                    max: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid reservations waiting for move-in */
+                                upcoming: number;
+                                /** @description Tenants moved in and not moved out */
+                                staying: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/orders/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your review of one of your reservations
+         * @description Null until you review it. One Ruxstar removed comes back with its reason; it can't be changed or written again.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Review a reservation, or change your review
+         * @description Once the property has marked you moved in, while you stay and until 30 days after you move out. 1 to 5 stars and, if you like, a few words; one review per reservation. Leaving out `text` keeps what you wrote; null or blank clears it. The business is told about a new review.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        rating: number;
+                        text?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Delete your review of a reservation
+         * @description You can review the reservation again while it is still open for reviews.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A property's reviews, newest first
+         * @description No sign-in needed. The business's rating covers all its reviews and is on the detail.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/reviews/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report a review to Ruxstar
+         * @description One open report per review you report; reporting it again while it is open changes nothing. The writer isn't told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: "spam" | "fake" | "abuse" | "other";
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ruxstar's rules for PGs and hostels: the refund rule, objection window, months and nights per reservation, hold time and fees
+         * @description No sign-in needed.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description A full refund when the customer cancels at least this many days before move-in. Properties can only be stricter */
+                                refundDays: number;
+                                /** @description The most days a property's stricter refund rule can ask for. At least `refundDays` */
+                                maxRefundDays: number;
+                                /** @description After the owner marks "Moved in", the tenant can object for this long; the owner's money waits until then */
+                                objectionHours: number;
+                                /** @description PG and co-living: months paid with a reservation, the first included */
+                                maxMonths: number;
+                                /** @description Hostels: nights in one reservation */
+                                maxNights: number;
+                                /** @description Unpaid reservations hold their beds this long for the checkout */
+                                holdMinutes: number;
+                                /** @description How far ahead move-in can be */
+                                bookAheadDays: number;
+                                /** @description Properties per business */
+                                maxProperties: number;
+                                /** @description Rooms per property */
+                                maxRooms: number;
+                                /** @description Beds per room */
+                                maxBeds: number;
+                                commissionBps: number;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/facilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The facilities properties can list, for filters and setup
+         * @description No sign-in needed. Ruxstar keeps the list.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * PGs, hostels and co-living taking reservations, newest first
+         * @description No sign-in needed. Filter by place, who it's for, food, facilities (keys from /facilities), how it's let, price, room kind, what's nearby, notice period and house rules. Empty while Ruxstar has stays switched off.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    city?: string;
+                    area?: string;
+                    /** @description Words in the property's or business's name */
+                    q?: string;
+                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                    kind?: "pg" | "hostel" | "coliving";
+                    /** @description Also matches places open to anyone */
+                    for?: "men" | "women";
+                    /** @description Also matches places open to anyone */
+                    occupant?: "students" | "working";
+                    /** @description any: serves food */
+                    food?: "veg" | "non_veg" | "none" | "any";
+                    /** @description Comma-separated meals that must be included, for example breakfast,dinner */
+                    meals?: string;
+                    /** @description Comma-separated facility keys, all of which it must have */
+                    facilities?: string;
+                    /** @description Has rooms let this way */
+                    stay?: "month" | "night";
+                    /** @description Paise: its lowest price per bed is at most this; per month, or per night with stay=night */
+                    priceMax?: number;
+                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                    room?: "private" | "shared";
+                    /** @description Words in a nearby college, office or metro station */
+                    near?: string;
+                    /** @description Notice period of at most this many days */
+                    noticeMax?: number;
+                    /** @description Comma-separated house rules it must allow: guests, smoking, alcohol, pets, late_entry (no curfew) */
+                    allows?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your stays: current ones by move-in, or past ones newest first
+         * @description Current: unpaid, paid and waiting for move-in, or moved in and not moved out. Past: everything else.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description current: unpaid, waiting for move-in, or staying */
+                    view?: "current" | "past";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Unpaid, or paid and not moved in */
+                                canCancel: boolean;
+                                /** @description What cancelling now gives back */
+                                refundIfCancelled: number | null;
+                                /** @description Within the window after "Moved in", with no objection yet */
+                                canObject: boolean;
+                                /** @description A monthly stay with no end date yet */
+                                canGiveNotice: boolean;
+                                /** @description The earliest move-out day a notice now can ask for */
+                                noticeFrom: string | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One reservation: the room and beds, dates, what cancelling gives back, objection, notice, refund and invoices
+         * @description While it waits for payment, Cashfree is asked whether it was paid.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Unpaid, or paid and not moved in */
+                                canCancel: boolean;
+                                /** @description What cancelling now gives back */
+                                refundIfCancelled: number | null;
+                                /** @description Within the window after "Moved in", with no objection yet */
+                                canObject: boolean;
+                                /** @description A monthly stay with no end date yet */
+                                canGiveNotice: boolean;
+                                /** @description The earliest move-out day a notice now can ask for */
+                                noticeFrom: string | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/orders/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A fresh checkout link for a reservation waiting for payment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a reservation before moving in
+         * @description Unpaid: the beds go back. Paid: everything back, platform fee included, until the refund rule's day (see `refundIfCancelled` and `refundUntil`); nothing back after it, though the bed is freed. Once moved in, give notice instead.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Unpaid, or paid and not moved in */
+                                canCancel: boolean;
+                                /** @description What cancelling now gives back */
+                                refundIfCancelled: number | null;
+                                /** @description Within the window after "Moved in", with no objection yet */
+                                canObject: boolean;
+                                /** @description A monthly stay with no end date yet */
+                                canGiveNotice: boolean;
+                                /** @description The earliest move-out day a notice now can ask for */
+                                noticeFrom: string | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/orders/{id}/objection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Object after the property marked you moved in
+         * @description Within the rules' `objectionHours` of "Moved in" (see `objectionUntil`), for example if you didn't actually move in or the room isn't as listed. The property isn't paid until Ruxstar decides. Once per reservation.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description What's wrong; Ruxstar support reads it */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Unpaid, or paid and not moved in */
+                                canCancel: boolean;
+                                /** @description What cancelling now gives back */
+                                refundIfCancelled: number | null;
+                                /** @description Within the window after "Moved in", with no objection yet */
+                                canObject: boolean;
+                                /** @description A monthly stay with no end date yet */
+                                canGiveNotice: boolean;
+                                /** @description The earliest move-out day a notice now can ask for */
+                                noticeFrom: string | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Take back your objection
+         * @description The property is paid once the objection window would have closed.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Unpaid, or paid and not moved in */
+                                canCancel: boolean;
+                                /** @description What cancelling now gives back */
+                                refundIfCancelled: number | null;
+                                /** @description Within the window after "Moved in", with no objection yet */
+                                canObject: boolean;
+                                /** @description A monthly stay with no end date yet */
+                                canGiveNotice: boolean;
+                                /** @description The earliest move-out day a notice now can ask for */
+                                noticeFrom: string | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/orders/{id}/notice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Give notice on a monthly stay
+         * @description Sets your move-out day: the notice period from today (see `noticeFrom`), or a later day. The bed opens for others from then.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description YYYY-MM-DD, in India */
+                        on?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Unpaid, or paid and not moved in */
+                                canCancel: boolean;
+                                /** @description What cancelling now gives back */
+                                refundIfCancelled: number | null;
+                                /** @description Within the window after "Moved in", with no objection yet */
+                                canObject: boolean;
+                                /** @description A monthly stay with no end date yet */
+                                canGiveNotice: boolean;
+                                /** @description The earliest move-out day a notice now can ask for */
+                                noticeFrom: string | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/{id}/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Which beds are free for a stay: each room's beds, and the price of a bed or the whole room
+         * @description No sign-in needed. A monthly stay needs the bed free from move-in onwards, as it has no end until notice; a hostel stay only for its nights. Beds held for someone's checkout show as taken.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description YYYY-MM-DD, in India */
+                    moveIn: string;
+                    stay?: "month" | "night";
+                    /** @description stay=month: months paid now. The bed stays yours after them until you give notice */
+                    months?: number;
+                    /** @description stay=night */
+                    nights?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                stay: "month" | "night";
+                                /** @description stay=night: the checkout day. stay=month: null, as the bed stays yours until notice */
+                                until: string | null;
+                                /** @description Within how far ahead move-in can be, and the property is taking reservations */
+                                reservable: boolean;
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    beds: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        label: string;
+                                        /** @description taken: reserved or held for someone's checkout at some point of the stay. closed: the owner marked it full */
+                                        state: "free" | "taken" | "closed";
+                                    }[];
+                                    /** @description Shared rooms: one free bed for this stay, before coupons and the platform fee; null when no bed is free or not let this way */
+                                    bedTotal: number | null;
+                                    /** @description The whole room for this stay; null when it can't be reserved whole for these dates */
+                                    roomTotal: number | null;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/rooms/{id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Coupons that work on this stay, best first
+         * @description Send the bed or whole room, move-in and months or nights you're about to reserve; with `code`, that code is checked too.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description MongoDB ObjectId as hex */
+                        bedId?: string;
+                        /** @description Shared rooms: every bed of the room. Private rooms are always whole */
+                        whole?: boolean;
+                        /** @description YYYY-MM-DD, in India */
+                        moveIn: string;
+                        /** @default month */
+                        stay?: "month" | "night";
+                        /** @description stay=month: months paid now, the first included; up to the rules' `maxMonths`. Default 1 */
+                        months?: number;
+                        /** @description stay=night: up to the rules' `maxNights`. Default 1 */
+                        nights?: number;
+                        /** @description Check this code too */
+                        code?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                offers: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    label: string;
+                                    terms: string | null;
+                                    /** @description Paise it takes off this order; 0 when it doesn't apply yet */
+                                    discount: number;
+                                    problem: string | null;
+                                }[];
+                                /** @description With `code` */
+                                checked: {
+                                    code: string;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    problem: string | null;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/rooms/{id}/reserve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reserve a bed or a whole room from a move-in day
+         * @description Needs base KYC: without it, a KYC_REQUIRED error whose detail has `reason: tenant_kyc` and a `link` to the verification screen. PG and co-living pay the first months now (stay=month); hostels pay the nights (stay=night). The security deposit is paid to the owner, not here. Returns a checkout link; the beds are held for the rules' `holdMinutes` while you pay. A bed someone else holds or has for these dates is a CONFLICT.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description A shared room needs `bedId` or `whole: true` */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description MongoDB ObjectId as hex */
+                        bedId?: string;
+                        /** @description Shared rooms: every bed of the room. Private rooms are always whole */
+                        whole?: boolean;
+                        /** @description YYYY-MM-DD, in India */
+                        moveIn: string;
+                        /** @default month */
+                        stay?: "month" | "night";
+                        /** @description stay=month: months paid now, the first included; up to the rules' `maxMonths`. Default 1 */
+                        months?: number;
+                        /** @description stay=night: up to the rules' `maxNights`. Default 1 */
+                        nights?: number;
+                        coupon?: string;
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                reservation: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                    status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                    property: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                        kind: "pg" | "hostel" | "coliving";
+                                        address: string;
+                                        city: string;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                        photo: {
+                                            id: string;
+                                            url: string;
+                                            width: number;
+                                            height: number;
+                                        } | null;
+                                        /** @description Taken down by Ruxstar */
+                                        removed: boolean;
+                                    };
+                                    room: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                        kind: "private" | "shared";
+                                    };
+                                    beds: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                    whole: boolean;
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    stay: "month" | "night";
+                                    /** @description Months or nights paid */
+                                    units: number;
+                                    /** @description YYYY-MM-DD, in India */
+                                    moveIn: string;
+                                    /** Format: date-time */
+                                    from: string;
+                                    /** @description When the beds are free again; null while a monthly stay has no end date */
+                                    until: string | null;
+                                    price: {
+                                        /** @description Amount in paise */
+                                        unitPrice: number;
+                                        /** @description Beds charged */
+                                        quantity: number;
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        discount: number;
+                                        /** @description Amount in paise */
+                                        platformFee: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    };
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    deposit: {
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string | null;
+                                    };
+                                    noticeDays: number;
+                                    refundRule: string;
+                                    /** Format: date-time */
+                                    refundUntil: string;
+                                    refund: {
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        status: "pending" | "done";
+                                        reason: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    cancellation: {
+                                        by: "customer" | "property" | "ruxstar" | "system";
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    movedInAt: string | null;
+                                    /** @description After "Moved in": the tenant can object until then */
+                                    objectionUntil: string | null;
+                                    objection: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                        /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                        status: "open" | "withdrawn" | "released" | "refunded";
+                                        note: string | null;
+                                        resolvedAt: string | null;
+                                    } | null;
+                                    moveOut: {
+                                        /** @description YYYY-MM-DD, in India */
+                                        on: string;
+                                        kind: "notice" | "move_out";
+                                        by: "tenant" | "property" | "ruxstar";
+                                    } | null;
+                                    /** @description Moved in and not moved out yet */
+                                    staying: boolean;
+                                    reason: string | null;
+                                    /** @description Unpaid, the beds go back after this */
+                                    payBy: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    /** @description Unpaid, or paid and not moved in */
+                                    canCancel: boolean;
+                                    /** @description What cancelling now gives back */
+                                    refundIfCancelled: number | null;
+                                    /** @description Within the window after "Moved in", with no objection yet */
+                                    canObject: boolean;
+                                    /** @description A monthly stay with no end date yet */
+                                    canGiveNotice: boolean;
+                                    /** @description The earliest move-out day a notice now can ask for */
+                                    noticeFrom: string | null;
+                                    /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                    invoices?: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                        kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                        number: string;
+                                        /** @description Whose document it is: the business's, or Ruxstar's */
+                                        issuer: "vendor" | "ruxstar";
+                                        /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                        role: "supply" | "fee";
+                                        /** @description Amount in paise */
+                                        total: number;
+                                        /** @description Credit notes: the refund behind it */
+                                        refundId: string | null;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                    }[];
+                                    /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                    canReview?: boolean;
+                                    /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                    reviewUntil?: string | null;
+                                };
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/stays/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One property: photos, rooms with prices and beds, food, facilities, house rules, notice, deposit, nearby places and the refund rule
+         * @description No sign-in needed; signed out, properties Ruxstar took down aren't found. Which beds are free comes from /{id}/availability.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                description: string | null;
+                                addressDetail: {
+                                    line: string;
+                                    area: string | null;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                rules: {
+                                    /** @description Latest entry time; null for none */
+                                    curfew: string | null;
+                                    /** @description Visitors allowed */
+                                    guests: boolean;
+                                    smoking: boolean;
+                                    alcohol: boolean;
+                                    pets: boolean;
+                                    notes: string | null;
+                                };
+                                depositDetail: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                /** @description Reservable and full rooms, in the property's order */
+                                rooms: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                    beds: number;
+                                    /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                    wholeRoom: boolean;
+                                    /** @description For each bed of a shared room, or the whole private room. At least one */
+                                    prices: {
+                                        /** @description Per month; null when not let by the month */
+                                        month: number | null;
+                                        /** @description Per night; null when not let by the night */
+                                        night: number | null;
+                                    };
+                                    features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                    /** @description paused: shown as full, not reservable */
+                                    status: "live" | "paused";
+                                    /** @description Its beds, for the dots; which are free comes from the availability call */
+                                    bedList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description A, B, C… in the room */
+                                        label: string;
+                                    }[];
+                                }[];
+                                /** @description Full refund until this many days before move-in */
+                                refundDays: number;
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canReserve: boolean;
+                                whyNot: string | null;
+                                /**
+                                 * @description Tenants need base KYC before reserving
+                                 * @enum {boolean}
+                                 */
+                                kycRequired: true;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/turf/desk/grounds": {
         parameters: {
             query?: never;
@@ -30210,11 +37530,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -30304,11 +37624,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -30459,11 +37779,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -32371,7 +39691,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                             }[];
                             meta: {
                                 requestId: string;
@@ -32618,7 +39938,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                             };
                             meta: {
                                 requestId: string;
@@ -32877,7 +40197,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                             };
                             meta: {
                                 requestId: string;
@@ -33135,7 +40455,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                             };
                             meta: {
                                 requestId: string;
@@ -33473,7 +40793,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                             };
                             meta: {
                                 requestId: string;
@@ -33707,7 +41027,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                             };
                             meta: {
                                 requestId: string;
@@ -33848,7 +41168,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -34033,7 +41353,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -34249,7 +41569,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -34417,7 +41737,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -34591,7 +41911,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -34762,7 +42082,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -34934,7 +42254,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -35477,11 +42797,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -35588,11 +42908,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -35676,11 +42996,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching or turf */
-                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground";
+                                    type: "event" | "course" | "ground" | "property";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -35766,7 +43086,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -35799,7 +43119,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                                     /** @description The pay they accepted */
                                     pay: {
                                         /** @description In paise, at least ₹1 */
@@ -35816,11 +43136,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -35909,7 +43229,7 @@ export interface paths {
                                 owner: {
                                     name: string;
                                 };
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                                 /** @description The pay they accepted */
                                 pay: {
                                     /** @description In paise, at least ₹1 */
@@ -39833,11 +47153,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events, coaching or turf */
-                                    module?: "pod" | "events" | "coaching" | "turf";
+                                    /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                    module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course" | "ground";
+                                        type: "event" | "course" | "ground" | "property";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -39963,11 +47283,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events, coaching or turf */
-                                    module?: "pod" | "events" | "coaching" | "turf";
+                                    /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                    module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course" | "ground";
+                                        type: "event" | "course" | "ground" | "property";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -40100,11 +47420,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events, coaching or turf */
-                                    module?: "pod" | "events" | "coaching" | "turf";
+                                    /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
+                                    module?: "pod" | "events" | "coaching" | "turf" | "stays";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course" | "ground";
+                                        type: "event" | "course" | "ground" | "property";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -41470,8 +48790,8 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Where it works: print orders, event tickets, coaching enrolments, turf bookings, or any of them. Print only when left out */
-                        modules?: ("pod" | "events" | "coaching" | "turf")[];
+                        /** @description Where it works: print orders, event tickets, coaching enrolments, turf bookings, PG and hostel reservations, or any of them. Print only when left out */
+                        modules?: ("pod" | "events" | "coaching" | "turf" | "stays")[];
                     };
                 };
             };
@@ -42498,7 +49818,7 @@ export interface paths {
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -42682,7 +50002,7 @@ export interface paths {
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -42888,7 +50208,7 @@ export interface paths {
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -43085,7 +50405,7 @@ export interface paths {
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -43281,7 +50601,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -43298,11 +50618,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -45894,6 +53214,1191 @@ export interface paths {
         };
         trace?: never;
     };
+    "/v1/ruxstar/stays/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every PG, hostel and co-living property, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "draft" | "live" | "removed";
+                    city?: string;
+                    /** @description Words in the property's or business's name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                kind: "pg" | "hostel" | "coliving";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                area: string | null;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Who can stay */
+                                for: "men" | "women" | "any";
+                                /** @description Empty: anyone */
+                                occupants: ("students" | "working")[];
+                                food: {
+                                    /** @description non_veg serves veg too; none: no food */
+                                    type: "veg" | "non_veg" | "none";
+                                    /** @description Meals included in the rent; empty when `type` is none */
+                                    meals: ("breakfast" | "lunch" | "dinner")[];
+                                };
+                                facilities: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                priceFrom: {
+                                    month: number | null;
+                                    night: number | null;
+                                };
+                                /** @description How its rooms are let */
+                                units: ("month" | "night")[];
+                                roomKinds: ("private" | "shared")[];
+                                noticeDays: number;
+                                /** @description Amount in paise */
+                                deposit: number;
+                                nearby: {
+                                    kind: "college" | "office" | "metro" | "other";
+                                    name: string;
+                                    /** @description Distance in kilometres */
+                                    km: number;
+                                }[];
+                                status: "draft" | "live" | "removed";
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/stays/properties/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One property, with its rooms and reservation counts */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    city: string;
+                                    area: string | null;
+                                    address: string;
+                                    /** @description The first photo */
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Who can stay */
+                                    for: "men" | "women" | "any";
+                                    /** @description Empty: anyone */
+                                    occupants: ("students" | "working")[];
+                                    food: {
+                                        /** @description non_veg serves veg too; none: no food */
+                                        type: "veg" | "non_veg" | "none";
+                                        /** @description Meals included in the rent; empty when `type` is none */
+                                        meals: ("breakfast" | "lunch" | "dinner")[];
+                                    };
+                                    facilities: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                    priceFrom: {
+                                        month: number | null;
+                                        night: number | null;
+                                    };
+                                    /** @description How its rooms are let */
+                                    units: ("month" | "night")[];
+                                    roomKinds: ("private" | "shared")[];
+                                    noticeDays: number;
+                                    /** @description Amount in paise */
+                                    deposit: number;
+                                    nearby: {
+                                        kind: "college" | "office" | "metro" | "other";
+                                        name: string;
+                                        /** @description Distance in kilometres */
+                                        km: number;
+                                    }[];
+                                    description: string | null;
+                                    addressDetail: {
+                                        line: string;
+                                        area: string | null;
+                                        city: string;
+                                        pincode: string | null;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                    };
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    rules: {
+                                        /** @description Latest entry time; null for none */
+                                        curfew: string | null;
+                                        /** @description Visitors allowed */
+                                        guests: boolean;
+                                        smoking: boolean;
+                                        alcohol: boolean;
+                                        pets: boolean;
+                                        notes: string | null;
+                                    };
+                                    depositDetail: {
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string | null;
+                                    };
+                                    /** @description Reservable and full rooms, in the property's order */
+                                    rooms: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                        kind: "private" | "shared";
+                                        beds: number;
+                                        /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                        wholeRoom: boolean;
+                                        /** @description For each bed of a shared room, or the whole private room. At least one */
+                                        prices: {
+                                            /** @description Per month; null when not let by the month */
+                                            month: number | null;
+                                            /** @description Per night; null when not let by the night */
+                                            night: number | null;
+                                        };
+                                        features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                        /** @description paused: shown as full, not reservable */
+                                        status: "live" | "paused";
+                                        /** @description Its beds, for the dots; which are free comes from the availability call */
+                                        bedList: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            /** @description A, B, C… in the room */
+                                            label: string;
+                                        }[];
+                                    }[];
+                                    /** @description Full refund until this many days before move-in */
+                                    refundDays: number;
+                                    /** @description The refund rule in one sentence, for above the Pay button */
+                                    refundRule: string;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    status: "draft" | "live" | "removed";
+                                    canReserve: boolean;
+                                    whyNot: string | null;
+                                    /**
+                                     * @description Tenants need base KYC before reserving
+                                     * @enum {boolean}
+                                     */
+                                    kycRequired: true;
+                                    /** @description Live reviews */
+                                    rating?: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
+                                    /** @description The refund days it can pick */
+                                    refundLimits: {
+                                        min: number;
+                                        max: number;
+                                    };
+                                    publishedAt: string | null;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    /** @description What it needs before it can be published */
+                                    missing: string[];
+                                    /** @description Paid reservations waiting for move-in */
+                                    upcoming: number;
+                                    /** @description Tenants moved in and not moved out */
+                                    staying: number;
+                                };
+                                reservations: {
+                                    upcoming: number;
+                                    staying: number;
+                                    total: number;
+                                    cancelled: number;
+                                    objections: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/stays/properties/{id}/take-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a property down
+         * @description It leaves the listings, and every reservation not moved in yet is cancelled and refunded in full, platform fee included; the owner and tenants are told why. Tenants who moved in stay as they are. It can't be undone.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The owner and every tenant refunded are told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    city: string;
+                                    area: string | null;
+                                    address: string;
+                                    /** @description The first photo */
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Who can stay */
+                                    for: "men" | "women" | "any";
+                                    /** @description Empty: anyone */
+                                    occupants: ("students" | "working")[];
+                                    food: {
+                                        /** @description non_veg serves veg too; none: no food */
+                                        type: "veg" | "non_veg" | "none";
+                                        /** @description Meals included in the rent; empty when `type` is none */
+                                        meals: ("breakfast" | "lunch" | "dinner")[];
+                                    };
+                                    facilities: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    /** @description The lowest price per bed (or private room) of its reservable rooms, per month and per night */
+                                    priceFrom: {
+                                        month: number | null;
+                                        night: number | null;
+                                    };
+                                    /** @description How its rooms are let */
+                                    units: ("month" | "night")[];
+                                    roomKinds: ("private" | "shared")[];
+                                    noticeDays: number;
+                                    /** @description Amount in paise */
+                                    deposit: number;
+                                    nearby: {
+                                        kind: "college" | "office" | "metro" | "other";
+                                        name: string;
+                                        /** @description Distance in kilometres */
+                                        km: number;
+                                    }[];
+                                    description: string | null;
+                                    addressDetail: {
+                                        line: string;
+                                        area: string | null;
+                                        city: string;
+                                        pincode: string | null;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                    };
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    rules: {
+                                        /** @description Latest entry time; null for none */
+                                        curfew: string | null;
+                                        /** @description Visitors allowed */
+                                        guests: boolean;
+                                        smoking: boolean;
+                                        alcohol: boolean;
+                                        pets: boolean;
+                                        notes: string | null;
+                                    };
+                                    depositDetail: {
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string | null;
+                                    };
+                                    /** @description Reservable and full rooms, in the property's order */
+                                    rooms: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                        kind: "private" | "shared";
+                                        beds: number;
+                                        /** @description Shared rooms: every bed can be reserved together, at the bed price times the beds */
+                                        wholeRoom: boolean;
+                                        /** @description For each bed of a shared room, or the whole private room. At least one */
+                                        prices: {
+                                            /** @description Per month; null when not let by the month */
+                                            month: number | null;
+                                            /** @description Per night; null when not let by the night */
+                                            night: number | null;
+                                        };
+                                        features: ("ac" | "attached_bath" | "balcony" | "furnished" | "window")[];
+                                        /** @description paused: shown as full, not reservable */
+                                        status: "live" | "paused";
+                                        /** @description Its beds, for the dots; which are free comes from the availability call */
+                                        bedList: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            /** @description A, B, C… in the room */
+                                            label: string;
+                                        }[];
+                                    }[];
+                                    /** @description Full refund until this many days before move-in */
+                                    refundDays: number;
+                                    /** @description The refund rule in one sentence, for above the Pay button */
+                                    refundRule: string;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    status: "draft" | "live" | "removed";
+                                    canReserve: boolean;
+                                    whyNot: string | null;
+                                    /**
+                                     * @description Tenants need base KYC before reserving
+                                     * @enum {boolean}
+                                     */
+                                    kycRequired: true;
+                                    /** @description Live reviews */
+                                    rating?: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
+                                    /** @description The refund days it can pick */
+                                    refundLimits: {
+                                        min: number;
+                                        max: number;
+                                    };
+                                    publishedAt: string | null;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    /** @description What it needs before it can be published */
+                                    missing: string[];
+                                    /** @description Paid reservations waiting for move-in */
+                                    upcoming: number;
+                                    /** @description Tenants moved in and not moved out */
+                                    staying: number;
+                                };
+                                /** @description Reservations not moved in yet, refunded in full */
+                                refunded: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/stays/objections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tenants' objections after "Moved in", newest first
+         * @description Open ones hold the owner's money until decided.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "open" | "withdrawn" | "released" | "refunded";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                tenant: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/stays/reservations/{id}/objection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide a tenant's objection
+         * @description release: the owner is paid now. refund: the tenant gets everything back, platform fee included, and the stay ends. Both sides are told. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description release: pay the owner. refund: everything back to the tenant and the stay ends */
+                        decision: "release" | "refund";
+                        /** @description Both sides are told */
+                        note: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description confirmed: paid, waiting for move-in. moved_in: the owner marked it; the stay may have an end date (`until`) */
+                                status: "awaiting_payment" | "confirmed" | "moved_in" | "moved_out" | "cancelled";
+                                property: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description pg and coliving rooms are usually priced per month, hostel beds per night; any room can offer both */
+                                    kind: "pg" | "hostel" | "coliving";
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                room: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description private: reserved whole, priced per room. shared: priced per bed; beds reserved one by one, or all together when `wholeRoom` */
+                                    kind: "private" | "shared";
+                                };
+                                beds: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description A, B, C… in the room */
+                                    label: string;
+                                }[];
+                                whole: boolean;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                stay: "month" | "night";
+                                /** @description Months or nights paid */
+                                units: number;
+                                /** @description YYYY-MM-DD, in India */
+                                moveIn: string;
+                                /** Format: date-time */
+                                from: string;
+                                /** @description When the beds are free again; null while a monthly stay has no end date */
+                                until: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    /** @description Beds charged */
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                deposit: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    note: string | null;
+                                };
+                                noticeDays: number;
+                                refundRule: string;
+                                /** Format: date-time */
+                                refundUntil: string;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                cancellation: {
+                                    by: "customer" | "property" | "ruxstar" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                movedInAt: string | null;
+                                /** @description After "Moved in": the tenant can object until then */
+                                objectionUntil: string | null;
+                                objection: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description released: Ruxstar paid the owner. refunded: Ruxstar refunded the tenant */
+                                    status: "open" | "withdrawn" | "released" | "refunded";
+                                    note: string | null;
+                                    resolvedAt: string | null;
+                                } | null;
+                                moveOut: {
+                                    /** @description YYYY-MM-DD, in India */
+                                    on: string;
+                                    kind: "notice" | "move_out";
+                                    by: "tenant" | "property" | "ruxstar";
+                                } | null;
+                                /** @description Moved in and not moved out yet */
+                                staying: boolean;
+                                reason: string | null;
+                                /** @description Unpaid, the beds go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                tenant: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                                releaseAt: string | null;
+                                releasedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/stays/facilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The facilities list, inactive ones too, in order */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                                active: boolean;
+                                order: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a facility properties can list
+         * @description The key can't change later. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description A key from GET /v1/stays/facilities */
+                        key: string;
+                        name: string;
+                        order?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                                active: boolean;
+                                order: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/stays/facilities/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Rename a facility, reorder it, or stop it being picked
+         * @description Inactive facilities stay on the properties that have them. Audited.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description A key from GET /v1/stays/facilities */
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        /** @description Inactive facilities stay on the properties that have them but can't be picked */
+                        active?: boolean;
+                        order?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                                active: boolean;
+                                order: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/v1/ruxstar/invoices": {
         parameters: {
             query?: never;
@@ -45952,7 +54457,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -46137,7 +54642,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -46928,6 +55433,28 @@ export interface paths {
                                     /** @description Add-ons per court */
                                     maxAddOns: number;
                                 } | null;
+                                staysRules: {
+                                    /** @description A full refund when the customer cancels at least this many days before move-in. Properties can only be stricter */
+                                    refundDays: number;
+                                    /** @description The most days a property's stricter refund rule can ask for. At least `refundDays` */
+                                    maxRefundDays: number;
+                                    /** @description After the owner marks "Moved in", the tenant can object for this long; the owner's money waits until then */
+                                    objectionHours: number;
+                                    /** @description PG and co-living: months paid with a reservation, the first included */
+                                    maxMonths: number;
+                                    /** @description Hostels: nights in one reservation */
+                                    maxNights: number;
+                                    /** @description Unpaid reservations hold their beds this long for the checkout */
+                                    holdMinutes: number;
+                                    /** @description How far ahead move-in can be */
+                                    bookAheadDays: number;
+                                    /** @description Properties per business */
+                                    maxProperties: number;
+                                    /** @description Rooms per property */
+                                    maxRooms: number;
+                                    /** @description Beds per room */
+                                    maxBeds: number;
+                                } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
                                 updatedAt: string;
@@ -47074,6 +55601,29 @@ export interface paths {
                             /** @description Add-ons per court */
                             maxAddOns?: number;
                         };
+                        /** @description Stays only. Send only what changes. A property outside new refund limits is held to them from its next reservation; reservations made keep their rule. */
+                        staysRules?: {
+                            /** @description A full refund when the customer cancels at least this many days before move-in. Properties can only be stricter */
+                            refundDays?: number;
+                            /** @description The most days a property's stricter refund rule can ask for. At least `refundDays` */
+                            maxRefundDays?: number;
+                            /** @description After the owner marks "Moved in", the tenant can object for this long; the owner's money waits until then */
+                            objectionHours?: number;
+                            /** @description PG and co-living: months paid with a reservation, the first included */
+                            maxMonths?: number;
+                            /** @description Hostels: nights in one reservation */
+                            maxNights?: number;
+                            /** @description Unpaid reservations hold their beds this long for the checkout */
+                            holdMinutes?: number;
+                            /** @description How far ahead move-in can be */
+                            bookAheadDays?: number;
+                            /** @description Properties per business */
+                            maxProperties?: number;
+                            /** @description Rooms per property */
+                            maxRooms?: number;
+                            /** @description Beds per room */
+                            maxBeds?: number;
+                        };
                     };
                 };
             };
@@ -47170,6 +55720,28 @@ export interface paths {
                                     maxCourts: number;
                                     /** @description Add-ons per court */
                                     maxAddOns: number;
+                                } | null;
+                                staysRules: {
+                                    /** @description A full refund when the customer cancels at least this many days before move-in. Properties can only be stricter */
+                                    refundDays: number;
+                                    /** @description The most days a property's stricter refund rule can ask for. At least `refundDays` */
+                                    maxRefundDays: number;
+                                    /** @description After the owner marks "Moved in", the tenant can object for this long; the owner's money waits until then */
+                                    objectionHours: number;
+                                    /** @description PG and co-living: months paid with a reservation, the first included */
+                                    maxMonths: number;
+                                    /** @description Hostels: nights in one reservation */
+                                    maxNights: number;
+                                    /** @description Unpaid reservations hold their beds this long for the checkout */
+                                    holdMinutes: number;
+                                    /** @description How far ahead move-in can be */
+                                    bookAheadDays: number;
+                                    /** @description Properties per business */
+                                    maxProperties: number;
+                                    /** @description Rooms per property */
+                                    maxRooms: number;
+                                    /** @description Beds per room */
+                                    maxBeds: number;
                                 } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */

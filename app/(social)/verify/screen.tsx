@@ -87,9 +87,33 @@ function CaseNote({ c, what }: { c: BaseCase; what: string }) {
   return null;
 }
 
-export function VerifyScreen() {
+/** Where to go back to once verified; kept for the session so it survives the trip to DigiLocker. */
+const NEXT_KEY = "ruxstar.verify.next";
+
+function useReturnTo(next: string | undefined): [string | null, () => void] {
+  const [returnTo, setReturnTo] = useState<string | null>(next ?? null);
+  useEffect(() => {
+    try {
+      if (next) sessionStorage.setItem(NEXT_KEY, next);
+      else setReturnTo(sessionStorage.getItem(NEXT_KEY));
+    } catch {
+      // Private windows can refuse storage; the link then shows only until DigiLocker.
+    }
+  }, [next]);
+  const clear = useCallback(() => {
+    try {
+      sessionStorage.removeItem(NEXT_KEY);
+    } catch {
+      // Nothing was stored.
+    }
+  }, []);
+  return [returnTo, clear];
+}
+
+export function VerifyScreen({ next }: { next?: string }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
+  const [returnTo, clearReturn] = useReturnTo(next);
   const [kyc, setKyc] = useState<Overview | null>(null);
   const [card, setCard] = useState<Card | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -178,6 +202,18 @@ export function VerifyScreen() {
         <h1 className={styles.title}>Verification</h1>
         <p className={styles.muted}>Verify once to get your Ruxstar Card, the Verified tick and the vendor portal.</p>
       </header>
+
+      {returnTo && (
+        <p className={styles.note} data-tone="info">
+          <Icon name="arrow-left" size={20} />
+          <span>
+            {approved ? "You’re verified. " : "Once the Ruxstar team approves your check, you can carry on. "}
+            <Link href={returnTo} onClick={clearReturn}>
+              {approved ? "Continue where you left off" : "Back to where you were"}
+            </Link>
+          </span>
+        </p>
+      )}
 
       <section className={styles.section} data-bare={approved || undefined} aria-labelledby="identity">
         <div className={styles.sectionHead}>

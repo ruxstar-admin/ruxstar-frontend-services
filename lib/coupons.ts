@@ -19,10 +19,16 @@ export const MAX_PER_CUSTOMER = 100;
 const MAX_MIN_ORDER_RUPEES = 5_00_000;
 
 /** Kinds of business whose orders take coupons, and what a coupon comes off there. */
-export const COUPON_MODULES = ["pod", "events", "coaching", "turf"] as const;
+export const COUPON_MODULES = ["pod", "events", "coaching", "turf", "stays"] as const;
 export type CouponModule = (typeof COUPON_MODULES)[number];
-export const COUPON_WHERE: Record<CouponModule, string> = { pod: "print orders", events: "event tickets", coaching: "coaching fees", turf: "turf bookings" };
-const KIND_WORD: Record<CouponModule, string> = { pod: "Print", events: "Events", coaching: "Coaching", turf: "Sports" };
+export const COUPON_WHERE: Record<CouponModule, string> = {
+  pod: "print orders",
+  events: "event tickets",
+  coaching: "coaching fees",
+  turf: "turf bookings",
+  stays: "PG and hostel reservations",
+};
+const KIND_WORD: Record<CouponModule, string> = { pod: "Print", events: "Events", coaching: "Coaching", turf: "Sports", stays: "Stays" };
 
 const takesCoupons = (module: string): module is CouponModule => (COUPON_MODULES as readonly string[]).includes(module);
 
@@ -51,7 +57,9 @@ export const offerWord = (fundedBy: "ruxstar" | "vendor", module: CouponModule =
         ? "Institute offer"
         : module === "turf"
           ? "Ground offer"
-          : "Shop offer";
+          : module === "stays"
+            ? "Property offer"
+            : "Shop offer";
 
 export const cleanCode = (text: string) => text.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
 export const cleanAmount = (text: string) => text.replace(/[^0-9.]/g, "").replace(/(\.\d{0,2}).*$/, "$1");

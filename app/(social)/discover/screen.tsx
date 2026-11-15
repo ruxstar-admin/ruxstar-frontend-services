@@ -14,7 +14,7 @@ import styles from "@/components/shop/shop.module.css";
 
 const DEBOUNCE_MS = 300;
 /** Categories the website can show; the rest say "coming soon". */
-const OPEN_ON_WEB: BusinessModule[] = ["pod", "events", "coaching", "turf"];
+const OPEN_ON_WEB: BusinessModule[] = ["pod", "events", "coaching", "turf", "stays"];
 
 /** Its own chunk: people who never open Events don't download it. */
 const EventResults = dynamic(() => import("@/components/events/EventResults"), {
@@ -36,6 +36,15 @@ const CourseResults = dynamic(() => import("@/components/coaching/CourseResults"
 });
 
 const GroundResults = dynamic(() => import("@/components/turf/GroundResults"), {
+  loading: () => (
+    <div className={styles.grid} aria-busy>
+      <ShopCardSkeleton />
+      <ShopCardSkeleton />
+    </div>
+  ),
+});
+
+const PropertyResults = dynamic(() => import("@/components/stays/PropertyResults"), {
   loading: () => (
     <div className={styles.grid} aria-busy>
       <ShopCardSkeleton />
@@ -129,7 +138,9 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
   const turfOpen = categories.some((c) => c.module === "turf" && c.live);
   const showEvents = category === "events" && !comingSoon;
   const showCourses = category === "coaching" && !comingSoon;
+  const staysOpen = categories.some((c) => c.module === "stays" && c.live);
   const showGrounds = category === "turf" && !comingSoon;
+  const showStays = category === "stays" && !comingSoon;
   const filters: ShopFilters = { ...(q ? { q } : {}), ...(category === "pod" && product ? { product } : {}) };
 
   const pickCategory = (next: BusinessModule | null) => {
@@ -163,6 +174,12 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
               Your bookings
             </ButtonLink>
           )}
+          {staysOpen && (
+            <ButtonLink href="/reservations" variant="secondary">
+              <Icon name="home" size={18} />
+              Your stays
+            </ButtonLink>
+          )}
           <ButtonLink href="/orders" variant="secondary">
             <Icon name="receipt" size={18} />
             Your orders
@@ -180,8 +197,20 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
           type="search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={showEvents ? "Event, organiser or city" : showCourses ? "Course or institute" : showGrounds ? "Ground or business" : "Shop, what they print, or a city"}
-          aria-label={showEvents ? "Search events" : showCourses ? "Search courses" : showGrounds ? "Search grounds" : "Search businesses"}
+          placeholder={
+            showEvents
+              ? "Event, organiser or city"
+              : showCourses
+                ? "Course or institute"
+                : showGrounds
+                  ? "Ground or business"
+                  : showStays
+                    ? "PG, hostel or business"
+                    : "Shop, what they print, or a city"
+          }
+          aria-label={
+            showEvents ? "Search events" : showCourses ? "Search courses" : showGrounds ? "Search grounds" : showStays ? "Search PGs and hostels" : "Search businesses"
+          }
           autoComplete="off"
           spellCheck={false}
         />
@@ -227,6 +256,8 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
         <CourseResults q={q} />
       ) : showGrounds ? (
         <GroundResults q={q} />
+      ) : showStays ? (
+        <PropertyResults q={q} />
       ) : (
         <Results key={`${q}|${category ?? ""}|${product ?? ""}`} filters={filters} />
       )}

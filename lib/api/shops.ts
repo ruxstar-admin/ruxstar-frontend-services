@@ -28,7 +28,7 @@ export const MODULE_LABEL: Record<BusinessModule, string> = {
   pod: "Print on demand",
   events: "Events",
   coaching: "Coaching",
-  stays: "Stays",
+  stays: "PG & hostels",
   turf: "Sports",
 };
 

@@ -1,0 +1,665 @@
+/* PG / Hostels: property pages, rooms with beds drawn as dots, the reservation timeline and the owner's bed map. Layout comes from the shop, order and vendor styles. */
+
+/* Discover filters */
+.more {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.more summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  font: 600 14px/20px var(--font);
+  color: var(--ink-2);
+  cursor: pointer;
+  list-style: none;
+}
+
+.more summary::-webkit-details-marker {
+  display: none;
+}
+
+.more summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-card);
+}
+
+.more[open] summary {
+  color: var(--ink);
+}
+
+.moreBody {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+/* Property page */
+.gallery {
+  display: grid;
+  grid-auto-columns: minmax(260px, 78%);
+  grid-auto-flow: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+  border-radius: var(--radius-card);
+}
+
+.gallery li {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--raised);
+  border-radius: var(--radius-card);
+  scroll-snap-align: start;
+}
+
+.gallery img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pills li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  font: var(--type-small);
+  background: var(--raised);
+  border-radius: var(--radius-pill);
+}
+
+.pills li[data-no] {
+  color: var(--ink-3);
+  text-decoration: line-through;
+}
+
+.list {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--type-small);
+  color: var(--ink-2);
+}
+
+.list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* Rooms, each with its beds as dots. */
+.rooms {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.room {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.room[data-paused] {
+  opacity: 0.7;
+}
+
+.room[data-picked] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.roomHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.roomName {
+  font: 600 16px/22px var(--font);
+}
+
+.roomPrice {
+  font: 600 15px/22px var(--font);
+  font-variant-numeric: tabular-nums;
+}
+
+.dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A bed. Each state has its own look besides colour: free is an outline, taken is filled and struck, full is dashed. */
+.dot {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font: 600 13px/1 var(--font);
+  color: var(--success);
+  background: var(--surface);
+  border: 2px solid var(--success);
+  border-radius: 50%;
+  contain: layout paint;
+}
+
+.dot[data-small] {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+  border-width: 1.5px;
+}
+
+button.dot {
+  cursor: pointer;
+}
+
+button.dot:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--success) 15%, var(--surface));
+}
+
+.dot[data-state="taken"],
+.dot[data-state="reserved"],
+.dot[data-state="occupied"] {
+  color: var(--ink-3);
+  text-decoration: line-through;
+  background: var(--raised);
+  border-color: var(--raised);
+}
+
+.dot[data-state="held"] {
+  color: var(--warning);
+  background: var(--raised);
+  border: 2px dashed var(--warning);
+}
+
+.dot[data-state="closed"] {
+  color: var(--ink-3);
+  background: var(--bg);
+  border: 2px dashed var(--ink-3);
+}
+
+.dot[data-state="unknown"] {
+  color: var(--ink-3);
+  border-color: var(--line);
+}
+
+button.dot:disabled {
+  cursor: not-allowed;
+}
+
+.dot[aria-pressed="true"] {
+  color: #fff;
+  text-decoration: none;
+  background: var(--accent-deep);
+  border-color: var(--accent);
+}
+
+.dot:focus-visible,
+.cell:focus-visible,
+.step:focus-visible,
+.whole:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.whole {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  font: 600 14px/20px var(--font);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.whole[aria-pressed="true"] {
+  color: #fff;
+  background: var(--accent-deep);
+  border-color: var(--accent);
+}
+
+.whole:disabled {
+  color: var(--ink-3);
+  cursor: not-allowed;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--type-caption);
+  color: var(--ink-2);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Stepper for months and nights */
+.stepper {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stepper output {
+  min-width: 24px;
+  font: 600 15px/22px var(--font);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.step {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--ink);
+  background: var(--raised);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.step:disabled {
+  color: var(--disabled-ink);
+  background: var(--disabled);
+  cursor: default;
+}
+
+.stayRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3) var(--space-5);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  font: 600 14px/20px var(--font);
+}
+
+.field input[type="date"],
+.dayNav input {
+  height: 44px;
+  padding: 0 var(--space-3);
+  font: inherit;
+  font-weight: 400;
+  color: var(--ink);
+  color-scheme: dark;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+}
+
+/* Reservation timeline */
+.timeline {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+}
+
+.timeline li:last-child {
+  padding-bottom: 0;
+}
+
+.timeline li:not(:last-child)::before {
+  position: absolute;
+  top: 28px;
+  bottom: 0;
+  left: 13px;
+  width: 2px;
+  background: var(--line);
+  content: "";
+}
+
+.timeline li[data-state="done"]:not(:last-child)::before {
+  background: var(--success);
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--ink-3);
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 50%;
+}
+
+.timeline li[data-state="done"] .mark {
+  color: #fff;
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.timeline li[data-state="now"] .mark {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.timeline li[data-state="problem"] .mark {
+  color: #fff;
+  background: var(--warning);
+  border-color: var(--warning);
+}
+
+.stepText {
+  display: grid;
+  gap: 2px;
+  padding-top: 3px;
+}
+
+.stepText strong {
+  font: 600 15px/22px var(--font);
+}
+
+.timeline li[data-state="todo"] .stepText strong {
+  color: var(--ink-3);
+}
+
+/* Owner's pages are wider so the bed map shows a whole week. */
+.deskPage {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.deskPanel {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.deskPanel h2 {
+  font: 700 18px/24px var(--font);
+}
+
+/* The bed map: beds down the side grouped by room, days across. Scrolls sideways with bed names pinned. */
+.boardWrap {
+  max-width: 100%;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  overscroll-behavior-x: contain;
+}
+
+.board {
+  display: grid;
+  gap: 4px;
+  width: max-content;
+  min-width: 100%;
+  padding: var(--space-2);
+}
+
+.corner,
+.colHead,
+.rowHead,
+.roomRow {
+  position: sticky;
+  z-index: 1;
+  background: var(--surface);
+}
+
+.corner {
+  top: 0;
+  left: 0;
+  z-index: 2;
+  font: 600 11px/32px var(--font);
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+}
+
+.colHead {
+  top: 0;
+  font: var(--type-caption);
+  line-height: 32px;
+  color: var(--ink-3);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.colHead[data-today] {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.roomRow {
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  grid-column: 1 / -1;
+  width: max-content;
+  padding: var(--space-2) 0 0;
+  font: 700 14px/20px var(--font);
+}
+
+.rowHead {
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 120px;
+  padding-right: var(--space-2);
+  font: var(--type-small);
+}
+
+.cell {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  min-width: 88px;
+  height: 48px;
+  padding: 0 4px;
+  font: 600 11px/14px var(--font);
+  color: var(--success);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  contain: layout paint;
+}
+
+.cell > span {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell:hover {
+  border-color: var(--ink-3);
+}
+
+.cell[data-state="reserved"] {
+  color: var(--ink);
+  background: var(--raised);
+  border-color: var(--raised);
+}
+
+.cell[data-state="occupied"] {
+  color: var(--ink);
+  background: var(--raised);
+  border-color: var(--success);
+}
+
+.cell[data-state="held"] {
+  color: var(--ink-3);
+  background: var(--raised);
+  border: 1px dashed var(--warning);
+}
+
+.cell[data-state="closed"] {
+  color: var(--ink-3);
+  background: var(--bg);
+  border: 1px dashed var(--ink-3);
+}
+
+.cell[data-past] {
+  opacity: 0.55;
+}
+
+.cell[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.swatch {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  background: var(--surface);
+  border: 1px solid var(--success);
+  border-radius: 6px;
+}
+
+.swatch[data-state="reserved"] {
+  background: var(--raised);
+  border-color: var(--raised);
+}
+
+.swatch[data-state="occupied"] {
+  background: var(--raised);
+  border-color: var(--success);
+}
+
+.swatch[data-state="held"] {
+  background: var(--raised);
+  border: 1px dashed var(--warning);
+}
+
+.swatch[data-state="closed"] {
+  background: var(--bg);
+  border: 1px dashed var(--ink-3);
+}
+
+.totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.dayNav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dayNav input {
+  height: 40px;
+}
+
+/* Forms */
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  font: 15px/22px var(--font);
+  cursor: pointer;
+}
+
+.checks input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+.nearbyRow {
+  display: grid;
+  grid-template-columns: minmax(110px, auto) 1fr 88px auto;
+  align-items: end;
+  gap: var(--space-2);
+}
+
+@media (max-width: 560px) {
+  .nearbyRow {
+    grid-template-columns: 1fr 88px auto;
+  }
+
+  .nearbyRow > :nth-child(2) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dot,
+  .cell,
+  .whole {
+    transition:
+      background-color 120ms var(--ease-out),
+      border-color 120ms var(--ease-out);
+  }
+}

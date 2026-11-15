@@ -36,6 +36,13 @@ const WORK_AREAS: { title: string; line: string; icon: IconName; allowed: (permi
     allowed: has("turf.bookings", "turf.block", "turf.cancel", "turf.arrivals", "turf.prices"),
     path: "/board",
   },
+  {
+    title: "Properties",
+    line: "The bed map, reservations, moving in and tenants",
+    icon: "bed",
+    allowed: (permissions) => permissions.some((p) => p.startsWith("stays.")),
+    path: "/beds",
+  },
 ];
 
 /** Areas whose `path` starts with "/" live outside Work: the gate and classes serve owners and their team alike. */

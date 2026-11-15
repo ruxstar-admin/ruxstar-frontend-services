@@ -15,6 +15,7 @@ import {
   replyAsOwner,
   replyAsTeam,
   workReviews,
+  type ListingType,
   type ReviewModule,
   type ShopReview,
 } from "@/lib/api/reviews";
@@ -32,6 +33,7 @@ const WHEN: Record<ReviewModule, string> = {
   events: "People review their booking once they’re checked in or the event ends, for 30 days after it.",
   coaching: "Students review their enrolment once the first class is held, until 30 days after the last class.",
   turf: "Players review their booking once they’ve played, until 30 days after its last date.",
+  stays: "Tenants review their stay once they’ve moved in, for 30 days after that.",
 };
 
 /** Where the owner (or the team, for print) opens what was reviewed. */
@@ -39,8 +41,10 @@ function reviewedLink(review: ShopReview, team: boolean): { href: string; label:
   const module = moduleOf(review);
   if (module === "pod") return { href: team ? `/work/order/${review.orderId}` : `/vendor/orders/${review.orderId}`, label: "Open order" };
   if (team || !review.listing) return null;
-  if (review.listing.type === "ground") return { href: `/board/bookings/${review.orderId}`, label: "Open booking" };
-  return review.listing.type === "event"
+  const type: ListingType = review.listing.type;
+  if (type === "ground") return { href: `/board/bookings/${review.orderId}`, label: "Open booking" };
+  if (type === "property") return { href: `/beds/reservations/${review.orderId}`, label: "Open reservation" };
+  return type === "event"
     ? { href: `/vendor/events/${review.listing.id}/bookings`, label: "See bookings" }
     : { href: `/vendor/courses/${review.listing.id}/students`, label: "See students" };
 }

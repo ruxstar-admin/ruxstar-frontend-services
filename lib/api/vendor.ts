@@ -207,6 +207,7 @@ export const TYPE_ICON = {
   coaching: "book",
   pg: "home",
   hostel: "home",
+  coliving: "home",
   turf: "ball",
   sports_complex: "ball",
   court: "ball",
