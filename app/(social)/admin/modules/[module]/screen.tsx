@@ -9,7 +9,8 @@ import { ButtonLink, Card, Icon, Tag } from "@/components/ui";
 import { listModules, type ModuleName, type ModuleSettings } from "@/lib/api/admin";
 import { ago } from "@/lib/time";
 import { DeliveryRates, ModuleCore, Rules, Withdrawals } from "../forms";
-import { isGstModule, isModuleName, MODULE_LABEL } from "../labels";
+import { isGstModule, isModuleName, isStatsModule, MODULE_LABEL } from "../labels";
+import { ModuleNumbers } from "../numbers";
 
 function Back() {
   return (
@@ -71,6 +72,7 @@ function Settings({ module }: { module: ModuleName }) {
         </div>
         {m && <Tag tone={m.live ? "success" : "neutral"}>{m.live ? "Live" : "Off"}</Tag>}
       </div>
+      {isStatsModule(module) && <ModuleNumbers module={module} />}
       {error ? (
         <Failed
           error={error}

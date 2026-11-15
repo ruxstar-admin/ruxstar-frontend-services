@@ -1,201 +1,163 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState } from "react";
 import { allows, useAccess } from "@/components/admin/AdminFrame";
+import { Cells, count, Freshness, Group, Metric, plural, useLoad, waiting } from "@/components/admin/metrics";
 import { Failed, styles } from "@/components/admin/parts";
-import { useMe, useOnSignedOut } from "@/components/social/session";
-import { Button, Card, Icon, Skeleton, type IconName } from "@/components/ui";
-import { getOverview, heldOrders, listPayouts } from "@/lib/api/admin";
-import type { Page } from "@/lib/api/social";
+import { useMe } from "@/components/social/session";
+import { Button, Skeleton } from "@/components/ui";
+import { getOverview, getStats } from "@/lib/api/admin";
+import { money } from "@/lib/api/shops";
 import { supportSummary } from "@/lib/api/support";
 import { MODULE_LABEL } from "./modules/labels";
+import { hasNumbers, ModuleCard } from "./modules/numbers";
 
-type Tone = "warn" | "good" | "quiet";
-type Tint = "amber" | "blue" | "purple" | "green";
+const loadStats = () => getStats();
 
-const count = (n: number) => n.toLocaleString("en-IN");
-const waiting = (n: number): Tone | undefined => (n > 0 ? "warn" : undefined);
+/** "On 4 posts, 2 people and 1 review". */
+const reportedOn = (r: { posts: number; people: number; reviews: number }) =>
+  `On ${plural(r.posts, "post")}, ${plural(r.people, "person", "people")} and ${plural(r.reviews, "review")}`;
 
-/** A list's first page: "20+" when it has more pages. Payouts have no count route. */
-const pageCount = (page: Page<unknown>) => `${count(page.items.length)}${page.nextCursor ? "+" : ""}`;
-
-const loadMoney = () =>
-  Promise.all([listPayouts("pending"), listPayouts("failed"), heldOrders(undefined)]).then(([pending, failed, held]) => ({
-    pending: pageCount(pending),
-    failed: pageCount(failed),
-    failedAny: failed.items.length > 0,
-    held: pageCount(held),
-  }));
-
-/** One source, loaded on its own so a slow or failing one doesn't hold the others back. An error shows only for the latest attempt. */
-function useLoad<T>(load: () => Promise<T>, enabled: boolean, attempt: number) {
-  const onSignedOut = useOnSignedOut();
-  const [result, setResult] = useState<{ at: number; data?: T; error?: unknown }>({ at: -1 });
-
-  useEffect(() => {
-    if (!enabled) return;
-    let live = true;
-    load().then(
-      (data) => live && setResult({ at: attempt, data }),
-      (error) => live && !onSignedOut(error) && setResult((r) => ({ ...r, at: attempt, error })),
-    );
-    return () => {
-      live = false;
-    };
-  }, [load, enabled, attempt, onSignedOut]);
-
-  return { data: result.data, error: result.at === attempt ? result.error : undefined, loading: enabled && result.at !== attempt };
-}
-
-function Group({ title, icon, tint, children }: { title: string; icon: IconName; tint: Tint; children: ReactNode }) {
-  const id = `metrics-${title.toLowerCase().replace(/[^a-z]+/g, "-")}`;
-  return (
-    <Card as="section" padding="lg" aria-labelledby={id}>
-      <h2 id={id} className={styles.metricHead}>
-        <span className={styles.metricIcon} data-tint={tint}>
-          <Icon name={icon} size={18} />
-        </span>
-        {title}
-      </h2>
-      <div className={styles.metrics}>{children}</div>
-    </Card>
-  );
-}
-
-function Metric({ href, label, value, tone }: { href: string; label: string; value: string; tone?: Tone }) {
-  return (
-    <Link href={href} className={styles.metric} data-tone={tone}>
-      <span className={styles.metricValue}>{value}</span>
-      <span className={styles.metricLabel}>{label}</span>
-    </Link>
-  );
-}
-
-function Cells({ n }: { n: number }) {
-  return (
-    <>
-      {Array.from({ length: n }, (_, i) => (
-        <Skeleton key={i} height={76} radius={12} />
-      ))}
-    </>
-  );
-}
-
-/** The console home: every count the console has, grouped by area, each one opening the page behind it. Same as the app. */
+/** The console home: every number the console has, grouped by area, each one opening the page behind it. The overview adds what only it has (delivery partners waiting, what was reported, staff, modules live). */
 export function Dashboard() {
   const me = useMe();
   const access = useAccess();
   const [attempt, setAttempt] = useState(0);
   const canDesk = allows(access, "support.view");
-  const canMoney = allows(access, "payouts.view");
+  const stats = useLoad(loadStats, true, attempt);
   const overview = useLoad(getOverview, true, attempt);
   const support = useLoad(supportSummary, canDesk, attempt);
-  const money = useLoad(loadMoney, canMoney, attempt);
-  const retry = () => setAttempt((n) => n + 1);
+  const refresh = () => setAttempt((n) => n + 1);
 
+  const s = stats.data;
   const o = overview.data;
-  const desk = support.data ?? o?.support ?? null;
+  const q = s?.queues;
+  const anyQueue = q && Object.values(q).some((n) => n !== null);
+  const modules = s?.modules.filter(hasNumbers) ?? [];
+  const pay = s?.money?.payouts;
   const first = me?.name.split(" ")[0];
 
   return (
     <div className={styles.page}>
-      <div>
-        <h1 className={styles.title}>{first ? `Hi ${first}` : "Dashboard"}</h1>
-        <p className={styles.muted}>
-          {access.admin ? "You are an admin, so every section is open to you." : `Signed in as ${access.title ?? "Ruxstar staff"}.`}
-        </p>
+      <div className={styles.head}>
+        <div>
+          <h1 className={styles.title}>{first ? `Hi ${first}` : "Dashboard"}</h1>
+          <p className={styles.muted}>
+            {access.admin ? "You are an admin, so every section is open to you." : `Signed in as ${access.title ?? "Ruxstar staff"}.`}
+          </p>
+        </div>
+        {s && <Freshness asOf={s.asOf} loading={stats.loading} failed={Boolean(stats.error)} onRefresh={refresh} />}
       </div>
 
-      {!o && overview.error ? (
-        <Failed error={overview.error} onRetry={retry} />
-      ) : !o ? (
+      {!s && stats.error ? (
+        <Failed error={stats.error} onRetry={refresh} />
+      ) : !s ? (
         <div className={styles.page} aria-busy>
-          {[3, 3, 6].map((n, i) => (
+          {[6, 6, 12, 7].map((n, i) => (
             <Skeleton key={i} height={76 + Math.ceil(n / 3) * 90} radius={18} />
           ))}
         </div>
       ) : (
         <>
-          {(o.kyc || o.reports || o.orders) && (
+          {q && anyQueue && (
             <Group title="Waiting for a decision" icon="alert" tint="amber">
-              {o.kyc && (
+              {q.kyc !== null && (
                 <>
-                  <Metric href="/admin/kyc" label="Verification to review" value={count(o.kyc.waiting)} tone={waiting(o.kyc.waiting)} />
-                  <Metric href="/admin/kyc?track=delivery" label="Of those, delivery partners" value={count(o.kyc.delivery)} />
+                  <Metric href="/admin/kyc" label="Verification to review" value={count(q.kyc)} tone={waiting(q.kyc)} />
+                  {o?.kyc && <Metric href="/admin/kyc?track=delivery" label="Of those, delivery partners" value={count(o.kyc.delivery)} />}
                 </>
               )}
-              {o.reports && (
-                <>
-                  <Metric href="/admin/reports" label="Reported posts" value={count(o.reports.posts)} tone={waiting(o.reports.posts)} />
-                  <Metric href="/admin/reports" label="Reports on those posts" value={count(o.reports.reports)} />
-                  <Metric href="/admin/reports" label="Reported people" value={count(o.reports.people)} tone={waiting(o.reports.people)} />
-                  <Metric href="/admin/reports" label="Reported reviews" value={count(o.reports.reviews)} tone={waiting(o.reports.reviews)} />
-                </>
+              {q.helpTickets !== null && (
+                <Metric href="/admin/support" label="Help tickets waiting" value={count(q.helpTickets)} tone={waiting(q.helpTickets)} />
               )}
-              {o.orders && <Metric href="/admin/reports" label="Print order problems" value={count(o.orders.problems)} tone={waiting(o.orders.problems)} />}
+              {q.reports !== null && (
+                <Metric
+                  href="/admin/reports"
+                  label="Reports to review"
+                  value={count(q.reports)}
+                  detail={o?.reports ? reportedOn(o.reports) : undefined}
+                  tone={waiting(q.reports)}
+                />
+              )}
+              {q.orderProblems !== null && (
+                <Metric href="/admin/reports" label="Print order problems" value={count(q.orderProblems)} tone={waiting(q.orderProblems)} />
+              )}
+              {q.staysObjections !== null && (
+                <Metric href="/admin/objections" label="Tenant objections" value={count(q.staysObjections)} tone={waiting(q.staysObjections)} />
+              )}
+              {q.shopReturns !== null && (
+                <Metric href="/admin/store-orders" label="Shop returns" value={count(q.shopReturns)} tone={waiting(q.shopReturns)} />
+              )}
             </Group>
           )}
 
-          {desk && (
+          {canDesk && (
             <Group title="Help tickets" icon="chat" tint="blue">
-              <Metric href="/admin/support" label="Open" value={count(desk.open)} />
-              <Metric href="/admin/support" label="Past reply-by" value={count(desk.overdue)} tone={waiting(desk.overdue)} />
-              <Metric href="/admin/support" label="With nobody on them" value={count(desk.unassigned)} tone={waiting(desk.unassigned)} />
               {support.data ? (
                 <>
+                  <Metric href="/admin/support" label="Open" value={count(support.data.open)} />
+                  <Metric href="/admin/support" label="Past reply-by" value={count(support.data.overdue)} tone={waiting(support.data.overdue)} />
+                  <Metric href="/admin/support" label="With nobody on them" value={count(support.data.unassigned)} tone={waiting(support.data.unassigned)} />
                   <Metric href="/admin/support" label="Assigned to you" value={count(support.data.mine)} />
                   <Metric href="/admin/support" label="Waiting on the person" value={count(support.data.waiting)} />
                 </>
-              ) : support.loading ? (
-                <Cells n={2} />
-              ) : null}
-            </Group>
-          )}
-
-          {(o.users || o.staff) && (
-            <Group title="People" icon="users" tint="purple">
-              {o.users && (
-                <>
-                  <Metric href="/admin/users" label="Accounts" value={count(o.users.total)} />
-                  <Metric href="/admin/users" label="Joined this week" value={count(o.users.newThisWeek)} />
-                  <Metric href="/admin/users" label="On hold" value={count(o.users.suspended)} />
-                </>
-              )}
-              {o.staff && <Metric href="/admin/staff" label="Ruxstar staff" value={count(o.staff.active)} />}
-            </Group>
-          )}
-
-          {o.businesses && (
-            <Group title="Businesses" icon="store" tint="purple">
-              <Metric href="/admin/businesses" label="All businesses" value={count(o.businesses.total)} />
-              <Metric href="/admin/businesses" label="Live" value={count(o.businesses.live)} />
-              <Metric href="/admin/businesses" label="On hold" value={count(o.businesses.suspended)} />
-            </Group>
-          )}
-
-          {canMoney && (
-            <Group title="Money" icon="wallet" tint="green">
-              {money.data ? (
-                <>
-                  <Metric href="/admin/payouts" label="Withdrawals on the way" value={money.data.pending} />
-                  <Metric href="/admin/payouts" label="Failed withdrawals" value={money.data.failed} tone={money.data.failedAny ? "warn" : undefined} />
-                  <Metric href="/admin/payouts" label="Orders with money on hold" value={money.data.held} />
-                </>
-              ) : money.error ? (
+              ) : support.error ? (
                 <div className={styles.metricFailed} role="alert">
-                  <span className={styles.muted}>Could not load payouts.</span>
-                  <Button variant="ghost" onClick={retry}>
+                  <span className={styles.muted}>Could not load help tickets.</span>
+                  <Button variant="ghost" onClick={refresh}>
                     Try again
                   </Button>
                 </div>
               ) : (
-                <Cells n={3} />
+                <Cells n={5} />
               )}
             </Group>
           )}
 
-          {o.modules && (
+          {(s.people || o?.staff) && (
+            <Group title="People" icon="users" tint="purple">
+              {s.people && (
+                <>
+                  <Metric href="/admin/users" label="Accounts" value={count(s.people.total)} />
+                  <Metric href="/admin/users" label="Joined today" value={count(s.people.joinedToday)} />
+                  <Metric href="/admin/users" label="Joined this week" value={count(s.people.joinedThisWeek)} />
+                  <Metric href="/admin/users" label="Verified" value={count(s.people.verified)} />
+                  <Metric href="/admin/users" label="On hold" value={count(s.people.onHold)} />
+                </>
+              )}
+              {o?.staff && <Metric href="/admin/staff" label="Ruxstar staff" value={count(o.staff.active)} />}
+            </Group>
+          )}
+
+          {s.money && pay && (
+            <Group title="Money" icon="wallet" tint="green">
+              <Metric label="Collected today" value={money(s.money.collectedToday)} />
+              <Metric label="Collected this week" value={money(s.money.collectedThisWeek)} />
+              <Metric label="Collected this month" value={money(s.money.collectedThisMonth)} />
+              <Metric label="Refunded today" value={money(s.money.refundsToday)} />
+              <Metric label="Refunded this month" value={money(s.money.refundsThisMonth)} />
+              <Metric href="/admin/payouts" label="Held for vendors and partners" value={money(s.money.held)} />
+              <Metric href="/admin/payouts" label="Withdrawals on the way" value={money(pay.pending.amount)} detail={plural(pay.pending.count, "withdrawal")} />
+              <Metric
+                href="/admin/payouts"
+                label="Failed withdrawals"
+                value={money(pay.failed.amount)}
+                detail={plural(pay.failed.count, "withdrawal")}
+                tone={waiting(pay.failed.count)}
+              />
+              <Metric href="/admin/payouts" label="Paid out this month" value={money(pay.paidThisMonth.amount)} detail={plural(pay.paidThisMonth.count, "withdrawal")} />
+            </Group>
+          )}
+
+          {modules.length > 0 && (
+            <Group title="Businesses by module" icon="store" tint="purple" wide>
+              {modules.map((m) => (
+                <ModuleCard key={m.module} m={m} />
+              ))}
+            </Group>
+          )}
+
+          {o?.modules && (
             <Group title="Modules" icon="stack" tint="amber">
               {o.modules.map((m) => (
                 <Metric key={m.module} href={`/admin/modules/${m.module}`} label={MODULE_LABEL[m.module]} value={m.live ? "Live" : "Off"} tone={m.live ? "good" : "quiet"} />

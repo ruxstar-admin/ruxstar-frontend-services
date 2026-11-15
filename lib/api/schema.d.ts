@@ -52385,6 +52385,182 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every console number in one place: people, businesses, orders and money per module, payouts and queues
+         * @description For admins and active Ruxstar staff; each section needs its view permission, as on the overview, and is null without it. Days, weeks (from Monday) and months are India time. Numbers are counted at most once a minute on each server.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Only this module's block. `people`, `money` and `queues` are then null. */
+                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "delivery";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description A section or count is null when you lack the permission to see it */
+                            data: {
+                                /**
+                                 * Format: date-time
+                                 * @description When the oldest number here was counted. Numbers are kept for up to 60 seconds on each server.
+                                 */
+                                asOf: string;
+                                module: ("pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "delivery") | null;
+                                people: {
+                                    /** @description Accounts not deleted */
+                                    total: number;
+                                    /** @description Accounts made today (India time) and not deleted */
+                                    joinedToday: number;
+                                    /** @description Accounts made since Monday 00:00 India time and not deleted */
+                                    joinedThisWeek: number;
+                                    /** @description Accounts not deleted whose identity verification (KYC) is approved */
+                                    verified: number;
+                                    /** @description Accounts on hold */
+                                    onHold: number;
+                                } | null;
+                                /** @description Print, events, coaching, turf, stays, shop and delivery, in that order; just one with `module` */
+                                modules: {
+                                    /** @description A business module, or `delivery` for Ruxstar partners' trips */
+                                    module: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "delivery";
+                                    businesses: {
+                                        /** @description Businesses in the module, drafts and taken down included */
+                                        total: number;
+                                        /** @description Published and not taken down */
+                                        live: number;
+                                        /** @description Not published yet */
+                                        drafts: number;
+                                        /** @description Held by the Ruxstar team (suspended), published or not */
+                                        takenDown: number;
+                                    } | null;
+                                    listings: {
+                                        /** @description What the module lists: events, courses, grounds, PG / hostel properties or shop products */
+                                        kind: "event" | "course" | "ground" | "property" | "product";
+                                        /** @description Published listings, past events included */
+                                        live: number;
+                                        /** @description Taken down by the Ruxstar team (events: cancelled by staff) */
+                                        takenDown: number;
+                                    } | null;
+                                    orders: {
+                                        /** @description Placed today (India time) and paid, or free; delivery: trips created today */
+                                        today: number;
+                                        /** @description Placed since Monday 00:00 India time and paid, or free; delivery: trips created */
+                                        thisWeek: number;
+                                        /** @description Still under way. Print and shop: paid and not yet delivered or cancelled. Events: confirmed ticket orders for events that haven't ended. Coaching: confirmed batch enrolments in batches still running. Turf: confirmed bookings with a slot still to come. Stays: reservations confirmed or moved in. Delivery: trips offered, accepted or picked up. */
+                                        open: number;
+                                    } | null;
+                                    money: {
+                                        /** @description Paise customers paid today (India time): the gateway side of each payment, so coupons Ruxstar pays for are not in it */
+                                        collectedToday: number;
+                                        /** @description Paise customers paid since Monday 00:00 India time */
+                                        collectedThisWeek: number;
+                                        /** @description Paise customers paid since the 1st 00:00 India time */
+                                        collectedThisMonth: number;
+                                        /** @description Paise refunded to customers today (India time), counted when the refund was started */
+                                        refundsToday: number;
+                                        /** @description Paise refunded to customers since the 1st 00:00 India time */
+                                        refundsThisMonth: number;
+                                        /** @description Paise vendors' and delivery partners' shares not yet released: everything in their pending balances */
+                                        held: number;
+                                    } | null;
+                                }[];
+                                money: {
+                                    /** @description Paise customers paid today (India time): the gateway side of each payment, so coupons Ruxstar pays for are not in it */
+                                    collectedToday: number;
+                                    /** @description Paise customers paid since Monday 00:00 India time */
+                                    collectedThisWeek: number;
+                                    /** @description Paise customers paid since the 1st 00:00 India time */
+                                    collectedThisMonth: number;
+                                    /** @description Paise refunded to customers today (India time), counted when the refund was started */
+                                    refundsToday: number;
+                                    /** @description Paise refunded to customers since the 1st 00:00 India time */
+                                    refundsThisMonth: number;
+                                    /** @description Paise vendors' and delivery partners' shares not yet released: everything in their pending balances */
+                                    held: number;
+                                    /** @description Withdrawals by vendors and delivery partners */
+                                    payouts: {
+                                        /** @description Vendors' and partners' withdrawals on the way */
+                                        pending: {
+                                            /** @description Withdrawals */
+                                            count: number;
+                                            /** @description Paise taken from payees' balances; the payout fee is included */
+                                            amount: number;
+                                        };
+                                        /** @description Withdrawals that failed and went back to the payee's balance, ever */
+                                        failed: {
+                                            /** @description Withdrawals */
+                                            count: number;
+                                            /** @description Paise taken from payees' balances; the payout fee is included */
+                                            amount: number;
+                                        };
+                                        /** @description Withdrawals that reached the bank since the 1st 00:00 India time */
+                                        paidThisMonth: {
+                                            /** @description Withdrawals */
+                                            count: number;
+                                            /** @description Paise taken from payees' balances; the payout fee is included */
+                                            amount: number;
+                                        };
+                                    };
+                                } | null;
+                                queues: {
+                                    kyc: number | null;
+                                    helpTickets: number | null;
+                                    reports: number | null;
+                                    orderProblems: number | null;
+                                    staysObjections: number | null;
+                                    shopReturns: number | null;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/kyc": {
         parameters: {
             query?: never;

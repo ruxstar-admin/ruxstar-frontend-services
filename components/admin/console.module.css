@@ -224,7 +224,7 @@
   transition: background var(--dur-quick) var(--ease-out);
 }
 
-.metric:hover {
+a.metric:hover {
   background: color-mix(in srgb, var(--raised) 70%, var(--line));
 }
 
@@ -232,6 +232,7 @@
   font: 700 24px/30px var(--font);
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--type-title-tracking);
+  overflow-wrap: anywhere;
 }
 
 .metric[data-tone="warn"] .metricValue {
@@ -249,6 +250,80 @@
 .metricLabel {
   font: var(--type-caption);
   color: var(--ink-2);
+}
+
+.metricDetail {
+  font: var(--type-caption);
+  color: var(--ink-3);
+}
+
+.metricTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.metricTop .metricHead {
+  margin-bottom: 0;
+}
+
+.freshness {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.warnText {
+  color: var(--warning);
+}
+
+/* A card per module, each line one section the person may see. */
+.moduleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-2);
+}
+
+.moduleCard {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  background: var(--raised);
+  border-radius: 12px;
+}
+
+.moduleCardHead {
+  font: 600 15px/22px var(--font);
+}
+
+.moduleCardHead a {
+  min-height: var(--size-touch);
+}
+
+.moduleCardHead a:hover .chevron {
+  color: var(--ink);
+}
+
+.moduleFigures {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.moduleFigures dt {
+  font: var(--type-caption);
+  color: var(--ink-2);
+}
+
+.moduleFigures dd {
+  margin: 0;
+  font: 500 14px/20px var(--font);
+  font-variant-numeric: tabular-nums;
 }
 
 .metricFailed {

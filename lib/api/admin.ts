@@ -36,6 +36,16 @@ export const getAccess = async () => (await signedIn(() => unwrap(api.GET("/v1/r
 
 export const getOverview = async () => (await signedIn(() => unwrap(api.GET("/v1/ruxstar/overview")))).data;
 
+// Console numbers: people, each module, money and queues. Counted at most once a minute on each server.
+
+export type Stats = Json<"/v1/ruxstar/stats", "get">["data"];
+export type ModuleStats = Stats["modules"][number];
+export type StatsModule = ModuleStats["module"];
+
+/** With `module`, only that module's block; people, money and queues are then null. */
+export const getStats = async (module?: StatsModule) =>
+  (await signedIn(() => unwrap(api.GET("/v1/ruxstar/stats", { params: { query: module ? { module } : {} } })))).data;
+
 // Reported posts.
 
 export const reportQueue = async (status: ReportStatus, cursor?: string) =>
