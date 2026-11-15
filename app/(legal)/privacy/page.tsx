@@ -62,7 +62,8 @@ export default function PrivacyPage() {
       <p>
         You can change your details at any time on your profile. When you delete your account, your profile and photo disappear straight
         away, every device is signed out, and your account record is erased after 30 days. Records we are required by law to
-        keep, such as payment records, are kept for as long as the law requires.
+        keep, such as payment records, are kept for as long as the law requires. The steps are on{" "}
+        <Link href="/delete-account">Delete your account</Link>.
       </p>
 
       <h2>Children</h2>
