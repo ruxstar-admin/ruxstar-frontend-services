@@ -283,6 +283,110 @@ function EventRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: Event
   );
 }
 
+type CoachingRules = NonNullable<ModuleSettings["coachingRules"]>;
+type CoachingKey = keyof CoachingRules;
+
+/** The API's limits for each coaching rule. `rupees` fields are paise in the API and typed in rupees here. */
+const COACHING_RULES: { key: CoachingKey; min: number; max: number; label: string; unit: string; hint: string; rupees?: boolean }[] = [
+  {
+    key: "certificatePercent",
+    min: 1,
+    max: 100,
+    label: "Attendance for a certificate",
+    unit: "%",
+    hint: "When a batch ends, students who came to this share of its classes get a certificate. A course can set its own.",
+  },
+  {
+    key: "minimumHours",
+    min: 1,
+    max: 168,
+    label: "Minimum batch size is checked this many hours before the first class",
+    unit: "hours",
+    hint: "A batch short of its minimum then is cancelled and everyone refunded in full.",
+  },
+  { key: "maxBatchSize", min: 1, max: 1000, label: "Students per batch", unit: "", hint: "The most seats an institute can give one batch." },
+  { key: "maxClasses", min: 1, max: 500, label: "Classes per batch", unit: "", hint: "Extra classes count too." },
+  { key: "maxBatches", min: 1, max: 100, label: "Batches per course", unit: "", hint: "Batches running or still to start in one course." },
+  { key: "maxDemoFee", min: 0, max: 10_000, label: "Most a demo class can cost", unit: "₹", hint: "0 means demo classes are free.", rupees: true },
+  { key: "maxDemoSeats", min: 1, max: 50, label: "Demo students per class", unit: "", hint: "The most an institute can let into one class for a demo." },
+  { key: "joinMinutes", min: 0, max: 120, label: "Online join link shows this many minutes before a class", unit: "minutes", hint: "Students see the meeting link from then until the class ends." },
+];
+
+const coachingText = (rules: CoachingRules) =>
+  Object.fromEntries(COACHING_RULES.map((f) => [f.key, String(f.rupees ? rules[f.key] / 100 : rules[f.key])])) as Record<CoachingKey, string>;
+const coachingFact = (f: (typeof COACHING_RULES)[number], value: number) =>
+  f.rupees ? (value ? `₹${(value / 100).toLocaleString("en-IN")}` : "Free only") : f.unit === "%" ? `${value}%` : plural(value, f.unit);
+
+/** Coaching only: certificates, the minimum-size check, limits per batch and course, demo classes and the join link. Same as the app. */
+function CoachingRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: CoachingRules; onSaved: (m: ModuleSettings) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const [text, setText] = useState(() => coachingText(rules));
+  const [busy, setBusy] = useState(false);
+
+  const typed = Object.fromEntries(COACHING_RULES.map((f) => [f.key, wholeOf(text[f.key])])) as Record<CoachingKey, number>;
+  const errors = Object.fromEntries(
+    COACHING_RULES.map((f) => [f.key, typed[f.key] >= f.min && typed[f.key] <= f.max ? undefined : `Enter a whole number from ${f.min} to ${f.max.toLocaleString("en-IN")}`]),
+  ) as Record<CoachingKey, string | undefined>;
+  const invalid = COACHING_RULES.some((f) => errors[f.key]);
+  const values = Object.fromEntries(COACHING_RULES.map((f) => [f.key, f.rupees ? typed[f.key] * 100 : typed[f.key]])) as Record<CoachingKey, number>;
+  const changes = Object.fromEntries(COACHING_RULES.filter((f) => values[f.key] !== rules[f.key]).map((f) => [f.key, values[f.key]])) as Partial<CoachingRules>;
+  const changed = Object.keys(changes).length > 0;
+
+  async function save() {
+    setBusy(true);
+    try {
+      const done = await updateModule(m.module, { coachingRules: changes });
+      onSaved(done);
+      if (done.coachingRules) setText(coachingText(done.coachingRules));
+      toast("Coaching rules saved.", "success");
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <div className={styles.group}>
+        <h3 className={styles.label}>Coaching rules</h3>
+        <p className={styles.muted}>Every institute&apos;s courses follow these.</p>
+      </div>
+      {canManage ? (
+        <div className={styles.group}>
+          {COACHING_RULES.map((f) => (
+            <Input
+              key={f.key}
+              label={f.label}
+              inputMode="numeric"
+              value={text[f.key]}
+              onChange={(e) => whole((v) => setText((all) => ({ ...all, [f.key]: v })))(e.target.value)}
+              prefix={f.rupees ? "₹" : undefined}
+              suffix={!f.rupees && f.unit ? f.unit : undefined}
+              hint={errors[f.key] ? undefined : f.hint}
+              error={errors[f.key]}
+              maxLength={5}
+            />
+          ))}
+          <div>
+            <Button variant="secondary" disabled={invalid || !changed} loading={busy} onClick={() => void save()}>
+              Save coaching rules
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <dl className={styles.facts}>
+          {COACHING_RULES.map((f) => (
+            <Fact key={f.key} label={f.label} value={coachingFact(f, rules[f.key])} />
+          ))}
+        </dl>
+      )}
+    </>
+  );
+}
+
 function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
@@ -421,6 +525,7 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
       {m.payouts && <Withdrawals m={m} payouts={m.payouts} onSaved={onSaved} />}
       {m.delivery && <DeliveryRates m={m} delivery={m.delivery} onSaved={onSaved} />}
       {m.eventRules && <EventRulesForm m={m} rules={m.eventRules} onSaved={onSaved} />}
+      {m.coachingRules && <CoachingRulesForm m={m} rules={m.coachingRules} onSaved={onSaved} />}
     </Card>
   );
 }

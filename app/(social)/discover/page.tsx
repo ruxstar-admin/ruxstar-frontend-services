@@ -5,8 +5,8 @@ type Props = { searchParams: Promise<{ category?: string }> };
 
 export const metadata: Metadata = { title: "Discover · Ruxstar", robots: { index: false } };
 
-/** `?category=events` opens straight on Events, for links from tickets and events pages. */
+/** `?category=events` or `?category=coaching` opens straight on that category, for links from tickets, classes and their pages. */
 export default async function DiscoverPage({ searchParams }: Props) {
   const { category } = await searchParams;
-  return <DiscoverScreen initialCategory={category === "events" ? "events" : null} />;
+  return <DiscoverScreen initialCategory={category === "events" || category === "coaching" ? category : null} />;
 }

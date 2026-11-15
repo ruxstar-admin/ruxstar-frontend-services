@@ -1,0 +1,452 @@
+/* Coaching: course cards, the course page, enrolling, your classes, the week grid and the class roster. Layout comes from the shop, order and vendor styles. */
+
+/* Discover */
+.demoTag {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  font: 600 12px/1 var(--font);
+  color: #fff;
+  background: rgb(31 138 76 / 92%);
+  border-radius: var(--radius-pill);
+}
+
+/* Course page */
+.batch {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.batch[data-picked] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.batch[data-closed] {
+  opacity: 0.7;
+}
+
+.batchHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.batchName {
+  font: 600 16px/22px var(--font);
+}
+
+.batchFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.fee {
+  font: 700 18px/24px var(--font);
+}
+
+/* Seven small day boxes: which days of the week a batch meets. */
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  max-width: 320px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.week li {
+  display: grid;
+  place-items: center;
+  height: 30px;
+  font: 600 12px/1 var(--font);
+  color: var(--ink-3);
+  background: var(--raised);
+  border-radius: 8px;
+}
+
+.week li[data-on] {
+  color: #fff;
+  background: var(--accent);
+}
+
+/* Choices: a batch, a demo class, a student */
+.choices {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--space-3) var(--space-4);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+}
+
+.choice:hover:not(:disabled) {
+  border-color: var(--ink-3);
+}
+
+.choice[aria-pressed="true"],
+.choice[aria-checked="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.choice:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.choice:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.choiceText {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.choiceTitle {
+  font: 600 15px/22px var(--font);
+}
+
+.radio {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ink-3);
+  border-radius: 50%;
+}
+
+[aria-checked="true"] > .radio,
+[aria-pressed="true"] > .radio {
+  border: 6px solid var(--accent);
+}
+
+/* Your classes */
+.day {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.dayTitle {
+  font: 600 13px/18px var(--font);
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  text-transform: uppercase;
+}
+
+.dayTitle[data-today] {
+  color: var(--accent-soft);
+}
+
+.lesson {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+a.lesson {
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.lesson:hover {
+  border-color: var(--ink-3);
+}
+
+a.lesson > svg {
+  flex: none;
+  color: var(--ink-3);
+}
+
+.lesson[data-cancelled] {
+  background: var(--raised);
+}
+
+.lesson[data-cancelled] .lessonTitle {
+  text-decoration: line-through;
+}
+
+.time {
+  display: grid;
+  flex: none;
+  gap: 2px;
+  width: 64px;
+  font: 600 14px/20px var(--font);
+  font-variant-numeric: tabular-nums;
+}
+
+.time span {
+  font: var(--type-caption);
+  color: var(--ink-3);
+}
+
+.lessonText {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.lessonTitle {
+  font: 600 15px/22px var(--font);
+  color: inherit;
+  text-decoration: none;
+}
+
+a.lessonTitle:hover {
+  text-decoration: underline;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+.weekNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.weekNav strong {
+  font: 600 15px/22px var(--font);
+}
+
+.meter {
+  height: 8px;
+  overflow: hidden;
+  background: var(--raised);
+  border-radius: var(--radius-pill);
+}
+
+.meter > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+.meter[data-good] > span {
+  background: var(--success);
+}
+
+.message {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.messageText {
+  font: var(--type-small);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* The week grid: days across, times down. Tap a time to start a class there. */
+.gridWrap {
+  max-height: 460px;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 56px repeat(7, minmax(40px, 1fr));
+  min-width: 360px;
+}
+
+.gridHead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--space-2) 0;
+  font: 600 12px/16px var(--font);
+  color: var(--ink-2);
+  text-align: center;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.gridTime {
+  padding-right: var(--space-2);
+  font: var(--type-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+  text-align: right;
+  transform: translateY(-7px);
+}
+
+.cell {
+  height: 26px;
+  padding: 0;
+  font: 600 11px/1 var(--font);
+  color: #fff;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.cell[data-hour="false"] {
+  border-top-style: dashed;
+}
+
+.cell:hover {
+  background: var(--raised);
+}
+
+.cell[data-covered] {
+  background: color-mix(in srgb, var(--accent) 55%, var(--surface));
+  border-top-color: transparent;
+}
+
+.cell[aria-pressed="true"] {
+  background: var(--accent);
+}
+
+.cell:focus-visible {
+  position: relative;
+  z-index: 2;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.slotRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+}
+
+.slotRow + .slotRow {
+  border-top: 1px solid var(--line);
+}
+
+.slotRow > strong {
+  flex: 1 1 120px;
+  align-self: center;
+  font: 600 15px/22px var(--font);
+}
+
+.slotRow select {
+  min-width: 110px;
+}
+
+/* Roster */
+.roster {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.roster > li + li {
+  border-top: 1px solid var(--line);
+}
+
+.student {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 60px;
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+}
+
+.student input {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  accent-color: var(--success);
+  cursor: pointer;
+}
+
+.student input:disabled {
+  cursor: default;
+}
+
+.studentName {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+  font: 600 16px/22px var(--font);
+}
+
+.marked {
+  font: 600 13px/18px var(--font);
+}
+
+.marked[data-present="true"] {
+  color: var(--success);
+}
+
+.marked[data-present="false"] {
+  color: var(--danger);
+}
+
+/* A vendor row that is a button, not a link. */
+.rowButton {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.rosterBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}

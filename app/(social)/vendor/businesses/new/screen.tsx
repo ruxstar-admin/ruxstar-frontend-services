@@ -180,7 +180,9 @@ export function CreateBusinessScreen() {
           <p className={styles.faint}>
             {module === "events"
               ? "You add a photo next and publish the business, then make events and sell tickets."
-              : `You add photos${module === "pod" ? ", products and prices" : ""} next, then publish it.`}
+              : module === "coaching"
+                ? "You add a photo next and publish the business, then make courses with batches and a weekly timetable."
+                : `You add photos${module === "pod" ? ", products and prices" : ""} next, then publish it.`}
           </p>
           {needsTerms && (
             <section className={styles.form}>

@@ -24,6 +24,15 @@ const EventResults = dynamic(() => import("@/components/events/EventResults"), {
   ),
 });
 
+const CourseResults = dynamic(() => import("@/components/coaching/CourseResults"), {
+  loading: () => (
+    <div className={styles.grid} aria-busy>
+      <ShopCardSkeleton />
+      <ShopCardSkeleton />
+    </div>
+  ),
+});
+
 function Results({ filters }: { filters: ShopFilters }) {
   const onSignedOut = useOnSignedOut();
   const { items, loading, loadingMore, hasMore, error, more, reload } = usePages((cursor) => shops(filters, cursor));
@@ -102,10 +111,12 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
   }, []);
 
   const picked = categories.find((c) => c.module === category);
-  const comingSoon = picked ? !picked.live || (picked.module !== "pod" && picked.module !== "events") : false;
+  const comingSoon = picked ? !picked.live || (picked.module !== "pod" && picked.module !== "events" && picked.module !== "coaching") : false;
   const printOpen = categories.some((c) => c.module === "pod" && c.live) && category !== "pod";
   const eventsOpen = categories.some((c) => c.module === "events" && c.live);
+  const coachingOpen = categories.some((c) => c.module === "coaching" && c.live);
   const showEvents = category === "events" && !comingSoon;
+  const showCourses = category === "coaching" && !comingSoon;
   const filters: ShopFilters = { ...(q ? { q } : {}), ...(category === "pod" && product ? { product } : {}) };
 
   const pickCategory = (next: BusinessModule | null) => {
@@ -127,6 +138,12 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
               Your tickets
             </ButtonLink>
           )}
+          {coachingOpen && (
+            <ButtonLink href="/classes" variant="secondary">
+              <Icon name="book" size={18} />
+              Your classes
+            </ButtonLink>
+          )}
           <ButtonLink href="/orders" variant="secondary">
             <Icon name="receipt" size={18} />
             Your orders
@@ -144,8 +161,8 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
           type="search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={showEvents ? "Event, organiser or city" : "Shop, what they print, or a city"}
-          aria-label={showEvents ? "Search events" : "Search businesses"}
+          placeholder={showEvents ? "Event, organiser or city" : showCourses ? "Course or institute" : "Shop, what they print, or a city"}
+          aria-label={showEvents ? "Search events" : showCourses ? "Search courses" : "Search businesses"}
           autoComplete="off"
           spellCheck={false}
         />
@@ -187,6 +204,8 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
         </Empty>
       ) : showEvents ? (
         <EventResults q={q} />
+      ) : showCourses ? (
+        <CourseResults q={q} />
       ) : (
         <Results key={`${q}|${category ?? ""}|${product ?? ""}`} filters={filters} />
       )}

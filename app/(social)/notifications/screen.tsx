@@ -38,6 +38,8 @@ const ICONS: Record<Notification["type"], IconName> = {
   "kyc.reopened": "shield",
   "event.ticket": "ticket",
   "event.updated": "ticket",
+  "coaching.enrolled": "book",
+  "coaching.updated": "book",
 };
 
 function hrefOf(link: Notification["link"]) {
@@ -75,6 +77,12 @@ function hrefOf(link: Notification["link"]) {
       return `/tickets/${link.id}`;
     case "vendor_event":
       return `/vendor/events/${link.id}`;
+    case "coaching_course":
+      return `/courses/${link.id}`;
+    case "coaching_order":
+      return `/classes/${link.id}`;
+    case "vendor_course":
+      return `/vendor/courses/${link.id}`;
     default:
       return `/p/${link.id}`;
   }

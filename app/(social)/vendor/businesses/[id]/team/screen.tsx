@@ -16,6 +16,7 @@ export function TeamScreen({ id }: { id: string }) {
   const full = data.members.length >= data.max;
   const quickStart = data.permissions.some((p) => !p.verify);
   const gate = data.permissions.some((p) => p.key === "tickets.scan");
+  const coaches = data.permissions.some((p) => p.key === "classes.view");
 
   return (
     <div className={styles.page}>
@@ -50,7 +51,13 @@ export function TeamScreen({ id }: { id: string }) {
         </>
       ) : (
         <Empty title="No one yet">
-          <p>{gate ? "Invite gate keepers to scan tickets at your events." : "Invite someone to help with orders, the shop or posts."}</p>
+          <p>
+            {gate
+              ? "Invite gate keepers to scan tickets at your events."
+              : coaches
+                ? "Invite coaches to take attendance, message students and share notes for their batches."
+                : "Invite someone to help with orders, the shop or posts."}
+          </p>
         </Empty>
       )}
     </div>

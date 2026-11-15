@@ -407,7 +407,7 @@ export interface paths {
                                 /** @description turf and ecommerce have defaults ready for when they open */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order";
+                                    type: "pod_order" | "event_order" | "coaching_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -592,7 +592,7 @@ export interface paths {
                                 /** @description turf and ecommerce have defaults ready for when they open */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order";
+                                    type: "pod_order" | "event_order" | "coaching_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -8561,12 +8561,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated";
+                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated" | "coaching.enrolled" | "coaching.updated";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal; `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches; `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch";
                                     id: string;
                                 };
                                 read: boolean;
@@ -9245,7 +9245,7 @@ export interface paths {
                                 /** @description turf and ecommerce have defaults ready for when they open */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order";
+                                    type: "pod_order" | "event_order" | "coaching_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -9494,7 +9494,7 @@ export interface paths {
                                 /** @description turf and ecommerce have defaults ready for when they open */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order";
+                                    type: "pod_order" | "event_order" | "coaching_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -11472,7 +11472,7 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Your print shops it works at */
+                        /** @description Your print shops and coaching businesses it works at */
                         businessIds: string[];
                     };
                 };
@@ -11603,7 +11603,7 @@ export interface paths {
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
                         active?: boolean;
-                        /** @description Your print shops it works at */
+                        /** @description Your print shops and coaching businesses it works at */
                         businessIds?: string[];
                     };
                 };
@@ -11730,7 +11730,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -11747,11 +11747,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -11804,7 +11804,7 @@ export interface paths {
                     "application/json": {
                         /** @description Their Ruxstar username, without the @ */
                         username: string;
-                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                         pay?: {
                             /** @description In paise, at least ₹1 */
                             amount: number;
@@ -11836,7 +11836,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -11969,7 +11969,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                         /** @description Only while they're invited: the offer can't change once they accept */
                         pay?: {
                             /** @description In paise, at least ₹1 */
@@ -12002,7 +12002,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -13329,6 +13329,2047 @@ export interface paths {
                                     status: "awaiting_payment" | "valid" | "cancelled";
                                     lastIn: string | null;
                                 }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A coaching business's courses, newest first, with batches, students and money */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Make a course as a draft
+         * @description Add batches next, then publish it. Limits follow GET /v1/coaching/rules.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        description: string | null;
+                        /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                        category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                        /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                        mode: "offline" | "online";
+                        /** @description Offline courses: where classes are. Null online */
+                        venue: {
+                            name: string;
+                            address: string;
+                            city: string;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        } | null;
+                        /** @description Null: no demo class */
+                        demo: {
+                            /** @description Paise; 0 is a free demo. Up to Ruxstar's most */
+                            fee: number;
+                            /** @description Demo students in one class. Up to Ruxstar's most */
+                            seats: number;
+                        } | null;
+                        /** @description Leave out for Ruxstar's default */
+                        certificatePercent?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/courses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of your courses, with its batches and money */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a draft course, with its batches and materials
+         * @description Published courses stay; cancel their batches instead.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Change a course */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Send only what changes. The mode can't change once the course has a batch. Enrolled students are told when the venue changes. */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title?: string;
+                        description?: string | null;
+                        /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                        category?: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                        /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                        mode?: "offline" | "online";
+                        /** @description Offline courses: where classes are. Null online */
+                        venue?: {
+                            name: string;
+                            address: string;
+                            city: string;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        } | null;
+                        /** @description Null: no demo class */
+                        demo?: {
+                            /** @description Paise; 0 is a free demo. Up to Ruxstar's most */
+                            fee: number;
+                            /** @description Demo students in one class. Up to Ruxstar's most */
+                            seats: number;
+                        } | null;
+                        certificatePercent?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/vendor/courses/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set the course's photo
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. It replaces the one there was.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/courses/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Put a draft course up for enrolment
+         * @description Needs the business published, the venue for an in-person course, and a batch whose first class is in the future. Everything missing comes back at once.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/courses/{id}/batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a batch: its fee, seats and weekly schedule
+         * @description Classes are made from the weekly slots, from the start date for `classes` classes or until `endDate`. On a live course it takes students at once.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description For example Weekend mornings */
+                        name: string;
+                        /** @description Paise for the whole batch, paid up front */
+                        fee: number;
+                        /** @description Up to Ruxstar's most */
+                        capacity: number;
+                        /** @description If fewer have enrolled Ruxstar's minimum hours before the first class, the batch is cancelled and everyone refunded */
+                        minStudents: number | null;
+                        slots: {
+                            /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                            day: number;
+                            /** @description HH:MM in India, in 15-minute steps */
+                            start: string;
+                            minutes: number;
+                        }[];
+                        /** @description YYYY-MM-DD, in India */
+                        startDate: string;
+                        /** @description How many classes; or null with `endDate` */
+                        classes: number | null;
+                        /** @description The last day classes can be on; or null with `classes` */
+                        endDate: string | null;
+                        /** @description Online courses only */
+                        onlineLink: string | null;
+                        /** @description Team members with “See their batches and students” */
+                        coachIds: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/batches/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a batch nobody has enrolled in
+         * @description One that has had students stays; cancel it instead.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Change a batch */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Send only what changes. Once anyone has enrolled the schedule is fixed: move, cancel or add single classes instead. The fee applies to new enrolments; capacity can't go below the seats taken. */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description For example Weekend mornings */
+                        name?: string;
+                        /** @description Paise for the whole batch, paid up front */
+                        fee?: number;
+                        /** @description Up to Ruxstar's most */
+                        capacity?: number;
+                        /** @description If fewer have enrolled Ruxstar's minimum hours before the first class, the batch is cancelled and everyone refunded */
+                        minStudents?: number | null;
+                        slots?: {
+                            /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                            day: number;
+                            /** @description HH:MM in India, in 15-minute steps */
+                            start: string;
+                            minutes: number;
+                        }[];
+                        /** @description YYYY-MM-DD, in India */
+                        startDate?: string;
+                        /** @description How many classes; or null with `endDate` */
+                        classes?: number | null;
+                        /** @description The last day classes can be on; or null with `classes` */
+                        endDate?: string | null;
+                        /** @description Online courses only */
+                        onlineLink?: string | null;
+                        /** @description Team members with “See their batches and students” */
+                        coachIds?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/vendor/batches/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a whole batch before its first class
+         * @description Every student and demo student is refunded in full, platform fee included, and told why. Once classes have started, cancel single classes instead.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Everyone affected is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/courses/{id}/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who enrolled or booked a demo, newest first
+         * @description With `kind=demo`, demo class bookings only. Each row has the parent's contact, the money and attendance so far.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description MongoDB ObjectId as hex */
+                    batchId?: string;
+                    /** @description batch: an enrolment. demo: one trial class */
+                    kind?: "batch" | "demo";
+                    status?: "confirmed" | "cancelled";
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description batch: an enrolment. demo: one trial class */
+                                kind: "batch" | "demo";
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                student: {
+                                    name: string;
+                                    child: boolean;
+                                };
+                                parent: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                batch: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description Demo classes: when */
+                                demoAt: string | null;
+                                /** @description Amount in paise */
+                                total: number;
+                                /** @description Amount in paise */
+                                share: number;
+                                /** @description Amount in paise */
+                                refunded: number;
+                                attendance: {
+                                    attended: number;
+                                    held: number;
+                                };
                                 /** Format: date-time */
                                 createdAt: string;
                             }[];
@@ -20091,6 +22132,3635 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/coaching/desk/batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Batches you run or teach, soonest first
+         * @description Your own institutes' batches, and those you're a coach on with “See their batches and students”. Ended ones drop off after two weeks.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                    mode: "offline" | "online";
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                schedule: string;
+                                slots: {
+                                    /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                    day: number;
+                                    /** @description HH:MM in India, in 15-minute steps */
+                                    start: string;
+                                    minutes: number;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                status: "open" | "full" | "started" | "ended" | "cancelled";
+                                onlineLink: string | null;
+                                students: number;
+                                nextClass: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                } | null;
+                                role: "owner" | "coach";
+                                can: {
+                                    attendance: boolean;
+                                    message: boolean;
+                                    materials: boolean;
+                                    reschedule: boolean;
+                                };
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Today's classes across your batches, by start time */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** Format: date-time */
+                                startsAt: string;
+                                /** Format: date-time */
+                                endsAt: string;
+                                status: "upcoming" | "done" | "cancelled";
+                                extra: boolean;
+                                movedFrom: string | null;
+                                cancelReason: string | null;
+                                /** @description Demo students booked */
+                                demos: number;
+                                /** @description Attendance saved */
+                                marked: boolean;
+                                present: number;
+                                batch: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                };
+                                students: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/batches/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One batch with every class */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                    mode: "offline" | "online";
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                schedule: string;
+                                slots: {
+                                    /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                    day: number;
+                                    /** @description HH:MM in India, in 15-minute steps */
+                                    start: string;
+                                    minutes: number;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                status: "open" | "full" | "started" | "ended" | "cancelled";
+                                onlineLink: string | null;
+                                students: number;
+                                nextClass: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                } | null;
+                                role: "owner" | "coach";
+                                can: {
+                                    attendance: boolean;
+                                    message: boolean;
+                                    materials: boolean;
+                                    reschedule: boolean;
+                                };
+                                classes: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/classes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A class's students, with attendance so far
+         * @description Paid students of the batch, and paid demo students booked into this class.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                class: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                };
+                                batch: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description Attendance opens 30 minutes before the class and closes when certificates are issued */
+                                canMark: boolean;
+                                students: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    orderId: string;
+                                    name: string;
+                                    /** @description batch: an enrolment. demo: one trial class */
+                                    kind: "batch" | "demo";
+                                    child: boolean;
+                                    present: boolean | null;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/classes/{id}/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mark who came: tick each student present or absent
+         * @description Send any of the class's students; others keep what they had. Saving again changes the marks.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        marks: {
+                            /** @description MongoDB ObjectId as hex */
+                            orderId: string;
+                            present: boolean;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                class: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                };
+                                batch: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description Attendance opens 30 minutes before the class and closes when certificates are issued */
+                                canMark: boolean;
+                                students: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    orderId: string;
+                                    name: string;
+                                    /** @description batch: an enrolment. demo: one trial class */
+                                    kind: "batch" | "demo";
+                                    child: boolean;
+                                    present: boolean | null;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/classes/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a class to come
+         * @description Every student is told why. There's no refund for a single class; add an extra class to make it up. Demo students booked into it are refunded in full.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Everyone affected is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                    mode: "offline" | "online";
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                schedule: string;
+                                slots: {
+                                    /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                    day: number;
+                                    /** @description HH:MM in India, in 15-minute steps */
+                                    start: string;
+                                    minutes: number;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                status: "open" | "full" | "started" | "ended" | "cancelled";
+                                onlineLink: string | null;
+                                students: number;
+                                nextClass: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                } | null;
+                                role: "owner" | "coach";
+                                can: {
+                                    attendance: boolean;
+                                    message: boolean;
+                                    materials: boolean;
+                                    reschedule: boolean;
+                                };
+                                classes: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/classes/{id}/move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move a class to come to another time
+         * @description Every student, and demo students booked into it, is told the new time.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: date-time */
+                        startsAt: string;
+                        minutes?: number;
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                    mode: "offline" | "online";
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                schedule: string;
+                                slots: {
+                                    /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                    day: number;
+                                    /** @description HH:MM in India, in 15-minute steps */
+                                    start: string;
+                                    minutes: number;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                status: "open" | "full" | "started" | "ended" | "cancelled";
+                                onlineLink: string | null;
+                                students: number;
+                                nextClass: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                } | null;
+                                role: "owner" | "coach";
+                                can: {
+                                    attendance: boolean;
+                                    message: boolean;
+                                    materials: boolean;
+                                    reschedule: boolean;
+                                };
+                                classes: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/batches/{id}/classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add an extra class, for example to make up a cancelled one
+         * @description Every student is told. Up to Ruxstar's most classes per batch; not once the batch has ended.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: date-time */
+                        startsAt: string;
+                        minutes: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                    mode: "offline" | "online";
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                schedule: string;
+                                slots: {
+                                    /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                    day: number;
+                                    /** @description HH:MM in India, in 15-minute steps */
+                                    start: string;
+                                    minutes: number;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                status: "open" | "full" | "started" | "ended" | "cancelled";
+                                onlineLink: string | null;
+                                students: number;
+                                nextClass: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                } | null;
+                                role: "owner" | "coach";
+                                can: {
+                                    attendance: boolean;
+                                    message: boolean;
+                                    materials: boolean;
+                                    reschedule: boolean;
+                                };
+                                classes: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    extra: boolean;
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    /** @description Demo students booked */
+                                    demos: number;
+                                    /** @description Attendance saved */
+                                    marked: boolean;
+                                    present: number;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/batches/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Messages sent to the batch, newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                text: string;
+                                author: string;
+                                /** Format: date-time */
+                                at: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Message everyone in the batch
+         * @description Each student, or their parent, gets a notification and sees it on their enrolment. Demo students with a class to come get it too.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        text: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                text: string;
+                                author: string;
+                                /** Format: date-time */
+                                at: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/batches/{id}/materials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Files and links the batch's students see, newest first
+         * @description Including the ones for every batch of the course.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                kind: "file" | "link";
+                                /** @description The link, or for a file a signed link that works for 10 minutes */
+                                url: string;
+                                fileName: string | null;
+                                contentType: string | null;
+                                bytes: number | null;
+                                /** @description For every batch of the course */
+                                wholeCourse: boolean;
+                                /** Format: date-time */
+                                addedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Share a link with the batch
+         * @description With `wholeCourse`, the owner shares it with every batch of the course. Students are told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        url: string;
+                        /** @description Owner only: for every batch of the course */
+                        wholeCourse?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                kind: "file" | "link";
+                                /** @description The link, or for a file a signed link that works for 10 minutes */
+                                url: string;
+                                fileName: string | null;
+                                contentType: string | null;
+                                bytes: number | null;
+                                /** @description For every batch of the course */
+                                wholeCourse: boolean;
+                                /** Format: date-time */
+                                addedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/batches/{id}/materials/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload a file for the batch
+         * @description Send the file itself with Content-Type application/pdf, image/jpeg or image/png, up to 20 MB. Students are told.
+         */
+        post: {
+            parameters: {
+                query: {
+                    title: string;
+                    /** @description Owner only: for every batch of the course */
+                    wholeCourse?: boolean;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                kind: "file" | "link";
+                                /** @description The link, or for a file a signed link that works for 10 minutes */
+                                url: string;
+                                fileName: string | null;
+                                contentType: string | null;
+                                bytes: number | null;
+                                /** @description For every batch of the course */
+                                wholeCourse: boolean;
+                                /** Format: date-time */
+                                addedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/materials/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a file or link
+         * @description Coaches remove their batch's; the owner, any.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/desk/batches/{id}/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The batch's paid students with their attendance so far */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                name: string;
+                                child: boolean;
+                                attended: number;
+                                /** @description Classes that have happened */
+                                held: number;
+                                percent: number;
+                                /** @description The percent the course needs for the certificate */
+                                certificateAt: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ruxstar's rules for coaching: certificates, minimum batch size checks, limits and fees */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description The default; each course can set its own */
+                                certificatePercent: number;
+                                /** @description A batch short of its minimum this many hours before the first class is cancelled and refunded */
+                                minimumHours: number;
+                                maxBatchSize: number;
+                                maxClasses: number;
+                                maxBatches: number;
+                                /** @description Amount in paise */
+                                maxDemoFee: number;
+                                maxDemoSeats: number;
+                                /** @description Online class links show this many minutes before the start */
+                                joinMinutes: number;
+                                commissionBps: number;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Courses taking students, newest first
+         * @description With `city`, courses taught there and online ones (unless `online` is false). Courses with no batch open show `openBatches` 0. Empty while Ruxstar has coaching switched off.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description Courses taught there, and online ones unless `online` is false */
+                    city?: string;
+                    /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                    category?: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                    /** @description true: online courses only. false: in-person only */
+                    online?: boolean;
+                    /** @description Words in the title or the institute's name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your enrolments and demo classes: current ones by first class, or past ones newest first
+         * @description Yours and your children's. Current: not cancelled, and the batch or demo class not over.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description current: not ended or cancelled */
+                    view?: "current" | "past";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description batch: an enrolment. demo: one trial class */
+                                kind: "batch" | "demo";
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                student: {
+                                    /** @description Null: the account holder */
+                                    childId: string | null;
+                                    name: string;
+                                };
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                    category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                    /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                    mode: "offline" | "online";
+                                    photo: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    venueName: string | null;
+                                    address: string | null;
+                                    city: string | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                batch: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    schedule: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    cancelled: boolean;
+                                    cancelReason: string | null;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                } | null;
+                                reason: string | null;
+                                canCancel: boolean;
+                                /** @description Cancel before this, the first class, for a full refund */
+                                cancelUntil: string | null;
+                                /** @description Unpaid, the seat goes back after this */
+                                payBy: string | null;
+                                /** @description Every class of the batch, or the demo class */
+                                classes: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    /** @description Added beyond the weekly schedule */
+                                    extra: boolean;
+                                    /** @description When it was first meant to start */
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    attendance: ("present" | "absent") | null;
+                                    joinLink: string | null;
+                                    joinFrom: string | null;
+                                }[];
+                                attendance: {
+                                    attended: number;
+                                    /** @description Classes that have happened */
+                                    held: number;
+                                    percent: number;
+                                    /** @description The share needed for the certificate */
+                                    needed: number;
+                                };
+                                certificate: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    code: string;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                    /** @description Works for 10 minutes without signing in */
+                                    pdfUrl: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One enrolment or demo class: every class, attendance, the join link, the certificate and invoices
+         * @description While it waits for payment, Cashfree is asked whether it was paid.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description batch: an enrolment. demo: one trial class */
+                                kind: "batch" | "demo";
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                student: {
+                                    /** @description Null: the account holder */
+                                    childId: string | null;
+                                    name: string;
+                                };
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                    category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                    /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                    mode: "offline" | "online";
+                                    photo: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    venueName: string | null;
+                                    address: string | null;
+                                    city: string | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                batch: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    schedule: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    cancelled: boolean;
+                                    cancelReason: string | null;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                } | null;
+                                reason: string | null;
+                                canCancel: boolean;
+                                /** @description Cancel before this, the first class, for a full refund */
+                                cancelUntil: string | null;
+                                /** @description Unpaid, the seat goes back after this */
+                                payBy: string | null;
+                                /** @description Every class of the batch, or the demo class */
+                                classes: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    /** @description Added beyond the weekly schedule */
+                                    extra: boolean;
+                                    /** @description When it was first meant to start */
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    attendance: ("present" | "absent") | null;
+                                    joinLink: string | null;
+                                    joinFrom: string | null;
+                                }[];
+                                attendance: {
+                                    attended: number;
+                                    /** @description Classes that have happened */
+                                    held: number;
+                                    percent: number;
+                                    /** @description The share needed for the certificate */
+                                    needed: number;
+                                };
+                                certificate: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    code: string;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                    /** @description Works for 10 minutes without signing in */
+                                    pdfUrl: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/orders/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A fresh checkout link for an enrolment waiting for payment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel an enrolment or demo class
+         * @description Unpaid: the place goes back. Paid: a full refund, platform fee included, until the first class it covers starts. No refunds after that.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description batch: an enrolment. demo: one trial class */
+                                kind: "batch" | "demo";
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                student: {
+                                    /** @description Null: the account holder */
+                                    childId: string | null;
+                                    name: string;
+                                };
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                    category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                    /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                    mode: "offline" | "online";
+                                    photo: {
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    venueName: string | null;
+                                    address: string | null;
+                                    city: string | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                batch: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    schedule: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    cancelled: boolean;
+                                    cancelReason: string | null;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refund: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                } | null;
+                                reason: string | null;
+                                canCancel: boolean;
+                                /** @description Cancel before this, the first class, for a full refund */
+                                cancelUntil: string | null;
+                                /** @description Unpaid, the seat goes back after this */
+                                payBy: string | null;
+                                /** @description Every class of the batch, or the demo class */
+                                classes: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    /** @description Added beyond the weekly schedule */
+                                    extra: boolean;
+                                    /** @description When it was first meant to start */
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    attendance: ("present" | "absent") | null;
+                                    joinLink: string | null;
+                                    joinFrom: string | null;
+                                }[];
+                                attendance: {
+                                    attended: number;
+                                    /** @description Classes that have happened */
+                                    held: number;
+                                    percent: number;
+                                    /** @description The share needed for the certificate */
+                                    needed: number;
+                                };
+                                certificate: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    code: string;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                    /** @description Works for 10 minutes without signing in */
+                                    pdfUrl: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/orders/{id}/materials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Notes, files and links for an enrolment, newest first
+         * @description For paid enrolments. File links work for 10 minutes; ask again for fresh ones.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                kind: "file" | "link";
+                                /** @description The link, or for a file a signed link that works for 10 minutes */
+                                url: string;
+                                fileName: string | null;
+                                contentType: string | null;
+                                bytes: number | null;
+                                /** @description For every batch of the course */
+                                wholeCourse: boolean;
+                                /** Format: date-time */
+                                addedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/orders/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Messages from the institute to the batch, newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                text: string;
+                                author: string;
+                                /** Format: date-time */
+                                at: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/timetable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your and your children's classes, day by day
+         * @description Paid enrolments and demos, from `from` (today by default) for `days` days, cancelled classes included so you see what changed.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description YYYY-MM-DD, in India */
+                    from?: string;
+                    days?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                /** @description batch: an enrolment. demo: one trial class */
+                                kind: "batch" | "demo";
+                                student: {
+                                    /** @description Null: the account holder */
+                                    childId: string | null;
+                                    name: string;
+                                };
+                                course: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                    mode: "offline" | "online";
+                                };
+                                batchName: string;
+                                business: string;
+                                class: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    status: "upcoming" | "done" | "cancelled";
+                                    /** @description Added beyond the weekly schedule */
+                                    extra: boolean;
+                                    /** @description When it was first meant to start */
+                                    movedFrom: string | null;
+                                    cancelReason: string | null;
+                                    attendance: ("present" | "absent") | null;
+                                    joinLink: string | null;
+                                    joinFrom: string | null;
+                                };
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/certificates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Certificates you and your children have earned, newest first
+         * @description Each `pdfUrl` works for 10 minutes; ask again for fresh ones.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                code: string;
+                                /** Format: date-time */
+                                issuedAt: string;
+                                /** @description Works for 10 minutes without signing in */
+                                pdfUrl: string;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                studentName: string;
+                                courseTitle: string;
+                                batchName: string;
+                                businessName: string;
+                                attended: number;
+                                classes: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/children": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your children, who you can enrol as students */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                birthYear: number | null;
+                                /** @description Open enrolments and demos; a child with any can't be removed */
+                                enrolments: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a child
+         * @description Up to 10. Their name goes on their classes and certificates.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        birthYear: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                birthYear: number | null;
+                                /** @description Open enrolments and demos; a child with any can't be removed */
+                                enrolments: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/children/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a child
+         * @description Not while they have a class booked; their past classes and certificates stay.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Change a child's name or birth year
+         * @description Classes already booked keep the name they were booked with.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        birthYear?: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                birthYear: number | null;
+                                /** @description Open enrolments and demos; a child with any can't be removed */
+                                enrolments: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/coaching/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One course: its batches with seats left, demo classes, the refund rule, and your enrolments in it */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Attend at least this share of classes for the certificate */
+                                certificatePercent: number;
+                                /** @description Open and running first, soonest first */
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                }[];
+                                /** @description The next classes with a demo place, up to 20 */
+                                demoClasses: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    sessionId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    batchId: string;
+                                    batchName: string;
+                                    /** Format: date-time */
+                                    startsAt: string;
+                                    /** Format: date-time */
+                                    endsAt: string;
+                                    seatsLeft: number;
+                                }[];
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canEnrol: boolean;
+                                whyNot: string | null;
+                                /** @description Your enrolments and demos in it, newest first */
+                                myOrders: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description batch: an enrolment. demo: one trial class */
+                                    kind: "batch" | "demo";
+                                    status: "awaiting_payment" | "confirmed" | "cancelled";
+                                    student: {
+                                        /** @description Null: the account holder */
+                                        childId: string | null;
+                                        name: string;
+                                    };
+                                    /** @description MongoDB ObjectId as hex */
+                                    batchId: string;
+                                }[];
+                                /** @description Students who have had, or booked, this course's demo */
+                                demoTaken: {
+                                    /** @description Null: the account holder */
+                                    childId: string | null;
+                                    name: string;
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/batches/{id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Coupons that work on this batch's fee, best first
+         * @description With `code`, that code is checked too. Demo classes don't take coupons.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Check this code too */
+                    code?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                offers: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    label: string;
+                                    terms: string | null;
+                                    /** @description Paise it takes off this order; 0 when it doesn't apply yet */
+                                    discount: number;
+                                    problem: string | null;
+                                }[];
+                                /** @description With `code` */
+                                checked: {
+                                    code: string;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    problem: string | null;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/batches/{id}/enrol": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enrol yourself or a child in a batch
+         * @description The whole batch fee is paid up front. Free batches are confirmed at once; paid ones return a checkout link and hold the seat for 20 minutes. Enrolment closes when the first class starts.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        student: {
+                            /** @description One of your children, or null for yourself */
+                            childId: string | null;
+                        };
+                        coupon?: string;
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description batch: an enrolment. demo: one trial class */
+                                    kind: "batch" | "demo";
+                                    status: "awaiting_payment" | "confirmed" | "cancelled";
+                                    student: {
+                                        /** @description Null: the account holder */
+                                        childId: string | null;
+                                        name: string;
+                                    };
+                                    course: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        title: string;
+                                        /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                        category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                        /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                        mode: "offline" | "online";
+                                        photo: {
+                                            url: string;
+                                            width: number;
+                                            height: number;
+                                        } | null;
+                                        venueName: string | null;
+                                        address: string | null;
+                                        city: string | null;
+                                        /** @description Taken down by Ruxstar */
+                                        removed: boolean;
+                                    };
+                                    batch: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        schedule: string;
+                                        /** Format: date-time */
+                                        firstAt: string;
+                                        /** Format: date-time */
+                                        lastEndsAt: string;
+                                        cancelled: boolean;
+                                        cancelReason: string | null;
+                                    };
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    price: {
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        discount: number;
+                                        /** @description Amount in paise */
+                                        platformFee: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    };
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    refund: {
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        status: "pending" | "done";
+                                        reason: string | null;
+                                    } | null;
+                                    reason: string | null;
+                                    canCancel: boolean;
+                                    /** @description Cancel before this, the first class, for a full refund */
+                                    cancelUntil: string | null;
+                                    /** @description Unpaid, the seat goes back after this */
+                                    payBy: string | null;
+                                    /** @description Every class of the batch, or the demo class */
+                                    classes: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** Format: date-time */
+                                        startsAt: string;
+                                        /** Format: date-time */
+                                        endsAt: string;
+                                        status: "upcoming" | "done" | "cancelled";
+                                        /** @description Added beyond the weekly schedule */
+                                        extra: boolean;
+                                        /** @description When it was first meant to start */
+                                        movedFrom: string | null;
+                                        cancelReason: string | null;
+                                        attendance: ("present" | "absent") | null;
+                                        joinLink: string | null;
+                                        joinFrom: string | null;
+                                    }[];
+                                    attendance: {
+                                        attended: number;
+                                        /** @description Classes that have happened */
+                                        held: number;
+                                        percent: number;
+                                        /** @description The share needed for the certificate */
+                                        needed: number;
+                                    };
+                                    certificate: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        code: string;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                        /** @description Works for 10 minutes without signing in */
+                                        pdfUrl: string;
+                                    } | null;
+                                    /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                    invoices?: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                        kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                        number: string;
+                                        /** @description Whose document it is: the business's, or Ruxstar's */
+                                        issuer: "vendor" | "ruxstar";
+                                        /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                        role: "supply" | "fee";
+                                        /** @description Amount in paise */
+                                        total: number;
+                                        /** @description Credit notes: the refund behind it */
+                                        refundId: string | null;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                };
+                                checkoutUrl: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/{id}/demo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Book a demo class for yourself or a child
+         * @description One demo per student per course, in any upcoming class with a demo place, and not once enrolled. Free demos are confirmed at once; paid ones return a checkout link. Cancel before the class for a full refund; if the class is cancelled, it's refunded.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description MongoDB ObjectId as hex */
+                        sessionId: string;
+                        student: {
+                            /** @description One of your children, or null for yourself */
+                            childId: string | null;
+                        };
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description batch: an enrolment. demo: one trial class */
+                                    kind: "batch" | "demo";
+                                    status: "awaiting_payment" | "confirmed" | "cancelled";
+                                    student: {
+                                        /** @description Null: the account holder */
+                                        childId: string | null;
+                                        name: string;
+                                    };
+                                    course: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        title: string;
+                                        /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                        category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                        /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                        mode: "offline" | "online";
+                                        photo: {
+                                            url: string;
+                                            width: number;
+                                            height: number;
+                                        } | null;
+                                        venueName: string | null;
+                                        address: string | null;
+                                        city: string | null;
+                                        /** @description Taken down by Ruxstar */
+                                        removed: boolean;
+                                    };
+                                    batch: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        schedule: string;
+                                        /** Format: date-time */
+                                        firstAt: string;
+                                        /** Format: date-time */
+                                        lastEndsAt: string;
+                                        cancelled: boolean;
+                                        cancelReason: string | null;
+                                    };
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    price: {
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        discount: number;
+                                        /** @description Amount in paise */
+                                        platformFee: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    };
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    refund: {
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        status: "pending" | "done";
+                                        reason: string | null;
+                                    } | null;
+                                    reason: string | null;
+                                    canCancel: boolean;
+                                    /** @description Cancel before this, the first class, for a full refund */
+                                    cancelUntil: string | null;
+                                    /** @description Unpaid, the seat goes back after this */
+                                    payBy: string | null;
+                                    /** @description Every class of the batch, or the demo class */
+                                    classes: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** Format: date-time */
+                                        startsAt: string;
+                                        /** Format: date-time */
+                                        endsAt: string;
+                                        status: "upcoming" | "done" | "cancelled";
+                                        /** @description Added beyond the weekly schedule */
+                                        extra: boolean;
+                                        /** @description When it was first meant to start */
+                                        movedFrom: string | null;
+                                        cancelReason: string | null;
+                                        attendance: ("present" | "absent") | null;
+                                        joinLink: string | null;
+                                        joinFrom: string | null;
+                                    }[];
+                                    attendance: {
+                                        attended: number;
+                                        /** @description Classes that have happened */
+                                        held: number;
+                                        percent: number;
+                                        /** @description The share needed for the certificate */
+                                        needed: number;
+                                    };
+                                    certificate: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        code: string;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                        /** @description Works for 10 minutes without signing in */
+                                        pdfUrl: string;
+                                    } | null;
+                                    /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                    invoices?: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                        kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                        number: string;
+                                        /** @description Whose document it is: the business's, or Ruxstar's */
+                                        issuer: "vendor" | "ruxstar";
+                                        /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                        role: "supply" | "fee";
+                                        /** @description Amount in paise */
+                                        total: number;
+                                        /** @description Credit notes: the refund behind it */
+                                        refundId: string | null;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                };
+                                checkoutUrl: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/employment/{id}/orders": {
         parameters: {
             query?: never;
@@ -20309,7 +25979,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                             }[];
                             meta: {
                                 requestId: string;
@@ -20556,7 +26226,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                             };
                             meta: {
                                 requestId: string;
@@ -20815,7 +26485,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                             };
                             meta: {
                                 requestId: string;
@@ -21073,7 +26743,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                             };
                             meta: {
                                 requestId: string;
@@ -21411,7 +27081,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                             };
                             meta: {
                                 requestId: string;
@@ -21645,7 +27315,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                             };
                             meta: {
                                 requestId: string;
@@ -23680,7 +29350,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -23713,7 +29383,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                                     /** @description The pay they accepted */
                                     pay: {
                                         /** @description In paise, at least ₹1 */
@@ -23730,11 +29400,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -23823,7 +29493,7 @@ export interface paths {
                                 owner: {
                                     name: string;
                                 };
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                                 /** @description The pay they accepted */
                                 pay: {
                                     /** @description In paise, at least ₹1 */
@@ -29360,6 +35030,8 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
+                        /** @description Where it works: print orders, coaching enrolments or both. Print only when left out */
+                        modules?: ("pod" | "coaching")[];
                     };
                 };
             };
@@ -31169,7 +36841,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -31186,11 +36858,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -32550,6 +38222,556 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/coaching/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every course, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "draft" | "live" | "removed";
+                    /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                    category?: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                    /** @description Words in the title or the institute's name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/coaching/courses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One course, with its batches, students and money */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/coaching/courses/{id}/take-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a course down
+         * @description It leaves the listings and its batches are cancelled: every place not yet settled is refunded in full, and the institute and students are told why. Places whose first class has happened are already paid out and aren't refunded automatically. It can't be undone.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The institute and every enrolled student see it */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                /** @description tuition: school subjects. exam_prep: entrance and competitive exams. tech: coding and computers */
+                                category: "tuition" | "exam_prep" | "music" | "dance" | "sports" | "fitness" | "art" | "languages" | "tech" | "other";
+                                /** @description offline: at the institute's venue. online: live classes on a meeting link */
+                                mode: "offline" | "online";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                city: string | null;
+                                venueName: string | null;
+                                /** @description The lowest fee of a batch open for enrolment */
+                                feeFrom: number | null;
+                                /** @description Batches taking enrolments now */
+                                openBatches: number;
+                                /** @description The soonest first class of an open batch */
+                                nextStart: string | null;
+                                /** @description Null when the course has no demo class */
+                                demo: {
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    free: boolean;
+                                } | null;
+                                description: string | null;
+                                venue: {
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                demoSeats: number | null;
+                                certificatePercent: number;
+                                status: "draft" | "live" | "removed";
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                batches: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    fee: number;
+                                    capacity: number;
+                                    seatsLeft: number;
+                                    slots: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, in 15-minute steps */
+                                        start: string;
+                                        minutes: number;
+                                    }[];
+                                    /** @description In words, for example "Mon, Wed 5–6 pm" */
+                                    schedule: string;
+                                    /** @description YYYY-MM-DD, in India */
+                                    startDate: string;
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    /** @description Classes not cancelled, extra ones included */
+                                    classes: number;
+                                    minStudents: number | null;
+                                    /** @description Paid enrolments */
+                                    enrolled: number;
+                                    coaches: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    /** @description open: taking enrolments. Enrolment closes when the first class starts */
+                                    status: "open" | "full" | "started" | "ended" | "cancelled";
+                                    cancelReason: string | null;
+                                    /** @description Seats waiting for a payment */
+                                    held: number;
+                                    onlineLink: string | null;
+                                    coachIds: string[];
+                                    /** @description When the minimum is checked */
+                                    minimumBy: string | null;
+                                    certificatesAt: string | null;
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                }[];
+                                counts: {
+                                    /** @description Paid enrolments */
+                                    students: number;
+                                    /** @description Demo classes booked */
+                                    demos: number;
+                                };
+                                money: {
+                                    /** @description Amount in paise */
+                                    sales: number;
+                                    /** @description Amount in paise */
+                                    share: number;
+                                    commissionBps: number;
+                                };
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/invoices": {
         parameters: {
             query?: never;
@@ -32600,7 +38822,7 @@ export interface paths {
                                 /** @description turf and ecommerce have defaults ready for when they open */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order";
+                                    type: "pod_order" | "event_order" | "coaching_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -32785,7 +39007,7 @@ export interface paths {
                                 /** @description turf and ecommerce have defaults ready for when they open */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order";
+                                    type: "pod_order" | "event_order" | "coaching_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -33532,6 +39754,23 @@ export interface paths {
                                     /** @description Questions an organiser can ask each ticket holder */
                                     maxQuestions: number;
                                 } | null;
+                                coachingRules: {
+                                    /** @description The share of classes a student must attend for a certificate, unless a course sets its own */
+                                    certificatePercent: number;
+                                    /** @description A batch short of its minimum this many hours before the first class is cancelled and refunded */
+                                    minimumHours: number;
+                                    maxBatchSize: number;
+                                    /** @description Classes in one batch, extra ones included */
+                                    maxClasses: number;
+                                    /** @description Batches running or to come in one course */
+                                    maxBatches: number;
+                                    /** @description Paise, the most a demo class can cost */
+                                    maxDemoFee: number;
+                                    /** @description Demo students in one class */
+                                    maxDemoSeats: number;
+                                    /** @description An online class's link shows this many minutes before it starts */
+                                    joinMinutes: number;
+                                } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
                                 updatedAt: string;
@@ -33632,6 +39871,24 @@ export interface paths {
                             /** @description Questions an organiser can ask each ticket holder */
                             maxQuestions?: number;
                         };
+                        /** @description Coaching only. Send only what changes. */
+                        coachingRules?: {
+                            /** @description The share of classes a student must attend for a certificate, unless a course sets its own */
+                            certificatePercent?: number;
+                            /** @description A batch short of its minimum this many hours before the first class is cancelled and refunded */
+                            minimumHours?: number;
+                            maxBatchSize?: number;
+                            /** @description Classes in one batch, extra ones included */
+                            maxClasses?: number;
+                            /** @description Batches running or to come in one course */
+                            maxBatches?: number;
+                            /** @description Paise, the most a demo class can cost */
+                            maxDemoFee?: number;
+                            /** @description Demo students in one class */
+                            maxDemoSeats?: number;
+                            /** @description An online class's link shows this many minutes before it starts */
+                            joinMinutes?: number;
+                        };
                     };
                 };
             };
@@ -33684,6 +39941,23 @@ export interface paths {
                                     maxTicketTypes: number;
                                     /** @description Questions an organiser can ask each ticket holder */
                                     maxQuestions: number;
+                                } | null;
+                                coachingRules: {
+                                    /** @description The share of classes a student must attend for a certificate, unless a course sets its own */
+                                    certificatePercent: number;
+                                    /** @description A batch short of its minimum this many hours before the first class is cancelled and refunded */
+                                    minimumHours: number;
+                                    maxBatchSize: number;
+                                    /** @description Classes in one batch, extra ones included */
+                                    maxClasses: number;
+                                    /** @description Batches running or to come in one course */
+                                    maxBatches: number;
+                                    /** @description Paise, the most a demo class can cost */
+                                    maxDemoFee: number;
+                                    /** @description Demo students in one class */
+                                    maxDemoSeats: number;
+                                    /** @description An online class's link shows this many minutes before it starts */
+                                    joinMinutes: number;
                                 } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */

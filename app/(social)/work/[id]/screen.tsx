@@ -28,9 +28,10 @@ const WORK_AREAS: { title: string; line: string; icon: IconName; allowed: (permi
   { title: "Reviews", line: "What customers said, and the shop’s replies", icon: "star", allowed: has("reviews.reply"), path: "reviews" },
   { title: "Post as the business", line: "It goes out under the owner’s name", icon: "edit", allowed: has("posts.create"), path: "post" },
   { title: "Scan tickets", line: "Check people in at this business’s events", icon: "ticket", allowed: has("tickets.scan"), path: "/gate" },
+  { title: "Classes", line: "Today’s classes, attendance and your batches", icon: "book", allowed: has("classes.view"), path: "/teach" },
 ];
 
-/** Areas whose `path` starts with "/" live outside Work: the gate serves owners and gate keepers alike. */
+/** Areas whose `path` starts with "/" live outside Work: the gate and classes serve owners and their team alike. */
 const areaHref = (placeId: string, path: string) => (path.startsWith("/") ? path : `/work/${placeId}/${path}`);
 
 function Head({ business, owner }: { business: WorkPlace["business"]; owner: string }) {
