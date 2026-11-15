@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { Button, Icon, Input } from "@/components/ui";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { addChild, myChildren, type Child, type Slot } from "@/lib/api/coaching";
 import { money } from "@/lib/api/shops";
 import { DAY_LONG, DAY_SHORT, WEEK } from "@/lib/coaching";
@@ -78,7 +78,7 @@ export function ChildForm({ onAdded, onCancel }: { onAdded: (child: Child) => vo
       onAdded(child);
     } catch (err) {
       setFailure(formError(err).message);
-      if (!(err instanceof ApiError && err.code === "NETWORK")) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
     } finally {
       setBusy(false);
     }

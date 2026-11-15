@@ -9,7 +9,7 @@ import { changeLine } from "@/components/coaching/ClassRow";
 import { Back, Failed, Loading, TextArea } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { cancelClass, getDeskBatch, getRoster, markAttendance, moveClass, type DeskBatchDetail, type Roster, type RosterStudent } from "@/lib/api/coaching";
 import { MARK_EARLY_MS } from "@/lib/coaching";
 import { whenLine } from "@/lib/events";
@@ -75,7 +75,7 @@ function ClassView({ roster, batch, onRoster, reloadBatch }: { roster: Roster; b
       onRoster(await getRoster(cls.id));
     } catch (err) {
       setPanelFailure(formError(err).message);
-      if (!(err instanceof ApiError && err.code === "NETWORK")) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
     } finally {
       setBusy(false);
     }

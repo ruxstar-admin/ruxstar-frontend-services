@@ -8,7 +8,7 @@ import { useMe } from "@/components/social/session";
 import { PriceLine, StepBar, StudentPicker } from "@/components/coaching/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { bookDemo, getCourse, type CourseDetail } from "@/lib/api/coaching";
 import { money } from "@/lib/api/shops";
 import { whenLine } from "@/lib/events";
@@ -61,7 +61,7 @@ function Booking({ course }: { course: CourseDetail }) {
       else router.replace(`/classes/${placed.id}?fresh=1`);
     } catch (err) {
       setFailure(formError(err).message);
-      if (!(err instanceof ApiError && err.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) attempt.current = newIdempotencyKey();
       setBusy(false);
     }
   };

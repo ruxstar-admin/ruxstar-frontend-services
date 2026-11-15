@@ -11,7 +11,7 @@ import { FileItem, PriceList } from "@/components/shop/OrderParts";
 import { PaymentTerms } from "@/components/shop/PaymentTerms";
 import { customerTerms, getPodTerms, type PodTerms } from "@/lib/api/terms";
 import { formError, getMe } from "@/lib/api/account";
-import { newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import {
   myOrders,
   placeOrder,
@@ -160,6 +160,7 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
   const current = priceable && priced?.key === choiceKey ? priced : null;
   const quote = current?.quote ?? null;
   const quoteError = current?.error ?? null;
+  const pricing = priceable && !quote && !quoteError;
   // The offers stay on screen while a new price loads, so the list doesn't jump.
   const offers = priceable ? (priced?.quote?.offers ?? null) : null;
   useEffect(() => {
@@ -255,6 +256,7 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
       window.location.assign(checkoutUrl);
     } catch (err) {
       setError(formError(err).message);
+      if (!keepIdempotencyKey(err)) attempt.current = newIdempotencyKey();
       setPlacing(false);
     }
   };
@@ -474,8 +476,8 @@ function OrderForm({ shop, initialProduct }: { shop: Shop; initialProduct?: stri
           )}
           <span className={styles.faint}>{!shop.open ? "This shop is closed right now" : (hint ?? readyLine(quote?.turnaroundDays ?? product.turnaroundDays))}</span>
         </span>
-        <Button size="lg" onClick={place} loading={placing} disabled={!shop.open || uploading}>
-          Pay
+        <Button size="lg" onClick={place} loading={placing} disabled={!shop.open || uploading || pricing}>
+          {pricing ? "Working out the price…" : "Pay"}
         </Button>
       </div>
     </div>

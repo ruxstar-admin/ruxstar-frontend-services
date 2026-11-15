@@ -7,7 +7,7 @@ import { Empty } from "@/components/social/PostList";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { addCourt, listSports, removeCourt, turfRules, updateCourt, vendorGround, type CourtInput, type CourtView, type Hours, type SlotMinutes, type Sport, type TurfRulesView, type VendorGround } from "@/lib/api/turf";
 import { DAY_LONG, HALF_HOURS, slotLengthText, WEEK } from "@/lib/turf";
 import { PricesFields, pricesDraftOf, pricesErrors, pricesOf, type PricesDraft } from "./PricesFields";
@@ -130,7 +130,7 @@ function Form({ rules, sports, ground, court }: { rules: TurfRulesView; sports: 
       router.push(back);
     } catch (e) {
       setFailure(formError(e).message);
-      if (!(e instanceof ApiError && e.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(e)) attempt.current = newIdempotencyKey();
       setBusy(null);
     }
   };

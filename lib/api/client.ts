@@ -35,6 +35,14 @@ api.use(identify);
 /** One key per user action. Reuse it when retrying that same action. */
 export const newIdempotencyKey = () => crypto.randomUUID();
 
+/**
+ * Whether a failed write may still have gone through, so the retry must send the same idempotency key: a dropped
+ * connection, a gateway or request timeout, or the first try still running. The API replays real refusals (4xx) to
+ * the same key, so after those the caller makes a new one.
+ */
+export const keepIdempotencyKey = (err: unknown) =>
+  err instanceof ApiError && (err.code === "NETWORK" || err.code === "IDEMPOTENCY_IN_PROGRESS" || [408, 502, 503, 504].includes(err.status));
+
 /** Returns the success envelope or throws one `ApiError`, so screens handle a single error type. */
 export async function unwrap<T>(call: Promise<{ data?: T; error?: unknown; response: Response }>): Promise<T> {
   let result: Awaited<typeof call>;

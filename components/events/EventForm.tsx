@@ -6,7 +6,7 @@ import { Button, Icon, Input, Switch } from "@/components/ui";
 import { Back, Failed, Loading, TextArea } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { createEvent, eventRules, getVendorEvent, updateEvent, type EventKind, type EventRules, type VendorEvent } from "@/lib/api/events";
 import { money } from "@/lib/api/shops";
 import {
@@ -112,7 +112,7 @@ function Form({ rules, event, businessId }: { rules: EventRules; event?: VendorE
       }
     } catch (e) {
       setFailure(formError(e).message);
-      if (!(e instanceof ApiError && e.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(e)) attempt.current = newIdempotencyKey();
       setBusy(false);
     }
   };

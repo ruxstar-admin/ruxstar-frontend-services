@@ -5,7 +5,7 @@ import { useOnSignedOut } from "@/components/social/session";
 import { Button, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
 import type { NewCoupon } from "@/lib/api/admin";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { COUPON_MODULES, COUPON_WHERE, draftErrors, emptyDraft, newCouponOf, todayKey, type CouponModule } from "@/lib/coupons";
 import { CouponFields } from "./CouponFields";
 import styles from "./coupons.module.css";
@@ -18,8 +18,6 @@ interface NewCouponFormProps {
   create: (body: NewCoupon & { businessIds?: string[] }, idempotencyKey: string) => Promise<{ code: string }>;
   onDone: () => void;
 }
-
-const retryable = (err: unknown) => err instanceof ApiError && err.status === 0;
 
 /**
  * Making a coupon: Ruxstar's from the console (for print orders, event tickets, coaching fees or any of them), a
@@ -47,7 +45,7 @@ export function NewCouponForm({ who, shops, create, onDone }: NewCouponFormProps
       toast(`${made.code} is ready.`, "success");
       onDone();
     } catch (err) {
-      if (!retryable(err)) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
       setBusy(false);
     }

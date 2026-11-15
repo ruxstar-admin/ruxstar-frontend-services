@@ -10,7 +10,7 @@ import { CheckoutCoupons } from "@/components/coupons/CheckoutCoupons";
 import { useOffers } from "@/components/coupons/use-offers";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { bookTickets, eventOffers, getEvent, type EventDetail, type EventQuestion } from "@/lib/api/events";
 import { money } from "@/lib/api/shops";
 import {
@@ -172,7 +172,7 @@ function Booking({ event, waitlistId }: { event: EventDetail; waitlistId?: strin
     } catch (err) {
       setFailure(formError(err).message);
       // A booking that timed out may have been placed; trying again with the same key returns it instead of holding seats twice.
-      if (!(err instanceof ApiError && err.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) attempt.current = newIdempotencyKey();
       setBusy(false);
     }
   };
@@ -329,8 +329,8 @@ function Booking({ event, waitlistId }: { event: EventDetail; waitlistId?: strin
         ) : step === 1 ? (
           <Button onClick={toPay}>Continue</Button>
         ) : (
-          <Button loading={busy} disabled={coupon.busy} onClick={() => void place()}>
-            {free ? "Get my free tickets" : `Pay ${money(total)}`}
+          <Button loading={busy} disabled={coupon.pricing} onClick={() => void place()}>
+            {coupon.pricing ? "Working out the price…" : free ? "Get my free tickets" : `Pay ${money(total)}`}
           </Button>
         )}
       </div>

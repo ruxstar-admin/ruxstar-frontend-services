@@ -10,7 +10,7 @@ import { InvoiceLinks } from "@/components/invoices/InvoiceLinks";
 import { TextArea } from "@/components/vendor/parts";
 import { PriceLine, Timeline } from "@/components/stays/pieces";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { money } from "@/lib/api/shops";
 import { cancelStay, getStay, giveNotice, objectStay, payStay, withdrawObjection, type StayReservation } from "@/lib/api/stays";
 import { offerWord } from "@/lib/coupons";
@@ -68,7 +68,7 @@ function StayView({ item, fresh, onChanged }: { item: StayReservation; fresh: bo
       keys.current = null;
     } catch (err) {
       setError(formError(err).message);
-      if (keyed && !(err instanceof ApiError && err.code === "NETWORK")) keys.current = null;
+      if (keyed && !keepIdempotencyKey(err)) keys.current = null;
     } finally {
       setBusy(null);
     }

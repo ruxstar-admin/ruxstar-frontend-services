@@ -9,7 +9,7 @@ import { BusinessFields } from "@/components/vendor/BusinessFields";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { getPodTerms, vendorTerms } from "@/lib/api/terms";
 import {
   checkProfile,
@@ -81,7 +81,7 @@ export function CreateBusinessScreen() {
     } catch (err) {
       setSaving(false);
       if (onSignedOut(err)) return;
-      if (err instanceof ApiError && err.code !== "NETWORK") attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) attempt.current = newIdempotencyKey();
       const detail = err instanceof ApiError ? err.details.find((d) => profileFieldOf(d.path)) : undefined;
       const field = profileFieldOf(detail?.path);
       if (detail && field) setErrors({ [field]: detail.message });

@@ -8,7 +8,7 @@ import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { Button, Segmented, Skeleton, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { money } from "@/lib/api/shops";
 import { consoleObjections, decideObjection, type ConsoleReservation, type ObjectionStatus } from "@/lib/api/stays";
 import { bedsText, momentText, stayText } from "@/lib/stays";
@@ -46,7 +46,7 @@ function Decide({ item, onDone }: { item: ConsoleReservation; onDone: (next: Con
       toast(decision === "release" ? "The owner is paid, and both sides have your note." : "The tenant is being refunded in full, and both sides have your note.", "success");
       onDone(next);
     } catch (err) {
-      if (!(err instanceof ApiError && err.code === "NETWORK")) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
     } finally {
       setBusy(false);

@@ -10,7 +10,7 @@ import { WeekDays } from "@/components/coaching/parts";
 import { Back, Failed, Loading, TextArea } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { cancelBatch, deleteBatch, deleteCourse, getVendorCourse, publishCourse, setCoursePhoto, type VendorBatch, type VendorCourse } from "@/lib/api/coaching";
 import { money } from "@/lib/api/shops";
 import { BATCH_STATUS, CATEGORY_LABEL, COURSE_STATUS, placeLine } from "@/lib/coaching";
@@ -58,7 +58,7 @@ function BatchCard({ course, batch, onChanged }: { course: VendorCourse; batch: 
       setMode(null);
     } catch (err) {
       setFailure(formError(err).message);
-      if (!(err instanceof ApiError && err.code === "NETWORK")) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
     } finally {
       setBusy(false);
     }

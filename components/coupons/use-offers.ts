@@ -19,6 +19,7 @@ export function useOffers(load: (code?: string) => Promise<OffersAnswer>, key: s
   const [applied, setApplied] = useState<{ code: string; label: string; discount: number } | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState<string | null>(null);
   const loadRef = useRef(load);
   const appliedCode = useRef<string | null>(null);
   /** Only the latest request may settle: an older answer, or one sent before Remove, would bring back a stale discount. */
@@ -48,12 +49,16 @@ export function useOffers(load: (code?: string) => Promise<OffersAnswer>, key: s
     const ask = ++latest.current;
     loadRef.current(appliedCode.current ?? undefined).then(
       (answer) => {
-        if (!live || ask !== latest.current) return;
+        if (!live) return;
+        setLoaded(key);
+        if (ask !== latest.current) return;
         settle(answer);
         setBusy(false);
       },
       () => {
-        if (!live || ask !== latest.current) return;
+        if (!live) return;
+        setLoaded(key);
+        if (ask !== latest.current) return;
         setOffers([]);
         setBusy(false);
       },
@@ -84,5 +89,8 @@ export function useOffers(load: (code?: string) => Promise<OffersAnswer>, key: s
     setBusy(false);
   };
 
-  return { offers, applied, discount: applied?.discount ?? 0, problem, busy, apply, remove };
+  /** The price for this order isn't back yet (first load, a re-price, or a code being checked): Pay waits. */
+  const pricing = busy || (key !== null && loaded !== key);
+
+  return { offers, applied, discount: applied?.discount ?? 0, problem, busy, pricing, apply, remove };
 }

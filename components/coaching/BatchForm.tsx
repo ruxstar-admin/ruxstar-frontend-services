@@ -6,7 +6,7 @@ import { Button, Icon, Input, Segmented } from "@/components/ui";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { addBatch, coachingRules, getVendorCourse, updateBatch, type BatchInput, type CoachingRules, type Slot, type VendorBatch, type VendorCourse } from "@/lib/api/coaching";
 import { money } from "@/lib/api/shops";
 import { getTeam, type TeamMember } from "@/lib/api/team";
@@ -164,7 +164,7 @@ function Form({ rules, course, batch, coaches }: { rules: CoachingRules; course:
       router.push(back);
     } catch (e) {
       setFailure(formError(e).message);
-      if (!(e instanceof ApiError && e.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(e)) attempt.current = newIdempotencyKey();
       setBusy(false);
     }
   };

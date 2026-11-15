@@ -10,7 +10,7 @@ import { useOffers } from "@/components/coupons/use-offers";
 import { useLoad } from "@/components/vendor/use-load";
 import { DateStrip, Legend, PriceLine, SlotGrid, Stepper } from "@/components/turf/booking";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { money } from "@/lib/api/shops";
 import { bookCourt, bookingOffers, courtSlots, getGround, turfRules, type AddOnPick, type GroundDetail, type TurfRulesView } from "@/lib/api/turf";
 import {
@@ -184,7 +184,7 @@ function Booking({ ground, rules, initialCourt, initialDay }: { ground: GroundDe
     } catch (err) {
       setFailure(formError(err).message);
       // A booking that timed out may have been placed; the same key returns it instead of holding the slots twice.
-      if (!(err instanceof ApiError && err.code === "NETWORK")) attempt.current = null;
+      if (!keepIdempotencyKey(err)) attempt.current = null;
       if (err instanceof ApiError && err.code === "CONFLICT") {
         daySlots.reload();
         setStage("pick");
@@ -393,8 +393,8 @@ function Booking({ ground, rules, initialCourt, initialDay }: { ground: GroundDe
             Pay
           </Button>
         ) : (
-          <Button loading={busy} disabled={coupon.busy || !summary.count || !repeatOk} onClick={() => void place()}>
-            {`Pay ${money(total)}`}
+          <Button loading={busy} disabled={coupon.pricing || !summary.count || !repeatOk} onClick={() => void place()}>
+            {coupon.pricing ? "Working out the price…" : `Pay ${money(total)}`}
           </Button>
         )}
       </div>

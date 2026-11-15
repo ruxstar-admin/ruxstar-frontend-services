@@ -6,7 +6,7 @@ import { Button, Icon, Input } from "@/components/ui";
 import { Back, Failed, Loading, TextArea } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import {
   createProperty,
   deskUpdateProperty,
@@ -221,7 +221,7 @@ function Form({ rules, facilities, mode }: { rules: StaysRulesView; facilities: 
       }
     } catch (e) {
       setFailure(formError(e).message);
-      if (!(e instanceof ApiError && e.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(e)) attempt.current = newIdempotencyKey();
       setBusy(false);
     }
   };

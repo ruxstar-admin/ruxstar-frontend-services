@@ -7,7 +7,7 @@ import { useOnSignedOut } from "@/components/social/session";
 import { Button, Card, Input, Switch, Tag, useToast } from "@/components/ui";
 import { TextArea } from "@/components/vendor/parts";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { bannedCategories, createBanned, updateBanned, type BannedCategory } from "@/lib/api/store";
 
 const KEY = /^[a-z][a-z0-9_]{1,29}$/;
@@ -139,7 +139,7 @@ function AddBanned({ onAdded }: { onAdded: (b: BannedCategory) => void }) {
       setText("");
       toast("Category added. New and changed products are checked against it from now.", "success");
     } catch (err) {
-      if (!(err instanceof ApiError && err.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) attempt.current = newIdempotencyKey();
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
     } finally {
       setBusy(false);

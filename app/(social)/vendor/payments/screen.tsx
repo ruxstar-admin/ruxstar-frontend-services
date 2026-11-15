@@ -8,7 +8,7 @@ import { SkeletonRows } from "@/app/(social)/notifications/screen";
 import { Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { money } from "@/lib/api/shops";
 import {
   digitsOnly,
@@ -194,7 +194,7 @@ function Withdraw({ data, onDone }: { data: Payments; onDone: () => void }) {
       if (onSignedOut(err)) return;
       setFailure(formError(err).message);
       // Unsure whether it reached Ruxstar: trying again with the same key can't withdraw twice.
-      if (err instanceof ApiError && err.code !== "NETWORK") {
+      if (!keepIdempotencyKey(err)) {
         key.current = newIdempotencyKey();
         setAsking(false);
         onDone();

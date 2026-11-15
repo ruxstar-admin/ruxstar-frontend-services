@@ -8,7 +8,7 @@ import { ClassTime, type ClassTimeValue } from "@/components/coaching/ClassTime"
 import { Back, Failed, Loading, TextArea } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import {
   addExtraClass,
   batchMaterials,
@@ -42,8 +42,6 @@ const FIRST_CLASSES = 8;
 /** The API takes PDF, JPEG or PNG files up to 20 MB. */
 const MAX_FILE = 20 * 1024 * 1024;
 const FILE_TYPES = ["application/pdf", "image/jpeg", "image/png"];
-
-const retryable = (err: unknown) => err instanceof ApiError && err.code === "NETWORK";
 
 function ClassRows({ batch, now }: { batch: DeskBatchDetail; now: number }) {
   const [all, setAll] = useState(false);
@@ -125,7 +123,7 @@ function Messages({ batch }: { batch: DeskBatchDetail }) {
       setData([sent, ...(data ?? [])]);
     } catch (err) {
       setFailure(formError(err).message);
-      if (!retryable(err)) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
     } finally {
       setBusy(false);
     }
@@ -197,7 +195,7 @@ function Files({ batch }: { batch: DeskBatchDetail }) {
       setData([added, ...(data ?? [])]);
     } catch (err) {
       setFailure(formError(err).message);
-      if (!retryable(err)) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
     } finally {
       setBusy(null);
     }
@@ -324,7 +322,7 @@ function BatchView({ batch, setBatch }: { batch: DeskBatchDetail; setBatch: (b: 
       setAdding(false);
     } catch (err) {
       setFailure(formError(err).message);
-      if (!retryable(err)) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
     } finally {
       setBusy(false);
     }

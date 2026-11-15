@@ -6,7 +6,7 @@ import { Button, Icon, Input } from "@/components/ui";
 import { Back, Failed, Loading, TextArea } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { createGround, turfRules, updateGround, vendorGround, type Amenity, type GroundInput, type Point, type TurfRulesView, type VendorGround } from "@/lib/api/turf";
 import { AMENITIES, AMENITY_LABEL, groundTiers, refundLine } from "@/lib/turf";
 import vendor from "@/components/vendor/vendor.module.css";
@@ -110,7 +110,7 @@ function Form({ rules, ground, businessId }: { rules: TurfRulesView; ground?: Ve
       }
     } catch (e) {
       setFailure(formError(e).message);
-      if (!(e instanceof ApiError && e.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(e)) attempt.current = newIdempotencyKey();
       setBusy(false);
     }
   };

@@ -7,7 +7,7 @@ import { Empty } from "@/components/social/PostList";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { addRoom, removeRoom, staysRules, updateRoom, vendorProperty, type RoomFeature, type RoomInput, type RoomKind, type RoomView, type StaysRulesView, type VendorProperty } from "@/lib/api/stays";
 import { FEATURE_LABEL, FEATURES, paiseOf, priceError, ROOM_KIND_LABEL, rupees } from "@/lib/stays";
 import { Stepper } from "./pieces";
@@ -81,7 +81,7 @@ function Form({ property, room, rules }: { property: VendorProperty; room?: Room
       router.push(back);
     } catch (e) {
       setFailure(formError(e).message);
-      if (!(e instanceof ApiError && e.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(e)) attempt.current = newIdempotencyKey();
       setBusy(null);
     }
   };

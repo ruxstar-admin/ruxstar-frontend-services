@@ -7,7 +7,7 @@ import { GroundPhoto } from "@/components/turf/GroundCard";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, ButtonLink, Card, Icon, Skeleton, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { consoleGround, takeDownGround, type ConsoleGroundDetail } from "@/lib/api/turf";
 import { AMENITY_LABEL, GROUND_STATUS, hoursText, pricesText, slotLengthText } from "@/lib/turf";
 import { ago } from "@/lib/time";
@@ -39,7 +39,7 @@ function TakeDown({ detail, onDone }: { detail: ConsoleGroundDetail; onDone: (ne
         done.refunded ? `Ground taken down. ${done.refunded} ${done.refunded === 1 ? "booking is" : "bookings are"} being refunded, and everyone has been told why.` : "Ground taken down. The owner has been told why.",
       );
     } catch (err) {
-      if (!(err instanceof ApiError && err.code === "NETWORK")) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
     } finally {
       setBusy(false);

@@ -11,7 +11,7 @@ import { PriceLine } from "@/components/stays/pieces";
 import { CartLines } from "@/components/store/CartLines";
 import { clearCart, refreshItems, useCart, type Cart } from "@/components/store/cart";
 import { formError, getMe } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { myOrders } from "@/lib/api/orders";
 import { money } from "@/lib/api/shops";
 import { getStore, myStoreOrders, placeStoreOrder, quoteCart, type DeliveryAddress, type Method, type Quote, type StoreDetail } from "@/lib/api/store";
@@ -88,6 +88,7 @@ function CheckoutForm({ cart, shop }: { cart: Cart; shop: StoreDetail }) {
   const current = priced?.key === key ? priced : null;
   const quote = current?.quote ?? null;
   const quoteError = current?.error ?? null;
+  const pricing = !quote && !quoteError;
   const offers = priced?.quote?.offers ?? null;
 
   useEffect(() => {
@@ -153,8 +154,7 @@ function CheckoutForm({ cart, shop }: { cart: Cart; shop: StoreDetail }) {
       window.location.assign(checkoutUrl);
     } catch (err) {
       setError(formError(err).message);
-      // The API replays a refused order to the same key, so only a dropped connection keeps it: that order may have been made.
-      if (!(err instanceof ApiError && err.code === "NETWORK")) attempt.current = null;
+      if (!keepIdempotencyKey(err)) attempt.current = null;
       setPlacing(false);
     }
   };
@@ -284,8 +284,8 @@ function CheckoutForm({ cart, shop }: { cart: Cart; shop: StoreDetail }) {
           {quote ? <strong>{money(quote.total)}</strong> : !quoteError ? <span className={styles.totalLoading} role="status" aria-label="Working out the price" /> : <strong>—</strong>}
           <span className={styles.faint}>{!shop.canOrder ? (shop.whyNot ?? "Not taking orders") : delivery && !filled ? "Fill in the delivery address" : "Pay on the next page"}</span>
         </span>
-        <Button size="lg" onClick={place} loading={placing} disabled={!shop.canOrder || !!quoteError}>
-          Pay
+        <Button size="lg" onClick={place} loading={placing} disabled={!shop.canOrder || !quote}>
+          {pricing ? "Working out the price…" : "Pay"}
         </Button>
       </div>
     </div>

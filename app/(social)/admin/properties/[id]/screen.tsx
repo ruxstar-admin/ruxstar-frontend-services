@@ -7,7 +7,7 @@ import { PropertyPhoto } from "@/components/stays/PropertyCard";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, ButtonLink, Card, Icon, Skeleton, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { consoleProperty, takeDownProperty, type ConsolePropertyDetail } from "@/lib/api/stays";
 import { depositLine, FEATURE_LABEL, foodText, forText, KIND_LABEL, noticeText, plural, pricesText, PROPERTY_STATUS, ROOM_KIND_LABEL } from "@/lib/stays";
 import { ago } from "@/lib/time";
@@ -41,7 +41,7 @@ function TakeDown({ detail, onDone }: { detail: ConsolePropertyDetail; onDone: (
           : "Property taken down. The owner has been told why.",
       );
     } catch (err) {
-      if (!(err instanceof ApiError && err.code === "NETWORK")) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
     } finally {
       setBusy(false);

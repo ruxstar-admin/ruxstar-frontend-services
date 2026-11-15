@@ -8,7 +8,7 @@ import { Empty } from "@/components/social/PostList";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { addPropertyPhoto, deleteProperty, publishProperty, removePropertyPhoto, vendorProperty, type VendorProperty } from "@/lib/api/stays";
 import { depositText, FEATURE_LABEL, foodText, forText, KIND_LABEL, noticeText, perText, plural, pricesText, PROPERTY_STATUS, ROOM_KIND_LABEL } from "@/lib/stays";
 import { shrinkPhoto } from "@/lib/photo";
@@ -55,7 +55,7 @@ function Dashboard({ property, setProperty, reload, fresh }: { property: VendorP
       setProperty(await action());
     } catch (err) {
       setFailure(err instanceof ApiError ? formError(err).message : "That file is not a photo we can read.");
-      if (name === "publish" && !(err instanceof ApiError && err.code === "NETWORK")) publishKey.current = newIdempotencyKey();
+      if (name === "publish" && !keepIdempotencyKey(err)) publishKey.current = newIdempotencyKey();
       reload();
     } finally {
       setBusy(null);

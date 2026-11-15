@@ -10,7 +10,7 @@ import { useOffers } from "@/components/coupons/use-offers";
 import { useLoad } from "@/components/vendor/use-load";
 import { BedDots, DotLegend, PriceLine, Stepper } from "@/components/stays/pieces";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { getKyc } from "@/lib/api/kyc";
 import { money } from "@/lib/api/shops";
 import {
@@ -255,7 +255,7 @@ function Reserve({ property, rules, pick }: { property: PropertyDetail; rules: S
       window.location.assign(placed.checkoutUrl);
     } catch (err) {
       // A reservation that timed out may have been placed; the same key returns it instead of holding the bed twice.
-      if (!(err instanceof ApiError && err.code === "NETWORK")) attempt.current = null;
+      if (!keepIdempotencyKey(err)) attempt.current = null;
       if (err instanceof ApiError && err.code === "KYC_REQUIRED") {
         setKycOk(false);
       } else {
@@ -448,8 +448,8 @@ function Reserve({ property, rules, pick }: { property: PropertyDetail; rules: S
             Continue
           </Button>
         ) : (
-          <Button loading={busy} disabled={coupon.busy || !picked || !verified} onClick={() => void place()}>
-            {`Pay ${money(total)}`}
+          <Button loading={busy} disabled={coupon.pricing || !picked || !verified} onClick={() => void place()}>
+            {coupon.pricing ? "Working out the price…" : `Pay ${money(total)}`}
           </Button>
         )}
       </div>

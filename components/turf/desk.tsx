@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useLoad } from "@/components/vendor/use-load";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { deskGrounds, type DeskGround } from "@/lib/api/turf";
 import type { TurfPermission } from "@/lib/turf";
 
@@ -26,7 +26,7 @@ export function useActionKey() {
       return held.current.key;
     },
     settle(err?: unknown) {
-      if (!(err instanceof ApiError && err.code === "NETWORK")) held.current = null;
+      if (!keepIdempotencyKey(err)) held.current = null;
     },
   };
 }

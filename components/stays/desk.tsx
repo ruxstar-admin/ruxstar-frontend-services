@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useLoad } from "@/components/vendor/use-load";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { deskProperties, type DeskProperty } from "@/lib/api/stays";
 import type { StaysPermission } from "@/lib/stays";
 
@@ -26,7 +26,7 @@ export function useActionKey() {
       return held.current.key;
     },
     settle(err?: unknown) {
-      if (!(err instanceof ApiError && err.code === "NETWORK")) held.current = null;
+      if (!keepIdempotencyKey(err)) held.current = null;
     },
   };
 }

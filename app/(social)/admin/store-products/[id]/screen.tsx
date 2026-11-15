@@ -7,7 +7,7 @@ import { ProductPhoto } from "@/components/store/cards";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, ButtonLink, Card, Icon, Skeleton, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { money } from "@/lib/api/shops";
 import { consoleProduct, takeDownProduct, type ConsoleProduct } from "@/lib/api/store";
 import { optionsText, plural, PRODUCT_STATUS, variantOptions } from "@/lib/store";
@@ -33,7 +33,7 @@ function TakeDown({ product, onDone }: { product: ConsoleProduct; onDone: (next:
       onDone(done);
       toast("Product taken down. The shop has been told why.", "success");
     } catch (err) {
-      if (!(err instanceof ApiError && err.code === "NETWORK")) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
     } finally {
       setBusy(false);

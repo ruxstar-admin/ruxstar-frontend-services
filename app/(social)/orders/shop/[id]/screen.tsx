@@ -12,7 +12,7 @@ import { Stepper, Timeline } from "@/components/stays/pieces";
 import { TextArea } from "@/components/vendor/parts";
 import { OrderLines, OrderPrice, RefundLines, ReturnCard } from "@/components/store/OrderPieces";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { money } from "@/lib/api/shops";
 import { cancelStoreOrder, getStoreOrder, payStoreOrder, returnStoreOrder, type ReturnReason, type StoreOrder } from "@/lib/api/store";
 import {
@@ -148,7 +148,7 @@ function OrderView({ o, fresh, onChanged }: { o: StoreOrder; fresh: boolean; onC
       keys.current = null;
     } catch (err) {
       setError(formError(err).message);
-      if (keyed && !(err instanceof ApiError && err.code === "NETWORK")) keys.current = null;
+      if (keyed && !keepIdempotencyKey(err)) keys.current = null;
     } finally {
       setBusy(null);
     }

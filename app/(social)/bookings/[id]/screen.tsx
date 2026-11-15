@@ -8,7 +8,7 @@ import { Empty } from "@/components/social/PostList";
 import { useOnSignedOut } from "@/components/social/session";
 import { InvoiceLinks } from "@/components/invoices/InvoiceLinks";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { money } from "@/lib/api/shops";
 import { cancelBooking, getBooking, payBooking, type Occurrence, type TurfBooking } from "@/lib/api/turf";
 import { offerWord } from "@/lib/coupons";
@@ -119,7 +119,7 @@ function BookingView({ item, fresh, onChanged }: { item: TurfBooking; fresh: boo
       cancelKey.current = null;
     } catch (err) {
       setError(formError(err).message);
-      if (!(err instanceof ApiError && err.code === "NETWORK")) cancelKey.current = null;
+      if (!keepIdempotencyKey(err)) cancelKey.current = null;
     } finally {
       setCancelling(false);
     }

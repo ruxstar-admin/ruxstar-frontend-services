@@ -10,7 +10,7 @@ import { CheckoutCoupons } from "@/components/coupons/CheckoutCoupons";
 import { useOffers } from "@/components/coupons/use-offers";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { batchOffers, enrol, getCourse, type CourseDetail } from "@/lib/api/coaching";
 import { money } from "@/lib/api/shops";
 import { dayLabel, dayText } from "@/lib/events";
@@ -67,7 +67,7 @@ function Enrolling({ course, initialBatch }: { course: CourseDetail; initialBatc
     } catch (err) {
       setFailure(formError(err).message);
       // An enrolment that timed out may have been placed; trying again with the same key returns it instead of holding a second seat.
-      if (!(err instanceof ApiError && err.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) attempt.current = newIdempotencyKey();
       setBusy(false);
     }
   };
@@ -166,8 +166,8 @@ function Enrolling({ course, initialBatch }: { course: CourseDetail; initialBatc
             Continue
           </Button>
         ) : (
-          <Button loading={busy} disabled={coupon.busy} onClick={() => void place()}>
-            {free ? "Enrol for free" : `Pay ${money(total)}`}
+          <Button loading={busy} disabled={coupon.pricing} onClick={() => void place()}>
+            {coupon.pricing ? "Working out the price…" : free ? "Enrol for free" : `Pay ${money(total)}`}
           </Button>
         )}
       </div>

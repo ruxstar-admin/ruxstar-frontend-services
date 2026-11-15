@@ -6,7 +6,7 @@ import { Failed, Rows, styles } from "@/components/admin/parts";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, Card, Input, Switch, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import { consoleFacilities, createFacility, updateFacility, type ConsoleFacility } from "@/lib/api/stays";
 
 const KEY = /^[a-z][a-z0-9_]{1,29}$/;
@@ -119,7 +119,7 @@ function AddFacility({ next, onAdded }: { next: number; onAdded: (f: ConsoleFaci
       setKeyTouched(false);
       toast("Facility added.", "success");
     } catch (err) {
-      if (!(err instanceof ApiError && err.code === "NETWORK")) attempt.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) attempt.current = newIdempotencyKey();
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
     } finally {
       setBusy(false);

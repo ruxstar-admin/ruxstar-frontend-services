@@ -13,7 +13,7 @@ import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError, type PublicProfile } from "@/lib/api/account";
-import { ApiError, newIdempotencyKey } from "@/lib/api/client";
+import { keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
 import {
   MEMBER_STATUS,
   getTeam,
@@ -29,7 +29,6 @@ import {
 import team from "@/components/team/team.module.css";
 import styles from "@/components/vendor/vendor.module.css";
 
-const retryable = (err: unknown) => err instanceof ApiError && err.status === 0;
 const dayText = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
 function Invite({ businessId, data }: { businessId: string; data: Team }) {
@@ -54,7 +53,7 @@ function Invite({ businessId, data }: { businessId: string; data: Team }) {
     } catch (err) {
       setBusy(false);
       if (onSignedOut(err)) return;
-      if (!retryable(err)) key.current = newIdempotencyKey();
+      if (!keepIdempotencyKey(err)) key.current = newIdempotencyKey();
       const problem = formError(err);
       setError(
         problem.field === "username"
