@@ -181,10 +181,10 @@ function Form({ rules, course, batch, coaches }: { rules: CoachingRules; course:
           void save();
         }}
       >
-        <Input label="Batch name" value={draft.name} onChange={(e) => set("name", e.target.value)} maxLength={60} placeholder="e.g. Weekday evenings" error={err("name")} />
+        <Input label="Batch name" value={draft.name} onChange={(e) => set("name", e.target.value)} maxLength={60} placeholder="Like “Morning batch” or “Weekend”" error={err("name")} />
         <div className={vendor.pair} data-even>
           <Input
-            label="Fee for the whole batch (₹)"
+            label="Course fee (₹)"
             inputMode="decimal"
             value={draft.fee}
             onChange={(e) => set("fee", e.target.value)}
@@ -203,12 +203,12 @@ function Form({ rules, course, batch, coaches }: { rules: CoachingRules; course:
           />
         </div>
         <Input
-          label="Fewest students to run it (optional)"
+          label="Fewest students to run (optional)"
           inputMode="numeric"
           value={draft.minStudents}
           onChange={(e) => set("minStudents", e.target.value)}
           maxLength={4}
-          hint={`If fewer have enrolled ${rules.minimumHours} hours before the first class, it’s cancelled and everyone refunded.`}
+          hint={`If fewer enrol by ${rules.minimumHours} hours before the first class, the batch is cancelled and everyone gets a full refund.`}
           error={err("minStudents")}
         />
 
@@ -332,7 +332,7 @@ function Form({ rules, course, batch, coaches }: { rules: CoachingRules; course:
         )}
         <div className={vendor.actions}>
           <Button type="submit" size="lg" loading={busy}>
-            {batch ? "Save changes" : "Add batch"}
+            {batch ? "Save batch" : "Add batch"}
           </Button>
         </div>
       </form>

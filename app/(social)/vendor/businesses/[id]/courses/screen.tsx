@@ -74,7 +74,7 @@ export function BusinessCoursesScreen({ id }: { id: string }) {
         </>
       ) : (
         <Empty title="No courses yet">
-          <p>Make your first one, then add batches with their weekly timetable. It’s saved as a draft until you publish it.</p>
+          <p>Make your first course, then add a batch with its weekly timetable. It’s a draft until you publish it.</p>
           <ButtonLink href={create} icon={<Icon name="plus" size={18} />}>
             New course
           </ButtonLink>

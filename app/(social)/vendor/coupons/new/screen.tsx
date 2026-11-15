@@ -6,6 +6,7 @@ import { ButtonLink } from "@/components/ui";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { createTeamCoupon, createVendorCoupon, myBusinesses } from "@/lib/api/vendor";
+import { couponBusinesses } from "@/lib/coupons";
 import styles from "@/components/vendor/vendor.module.css";
 
 /** One shop's new coupon, from Work: it works at that shop only. */
@@ -27,7 +28,7 @@ function VendorCoupon() {
 
   if (businesses.error && !businesses.data) return <Failed error={businesses.error} onRetry={businesses.reload} />;
   if (!businesses.data) return <Loading rows={2} />;
-  const shops = businesses.data.filter((b) => b.module === "pod").map((b) => ({ id: b.id, name: b.name }));
+  const shops = couponBusinesses(businesses.data);
 
   return (
     <div className={styles.page}>
@@ -42,8 +43,8 @@ function VendorCoupon() {
         />
       ) : (
         <div className={styles.card}>
-          <h2 className={styles.cardHead}>No print shop yet</h2>
-          <p className={styles.muted}>Coupons work on print orders. Add a print shop first.</p>
+          <h2 className={styles.cardHead}>No business for coupons yet</h2>
+          <p className={styles.muted}>Coupons work on print orders, event tickets and coaching fees. Add a print shop, events or coaching business first.</p>
           <div>
             <ButtonLink href="/vendor/businesses/new">Add a business</ButtonLink>
           </div>
@@ -53,7 +54,7 @@ function VendorCoupon() {
   );
 }
 
-/** A vendor's new coupon for their print shops, or with `placeId` one shop's from Work. Same as the app. */
+/** A vendor's new coupon for their print shops, events and coaching businesses, or with `placeId` one shop's from Work. Same as the app. */
 export function NewVendorCouponScreen({ placeId }: { placeId?: string }) {
   return placeId ? <TeamCoupon placeId={placeId} /> : <VendorCoupon />;
 }

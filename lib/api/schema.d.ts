@@ -375,8 +375,14 @@ export interface paths {
                 query?: {
                     cursor?: string;
                     limit?: number;
+                    /** @description Issued on or after: a day (YYYY-MM-DD, India time) or an exact ISO 8601 time */
+                    from?: string;
+                    /** @description Issued on or before: a day (YYYY-MM-DD, India time, the whole day) or an exact ISO 8601 time */
+                    to?: string;
                     /** @description MongoDB ObjectId as hex */
                     orderId?: string;
+                    /** @description turf and ecommerce have defaults ready for when they open */
+                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                 };
                 header?: never;
                 path?: never;
@@ -9215,6 +9221,14 @@ export interface paths {
                     business?: string;
                     /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
                     kind?: "tax_invoice" | "bill_of_supply" | "credit_note";
+                    /** @description Issued on or after: a day (YYYY-MM-DD, India time) or an exact ISO 8601 time */
+                    from?: string;
+                    /** @description Issued on or before: a day (YYYY-MM-DD, India time, the whole day) or an exact ISO 8601 time */
+                    to?: string;
+                    /** @description MongoDB ObjectId as hex */
+                    orderId?: string;
+                    /** @description turf and ecommerce have defaults ready for when they open */
+                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                 };
                 header?: never;
                 path?: never;
@@ -11472,7 +11486,7 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Your print shops and coaching businesses it works at */
+                        /** @description Your print shops, events and coaching businesses it works at */
                         businessIds: string[];
                     };
                 };
@@ -11603,7 +11617,7 @@ export interface paths {
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
                         active?: boolean;
-                        /** @description Your print shops and coaching businesses it works at */
+                        /** @description Your print shops, events and coaching businesses it works at */
                         businessIds?: string[];
                     };
                 };
@@ -15538,7 +15552,7 @@ export interface paths {
                                 id: string;
                                 rating: number;
                                 text: string | null;
-                                /** @description What was ordered, for example Business cards */
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                 product: string;
                                 author: {
                                     /** @description MongoDB ObjectId as hex */
@@ -15557,6 +15571,14 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 orderId: string;
                                 orderNo: number;
@@ -15641,7 +15663,7 @@ export interface paths {
                                 id: string;
                                 rating: number;
                                 text: string | null;
-                                /** @description What was ordered, for example Business cards */
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                 product: string;
                                 author: {
                                     /** @description MongoDB ObjectId as hex */
@@ -15660,6 +15682,14 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 orderId: string;
                                 orderNo: number;
@@ -15718,7 +15748,7 @@ export interface paths {
                                 id: string;
                                 rating: number;
                                 text: string | null;
-                                /** @description What was ordered, for example Business cards */
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                 product: string;
                                 author: {
                                     /** @description MongoDB ObjectId as hex */
@@ -15737,6 +15767,14 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 orderId: string;
                                 orderNo: number;
@@ -19525,7 +19563,7 @@ export interface paths {
                                 id: string;
                                 rating: number;
                                 text: string | null;
-                                /** @description What was ordered, for example Business cards */
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                 product: string;
                                 author: {
                                     /** @description MongoDB ObjectId as hex */
@@ -19544,6 +19582,14 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 orderId: string;
                                 status: "live" | "removed";
@@ -19611,7 +19657,7 @@ export interface paths {
                                 id: string;
                                 rating: number;
                                 text: string | null;
-                                /** @description What was ordered, for example Business cards */
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                 product: string;
                                 author: {
                                     /** @description MongoDB ObjectId as hex */
@@ -19630,6 +19676,14 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 orderId: string;
                                 status: "live" | "removed";
@@ -19758,7 +19812,7 @@ export interface paths {
                                 id: string;
                                 rating: number;
                                 text: string | null;
-                                /** @description What was ordered, for example Business cards */
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                 product: string;
                                 author: {
                                     /** @description MongoDB ObjectId as hex */
@@ -19777,6 +19831,14 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
                             }[];
                             meta: {
                                 requestId: string;
@@ -20936,6 +20998,429 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/events/orders/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your review of one of your bookings
+         * @description Null until you review it. One Ruxstar removed comes back with its reason; it can't be changed or written again.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Review a booking, or change your review
+         * @description Once one of your tickets is checked in or the event has ended, until 30 days after it ends; confirmed bookings of events that went ahead. 1 to 5 stars and, if you like, a few words; one review per booking. Leaving out `text` keeps what you wrote; null or blank clears it. The business is told about a new review.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        rating: number;
+                        text?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Delete your review of a booking
+         * @description You can review the booking again while it is still open for reviews.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A event's reviews, newest first
+         * @description No sign-in needed. The business's rating covers all its reviews and is on the detail.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/reviews/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report a review to Ruxstar
+         * @description One open report per review you report; reporting it again while it is open changes nothing. The writer isn't told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: "spam" | "fake" | "abuse" | "other";
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/events/rules": {
         parameters: {
             query?: never;
@@ -20943,7 +21428,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Ruxstar's rules for events: refunds, the waitlist and limits */
+        /**
+         * Ruxstar's rules for events: refunds, the waitlist and limits
+         * @description No sign-in needed.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -21014,7 +21502,7 @@ export interface paths {
         };
         /**
          * Events on sale, soonest first
-         * @description Including ones under way. With `city`, events there and online ones. Empty while Ruxstar has events switched off.
+         * @description No sign-in needed. Including ones under way. With `city`, events there and online ones. Empty while Ruxstar has events switched off.
          */
         get: {
             parameters: {
@@ -21113,7 +21601,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** One event: tickets left, the questions asked, refunds, and your bookings and waitlist places */
+        /**
+         * One event: tickets left, the questions asked, refunds, and your bookings and waitlist places
+         * @description No sign-in needed. Signed out, `myOrders` and `myWaits` are empty, and drafts and events Ruxstar took down answer NOT_FOUND.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -21225,6 +21716,100 @@ export interface paths {
                                     offeredUntil: string | null;
                                 }[];
                                 maxPerOrder: number;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Coupons that work on this event's tickets, best first
+         * @description With `code`, that code is checked too. Free tickets don't take coupons.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Paise of the tickets picked, before the platform fee; the cheapest paid ticket when left out */
+                    items?: number;
+                    /** @description Check this code too */
+                    code?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                offers: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    label: string;
+                                    terms: string | null;
+                                    /** @description Paise it takes off this order; 0 when it doesn't apply yet */
+                                    discount: number;
+                                    problem: string | null;
+                                }[];
+                                /** @description With `code` */
+                                checked: {
+                                    code: string;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    problem: string | null;
+                                } | null;
                             };
                             meta: {
                                 requestId: string;
@@ -21304,6 +21889,8 @@ export interface paths {
                         };
                         /** @description MongoDB ObjectId as hex */
                         waitlistId?: string;
+                        /** @description A coupon code for the tickets; free tickets ignore it */
+                        coupon?: string;
                         /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
                         returnTo: string;
                     };
@@ -21363,7 +21950,16 @@ export interface paths {
                                         platformFee: number;
                                         /** @description Amount in paise */
                                         total: number;
+                                        /** @description Amount in paise */
+                                        discount?: number;
                                     };
+                                    coupon?: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
                                     refund: {
                                         /** @description Amount in paise */
                                         amount: number;
@@ -21408,6 +22004,10 @@ export interface paths {
                                         /** Format: date-time */
                                         issuedAt: string;
                                     }[];
+                                    /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                    canReview?: boolean;
+                                    /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                    reviewUntil?: string | null;
                                     /** Format: date-time */
                                     createdAt: string;
                                 };
@@ -21664,7 +22264,16 @@ export interface paths {
                                     platformFee: number;
                                     /** @description Amount in paise */
                                     total: number;
+                                    /** @description Amount in paise */
+                                    discount?: number;
                                 };
+                                coupon?: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
                                 refund: {
                                     /** @description Amount in paise */
                                     amount: number;
@@ -21709,6 +22318,10 @@ export interface paths {
                                     /** Format: date-time */
                                     issuedAt: string;
                                 }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
                             }[];
@@ -21822,7 +22435,16 @@ export interface paths {
                                     platformFee: number;
                                     /** @description Amount in paise */
                                     total: number;
+                                    /** @description Amount in paise */
+                                    discount?: number;
                                 };
+                                coupon?: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
                                 refund: {
                                     /** @description Amount in paise */
                                     amount: number;
@@ -21867,6 +22489,10 @@ export interface paths {
                                     /** Format: date-time */
                                     issuedAt: string;
                                 }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -22052,7 +22678,16 @@ export interface paths {
                                     platformFee: number;
                                     /** @description Amount in paise */
                                     total: number;
+                                    /** @description Amount in paise */
+                                    discount?: number;
                                 };
+                                coupon?: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
                                 refund: {
                                     /** @description Amount in paise */
                                     amount: number;
@@ -22097,6 +22732,10 @@ export interface paths {
                                     /** Format: date-time */
                                     issuedAt: string;
                                 }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -23628,6 +24267,429 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/coaching/orders/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your review of one of your enrolments
+         * @description Null until you review it. One Ruxstar removed comes back with its reason; it can't be changed or written again.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Review a enrolment, or change your review
+         * @description Once the first class it covers has been held, until 30 days after its last class; confirmed enrolments and demos. 1 to 5 stars and, if you like, a few words; one review per enrolment. Leaving out `text` keeps what you wrote; null or blank clears it. The business is told about a new review.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        rating: number;
+                        text?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Delete your review of a enrolment
+         * @description You can review the enrolment again while it is still open for reviews.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A course's reviews, newest first
+         * @description No sign-in needed. The business's rating covers all its reviews and is on the detail.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/coaching/reviews/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report a review to Ruxstar
+         * @description One open report per review you report; reporting it again while it is open changes nothing. The writer isn't told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: "spam" | "fake" | "abuse" | "other";
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/coaching/rules": {
         parameters: {
             query?: never;
@@ -23635,7 +24697,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Ruxstar's rules for coaching: certificates, minimum batch size checks, limits and fees */
+        /**
+         * Ruxstar's rules for coaching: certificates, minimum batch size checks, limits and fees
+         * @description No sign-in needed.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -23712,7 +24777,7 @@ export interface paths {
         };
         /**
          * Courses taking students, newest first
-         * @description With `city`, courses taught there and online ones (unless `online` is false). Courses with no batch open show `openBatches` 0. Empty while Ruxstar has coaching switched off.
+         * @description No sign-in needed. With `city`, courses taught there and online ones (unless `online` is false). Courses with no batch open show `openBatches` 0. Empty while Ruxstar has coaching switched off.
          */
         get: {
             parameters: {
@@ -23971,6 +25036,10 @@ export interface paths {
                                     /** Format: date-time */
                                     issuedAt: string;
                                 }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
                             }[];
@@ -24169,6 +25238,10 @@ export interface paths {
                                     /** Format: date-time */
                                     issuedAt: string;
                                 }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -24439,6 +25512,10 @@ export interface paths {
                                     /** Format: date-time */
                                     issuedAt: string;
                                 }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
                                 /** Format: date-time */
                                 createdAt: string;
                             };
@@ -25071,7 +26148,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** One course: its batches with seats left, demo classes, the refund rule, and your enrolments in it */
+        /**
+         * One course: its batches with seats left, demo classes, the refund rule, and your enrolments in it
+         * @description No sign-in needed; signed out, `myOrders` and `demoTaken` are empty and courses Ruxstar took down aren't found.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -25193,7 +26273,7 @@ export interface paths {
                                 status: "draft" | "live" | "removed";
                                 canEnrol: boolean;
                                 whyNot: string | null;
-                                /** @description Your enrolments and demos in it, newest first */
+                                /** @description Your enrolments and demos in it, newest first. Empty when signed out */
                                 myOrders: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -25209,12 +26289,18 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     batchId: string;
                                 }[];
-                                /** @description Students who have had, or booked, this course's demo */
+                                /** @description Students who have had, or booked, this course's demo. Empty when signed out */
                                 demoTaken: {
                                     /** @description Null: the account holder */
                                     childId: string | null;
                                     name: string;
                                 }[];
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
                             };
                             meta: {
                                 requestId: string;
@@ -25511,6 +26597,10 @@ export interface paths {
                                         /** Format: date-time */
                                         issuedAt: string;
                                     }[];
+                                    /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                    canReview?: boolean;
+                                    /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                    reviewUntil?: string | null;
                                     /** Format: date-time */
                                     createdAt: string;
                                 };
@@ -25724,6 +26814,10 @@ export interface paths {
                                         /** Format: date-time */
                                         issuedAt: string;
                                     }[];
+                                    /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                    canReview?: boolean;
+                                    /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                    reviewUntil?: string | null;
                                     /** Format: date-time */
                                     createdAt: string;
                                 };
@@ -29066,7 +30160,7 @@ export interface paths {
                                 id: string;
                                 rating: number;
                                 text: string | null;
-                                /** @description What was ordered, for example Business cards */
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                 product: string;
                                 author: {
                                     /** @description MongoDB ObjectId as hex */
@@ -29085,6 +30179,14 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 orderId: string;
                                 orderNo: number;
@@ -29169,7 +30271,7 @@ export interface paths {
                                 id: string;
                                 rating: number;
                                 text: string | null;
-                                /** @description What was ordered, for example Business cards */
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                 product: string;
                                 author: {
                                     /** @description MongoDB ObjectId as hex */
@@ -29188,6 +30290,14 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 orderId: string;
                                 orderNo: number;
@@ -29249,7 +30359,7 @@ export interface paths {
                                 id: string;
                                 rating: number;
                                 text: string | null;
-                                /** @description What was ordered, for example Business cards */
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                 product: string;
                                 author: {
                                     /** @description MongoDB ObjectId as hex */
@@ -29268,6 +30378,14 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
+                                /** @description The kind of business: print, events or coaching */
+                                module?: "pod" | "events" | "coaching";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
                                 /** @description MongoDB ObjectId as hex */
                                 orderId: string;
                                 orderNo: number;
@@ -33398,7 +34516,7 @@ export interface paths {
                                     id: string;
                                     rating: number;
                                     text: string | null;
-                                    /** @description What was ordered, for example Business cards */
+                                    /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                     product: string;
                                     author: {
                                         /** @description MongoDB ObjectId as hex */
@@ -33417,6 +34535,14 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
+                                    /** @description The kind of business: print, events or coaching */
+                                    module?: "pod" | "events" | "coaching";
+                                    /** @description The event or course reviewed; null for print */
+                                    listing?: {
+                                        type: "event" | "course";
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                    } | null;
                                     status: "live" | "removed";
                                     shop: {
                                         /** @description MongoDB ObjectId as hex */
@@ -33520,7 +34646,7 @@ export interface paths {
                                     id: string;
                                     rating: number;
                                     text: string | null;
-                                    /** @description What was ordered, for example Business cards */
+                                    /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                     product: string;
                                     author: {
                                         /** @description MongoDB ObjectId as hex */
@@ -33539,6 +34665,14 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
+                                    /** @description The kind of business: print, events or coaching */
+                                    module?: "pod" | "events" | "coaching";
+                                    /** @description The event or course reviewed; null for print */
+                                    listing?: {
+                                        type: "event" | "course";
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                    } | null;
                                     status: "live" | "removed";
                                     shop: {
                                         /** @description MongoDB ObjectId as hex */
@@ -33649,7 +34783,7 @@ export interface paths {
                                     id: string;
                                     rating: number;
                                     text: string | null;
-                                    /** @description What was ordered, for example Business cards */
+                                    /** @description What was bought: a print product such as Business cards, an event's title or a course's */
                                     product: string;
                                     author: {
                                         /** @description MongoDB ObjectId as hex */
@@ -33668,6 +34802,14 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
+                                    /** @description The kind of business: print, events or coaching */
+                                    module?: "pod" | "events" | "coaching";
+                                    /** @description The event or course reviewed; null for print */
+                                    listing?: {
+                                        type: "event" | "course";
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                    } | null;
                                     status: "live" | "removed";
                                     shop: {
                                         /** @description MongoDB ObjectId as hex */
@@ -35030,8 +36172,8 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Where it works: print orders, coaching enrolments or both. Print only when left out */
-                        modules?: ("pod" | "coaching")[];
+                        /** @description Where it works: print orders, event tickets, coaching enrolments, or any of them. Print only when left out */
+                        modules?: ("pod" | "events" | "coaching")[];
                     };
                 };
             };
@@ -38792,6 +39934,14 @@ export interface paths {
                     orderNo?: number;
                     /** @description MongoDB ObjectId as hex */
                     business?: string;
+                    /** @description Issued on or after: a day (YYYY-MM-DD, India time) or an exact ISO 8601 time */
+                    from?: string;
+                    /** @description Issued on or before: a day (YYYY-MM-DD, India time, the whole day) or an exact ISO 8601 time */
+                    to?: string;
+                    /** @description MongoDB ObjectId as hex */
+                    orderId?: string;
+                    /** @description turf and ecommerce have defaults ready for when they open */
+                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                 };
                 header?: never;
                 path?: never;

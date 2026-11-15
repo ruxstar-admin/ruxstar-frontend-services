@@ -18,6 +18,33 @@ export const MAX_USES = 1_000_000;
 export const MAX_PER_CUSTOMER = 100;
 const MAX_MIN_ORDER_RUPEES = 5_00_000;
 
+/** Kinds of business whose orders take coupons, and what a coupon comes off there. */
+export const COUPON_MODULES = ["pod", "events", "coaching"] as const;
+export type CouponModule = (typeof COUPON_MODULES)[number];
+export const COUPON_WHERE: Record<CouponModule, string> = { pod: "print orders", events: "event tickets", coaching: "coaching fees" };
+const KIND_WORD: Record<CouponModule, string> = { pod: "Print", events: "Events", coaching: "Coaching" };
+
+const takesCoupons = (module: string): module is CouponModule => (COUPON_MODULES as readonly string[]).includes(module);
+
+/** A vendor's businesses a coupon can work at, named with their kind when they have more than one kind. */
+export function couponBusinesses(businesses: { id: string; name: string; module: string }[]): { id: string; name: string }[] {
+  const usable = businesses.filter((b) => takesCoupons(b.module));
+  const mixed = new Set(usable.map((b) => b.module)).size > 1;
+  return usable.map((b) => ({ id: b.id, name: mixed ? `${b.name} · ${KIND_WORD[b.module as CouponModule]}` : b.name }));
+}
+
+/** "Every print shop", or where a Ruxstar coupon works: "Every business, on print orders and event tickets". */
+export function everywhereLine(modules: readonly string[]): string {
+  const where = COUPON_MODULES.filter((m) => modules.includes(m));
+  if (where.length <= 1 && (where[0] ?? "pod") === "pod") return "Every print shop";
+  const words = where.map((m) => COUPON_WHERE[m]);
+  return `Every business, on ${words.length > 1 ? `${words.slice(0, -1).join(", ")} and ${words[words.length - 1]}` : words[0]}`;
+}
+
+/** Who pays for a coupon, in the customer's words: "Ruxstar offer", or the business's own. */
+export const offerWord = (fundedBy: "ruxstar" | "vendor", module: "pod" | "events" | "coaching" = "pod") =>
+  fundedBy === "ruxstar" ? "Ruxstar offer" : module === "events" ? "Organiser offer" : module === "coaching" ? "Institute offer" : "Shop offer";
+
 export const cleanCode = (text: string) => text.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
 export const cleanAmount = (text: string) => text.replace(/[^0-9.]/g, "").replace(/(\.\d{0,2}).*$/, "$1");
 export const cleanCount = (text: string) => text.replace(/\D/g, "").slice(0, 7);
@@ -101,7 +128,7 @@ export function draftErrors(d: CouponDraft, { creating, needsShops, today }: { c
   if (d.ends && (d.ends < today || (d.starts && d.ends < d.starts))) errors.ends = "Pick a day on or after the start";
   if (d.limit && !(Number(d.limit) >= 1 && Number(d.limit) <= MAX_USES)) errors.limit = "At least 1, or empty for no limit";
   if (d.perCustomer && !(Number(d.perCustomer) >= 1 && Number(d.perCustomer) <= MAX_PER_CUSTOMER)) errors.perCustomer = `1 to ${MAX_PER_CUSTOMER}, or empty for no limit`;
-  if (needsShops && !d.businessIds.length) errors.shops = "Pick at least one shop";
+  if (needsShops && !d.businessIds.length) errors.shops = "Pick at least one business";
   return errors;
 }
 

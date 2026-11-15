@@ -135,8 +135,8 @@ function Messages({ batch }: { batch: DeskBatchDetail }) {
     <>
       {batch.can.message && (
         <section className={vendor.card}>
-          <TextArea label="Message the batch" value={text} onChange={setText} max={1000} placeholder="e.g. Bring your geometry box tomorrow" />
-          <p className={vendor.faint}>Every student, and the parents of children, get it as a notification.</p>
+          <TextArea label="Message the batch" value={text} onChange={setText} max={1000} placeholder="Like “Bring your geometry box on Friday”" />
+          <p className={vendor.faint}>Every student and parent in the batch gets a notification.</p>
           {failure && (
             <p className={vendor.error} role="alert">
               {failure}
@@ -161,7 +161,7 @@ function Messages({ batch }: { batch: DeskBatchDetail }) {
           </div>
         ))
       ) : (
-        <p className={vendor.muted}>Nothing sent to this batch yet.</p>
+        <p className={vendor.muted}>No messages yet. Write to the whole batch above.</p>
       )}
     </>
   );
@@ -230,7 +230,7 @@ function Files({ batch }: { batch: DeskBatchDetail }) {
             value={kind}
             onChange={setKind}
           />
-          <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={100} placeholder="e.g. Chapter 4 worksheet" />
+          <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={100} placeholder="Name it, like “Chapter 3 notes”" />
           {kind === "file" ? (
             <div className={vendor.field}>
               <input
@@ -293,7 +293,7 @@ function Files({ batch }: { batch: DeskBatchDetail }) {
           ))}
         </ul>
       ) : (
-        <p className={vendor.muted}>Nothing shared with this batch yet.</p>
+        <p className={vendor.muted}>Nothing shared yet. Notes, worksheets and links for this batch show up here.</p>
       )}
     </>
   );

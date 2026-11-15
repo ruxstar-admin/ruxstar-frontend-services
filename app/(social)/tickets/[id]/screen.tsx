@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
@@ -11,6 +12,7 @@ import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import { cancelTickets, getTicketOrder, payTickets, type TicketOrder } from "@/lib/api/events";
 import { money } from "@/lib/api/shops";
+import { offerWord } from "@/lib/coupons";
 import { dayText, linesText, ORDER_STATUS, timeText, whenLine } from "@/lib/events";
 import shop from "@/components/shop/shop.module.css";
 import order from "@/components/shop/order.module.css";
@@ -18,6 +20,13 @@ import styles from "@/components/events/events.module.css";
 
 /** While it waits for payment, each look also asks Cashfree whether it was paid. */
 const POLL_MS = 8000;
+
+/** Its own chunk: only bookings that can have a review download it. */
+const Rate = dynamic(() => import("@/components/reviews/Reviews").then((m) => m.Rate));
+
+/** Reviews open once a ticket is checked in or the event ends; before that there's nothing to look up. */
+const mayHaveReview = (b: TicketOrder) =>
+  b.status === "confirmed" && !b.event.cancelled && (!!b.canReview || Date.parse(b.event.endsAt) < Date.now() || b.tickets.some((t) => t.checkedInAt));
 
 function OrderView({ booking, fresh, onChanged }: { booking: TicketOrder; fresh: boolean; onChanged: (next: TicketOrder) => void }) {
   const [paying, setPaying] = useState(false);
@@ -113,6 +122,21 @@ function OrderView({ booking, fresh, onChanged }: { booking: TicketOrder; fresh:
         </Button>
       )}
 
+      {mayHaveReview(booking) && (
+        <Rate
+          orderId={booking.id}
+          module="events"
+          open={!!booking.canReview}
+          until={booking.reviewUntil ?? null}
+          words={{
+            ask: "Rate this event",
+            askLine: `How was it? Your review helps others choose ${booking.business.name}’s events.`,
+            writeTitle: `Rate ${event.title}`,
+            placeholder: "The event, the venue, how it was run",
+          }}
+        />
+      )}
+
       {booking.status === "confirmed" && event.online && event.onlineLink && (
         <ButtonLink href={event.onlineLink} target="_blank" rel="noreferrer" size="lg" icon={<Icon name="play" size={18} />}>
           Join online
@@ -135,6 +159,9 @@ function OrderView({ booking, fresh, onChanged }: { booking: TicketOrder; fresh:
             ? `${money(total)}${unpaid ? " to pay" : ""}${booking.price.platformFee ? `, including a ${money(booking.price.platformFee)} fee` : ""}`
             : "Free"}
         </span>
+        {!!booking.price.discount && (
+          <span className={order.small}>{`${money(booking.price.discount)} off${booking.coupon ? ` with ${booking.coupon.code} · ${offerWord(booking.coupon.fundedBy, "events")}` : ""}`}</span>
+        )}
         <span className={order.faint}>{`By ${booking.business.name}`}</span>
       </div>
 

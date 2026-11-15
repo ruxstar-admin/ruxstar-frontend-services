@@ -11,7 +11,19 @@ import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { Button, Icon, Skeleton, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
 import type { ReportStatus } from "@/lib/api/admin";
-import { keepReview, removeReview, REPORT_REASONS, reviewReports, starsLabel, type ReviewCase } from "@/lib/api/reviews";
+import {
+  keepReview,
+  moduleOf,
+  ORDER_WORD,
+  removeReview,
+  REPLY_FROM,
+  REPORT_REASONS,
+  reviewReports,
+  reviewsHref,
+  REVIEWED_WORD,
+  starsLabel,
+  type ReviewCase,
+} from "@/lib/api/reviews";
 import { ago, exact } from "@/lib/time";
 
 const reasonText = (c: ReviewCase) =>
@@ -27,6 +39,7 @@ function ReviewDetail({ c, onDone }: { c: ReviewCase; onDone: (message: string) 
   const [busy, setBusy] = useState<"keep" | "remove" | null>(null);
   const keys = useRef({ keep: crypto.randomUUID(), remove: crypto.randomUUID() });
   const review = c.review;
+  const kind = review ? moduleOf(review) : "pod";
 
   async function act(kind: "keep" | "remove", reason = "") {
     setBusy(kind);
@@ -47,8 +60,9 @@ function ReviewDetail({ c, onDone }: { c: ReviewCase; onDone: (message: string) 
         <Fact label="Reports" value={String(c.reports)} />
         <Fact label="First reported" value={date(c.firstAt)} />
         <Fact label="Last reported" value={date(c.lastAt)} />
-        {review && <Fact label="Shop" value={review.shop.name} />}
-        {review && <Fact label="Order" value={`#${review.orderNo} · ${review.product}`} />}
+        {review && <Fact label={kind === "pod" ? "Shop" : "Business"} value={review.shop.name} />}
+        {review && kind !== "pod" && <Fact label={REVIEWED_WORD[kind]} value={review.product} />}
+        {review && <Fact label={ORDER_WORD[kind]} value={kind === "pod" ? `#${review.orderNo} · ${review.product}` : `#${review.orderNo}`} />}
         {review && <Fact label="Written" value={date(review.createdAt)} />}
       </dl>
 
@@ -56,7 +70,7 @@ function ReviewDetail({ c, onDone }: { c: ReviewCase; onDone: (message: string) 
         <>
           <Stars value={review.rating} size={16} />
           {review.text ? <p className={styles.text}>{review.text}</p> : <p className={styles.note}>Stars only, no text.</p>}
-          {review.reply && <p className={styles.text}>{`Shop's reply: ${review.reply.text}`}</p>}
+          {review.reply && <p className={styles.text}>{`${REPLY_FROM[kind]}: ${review.reply.text}`}</p>}
           {review.status === "removed" && review.removal && (
             <p className={styles.note} data-tone="danger">
               Removed {ago(review.removal.at)}: {review.removal.reason}
@@ -76,7 +90,7 @@ function ReviewDetail({ c, onDone }: { c: ReviewCase; onDone: (message: string) 
         canAct &&
         (removing ? (
           <ReasonForm
-            prompt="Why is it coming down? The customer will see this. The shop sees it in its activity."
+            prompt={`Why is it coming down? The customer will see this. The ${kind === "pod" ? "shop" : "business"} sees it in its activity.`}
             placeholder="For example: reviews can't advertise other services."
             confirm="Remove review"
             busy={busy === "remove"}
@@ -86,8 +100,8 @@ function ReviewDetail({ c, onDone }: { c: ReviewCase; onDone: (message: string) 
         ) : (
           <div className={styles.actions}>
             {review?.status === "live" && (
-              <Link href={`/b/${review.shop.id}/reviews`} className={styles.muted} target="_blank">
-                Open the shop&apos;s reviews
+              <Link href={reviewsHref(review, review.shop.id)} className={styles.muted} target="_blank">
+                {kind === "events" ? "Open the event’s page" : kind === "coaching" ? "Open the course page" : "Open the shop’s reviews"}
               </Link>
             )}
             <Button variant="secondary" onClick={() => act("keep")} loading={busy === "keep"} disabled={!!busy}>
@@ -104,7 +118,7 @@ function ReviewDetail({ c, onDone }: { c: ReviewCase; onDone: (message: string) 
   );
 }
 
-/** Reported shop reviews, one row per review. Same as the app. */
+/** Reported reviews of print shops, events and courses, one row per review. Same as the app. */
 export function ReviewReportsQueue({ status }: { status: ReportStatus }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
@@ -134,6 +148,7 @@ export function ReviewReportsQueue({ status }: { status: ReportStatus }) {
               <span className={styles.whoRow}>
                 <span className={styles.name}>{review ? `${starsLabel(review.rating)} for ${review.shop.name}` : "Deleted review"}</span>
                 <span className={`${styles.muted} ${styles.line}`}>
+                  {review && moduleOf(review) !== "pod" ? `${REVIEWED_WORD[moduleOf(review)]}: ${review.product} · ` : ""}
                   {review?.text ? `${review.text.slice(0, 60)} · ` : ""}
                   {reasonText(c) || `${c.reports} reports`}
                 </span>

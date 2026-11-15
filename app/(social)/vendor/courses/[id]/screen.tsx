@@ -92,12 +92,14 @@ function BatchCard({ course, batch, onChanged }: { course: VendorCourse; batch: 
       {mode === "cancel" ? (
         <div className={vendor.form}>
           <p className={vendor.muted}>
-            {booked ? `All ${booked} students are told and refunded in full, platform fee included. This can’t be undone.` : "It stops taking students for good. This can’t be undone."}
+            {booked
+              ? `Every class is cancelled and all ${booked} students get a full refund, platform fee included. This can’t be undone.`
+              : "Every class is cancelled and it stops taking students. This can’t be undone."}
           </p>
-          <TextArea label="Tell them why" value={reason} onChange={setReason} max={300} placeholder="e.g. The teacher has moved away" />
+          <TextArea label="Tell students and parents why" value={reason} onChange={setReason} max={300} placeholder="Like “Not enough students for this timing”" />
           <div className={vendor.actions}>
             <Button variant="danger" loading={busy} disabled={reason.trim().length < 5} onClick={() => void run(() => cancelBatch(batch.id, reason.trim(), key.current))}>
-              Cancel the batch
+              Cancel batch
             </Button>
             <Button variant="ghost" disabled={busy} onClick={() => setMode(null)}>
               Keep it
@@ -105,35 +107,38 @@ function BatchCard({ course, batch, onChanged }: { course: VendorCourse; batch: 
           </div>
         </div>
       ) : mode === "delete" ? (
-        <div className={vendor.actions}>
-          <Button variant="danger" loading={busy} onClick={() => void run(() => deleteBatch(batch.id))}>
-            {`Delete ${batch.name}`}
-          </Button>
-          <Button variant="ghost" disabled={busy} onClick={() => setMode(null)}>
-            Keep it
-          </Button>
+        <div className={vendor.form}>
+          <p className={vendor.muted}>{`${batch.name} and its classes are deleted. No one has enrolled yet.`}</p>
+          <div className={vendor.actions}>
+            <Button variant="danger" loading={busy} onClick={() => void run(() => deleteBatch(batch.id))}>
+              Delete
+            </Button>
+            <Button variant="ghost" disabled={busy} onClick={() => setMode(null)}>
+              Keep it
+            </Button>
+          </div>
         </div>
       ) : (
         <div className={styles.batchFoot}>
           {course.status !== "removed" && batch.status !== "cancelled" && batch.status !== "ended" && (
             <ButtonLink href={`/vendor/courses/${course.id}/batches/${batch.id}`} variant="secondary" icon={<Icon name="edit" size={16} />}>
-              Edit
+              Edit batch
             </ButtonLink>
           )}
           {course.status === "live" && batch.status !== "cancelled" && (
             <ButtonLink href={`/teach/batches/${batch.id}`} variant="secondary" icon={<Icon name="book" size={16} />}>
-              Classes
+              Classes and materials
             </ButtonLink>
           )}
           {before && booked === 0 && batch.sales === 0 ? (
             <button type="button" className={vendor.link} data-muted onClick={() => setMode("delete")}>
-              Delete
+              Delete this batch
             </button>
           ) : (
             before &&
             course.status !== "removed" && (
               <button type="button" className={vendor.link} data-muted onClick={() => setMode("cancel")}>
-                Cancel batch
+                Cancel this batch
               </button>
             )
           )}
@@ -190,7 +195,7 @@ function Dashboard({ course, setCourse, reload, fresh }: { course: VendorCourse;
       {fresh && draft && (
         <p className={vendor.note}>
           <Icon name="check" size={20} />
-          <span>Saved as a draft. Add a photo and a batch with its weekly timetable, then publish it.</span>
+          <span>Saved as a draft. Add a photo and a batch with its timetable, then publish.</span>
         </p>
       )}
 
@@ -258,7 +263,7 @@ function Dashboard({ course, setCourse, reload, fresh }: { course: VendorCourse;
       {draft && (
         <div className={vendor.actions}>
           <Button size="lg" loading={busy === "publish"} disabled={course.missing.length > 0} onClick={() => void run("publish", () => publishCourse(course.id, publishKey.current))}>
-            Publish and take students
+            Publish course
           </Button>
         </div>
       )}
@@ -294,16 +299,16 @@ function Dashboard({ course, setCourse, reload, fresh }: { course: VendorCourse;
       {batches.length ? (
         batches.map((b) => <BatchCard key={b.id} course={course} batch={b} onChanged={setCourse} />)
       ) : (
-        <p className={vendor.muted}>A batch is a group of students with a fee, seats and a weekly timetable, like “Weekday evenings”.</p>
+        <p className={vendor.muted}>A batch is a group with its own fee, seats and weekly timetable. Add at least one.</p>
       )}
 
       <ul className={vendor.rows}>
         {!draft && (
-          <Row href={`/vendor/courses/${course.id}/students`} icon="users" title="Students" subtitle="Who enrolled, demo requests and parents’ numbers" />
+          <Row href={`/vendor/courses/${course.id}/students`} icon="users" title="Students" subtitle="Who enrolled, for whom, and their attendance" />
         )}
-        {!removed && <Row href={`/vendor/courses/${course.id}/edit`} icon="edit" title="Edit details" subtitle="Name, venue, demo class and certificate" />}
-        {!draft && <Row href="/teach" icon="calendar" title="Today’s classes" subtitle="Attendance, messages and notes for every batch" />}
-        {!draft && <Row href={`/vendor/businesses/${course.business.id}/team`} icon="shield" title="Coaches" subtitle="Invite teachers who take attendance for their batches" />}
+        {!removed && <Row href={`/vendor/courses/${course.id}/edit`} icon="edit" title="Edit details" subtitle="Name, subject, place, demo class and certificate" />}
+        {!draft && <Row href="/teach" icon="calendar" title="Today’s classes" subtitle="Take attendance, move or cancel a class" />}
+        {!draft && <Row href={`/vendor/businesses/${course.business.id}/team`} icon="shield" title="Coaches" subtitle="Invite coaches to your team and choose what they can do" />}
       </ul>
 
       {deleting ? (

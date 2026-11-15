@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { cache } from "react";
 import { fetchPublicEvent } from "@/lib/api/events";
-import { dayText, placeLine } from "@/lib/events";
+import { fetchListingReviews } from "@/lib/api/reviews";
+import { dayText, placeLine, priceLine, timeText } from "@/lib/events";
 import { EventScreen } from "./screen";
 
 type Props = { params: Promise<{ id: string }> };
@@ -14,6 +15,9 @@ export async function generateStaticParams(): Promise<{ id: string }[]> {
   return [];
 }
 
+/** Reviews that arrive with the page; "Show more reviews" loads the rest in the browser. */
+const FIRST_REVIEWS = 5;
+
 /** Shared by the page and its metadata, so a visit makes one API call. */
 const load = cache(fetchPublicEvent);
 
@@ -21,8 +25,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const event = await load((await params).id);
   if (!event) return { title: "Event · Ruxstar", robots: { index: false } };
   const title = `${event.title} · Ruxstar`;
-  const description = `${dayText(event.startsAt)} · ${placeLine(event)}. By ${event.business.name}.`;
-  const images = event.photo ? [{ url: event.photo.url, width: event.photo.width, height: event.photo.height, alt: "" }] : undefined;
+  const place = placeLine(event);
+  const description = `${dayText(event.startsAt)}, ${timeText(event.startsAt)}${place ? ` · ${place}` : ""}. ${priceLine(event)}. By ${event.business.name}.`;
+  const images = event.photo ? [{ url: event.photo.url, width: event.photo.width, height: event.photo.height, alt: event.title }] : undefined;
   return {
     title,
     description,
@@ -34,5 +39,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EventPage({ params }: Props) {
   const { id } = await params;
-  return <EventScreen id={id} initial={await load(id)} />;
+  const [event, reviews] = await Promise.all([load(id), fetchListingReviews("events", id, FIRST_REVIEWS)]);
+  return <EventScreen id={id} initial={event} reviews={event ? reviews : null} />;
 }

@@ -6,10 +6,12 @@ import { Button, ButtonLink, Icon, Input } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useMe } from "@/components/social/session";
 import { Stepper } from "@/components/events/Stepper";
+import { CheckoutCoupons } from "@/components/coupons/CheckoutCoupons";
+import { useOffers } from "@/components/coupons/use-offers";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
-import { bookTickets, getEvent, type EventDetail, type EventQuestion } from "@/lib/api/events";
+import { bookTickets, eventOffers, getEvent, type EventDetail, type EventQuestion } from "@/lib/api/events";
 import { money } from "@/lib/api/shops";
 import {
   countOf,
@@ -85,11 +87,11 @@ function PersonCard({
   );
 }
 
-function Line({ label, amount, strong }: { label: string; amount: number; strong?: boolean }) {
+function Line({ label, amount, strong, minus }: { label: string; amount: number; strong?: boolean; minus?: boolean }) {
   return (
     <div className={strong ? `${order.priceRow} ${order.total}` : order.priceRow}>
       <dt>{label}</dt>
-      <dd>{amount === 0 ? "Free" : money(amount)}</dd>
+      <dd>{minus ? `−${money(amount)}` : amount === 0 ? "Free" : money(amount)}</dd>
     </div>
   );
 }
@@ -116,7 +118,10 @@ function Booking({ event, waitlistId }: { event: EventDetail; waitlistId?: strin
   const picked = team ? { [teamTier]: 1 } : selection;
   const count = team ? players : countOf(selection);
   const price = orderPrice(picked, event.tiers, event.platformFee, !!team);
-  const free = price.total === 0;
+  const coupon = useOffers((code) => eventOffers(event.id, price.items, code), step === 2 && price.items > 0 ? String(price.items) : null);
+  const discount = price.items > 0 ? Math.min(coupon.discount, price.items) : 0;
+  const total = price.total - discount;
+  const free = total === 0;
   const errors = useMemo(() => people.map((p) => personErrors(p, event.questions)), [people, event.questions]);
   const phoneTwice = useMemo(() => {
     const phones = people.map((p) => p.phone.replace(/\D/g, "").slice(-10)).filter((p) => p.length === 10);
@@ -157,6 +162,7 @@ function Booking({ event, waitlistId }: { event: EventDetail; waitlistId?: strin
           tickets: toHolders(people, event.questions),
           ...(team ? { team: { tierId: teamTier, name: teamName.trim() } } : {}),
           ...(offer ? { waitlistId: offer.id } : {}),
+          ...(discount > 0 && coupon.applied ? { coupon: coupon.applied.code } : {}),
           returnTo: `${window.location.origin}/tickets`,
         },
         attempt.current,
@@ -269,10 +275,26 @@ function Booking({ event, waitlistId }: { event: EventDetail; waitlistId?: strin
               ) : (
                 event.tiers.filter((t) => selection[t.id]).map((t) => <Line key={t.id} label={`${selection[t.id]} × ${t.name}`} amount={t.price * selection[t.id]!} />)
               )}
+              {discount > 0 && coupon.applied && <Line label={`Coupon ${coupon.applied.code}`} amount={discount} minus />}
               {price.fee > 0 && <Line label="Platform fee" amount={price.fee} />}
-              <Line label="Total" amount={price.total} strong />
+              <Line label="Total" amount={total} strong />
             </dl>
           </div>
+          {price.items > 0 && (
+            <section className={order.section}>
+              <h2 className={order.overline}>Coupon</h2>
+              <CheckoutCoupons
+                offers={coupon.offers}
+                applied={coupon.applied}
+                discount={discount}
+                problem={coupon.problem}
+                busy={coupon.busy}
+                module="events"
+                onApply={(code) => void coupon.apply(code)}
+                onRemove={coupon.remove}
+              />
+            </section>
+          )}
           <section className={order.section}>
             <h2 className={order.overline}>{team ? "Players" : "Tickets for"}</h2>
             <ul className={styles.qList}>
@@ -297,7 +319,7 @@ function Booking({ event, waitlistId }: { event: EventDetail; waitlistId?: strin
 
       <div className={shop.orderBar}>
         <span className={shop.orderText}>
-          <strong>{count ? (free ? "Free" : money(price.total)) : "No tickets yet"}</strong>
+          <strong>{count ? (free ? "Free" : money(total)) : "No tickets yet"}</strong>
           <span className={order.faint}>{count ? `${count} ${team ? (count === 1 ? "player" : "players") : count === 1 ? "ticket" : "tickets"}` : STEPS[step]}</span>
         </span>
         {step === 0 ? (
@@ -307,8 +329,8 @@ function Booking({ event, waitlistId }: { event: EventDetail; waitlistId?: strin
         ) : step === 1 ? (
           <Button onClick={toPay}>Continue</Button>
         ) : (
-          <Button loading={busy} onClick={() => void place()}>
-            {free ? "Get my free tickets" : `Pay ${money(price.total)}`}
+          <Button loading={busy} disabled={coupon.busy} onClick={() => void place()}>
+            {free ? "Get my free tickets" : `Pay ${money(total)}`}
           </Button>
         )}
       </div>

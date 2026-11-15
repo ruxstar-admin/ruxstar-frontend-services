@@ -60,7 +60,7 @@ export function ChildForm({ onAdded, onCancel }: { onAdded: (child: Child) => vo
 
   const yearNumber = year.trim() ? Number(year) : null;
   const errors = {
-    name: name.trim().length < 2 ? "Their name, as it goes on the certificate" : undefined,
+    name: name.trim().length < 2 ? "At least 2 letters" : undefined,
     year: yearNumber !== null && !(Number.isInteger(yearNumber) && yearNumber >= 1990 && yearNumber <= THIS_YEAR) ? `A year from 1990 to ${THIS_YEAR}` : undefined,
   };
 
@@ -87,13 +87,21 @@ export function ChildForm({ onAdded, onCancel }: { onAdded: (child: Child) => vo
   return (
     <fieldset className={events.person}>
       <h3>Add a child</h3>
-      <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} autoComplete="off" error={shown ? errors.name : undefined} />
       <Input
-        label="Birth year (optional)"
+        label="Child’s name"
+        placeholder="As the institute should call them"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        maxLength={60}
+        autoComplete="off"
+        error={shown ? errors.name : undefined}
+      />
+      <Input
+        label="Year of birth (optional)"
         inputMode="numeric"
         value={year}
         onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
-        hint="Helps the institute put them in the right batch."
+        hint="Helps the institute place them in the right batch."
         error={shown ? errors.year : undefined}
       />
       {failure && (
@@ -103,7 +111,7 @@ export function ChildForm({ onAdded, onCancel }: { onAdded: (child: Child) => vo
       )}
       <div className={order.actions}>
         <Button loading={busy} onClick={() => void save()}>
-          Add
+          Add child
         </Button>
         {onCancel && (
           <Button variant="ghost" disabled={busy} onClick={onCancel}>

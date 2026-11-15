@@ -121,6 +121,8 @@ export interface CourseDetail extends CourseCard {
   myOrders: { id: string; orderNo: number; kind: CoachingKind; status: CoachingOrderStatus; student: Student; batchId: string }[];
   /** Students who have had, or booked, this course's demo. */
   demoTaken: Student[];
+  /** The institute's rating across all its reviews; `average` is null until there are 3. */
+  rating?: { average: number | null; count: number };
 }
 
 export interface ClassView {
@@ -184,6 +186,10 @@ export interface CoachingOrder {
   attendance: { attended: number; held: number; percent: number; needed: number };
   certificate: CertificateRef | null;
   invoices?: InvoiceRef[];
+  /** Open for a review now: once the first class it covers is held, until 30 days after the last. */
+  canReview?: boolean;
+  /** The last moment to write or change the review; null when it can't be reviewed now. */
+  reviewUntil?: string | null;
   createdAt: string;
 }
 

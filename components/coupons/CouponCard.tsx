@@ -7,7 +7,7 @@ import { Button, Icon, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
 import type { CouponPatch, ManagedCoupon } from "@/lib/api/admin";
 import { money } from "@/lib/api/shops";
-import { dayText, draftErrors, draftOf, patchOf, perCustomerLine, shopsChanged, STATE, todayKey, usesLine } from "@/lib/coupons";
+import { dayText, draftErrors, draftOf, everywhereLine, patchOf, perCustomerLine, shopsChanged, STATE, todayKey, usesLine } from "@/lib/coupons";
 import { contactSupport } from "@/lib/support";
 import { CouponFields } from "./CouponFields";
 import styles from "./coupons.module.css";
@@ -18,7 +18,7 @@ interface CouponCardProps {
   canEdit: boolean;
   /** Switch it off or on. */
   canSwitch: boolean;
-  /** The vendor's print shops, when they choose where it works. */
+  /** The vendor's businesses that take coupons, when they choose where it works. */
   shops?: { id: string; name: string }[];
   /** The Ruxstar team sees whose coupon it is. */
   forTeam?: boolean;
@@ -83,7 +83,7 @@ export function CouponCard({ coupon: c, canEdit, canSwitch, shops, forTeam, save
           ) : (
             <dl className={styles.facts}>
               {forTeam && c.vendor && <Fact label="Vendor" value={c.vendor.name} />}
-              <Fact label="Works at" value={c.businesses.length ? c.businesses.map((b) => b.name).join(", ") : "Every print shop"} />
+              <Fact label="Works at" value={c.businesses.length ? c.businesses.map((b) => b.name).join(", ") : everywhereLine(c.modules)} />
               <Fact label="Smallest order" value={c.minOrder ? money(c.minOrder) : "None"} />
               <Fact label="Starts" value={c.startsAt ? dayText(c.startsAt) : "When made"} />
               <Fact label="Ends" value={c.endsAt ? dayText(c.endsAt) : "No end date"} />

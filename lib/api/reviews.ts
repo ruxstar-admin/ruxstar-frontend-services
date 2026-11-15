@@ -1,11 +1,11 @@
 import { signedIn } from "./account";
-import { api, newIdempotencyKey, unwrap } from "./client";
+import { api, API_URL, newIdempotencyKey, unwrap } from "./client";
 import type { paths } from "./schema";
 import type { Page } from "./social";
 
 type Data<T> = T extends { content: { "application/json": { data: infer D } } } ? D : never;
 
-/** A shop's live reviews. `average` is to one decimal, and null until there are 3 reviews. */
+/** A business's live reviews, across everything it sells. `average` is to one decimal, and null until there are 3 reviews. */
 export type Rating = Data<paths["/v1/pod/shops/{id}"]["get"]["responses"][200]>["rating"];
 /** GET /v1/pod/shops/:id/reviews: a review as anyone sees it. */
 export type Review = Data<paths["/v1/pod/shops/{id}/reviews"]["get"]["responses"][200]>[number];
@@ -15,29 +15,100 @@ export type MyReview = NonNullable<Data<paths["/v1/pod/orders/{id}/review"]["get
 export type ShopReview = Data<paths["/v1/vendor/businesses/{id}/reviews"]["get"]["responses"][200]>[number];
 export type ReviewCase = Data<paths["/v1/ruxstar/reports/reviews"]["get"]["responses"][200]>[number];
 export type ReviewReportReason = NonNullable<paths["/v1/pod/reviews/{id}/report"]["post"]["requestBody"]>["content"]["application/json"]["reason"];
+/** Print, events or coaching. Print reviews written before the others came have no `module`. */
+export type ReviewModule = NonNullable<Review["module"]>;
+/** Modules whose reviews are of an event or a course. */
+export type ListingModule = Exclude<ReviewModule, "pod">;
 
 const path = (id: string) => ({ params: { path: { id } } });
 const pageOf = <T>(envelope: { data: T[]; meta: { nextCursor?: string | null } }): Page<T> => ({ items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null });
 
-// The customer's side.
+// The customer's side. Each module has the same review routes under its own path.
+
+type Mine = { data: MyReview | null };
 
 /** Null until the customer reviews the order. */
-export const myReview = async (orderId: string) => (await signedIn(() => unwrap(api.GET("/v1/pod/orders/{id}/review", path(orderId))))).data;
+export const myReview = async (orderId: string, module: ReviewModule = "pod") =>
+  (
+    await signedIn(() =>
+      unwrap<Mine>(
+        module === "events"
+          ? api.GET("/v1/events/orders/{id}/review", path(orderId))
+          : module === "coaching"
+            ? api.GET("/v1/coaching/orders/{id}/review", path(orderId))
+            : api.GET("/v1/pod/orders/{id}/review", path(orderId)),
+      ),
+    )
+  ).data;
 
-/** For 30 days after delivery. Leaving out `text` keeps it; null clears it. */
-export const writeReview = async (orderId: string, body: { rating: number; text?: string | null }) =>
-  (await signedIn(() => unwrap(api.PUT("/v1/pod/orders/{id}/review", { ...path(orderId), body })))).data!;
+/** While the order is open for reviews. Leaving out `text` keeps it; null clears it. */
+export const writeReview = async (orderId: string, body: { rating: number; text?: string | null }, module: ReviewModule = "pod") =>
+  (
+    await signedIn(() =>
+      unwrap<Mine>(
+        module === "events"
+          ? api.PUT("/v1/events/orders/{id}/review", { ...path(orderId), body })
+          : module === "coaching"
+            ? api.PUT("/v1/coaching/orders/{id}/review", { ...path(orderId), body })
+            : api.PUT("/v1/pod/orders/{id}/review", { ...path(orderId), body }),
+      ),
+    )
+  ).data!;
 
-export const deleteReview = async (orderId: string) => {
-  await signedIn(() => unwrap(api.DELETE("/v1/pod/orders/{id}/review", path(orderId))));
+export const deleteReview = async (orderId: string, module: ReviewModule = "pod") => {
+  await signedIn(() =>
+    unwrap<unknown>(
+      module === "events"
+        ? api.DELETE("/v1/events/orders/{id}/review", path(orderId))
+        : module === "coaching"
+          ? api.DELETE("/v1/coaching/orders/{id}/review", path(orderId))
+          : api.DELETE("/v1/pod/orders/{id}/review", path(orderId)),
+    ),
+  );
 };
 
 export const shopReviews = async (shopId: string, cursor?: string): Promise<Page<Review>> =>
   pageOf(await signedIn(() => unwrap(api.GET("/v1/pod/shops/{id}/reviews", { params: { path: { id: shopId }, query: { cursor } } }))));
 
+/** An event's or a course's live reviews, newest first. No sign-in needed. */
+export const listingReviews = async (module: ListingModule, id: string, cursor?: string, limit?: number): Promise<Page<Review>> => {
+  const params = { params: { path: { id }, query: { cursor, limit } } };
+  return pageOf(
+    await signedIn(() =>
+      unwrap<{ data: Review[]; meta: { nextCursor: string | null } }>(
+        module === "events" ? api.GET("/v1/events/{id}/reviews", params) : api.GET("/v1/coaching/{id}/reviews", params),
+      ),
+    ),
+  );
+};
+
+/**
+ * For the server: the first few reviews of an event or a course, cached for a minute like the page. Null when the
+ * API doesn't answer; the page then shows none.
+ */
+export async function fetchListingReviews(module: ListingModule, id: string, limit: number): Promise<Page<Review> | null> {
+  if (!/^[a-f0-9]{24}$/.test(id)) return null;
+  try {
+    const res = await fetch(`${API_URL}/v1/${module}/${id}/reviews?limit=${limit}`, { headers: { "X-Client": "web" }, next: { revalidate: 60 } });
+    if (!res.ok) return null;
+    return pageOf((await res.json()) as { data: Review[]; meta: { nextCursor?: string | null } });
+  } catch {
+    return null;
+  }
+}
+
 /** One open report per review; the writer isn't told. */
-export const reportReview = async (reviewId: string, reason: ReviewReportReason, note?: string) => {
-  await signedIn(() => unwrap(api.POST("/v1/pod/reviews/{id}/report", { ...path(reviewId), body: { reason, ...(note ? { note } : {}) } })));
+export const reportReview = async (reviewId: string, reason: ReviewReportReason, note?: string, module: ReviewModule = "pod") => {
+  const body = { reason, ...(note ? { note } : {}) };
+  await signedIn(() =>
+    unwrap<unknown>(
+      module === "events"
+        ? api.POST("/v1/events/reviews/{id}/report", { ...path(reviewId), body })
+        : module === "coaching"
+          ? api.POST("/v1/coaching/reviews/{id}/report", { ...path(reviewId), body })
+          : api.POST("/v1/pod/reviews/{id}/report", { ...path(reviewId), body }),
+    ),
+  );
 };
 
 // The shop's side: the owner's by business id, the team's by place id (with "Reply to reviews").
@@ -105,3 +176,20 @@ export const REPORT_REASONS: { key: ReviewReportReason; label: string }[] = [
 ];
 
 export const STAR_WORDS: Record<number, string> = { 1: "Poor", 2: "Not great", 3: "Okay", 4: "Good", 5: "Excellent" };
+
+export const moduleOf = (review: { module?: ReviewModule }): ReviewModule => review.module ?? "pod";
+
+/** The label over the business's reply. */
+export const REPLY_FROM: Record<ReviewModule, string> = { pod: "From the shop", events: "From the organiser", coaching: "From the institute" };
+
+/** What was reviewed, for people who see reviews of every kind: "Event", "Course", or "Order" for print. */
+export const REVIEWED_WORD: Record<ReviewModule, string> = { pod: "Order", events: "Event", coaching: "Course" };
+
+/** The order a review came from: "Order #1234", "Booking #1234", "Enrolment #1234". */
+export const ORDER_WORD: Record<ReviewModule, string> = { pod: "Order", events: "Booking", coaching: "Enrolment" };
+
+/** Where anyone can read the reviews it sits with. */
+export function reviewsHref(review: { module?: ReviewModule; listing?: { type: "event" | "course"; id: string } | null }, shopId: string): string {
+  if (review.listing) return review.listing.type === "event" ? `/events/${review.listing.id}` : `/courses/${review.listing.id}`;
+  return `/b/${shopId}/reviews`;
+}

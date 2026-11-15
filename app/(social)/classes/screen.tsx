@@ -153,14 +153,14 @@ function Enrolments({ view }: { view: MyClassesView }) {
   if (error && items.length === 0) return <Failure error={error} onRetry={reload} />;
   if (items.length === 0) {
     return view === "current" ? (
-      <Empty title="No classes yet">
-        <p>Enrol yourself or your children in a batch, or try a demo class first.</p>
+      <Empty title="Not enrolled in anything yet">
+        <p>Enrol yourself or your child in a course, or book a demo class first.</p>
         <ButtonLink href="/discover?category=coaching" variant="secondary">
-          Find courses
+          Find a course
         </ButtonLink>
       </Empty>
     ) : (
-      <Empty title="Nothing past yet">
+      <Empty title="Nothing finished yet">
         <p>Batches that have ended, and cancelled enrolments, show up here.</p>
       </Empty>
     );
@@ -222,7 +222,7 @@ function Certificates() {
             <span className={order.rowText}>
               <span className={order.rowTitle}>{`${c.studentName} · ${c.courseTitle}`}</span>
               <span className={order.small}>{`${c.batchName} · ${c.businessName}`}</span>
-              <span className={order.faint}>{`Came to ${c.attended} of ${c.classes} classes · issued ${dayText(c.issuedAt)} · code ${c.code}`}</span>
+              <span className={order.faint}>{`Attended ${c.attended} of ${c.classes} · issued ${dayText(c.issuedAt)} · code ${c.code}`}</span>
             </span>
             <span className={order.rowEnd}>PDF</span>
             <Icon name="download" size={18} />

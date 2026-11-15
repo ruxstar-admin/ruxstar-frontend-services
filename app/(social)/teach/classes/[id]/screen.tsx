@@ -195,7 +195,7 @@ function ClassView({ roster, batch, onRoster, reloadBatch }: { roster: Roster; b
           <section className={vendor.card}>
             <h2 className={vendor.section}>Cancel this class?</h2>
             <p className={vendor.muted}>Every student and parent is told why. Demo students booked into it are refunded. There’s no refund for one class; add an extra class to make it up.</p>
-            <TextArea label="Tell them why" value={reason} onChange={setReason} max={300} placeholder="e.g. Teacher unwell, we’ll add a class next week" />
+            <TextArea label="Tell them why" value={reason} onChange={setReason} max={300} placeholder="Like “Teacher unwell, we’ll add a class next week”" />
             {panelFailure && (
               <p className={vendor.error} role="alert">
                 {panelFailure}

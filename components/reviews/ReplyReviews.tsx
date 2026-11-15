@@ -6,7 +6,18 @@ import { Button, Skeleton } from "@/components/ui";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { Back, Failed } from "@/components/vendor/parts";
-import { businessReviews, removeOwnerReply, removeTeamReply, replyAsOwner, replyAsTeam, workReviews, type ShopReview } from "@/lib/api/reviews";
+import {
+  businessReviews,
+  moduleOf,
+  ORDER_WORD,
+  removeOwnerReply,
+  removeTeamReply,
+  replyAsOwner,
+  replyAsTeam,
+  workReviews,
+  type ReviewModule,
+  type ShopReview,
+} from "@/lib/api/reviews";
 import { formError } from "@/lib/api/account";
 import { ReviewCard, TextAction } from "./Reviews";
 import order from "@/components/shop/order.module.css";
@@ -14,6 +25,23 @@ import vendor from "@/components/vendor/vendor.module.css";
 import styles from "./reviews.module.css";
 
 const REPLY_TEXT_MAX = 500;
+
+/** When customers can review, per kind of business. */
+const WHEN: Record<ReviewModule, string> = {
+  pod: "Customers review delivered orders for 30 days.",
+  events: "People review their booking once they’re checked in or the event ends, for 30 days after it.",
+  coaching: "Students review their enrolment once the first class is held, until 30 days after the last class.",
+};
+
+/** Where the owner (or the team, for print) opens what was reviewed. */
+function reviewedLink(review: ShopReview, team: boolean): { href: string; label: string } | null {
+  const module = moduleOf(review);
+  if (module === "pod") return { href: team ? `/work/order/${review.orderId}` : `/vendor/orders/${review.orderId}`, label: "Open order" };
+  if (team || !review.listing) return null;
+  return review.listing.type === "event"
+    ? { href: `/vendor/events/${review.listing.id}/bookings`, label: "See bookings" }
+    : { href: `/vendor/courses/${review.listing.id}/students`, label: "See students" };
+}
 
 function ReplyForm({ review, send, onClose }: { review: ShopReview; send: (text: string | null) => Promise<void>; onClose: () => void }) {
   const [text, setText] = useState(review.reply?.text ?? "");
@@ -91,13 +119,13 @@ export function ReplyReviews({ id, team = false }: { id: string; team?: boolean 
     if (next) setItems((prev) => prev.map((r) => (r.id === next.id ? next : r)));
   };
 
-  const orderHref = (review: ShopReview) => (team ? `/work/order/${review.orderId}` : `/vendor/orders/${review.orderId}`);
+  const module = items[0] ? moduleOf(items[0]) : null;
 
   return (
     <div className={vendor.page}>
       {team ? <Back href={`/work/${id}`}>Work</Back> : <Back href={`/vendor/businesses/${id}`}>Business</Back>}
       <h1 className={vendor.title}>Reviews</h1>
-      <p className={vendor.muted}>Customers review delivered orders for 30 days. Only Ruxstar can remove a review.</p>
+      <p className={vendor.muted}>{`${module ? `${WHEN[module]} ` : ""}Only Ruxstar can remove a review.`}</p>
       {loading ? (
         <div className={styles.list} aria-busy>
           {[0, 1, 2].map((i) => (
@@ -109,24 +137,27 @@ export function ReplyReviews({ id, team = false }: { id: string; team?: boolean 
       ) : items.length === 0 ? (
         <div className={vendor.card}>
           <h2 className={vendor.cardHead}>No reviews yet</h2>
-          <p className={vendor.muted}>{"Customers are asked to rate their order once it's delivered."}</p>
+          <p className={vendor.muted}>Customers are asked for a review after a delivery, after an event, or once their first class is held.</p>
         </div>
       ) : (
         <div className={styles.list}>
-          {items.map((review) =>
-            replying === review.id ? (
-              <ReplyForm key={review.id} review={review} send={send(review)} onClose={() => setReplying(null)} />
-            ) : (
-              <ReviewCard key={review.id} review={review} extra={`#${review.orderNo}`}>
+          {items.map((review) => {
+            if (replying === review.id) return <ReplyForm key={review.id} review={review} send={send(review)} onClose={() => setReplying(null)} />;
+            const kind = moduleOf(review);
+            const link = reviewedLink(review, team);
+            return (
+              <ReviewCard key={review.id} review={review} extra={kind === "pod" ? `#${review.orderNo}` : `${ORDER_WORD[kind]} #${review.orderNo}`}>
                 <div className={styles.actions}>
                   <TextAction onClick={() => setReplying(review.id)}>{review.reply ? "Edit reply" : "Reply"}</TextAction>
-                  <Link href={orderHref(review)} className={styles.link} data-muted>
-                    Open order
-                  </Link>
+                  {link && (
+                    <Link href={link.href} className={styles.link} data-muted>
+                      {link.label}
+                    </Link>
+                  )}
                 </div>
               </ReviewCard>
-            ),
-          )}
+            );
+          })}
           {hasMore && <div ref={sentinel} aria-hidden />}
           {loadingMore && <Skeleton height={110} radius={18} />}
         </div>

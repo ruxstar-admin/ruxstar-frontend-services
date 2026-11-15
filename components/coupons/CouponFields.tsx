@@ -18,7 +18,7 @@ interface CouponFieldsProps {
   creating: boolean;
   /** A coupon that hasn't started can still move its start. */
   canMoveStart: boolean;
-  /** Vendors pick which of their print shops it works at. */
+  /** Vendors pick which of their businesses it works at. */
   shops?: { id: string; name: string }[];
 }
 

@@ -20,7 +20,7 @@ function ChildRow({ child, onSaved, onRemoved }: { child: Child; onSaved: (c: Ch
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const yearNumber = year.trim() ? Number(year) : null;
-  const nameError = name.trim().length < 2 ? "Their name, as it goes on the certificate" : undefined;
+  const nameError = name.trim().length < 2 ? "At least 2 letters" : undefined;
   const yearError = yearNumber !== null && !(yearNumber >= 1990 && yearNumber <= THIS_YEAR) ? `A year from 1990 to ${THIS_YEAR}` : undefined;
 
   const save = async () => {
@@ -52,10 +52,10 @@ function ChildRow({ child, onSaved, onRemoved }: { child: Child; onSaved: (c: Ch
   if (editing) {
     return (
       <fieldset className={events.person}>
-        <h3>{`Edit ${child.name}`}</h3>
-        <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} autoComplete="off" error={nameError} />
+        <h3>{`Change ${child.name}`}</h3>
+        <Input label="Child’s name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} autoComplete="off" error={nameError} />
         <Input
-          label="Birth year (optional)"
+          label="Year of birth (optional)"
           inputMode="numeric"
           value={year}
           onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
@@ -88,16 +88,17 @@ function ChildRow({ child, onSaved, onRemoved }: { child: Child; onSaved: (c: Ch
         <span className={order.rowText}>
           <span className={order.rowTitle}>{child.name}</span>
           <span className={order.faint}>
-            {[child.birthYear ? `Born ${child.birthYear}` : null, child.enrolments ? `${child.enrolments} open ${child.enrolments === 1 ? "class" : "classes"}` : "No classes"].filter(Boolean).join(" · ")}
+            {[child.birthYear ? `Born ${child.birthYear}` : null, child.enrolments ? `${child.enrolments} ${child.enrolments === 1 ? "class" : "classes"}` : "Not enrolled yet"].filter(Boolean).join(" · ")}
           </span>
         </span>
-        <Button variant="ghost" icon={<Icon name="edit" size={16} />} onClick={() => setEditing(true)} aria-label={`Edit ${child.name}`} />
+        <Button variant="ghost" icon={<Icon name="edit" size={16} />} onClick={() => setEditing(true)} aria-label={`Change ${child.name}`} />
       </div>
       {error && (
         <p className={order.error} role="alert">
           {error}
         </p>
       )}
+      {confirming && <p className={order.small}>Their past enrolments and certificates stay in your classes.</p>}
       {confirming ? (
         <div className={order.actions}>
           <Button variant="danger" loading={busy} onClick={() => void remove()}>
@@ -108,7 +109,7 @@ function ChildRow({ child, onSaved, onRemoved }: { child: Child; onSaved: (c: Ch
           </Button>
         </div>
       ) : child.enrolments > 0 ? (
-        <span className={order.faint}>Children with an open enrolment or demo can’t be removed.</span>
+        <span className={order.faint}>{`${child.name} has classes booked, so they can’t be removed yet.`}</span>
       ) : (
         <button type="button" className={events.textLink} data-danger onClick={() => setConfirming(true)}>
           Remove
@@ -127,14 +128,19 @@ export function ChildrenScreen() {
     <div className={order.page}>
       <Back href="/classes">Your classes</Back>
       <h1 className={order.title}>Your children</h1>
-      <p className={order.small}>Enrol them in batches and demo classes from your account. Classes, attendance and certificates are kept under their name.</p>
+      <p className={order.small}>Pick them when you enrol or book a demo. Only the institutes they’re enrolled with see their name.</p>
       {error && !data ? (
         <Failed error={error} onRetry={reload} />
       ) : !data ? (
         <Skeleton height={84} radius={16} />
       ) : (
         <>
-          {data.length === 0 && !adding && <p className={order.small}>No children added yet.</p>}
+          {data.length === 0 && !adding && (
+            <div className={order.panel}>
+              <strong>No children added</strong>
+              <p className={order.small}>Add your child to enrol them in classes. You can still enrol yourself without this.</p>
+            </div>
+          )}
           {data.map((c) => (
             <ChildRow
               key={c.id}

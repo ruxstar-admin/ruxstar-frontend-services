@@ -36,7 +36,7 @@ function Booking({ course }: { course: CourseDetail }) {
   const total = demo.fee + fee;
 
   const blocked = (childId: string | null) => {
-    if (course.demoTaken.some((s) => s.childId === childId)) return "Has had, or booked, this course’s demo";
+    if (course.demoTaken.some((s) => s.childId === childId)) return "Had a demo for this course already";
     if (course.myOrders.some((o) => o.kind === "batch" && o.status === "confirmed" && o.student.childId === childId)) return "Already enrolled";
     return null;
   };
@@ -81,7 +81,7 @@ function Booking({ course }: { course: CourseDetail }) {
 
       {step === 0 && (
         <>
-          <p className={order.small}>Sit in on a real class of one of the batches.</p>
+          <p className={order.small}>{`Pick a class to try. ${demo.free ? "It’s free." : `It costs ${money(demo.fee)}.`} One demo per student for this course.`}</p>
           <ul className={styles.choices} role="radiogroup" aria-label="Class">
             {course.demoClasses.map((c) => (
               <li key={c.sessionId}>
@@ -89,7 +89,7 @@ function Booking({ course }: { course: CourseDetail }) {
                   <span className={styles.radio} aria-hidden />
                   <span className={styles.choiceText}>
                     <span className={styles.choiceTitle}>{whenLine(c.startsAt, c.endsAt)}</span>
-                    <span className={order.small}>{`${c.batchName} · ${c.seatsLeft} demo ${c.seatsLeft === 1 ? "place" : "places"} left`}</span>
+                    <span className={order.small}>{`${c.batchName} · ${c.seatsLeft === 1 ? "1 demo seat left" : `${c.seatsLeft} demo seats left`}`}</span>
                   </span>
                 </button>
               </li>
@@ -100,7 +100,7 @@ function Booking({ course }: { course: CourseDetail }) {
 
       {step === 1 && (
         <>
-          <p className={order.small}>Who’s coming to the demo?</p>
+          <p className={order.small}>Who is this for? Add your child once and pick them every time.</p>
           <StudentPicker meName={meName} value={student?.childId} onChange={(childId, name) => setStudent({ childId, name })} blocked={blocked} />
         </>
       )}
@@ -122,7 +122,7 @@ function Booking({ course }: { course: CourseDetail }) {
               {total ? "Full refund if you cancel before the class. If the class is cancelled, you get it all back." : "Cancel any time before the class so someone else can come."}
             </span>
           </div>
-          {total > 0 && <p className={order.faint}>You’ll pay on Cashfree’s secure page. The place is held for 20 minutes while you pay.</p>}
+          {total > 0 && <p className={order.faint}>You’ll pay on Cashfree’s secure page. The seat is held for 20 minutes while you pay.</p>}
         </>
       )}
 
@@ -147,7 +147,7 @@ function Booking({ course }: { course: CourseDetail }) {
           </Button>
         ) : (
           <Button loading={busy} onClick={() => void place()}>
-            {total ? `Pay ${money(total)}` : "Book the demo"}
+            {total ? `Pay ${money(total)}` : "Book the free demo"}
           </Button>
         )}
       </div>
@@ -161,8 +161,8 @@ export function DemoScreen({ id }: { id: string }) {
   if (data) {
     if (!data.demo || !data.demoClasses.length || data.status !== "live") {
       return (
-        <Empty title={data.demo ? "No demo places right now" : "This course has no demo class"}>
-          <p>{data.demo ? "Every coming class is full of demo students. Check back soon." : "You can still enrol in a batch."}</p>
+        <Empty title={data.demo ? "No demo classes have seats right now." : "This course has no demo class"}>
+          <p>{data.demo ? "Check back soon, or enrol in a batch." : "You can still enrol in a batch."}</p>
           <ButtonLink href={`/courses/${id}`} variant="secondary">
             Back to the course
           </ButtonLink>

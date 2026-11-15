@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
@@ -13,6 +14,7 @@ import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import { cancelEnrolment, enrolmentMaterials, enrolmentMessages, getEnrolment, payEnrolment, type CoachingOrder } from "@/lib/api/coaching";
 import { money } from "@/lib/api/shops";
 import { attendanceLine, ORDER_STATUS, sizeText } from "@/lib/coaching";
+import { offerWord } from "@/lib/coupons";
 import { dayText, istParts, istToday, timeText } from "@/lib/events";
 import { ago } from "@/lib/time";
 import shop from "@/components/shop/shop.module.css";
@@ -24,6 +26,12 @@ import styles from "@/components/coaching/coaching.module.css";
 const POLL_MS = 8000;
 /** Classes shown before "Show all". */
 const FIRST_CLASSES = 6;
+
+/** Its own chunk: only enrolments that can have a review download it. */
+const Rate = dynamic(() => import("@/components/reviews/Reviews").then((m) => m.Rate));
+
+/** Reviews open once the first class is held; before that there's nothing to look up. */
+const mayHaveReview = (o: CoachingOrder) => o.status === "confirmed" && (!!o.canReview || o.classes.some((c) => c.status === "done"));
 
 function Materials({ orderId }: { orderId: string }) {
   const { data, error, reload } = useLoad(() => enrolmentMaterials(orderId), `m${orderId}`);
@@ -57,7 +65,7 @@ function Materials({ orderId }: { orderId: string }) {
           ))}
         </ul>
       ) : (
-        <p className={order.small}>Notes, worksheets and links from the institute show up here.</p>
+        <p className={order.small}>Notes, worksheets and links for this batch show up here.</p>
       )}
     </section>
   );
@@ -168,7 +176,7 @@ function EnrolmentView({ item, fresh, onChanged }: { item: CoachingOrder; fresh:
       {course.removed && !batch.cancelled && (
         <div className={order.news}>
           <strong>Course taken down</strong>
-          <p className={order.small}>Ruxstar took this course down. What you paid is refunded.</p>
+          <p className={order.small}>Ruxstar took this course down. Classes that hadn’t started are cancelled.</p>
         </div>
       )}
       {item.status === "cancelled" && item.reason && !batch.cancelled && <p className={order.small}>{item.reason}</p>}
@@ -192,6 +200,21 @@ function EnrolmentView({ item, fresh, onChanged }: { item: CoachingOrder; fresh:
         <Button size="lg" loading={paying} onClick={() => void pay()}>
           {`Pay ${money(total)}`}
         </Button>
+      )}
+
+      {mayHaveReview(item) && (
+        <Rate
+          orderId={item.id}
+          module="coaching"
+          open={!!item.canReview}
+          until={item.reviewUntil ?? null}
+          words={{
+            ask: demo ? "Rate the demo class" : "Rate this course",
+            askLine: `How ${demo ? "was the class" : "are the classes"}? Your review helps other students and parents choose ${item.business.name}.`,
+            writeTitle: `Rate ${course.title}`,
+            placeholder: "The teaching, the timings, how the institute was to deal with",
+          }}
+        />
       )}
 
       {confirmed && next && (
@@ -257,9 +280,12 @@ function EnrolmentView({ item, fresh, onChanged }: { item: CoachingOrder; fresh:
         <span className={order.faint}>{`${demo ? "Demo" : "Enrolment"} #${item.orderNo}`}</span>
         <span>
           {total
-            ? `${money(total)}${unpaid ? " to pay" : ""}${item.price.discount ? `, after ${money(item.price.discount)} off` : ""}${item.price.platformFee ? `, including a ${money(item.price.platformFee)} fee` : ""}`
+            ? `${money(total)}${unpaid ? " to pay" : ""}${item.price.platformFee ? `, including a ${money(item.price.platformFee)} platform fee` : ""}`
             : "Free"}
         </span>
+        {item.price.discount > 0 && (
+          <span className={order.small}>{`${money(item.price.discount)} off${item.coupon ? ` with ${item.coupon.code} · ${offerWord(item.coupon.fundedBy, "coaching")}` : ""}`}</span>
+        )}
         <span className={order.faint}>{`By ${item.business.name}`}</span>
       </div>
 
@@ -272,7 +298,7 @@ function EnrolmentView({ item, fresh, onChanged }: { item: CoachingOrder; fresh:
             <p className={order.small}>
               {unpaid || !total
                 ? "The seat goes to someone else."
-                : `${money(total)} goes back to how you paid.${item.cancelUntil ? ` You can do this until ${dayText(item.cancelUntil)}, ${timeText(item.cancelUntil)}, when the first class starts.` : ""}`}
+                : `${item.student.name}’s seat is given up and ${money(total)} goes back to how you paid.${item.cancelUntil ? ` You can do this until ${dayText(item.cancelUntil)}, ${timeText(item.cancelUntil)}, when the first class starts.` : ""}`}
             </p>
             <div className={order.actions}>
               <Button variant="danger" loading={cancelling} onClick={() => void cancel()}>
@@ -288,7 +314,9 @@ function EnrolmentView({ item, fresh, onChanged }: { item: CoachingOrder; fresh:
             {confirmed && total ? "Cancel and get a refund" : "Cancel"}
           </button>
         ))}
-      {confirmed && !item.canCancel && !demo && total > 0 && <p className={order.faint}>No refunds once the first class has started.</p>}
+      {confirmed && !item.canCancel && (
+        <p className={order.faint}>{demo ? "The demo class has started, so it can’t be cancelled." : "Classes have started, so there are no refunds now."}</p>
+      )}
     </div>
   );
 }

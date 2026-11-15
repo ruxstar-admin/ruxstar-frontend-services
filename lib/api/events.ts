@@ -18,6 +18,7 @@ export type EventRules = Data<paths["/v1/events/rules"]["get"]["responses"][200]
 export type BookBody = Body<paths["/v1/events/{id}/tickets"]["post"]>;
 export type HolderInput = BookBody["tickets"][number];
 export type Placed = Data<paths["/v1/events/{id}/tickets"]["post"]["responses"][201]>;
+export type EventOffers = Data<paths["/v1/events/{id}/offers"]["get"]["responses"][200]>;
 export type TicketOrder = Data<paths["/v1/events/orders/{id}"]["get"]["responses"][200]>;
 export type TicketOrderStatus = TicketOrder["status"];
 export type TicketView = TicketOrder["tickets"][number];
@@ -76,6 +77,10 @@ export async function fetchPublicEvent(id: string): Promise<PublicEvent | null> 
     return null;
   }
 }
+
+/** Coupons that work on these tickets, best first. `items` is the tickets' paise before the fee; `code` checks one code too. */
+export const eventOffers = async (eventId: string, items: number, code?: string) =>
+  (await signedIn(() => unwrap(api.GET("/v1/events/{id}/offers", { params: { path: { id: eventId }, query: { items, ...(code ? { code } : {}) } } })))).data;
 
 /** Free tickets come back confirmed with no checkout link. Pass the same key when retrying the same click. */
 export const bookTickets = async (eventId: string, body: BookBody, key: string) =>

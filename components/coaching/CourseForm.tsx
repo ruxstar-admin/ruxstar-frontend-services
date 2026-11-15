@@ -145,13 +145,13 @@ function Form({ rules, course, businessId }: { rules: CoachingRules; course?: Ve
             </p>
           )}
         </div>
-        <Input label="Course name" value={draft.title} onChange={(e) => set("title", e.target.value)} maxLength={80} placeholder="e.g. Class 10 Maths, Beginner guitar" error={err("title")} />
+        <Input label="Course name" value={draft.title} onChange={(e) => set("title", e.target.value)} maxLength={80} placeholder="Like “Class 10 Maths” or “Guitar for beginners”" error={err("title")} />
         <TextArea
-          label="What students learn (optional)"
+          label="About the course (optional)"
           value={draft.description}
           onChange={(v) => set("description", v)}
           max={2000}
-          placeholder="Topics, who it’s for, what to bring, the teacher’s experience…"
+          placeholder="What students learn, who it’s for, what to bring"
         />
 
         <div className={vendor.field}>
@@ -175,8 +175,8 @@ function Form({ rules, course, businessId }: { rules: CoachingRules; course?: Ve
         </div>
         {draft.mode === "offline" && (
           <>
-            <Input label="Venue" value={draft.venueName} onChange={(e) => set("venueName", e.target.value)} maxLength={80} placeholder="e.g. Bright Minds Academy" error={err("venueName")} />
-            <Input label="Address" value={draft.address} onChange={(e) => set("address", e.target.value)} maxLength={200} placeholder="Street, area" error={err("address")} />
+            <Input label="Centre name" value={draft.venueName} onChange={(e) => set("venueName", e.target.value)} maxLength={80} placeholder="Like “Bright Minds, Madhapur”" error={err("venueName")} />
+            <Input label="Address" value={draft.address} onChange={(e) => set("address", e.target.value)} maxLength={200} placeholder="Building, street, area" error={err("address")} />
             <Input label="City" value={draft.city} onChange={(e) => set("city", e.target.value)} maxLength={60} autoComplete="address-level2" error={err("city")} />
             {course && course.counts.students > 0 && <p className={vendor.faint}>Enrolled students are told when the venue changes.</p>}
           </>
@@ -191,7 +191,7 @@ function Form({ rules, course, businessId }: { rules: CoachingRules; course?: Ve
           <div className={vendor.pair} data-even>
             <Input label="Demo fee (₹)" inputMode="decimal" value={draft.demoFee} onChange={(e) => set("demoFee", e.target.value)} hint="0 for free" error={err("demoFee")} />
             <Input
-              label="Demo students per class"
+              label="Seats per class"
               inputMode="numeric"
               value={draft.demoSeats}
               onChange={(e) => set("demoSeats", e.target.value)}
@@ -209,7 +209,7 @@ function Form({ rules, course, businessId }: { rules: CoachingRules; course?: Ve
           onChange={(e) => set("certificate", e.target.value)}
           maxLength={3}
           placeholder={String(rules.certificatePercent)}
-          hint={`When a batch ends, students who came to this share of classes get a certificate. Leave empty for ${rules.certificatePercent}%.`}
+          hint={`Students who attend this share of classes get a certificate after the last one. Ruxstar’s usual is ${rules.certificatePercent}%.`}
           error={err("certificate")}
         />
 

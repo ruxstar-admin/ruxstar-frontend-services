@@ -19,8 +19,8 @@ export const CATEGORY_LABEL: Record<CourseCategory, string> = {
   music: "Music",
   dance: "Dance",
   sports: "Sports",
-  fitness: "Fitness",
-  art: "Art",
+  fitness: "Fitness & yoga",
+  art: "Art & craft",
   languages: "Languages",
   tech: "Coding & tech",
   other: "Other",
@@ -38,7 +38,7 @@ export const ORDER_STATUS: Record<CoachingOrderStatus, { label: string; tone: Ta
 export const KIND_LABEL: Record<CoachingKind, string> = { batch: "Enrolment", demo: "Demo class" };
 
 export const BATCH_STATUS: Record<BatchStatus, { label: string; tone: TagTone }> = {
-  open: { label: "Open", tone: "success" },
+  open: { label: "Taking students", tone: "success" },
   full: { label: "Full", tone: "warning" },
   started: { label: "Running", tone: "neutral" },
   ended: { label: "Ended", tone: "neutral" },
@@ -59,12 +59,16 @@ export const placeLine = (course: Pick<CourseCard, "mode" | "venueName" | "city"
 
 /** "From ₹4,000", "Free", or that no batch is open. */
 export function feeLine(course: Pick<CourseCard, "feeFrom">): string {
-  if (course.feeFrom === null) return "No batch open";
+  if (course.feeFrom === null) return "No batches open";
   return course.feeFrom === 0 ? "Free" : `From ${money(course.feeFrom)}`;
 }
 
-/** "Free demo", "Demo ₹200", or null. */
-export const demoLine = (course: Pick<CourseCard, "demo">) => (course.demo ? (course.demo.free ? "Free demo" : `Demo ${money(course.demo.fee)}`) : null);
+/** "Free demo class", "Demo class ₹200", or null. */
+export const demoLine = (course: Pick<CourseCard, "demo">) =>
+  course.demo ? (course.demo.free ? "Free demo class" : `Demo class ${money(course.demo.fee)}`) : null;
+
+/** "Free" or the fee. */
+export const feeText = (paise: number) => (paise === 0 ? "Free" : money(paise));
 
 /** The student's name, marked when it's the account holder. */
 export const studentName = (student: Student) => (student.childId ? student.name : `${student.name} (you)`);

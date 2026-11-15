@@ -6,6 +6,7 @@ import { Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { money } from "@/lib/api/shops";
 import { canOpen, listOf, MISSING_LABEL, myBusinesses, vendorPayments } from "@/lib/api/vendor";
+import { COUPON_MODULES, COUPON_WHERE, couponBusinesses } from "@/lib/coupons";
 import styles from "@/components/vendor/vendor.module.css";
 
 function Stat({ value, label }: { value: string; label: string }) {
@@ -93,14 +94,14 @@ export function VendorDashboard() {
         </Link>
       )}
 
-      {list.some((b) => b.module === "pod") && (
+      {couponBusinesses(list).length > 0 && (
         <ul className={styles.rows}>
           <li>
             <Link href="/vendor/coupons" className={styles.row}>
               <Icon name="ticket" size={20} />
               <span className={styles.rowText}>
                 <span className={styles.rowTitle}>Coupons</span>
-                <span className={styles.rowLine}>Discounts for your print shops</span>
+                <span className={styles.rowLine}>{`Discounts on ${listOf(COUPON_MODULES.filter((m) => list.some((b) => b.module === m)).map((m) => COUPON_WHERE[m]))}`}</span>
               </span>
               <Icon name="chevron-right" size={18} />
             </Link>

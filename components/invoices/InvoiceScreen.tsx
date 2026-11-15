@@ -22,16 +22,16 @@ const LOAD: Record<InvoiceAudience, (id: string) => Promise<Invoice>> = { custom
 const HOME_LABEL: Record<InvoiceAudience, string> = { customer: "Your invoices", vendor: "GST invoices", staff: "Invoices" };
 
 /**
- * The order's other documents: Ruxstar's fee invoice, and credit notes for refunds. Businesses can't filter by order,
- * so for them this looks through their latest credit notes for ones against this invoice. Same as the app.
+ * The order's other documents: Ruxstar's fee invoice (not for businesses), and credit notes for refunds, asked for by
+ * the order's id. Same as the app.
  */
 async function relatedTo(invoice: Invoice, audience: InvoiceAudience): Promise<Invoice[]> {
-  const others = (items: Invoice[]) => items.filter((d) => d.id !== invoice.id && d.order.id === invoice.order.id);
-  if (audience === "customer") return others((await myInvoices(undefined, invoice.order.id)).items);
-  if (audience === "staff") return others((await staffInvoices({ orderNo: invoice.order.orderNo, business: invoice.business.id }, undefined, 50)).items);
-  if (invoice.kind === "credit_note" || !invoice.credited) return [];
-  const notes = await vendorInvoices({ kind: "credit_note", business: invoice.business.id }, undefined, 50);
-  return notes.items.filter((d) => d.against?.id === invoice.id);
+  const orderId = invoice.order.id;
+  const others = (items: Invoice[]) => items.filter((d) => d.id !== invoice.id && d.order.id === orderId);
+  if (audience === "customer") return others((await myInvoices(undefined, orderId)).items);
+  if (audience === "staff") return others((await staffInvoices({ orderId }, undefined, 50)).items);
+  if (invoice.kind !== "credit_note" && !invoice.credited) return [];
+  return others((await vendorInvoices({ orderId, business: invoice.business.id }, undefined, 50)).items);
 }
 
 /** What the document is, in a sentence, for the person looking at it. Same as the app. */
@@ -71,7 +71,10 @@ const supplyLine = (invoice: Invoice) =>
 
 function orderLink(invoice: Invoice, audience: InvoiceAudience): { href: string; label: string } | null {
   const { type, id, orderNo } = invoice.order;
-  if (audience === "customer") return type === "pod_order" ? { href: `/orders/${id}`, label: "View order" } : { href: `/tickets/${id}`, label: "View booking" };
+  if (audience === "customer") {
+    if (type === "pod_order") return { href: `/orders/${id}`, label: "View order" };
+    return type === "coaching_order" ? { href: `/classes/${id}`, label: "View enrolment" } : { href: `/tickets/${id}`, label: "View booking" };
+  }
   if (audience === "vendor") return type === "pod_order" ? { href: `/vendor/orders/${id}`, label: "View order" } : null;
   return { href: `/admin/invoices?orderNo=${orderNo}`, label: `Every document for order #${orderNo}` };
 }
@@ -277,7 +280,7 @@ function InvoiceDocument({
           <h1 className={order.title}>{INVOICE_KIND[invoice.kind]}</h1>
           <p className={styles.number}>{invoice.number}</p>
           <p className={order.small}>{`Issued ${issuedOn(invoice.issuedAt)} · FY ${invoice.fy}`}</p>
-          <p className={order.small}>{`${invoice.business.name} · ${invoice.order.type === "event_order" ? "Booking" : "Order"} #${invoice.order.orderNo}`}</p>
+          <p className={order.small}>{`${invoice.business.name} · ${invoice.order.type === "event_order" ? "Booking" : invoice.order.type === "coaching_order" ? "Enrolment" : "Order"} #${invoice.order.orderNo}`}</p>
         </div>
         <Tag tone={KIND_TONE[invoice.kind]}>{`${invoice.kind === "credit_note" ? "−" : ""}${money(invoice.totals.total)}`}</Tag>
       </div>
@@ -358,7 +361,7 @@ function InvoiceDocument({
         </ul>
       )}
 
-      <Related title={audience === "vendor" ? "Credit notes against it" : "Other documents for this order"} docs={related} audience={audience} />
+      <Related title={audience === "vendor" && invoice.kind !== "credit_note" ? "Credit notes against it" : "Other documents for this order"} docs={related} audience={audience} />
     </div>
   );
 }

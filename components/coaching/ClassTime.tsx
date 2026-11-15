@@ -74,8 +74,8 @@ export function ClassTime({
         <Pick label="Starts" value={time} options={STARTS.map((t) => ({ value: t, label: clockText(t) }))} onChange={setTime} />
         <Pick label="Lasts" value={String(length)} options={LENGTHS.map((m) => ({ value: String(m), label: lengthText(m) }))} onChange={(v) => setLength(Number(v))} />
       </div>
-      {withReason && <TextArea label="Tell them why (optional)" value={reason} onChange={setReason} max={300} placeholder="e.g. Hall booked for exams that day" />}
-      <p className={vendor.faint}>Every student and parent is told. Times are India time.</p>
+      {withReason && <TextArea label="Why (optional)" value={reason} onChange={setReason} max={300} placeholder="Like “Hall booked for exams”" />}
+      <p className={vendor.faint}>Every student and parent in the batch is told the new time. Times are India time.</p>
       {failure && (
         <p className={vendor.error} role="alert">
           {failure}

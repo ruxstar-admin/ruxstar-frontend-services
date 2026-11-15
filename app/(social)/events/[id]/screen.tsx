@@ -7,10 +7,13 @@ import { Empty } from "@/components/social/PostList";
 import { useMe, useSignInFirst } from "@/components/social/session";
 import { Poster } from "@/components/events/EventCard";
 import { Stepper } from "@/components/events/Stepper";
+import { ListingReviews } from "@/components/reviews/ListingReviews";
 import { formError, isSignedOut } from "@/lib/api/account";
 import { ApiError, newIdempotencyKey } from "@/lib/api/client";
 import { getEvent, joinWaitlist, leaveWaitlist, type EventDetail, type MyWait, type PublicEvent } from "@/lib/api/events";
+import { ratingLine, type Review } from "@/lib/api/reviews";
 import { money } from "@/lib/api/shops";
+import type { Page } from "@/lib/api/social";
 import { dayText, KIND_LABEL, mapsUrl, placeLine, priceLine, refundText, timeText, whenLine } from "@/lib/events";
 import shop from "@/components/shop/shop.module.css";
 import order from "@/components/shop/order.module.css";
@@ -19,7 +22,7 @@ import styles from "@/components/events/events.module.css";
 /** Shown as "12 left" once this few remain. */
 const FEW_LEFT = 20;
 
-function Fact({ icon, title, detail }: { icon: "calendar" | "map-pin" | "play" | "users"; title: string; detail?: string | null }) {
+function Fact({ icon, title, detail }: { icon: "calendar" | "map-pin" | "play" | "users" | "star"; title: string; detail?: string | null }) {
   return (
     <div className={styles.factRow}>
       <Icon name={icon} size={18} />
@@ -114,7 +117,19 @@ function JoinWaitlist({ event, onJoined, onClose }: { event: PublicEvent; onJoin
   );
 }
 
-function EventView({ event, mine, signedOut, onChanged }: { event: PublicEvent; mine: EventDetail | null; signedOut: boolean; onChanged: () => void }) {
+function EventView({
+  event,
+  mine,
+  signedOut,
+  reviews,
+  onChanged,
+}: {
+  event: PublicEvent;
+  mine: EventDetail | null;
+  signedOut: boolean;
+  reviews: Page<Review> | null;
+  onChanged: () => void;
+}) {
   const signIn = useSignInFirst();
   const [joining, setJoining] = useState(false);
   const [leaving, setLeaving] = useState<MyWait | null>(null);
@@ -235,6 +250,7 @@ function EventView({ event, mine, signedOut, onChanged }: { event: PublicEvent; 
             detail="The captain books and pays once for the team. Every player gets their own QR code."
           />
         )}
+        {event.rating && event.rating.count > 0 && <Fact icon="star" title={ratingLine(event.rating)} detail={`Across ${event.business.name}’s events`} />}
         {event.venue && !event.online && (
           <a className={styles.textLink} href={mapsUrl(event.venue)} target="_blank" rel="noreferrer">
             Open in maps
@@ -271,6 +287,8 @@ function EventView({ event, mine, signedOut, onChanged }: { event: PublicEvent; 
         </section>
       )}
 
+      {reviews && <ListingReviews module="events" id={event.id} initial={reviews} />}
+
       {joining && (
         <JoinWaitlist
           event={event}
@@ -296,12 +314,12 @@ function EventView({ event, mine, signedOut, onChanged }: { event: PublicEvent; 
 }
 
 /**
- * One event: poster, when and where, ticket types and refunds. The page arrives with the event already in it when
- * the API shares it publicly; seats left, your bookings and waitlist places always load here. Same as the app.
+ * One event: poster, when and where, ticket types, refunds and reviews. The page arrives from the server with the
+ * event and its first reviews in it; when you're signed in, seats left, your bookings and waitlist places load here.
+ * Same as the app.
  */
-export function EventScreen({ id, initial }: { id: string; initial: PublicEvent | null }) {
+export function EventScreen({ id, initial, reviews }: { id: string; initial: PublicEvent | null; reviews: Page<Review> | null }) {
   const me = useMe();
-  const signIn = useSignInFirst();
   const [full, setFull] = useState<EventDetail | null>(null);
   const [error, setError] = useState<unknown>(null);
 
@@ -318,24 +336,21 @@ export function EventScreen({ id, initial }: { id: string; initial: PublicEvent 
   );
 
   useEffect(() => {
-    if (me === undefined || me === null) return;
+    if (me === undefined) return;
+    // Signed out, the server's copy is all there is to show; it's only fetched here when the server had none.
+    if (me === null) {
+      if (!initial) void load();
+      return;
+    }
     void load();
     const onShow = () => document.visibilityState === "visible" && void load();
     document.addEventListener("visibilitychange", onShow);
     return () => document.removeEventListener("visibilitychange", onShow);
-  }, [me, load]);
+  }, [me, load, initial]);
 
   const signedOut = me === null || isSignedOut(error);
   const event = full ?? initial;
-  if (event) return <EventView event={event} mine={full} signedOut={signedOut} onChanged={() => void load()} />;
-  if (signedOut) {
-    return (
-      <Empty title="Sign in to see this event">
-        <p>Events and tickets are for people with a Ruxstar account.</p>
-        <Button onClick={signIn}>Sign in</Button>
-      </Empty>
-    );
-  }
+  if (event) return <EventView event={event} mine={me ? full : null} signedOut={signedOut} reviews={reviews} onChanged={() => void load()} />;
   if (error) {
     const gone = error instanceof ApiError && error.status === 404;
     return (

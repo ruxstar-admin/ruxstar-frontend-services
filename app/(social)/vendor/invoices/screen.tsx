@@ -7,9 +7,8 @@ import { usePages } from "@/components/social/use-pages";
 import { SkeletonRows } from "@/app/(social)/notifications/screen";
 import { InvoiceTable } from "@/components/invoices/InvoiceTable";
 import { formError } from "@/lib/api/account";
-import { exportVendorInvoices, vendorInvoices, type Invoice, type InvoiceKind, type VendorInvoiceFilter } from "@/lib/api/invoices";
+import { exportVendorInvoices, vendorInvoices, type InvoiceKind, type VendorInvoiceFilter } from "@/lib/api/invoices";
 import { myBusinesses, type Business } from "@/lib/api/vendor";
-import type { Page } from "@/lib/api/social";
 import vendor from "@/components/vendor/vendor.module.css";
 import styles from "@/components/invoices/invoices.module.css";
 
@@ -19,10 +18,9 @@ const KINDS: { value: InvoiceKind | ""; label: string }[] = [
   { value: "bill_of_supply", label: "Bills of supply" },
   { value: "credit_note", label: "Credit notes" },
 ];
+type InvoiceModule = NonNullable<VendorInvoiceFilter["module"]>;
+const MODULE_LABEL: Partial<Record<InvoiceModule, string>> = { pod: "Print", events: "Events", coaching: "Coaching" };
 const MONTHS_BACK = 24;
-/** The list has no date filter, so a month is found by reading newest-first pages; this many before asking. */
-const MONTH_SCAN_PAGES = 10;
-const PAGE_SIZE = 50;
 
 /** Today as YYYY-MM-DD in India time, the time the documents and the CSV use. */
 const todayInIndia = () => new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
@@ -38,16 +36,11 @@ function recentMonths(): string[] {
   });
 }
 
+/** The month's first and last day; the API reads a plain day as the whole day in India. */
 function monthBounds(month: string) {
   const [year, m] = month.split("-").map(Number) as [number, number];
-  const next = m === 12 ? `${year + 1}-01` : `${year}-${two(m + 1)}`;
   const lastDay = new Date(Date.UTC(year, m, 0)).getUTCDate();
-  return {
-    start: Date.parse(`${month}-01T00:00:00+05:30`),
-    end: Date.parse(`${next}-01T00:00:00+05:30`),
-    from: `${month}-01`,
-    to: `${month}-${two(lastDay)}`,
-  };
+  return { from: `${month}-01`, to: `${month}-${two(lastDay)}` };
 }
 
 /** April to today: GST's financial year, and inside the export's one-year limit. */
@@ -56,23 +49,6 @@ function financialYearSoFar() {
   const [year, month] = to.split("-").map(Number) as [number, number];
   const first = month >= 4 ? year : year - 1;
   return { from: `${first}-04-01`, to, label: `${first}-${two((first + 1) % 100)} so far` };
-}
-
-async function loadMonth(filter: VendorInvoiceFilter, month: string, cursor?: string): Promise<Page<Invoice>> {
-  const { start, end } = monthBounds(month);
-  let next = cursor;
-  for (let i = 0; i < MONTH_SCAN_PAGES; i++) {
-    const page = await vendorInvoices(filter, next, PAGE_SIZE);
-    const items = page.items.filter((d) => {
-      const at = Date.parse(d.issuedAt);
-      return at >= start && at < end;
-    });
-    const oldest = page.items[page.items.length - 1];
-    if (!page.nextCursor || (oldest && Date.parse(oldest.issuedAt) < start)) return { items, nextCursor: null };
-    if (items.length) return { items, nextCursor: page.nextCursor };
-    next = page.nextCursor;
-  }
-  return { items: [], nextCursor: next ?? null };
 }
 
 function saveFile(blob: Blob, name: string) {
@@ -106,7 +82,7 @@ function Choice<T extends string>({ label, value, options, onChange }: { label: 
 
 function List({ filter, month, showBusiness }: { filter: VendorInvoiceFilter; month: string; showBusiness: boolean }) {
   const onSignedOut = useOnSignedOut();
-  const load = useCallback((cursor?: string) => (month ? loadMonth(filter, month, cursor) : vendorInvoices(filter, cursor)), [filter, month]);
+  const load = useCallback((cursor?: string) => vendorInvoices(filter, cursor), [filter]);
   const { items, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
 
   useEffect(() => {
@@ -128,26 +104,21 @@ function List({ filter, month, showBusiness }: { filter: VendorInvoiceFilter; mo
       </div>
     );
   }
-  if (items.length === 0 && !hasMore) {
+  const filtered = !!(month || filter.kind || filter.business || filter.module);
+  if (items.length === 0) {
     return (
       <div className={vendor.card}>
-        <strong>{month || filter.kind || filter.business ? "Nothing matches" : "No GST documents yet"}</strong>
+        <strong>{filtered ? "Nothing matches" : "No GST documents yet"}</strong>
         <p className={vendor.muted}>
-          {month || filter.kind || filter.business
-            ? "Try another month or type."
-            : "Ruxstar issues a GST invoice in your business's name for every paid order, and a credit note for every refund."}
+          {filtered ? "Try another month or type." : "Ruxstar issues a GST invoice in your business's name for every paid order, and a credit note for every refund."}
         </p>
       </div>
     );
   }
   return (
     <>
-      {items.length > 0 ? (
-        <InvoiceTable items={items} audience="vendor" caption={month ? `Documents from ${monthLabel(month)}` : "Your documents, newest first"} showBusiness={showBusiness} />
-      ) : (
-        <p className={vendor.muted}>{`Nothing from ${monthLabel(month)} in your newest ${MONTH_SCAN_PAGES * PAGE_SIZE} documents yet.`}</p>
-      )}
-      {error && items.length > 0 && (
+      <InvoiceTable items={items} audience="vendor" caption={month ? `Documents from ${monthLabel(month)}` : "Your documents, newest first"} showBusiness={showBusiness} />
+      {error && (
         <p className={vendor.error} role="alert">
           {formError(error).message}
         </p>
@@ -155,7 +126,7 @@ function List({ filter, month, showBusiness }: { filter: VendorInvoiceFilter; mo
       {hasMore && (
         <div className={styles.more}>
           <Button variant="secondary" loading={loadingMore} onClick={more}>
-            {items.length ? "Show more" : "Look further back"}
+            Show more
           </Button>
         </div>
       )}
@@ -170,6 +141,7 @@ export function VendorInvoicesScreen() {
   const [month, setMonth] = useState("");
   const [kind, setKind] = useState<InvoiceKind | "">("");
   const [business, setBusiness] = useState("");
+  const [module, setModule] = useState<InvoiceModule | "">("");
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -185,8 +157,12 @@ export function VendorInvoicesScreen() {
     };
   }, [onSignedOut]);
 
-  const filter = useMemo<VendorInvoiceFilter>(() => ({ ...(kind ? { kind } : {}), ...(business ? { business } : {}) }), [kind, business]);
+  const filter = useMemo<VendorInvoiceFilter>(
+    () => ({ ...(kind ? { kind } : {}), ...(business ? { business } : {}), ...(module ? { module } : {}), ...(month ? monthBounds(month) : {}) }),
+    [kind, business, module, month],
+  );
   const period = month ? { ...monthBounds(month), label: monthLabel(month) } : financialYearSoFar();
+  const modules = (Object.keys(MODULE_LABEL) as InvoiceModule[]).filter((m) => businesses.some((b) => b.module === m));
 
   const exportCsv = async () => {
     setExporting(true);
@@ -212,8 +188,24 @@ export function VendorInvoicesScreen() {
       <div className={styles.filters}>
         <Choice label="Month" value={month} onChange={setMonth} options={[{ value: "", label: "Any month" }, ...months.map((m) => ({ value: m, label: monthLabel(m) }))]} />
         <Choice label="Type" value={kind} onChange={setKind} options={KINDS} />
+        {modules.length > 1 && (
+          <Choice
+            label="Kind"
+            value={module}
+            onChange={(next) => {
+              setModule(next);
+              setBusiness("");
+            }}
+            options={[{ value: "", label: "Every kind" }, ...modules.map((m) => ({ value: m, label: MODULE_LABEL[m]! }))]}
+          />
+        )}
         {businesses.length > 1 && (
-          <Choice label="Business" value={business} onChange={setBusiness} options={[{ value: "", label: "Every business" }, ...businesses.map((b) => ({ value: b.id, label: b.name }))]} />
+          <Choice
+            label="Business"
+            value={business}
+            onChange={setBusiness}
+            options={[{ value: "", label: "Every business" }, ...businesses.filter((b) => !module || b.module === module).map((b) => ({ value: b.id, label: b.name }))]}
+          />
         )}
         <Button variant="secondary" icon={<Icon name="download" size={18} />} loading={exporting} onClick={() => void exportCsv()}>
           {`Export ${period.label} as CSV`}
@@ -225,7 +217,7 @@ export function VendorInvoicesScreen() {
           {exportError}
         </p>
       )}
-      <List key={`${month}|${kind}|${business}`} filter={filter} month={month} showBusiness={businesses.length > 1} />
+      <List key={`${month}|${kind}|${business}|${module}`} filter={filter} month={month} showBusiness={businesses.length > 1} />
     </div>
   );
 }

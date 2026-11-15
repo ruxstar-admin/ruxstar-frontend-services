@@ -271,7 +271,9 @@ function Details({
           {!team && events && editable && (
             <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team & gate keepers" subtitle="Invite people to scan tickets or help run events" />
           )}
-          {!team && b.pod && b.status === "live" && <Tile href={`/vendor/businesses/${id}/reviews`} icon="star" title="Reviews" subtitle={ratingLine(b.rating)} />}
+          {!team && (b.pod || events || coaching) && b.status === "live" && (
+            <Tile href={`/vendor/businesses/${id}/reviews`} icon="star" title="Reviews" subtitle={ratingLine(b.rating)} />
+          )}
           {!team && b.pod && (
             <Tile href={`/vendor/businesses/${id}/terms`} icon="receipt" title="Payment terms" subtitle="Commission, fees and when you're paid" />
           )}

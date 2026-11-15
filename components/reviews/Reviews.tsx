@@ -6,7 +6,9 @@ import { Button, Icon } from "@/components/ui";
 import { formError } from "@/lib/api/account";
 import {
   deleteReview,
+  moduleOf,
   myReview,
+  REPLY_FROM,
   REPORT_REASONS,
   reportReview,
   REVIEW_TEXT_MAX,
@@ -15,6 +17,7 @@ import {
   writeReview,
   type MyReview,
   type Review,
+  type ReviewModule,
   type ReviewReportReason,
 } from "@/lib/api/reviews";
 import type { Order } from "@/lib/api/orders";
@@ -70,10 +73,13 @@ export function TextAction({ children, muted, onClick }: { children: ReactNode; 
   );
 }
 
-/** One review: who, the stars, what they ordered, what they wrote and the shop's reply. Same as the app. */
-export function ReviewCard({ review, extra, children }: { review: Review; extra?: string; children?: ReactNode }) {
+/**
+ * One review: who, the stars, what they bought, what they wrote and the business's reply. Same as the app.
+ * `hideProduct` is for an event's or a course's own page, where what they bought is the page.
+ */
+export function ReviewCard({ review, extra, hideProduct, children }: { review: Review; extra?: string; hideProduct?: boolean; children?: ReactNode }) {
   const name = review.author?.name ?? "A customer";
-  const meta = [review.product, extra, `${ago(review.createdAt)}${review.editedAt ? " · edited" : ""}`].filter(Boolean).join(" · ");
+  const meta = [hideProduct ? null : review.product, extra, `${ago(review.createdAt)}${review.editedAt ? " · edited" : ""}`].filter(Boolean).join(" · ");
   return (
     <article className={styles.review}>
       <div className={styles.head}>
@@ -87,7 +93,7 @@ export function ReviewCard({ review, extra, children }: { review: Review; extra?
       {review.text && <p className={styles.text}>{review.text}</p>}
       {review.reply && (
         <div className={styles.reply}>
-          <span className={styles.replyLabel}>{`From the shop${review.reply.editedAt ? " · edited" : ""}`}</span>
+          <span className={styles.replyLabel}>{`${REPLY_FROM[moduleOf(review)]}${review.reply.editedAt ? " · edited" : ""}`}</span>
           <p className={styles.text}>{review.reply.text}</p>
         </div>
       )}
@@ -96,15 +102,30 @@ export function ReviewCard({ review, extra, children }: { review: Review; extra?
   );
 }
 
+/** What the rating card says, per kind of order. */
+export interface RateWords {
+  /** "Rate your order", "Rate this event". */
+  ask: string;
+  /** Under the ask: why it helps. */
+  askLine: string;
+  /** Over the form for a new review. */
+  writeTitle: string;
+  placeholder: string;
+}
+
 function WriteForm({
-  orderOf,
+  orderId,
+  module,
+  words,
   review,
   start,
   onSaved,
   onClose,
   onDelete,
 }: {
-  orderOf: Order;
+  orderId: string;
+  module: ReviewModule;
+  words: RateWords;
   review: MyReview | null;
   start: number;
   onSaved: (r: MyReview) => void;
@@ -120,7 +141,7 @@ function WriteForm({
     setSaving(true);
     setError(null);
     try {
-      onSaved(await writeReview(orderOf.id, { rating, text: text.trim() || null }));
+      onSaved(await writeReview(orderId, { rating, text: text.trim() || null }, module));
     } catch (err) {
       setError(formError(err).message);
     } finally {
@@ -130,7 +151,7 @@ function WriteForm({
 
   return (
     <div className={order.news}>
-      <strong>{review ? "Change your review" : `Rate ${orderOf.shop.name}`}</strong>
+      <strong>{review ? "Change your review" : words.writeTitle}</strong>
       <div className={styles.center}>
         <StarPicker value={rating} onChange={setRating} disabled={saving} />
         <span className={styles.muted}>{rating ? STAR_WORDS[rating] : "Pick the stars"}</span>
@@ -144,7 +165,7 @@ function WriteForm({
         value={text}
         onChange={(e) => setText(e.target.value)}
         maxLength={REVIEW_TEXT_MAX}
-        placeholder="Print quality, on time, how the shop was to deal with"
+        placeholder={words.placeholder}
       />
       <p className={order.faint}>{`${text.length}/${REVIEW_TEXT_MAX} · Your name and photo show with your review.`}</p>
       {error && (
@@ -169,25 +190,27 @@ function WriteForm({
   );
 }
 
-/** On a delivered order: "Rate your order" until it's reviewed, then just the stars given, changeable for 30 days after delivery. Same as the app. */
-export function RateOrder({ order: o }: { order: Order }) {
+/**
+ * "Rate …" while the order is open for a review and has none, then just the stars given, changeable and deletable
+ * until `until`. `open` comes from the order (`reviewUntil` for print, `canReview` for events and coaching).
+ */
+export function Rate({ orderId, module, open, until, words }: { orderId: string; module: ReviewModule; open: boolean; until: string | null; words: RateWords }) {
   const [review, setReview] = useState<MyReview | null | undefined>(undefined);
   const [writing, setWriting] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const open = o.reviewUntil !== null;
 
   useEffect(() => {
     let live = true;
-    myReview(o.id).then(
+    myReview(orderId, module).then(
       (r) => live && setReview(r),
       () => live && setReview(null),
     );
     return () => {
       live = false;
     };
-  }, [o.id]);
+  }, [orderId, module]);
 
   if (review === undefined) return null;
 
@@ -195,7 +218,7 @@ export function RateOrder({ order: o }: { order: Order }) {
     setBusy(true);
     setError(null);
     try {
-      await deleteReview(o.id);
+      await deleteReview(orderId, module);
       setReview(null);
       setDeleting(false);
     } catch (err) {
@@ -208,7 +231,9 @@ export function RateOrder({ order: o }: { order: Order }) {
   if (writing !== null) {
     return (
       <WriteForm
-        orderOf={o}
+        orderId={orderId}
+        module={module}
+        words={words}
         review={review}
         start={writing}
         onClose={() => setWriting(null)}
@@ -228,9 +253,10 @@ export function RateOrder({ order: o }: { order: Order }) {
     if (!open) return null;
     return (
       <div className={styles.ask}>
-        <strong>Rate your order</strong>
-        <p className={styles.muted}>{`How was ${o.shop.name}? It helps other customers choose.`}</p>
+        <strong>{words.ask}</strong>
+        <p className={styles.muted}>{words.askLine}</p>
         <StarPicker value={0} onChange={setWriting} />
+        {until && module !== "pod" && <span className={styles.faint}>{`You can review it until ${exact(until)}`}</span>}
       </div>
     );
   }
@@ -253,7 +279,7 @@ export function RateOrder({ order: o }: { order: Order }) {
         <span className={styles.ratedText}>
           <strong>{`You rated it ${review.rating} ${review.rating === 1 ? "star" : "stars"}`}</strong>
           <Stars value={review.rating} size={16} />
-          {open && <span className={styles.faint}>{`You can change it until ${exact(o.reviewUntil!)}`}</span>}
+          {open && until && <span className={styles.faint}>{`You can change it until ${exact(until)}`}</span>}
         </span>
         {open && !deleting && (
           <Button variant="secondary" icon={<Icon name="edit" size={16} />} onClick={() => setWriting(review.rating)}>
@@ -280,8 +306,26 @@ export function RateOrder({ order: o }: { order: Order }) {
   );
 }
 
+/** On a delivered order: "Rate your order" until it's reviewed, then just the stars given, changeable for 30 days after delivery. Same as the app. */
+export function RateOrder({ order: o }: { order: Order }) {
+  return (
+    <Rate
+      orderId={o.id}
+      module="pod"
+      open={o.reviewUntil !== null}
+      until={o.reviewUntil}
+      words={{
+        ask: "Rate your order",
+        askLine: `How was ${o.shop.name}? It helps other customers choose.`,
+        writeTitle: `Rate ${o.shop.name}`,
+        placeholder: "Print quality, on time, how the shop was to deal with",
+      }}
+    />
+  );
+}
+
 /** Report a review to Ruxstar: why, and a note if you like. The writer isn't told. */
-export function ReportForm({ reviewId, onDone, onClose }: { reviewId: string; onDone: () => void; onClose: () => void }) {
+export function ReportForm({ reviewId, module = "pod", onDone, onClose }: { reviewId: string; module?: ReviewModule; onDone: () => void; onClose: () => void }) {
   const [reason, setReason] = useState<ReviewReportReason>("spam");
   const [note, setNote] = useState("");
   const [sending, setSending] = useState(false);
@@ -291,7 +335,7 @@ export function ReportForm({ reviewId, onDone, onClose }: { reviewId: string; on
     setSending(true);
     setError(null);
     try {
-      await reportReview(reviewId, reason, note.trim() || undefined);
+      await reportReview(reviewId, reason, note.trim() || undefined, module);
       onDone();
     } catch (err) {
       setError(formError(err).message);

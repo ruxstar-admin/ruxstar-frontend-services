@@ -68,8 +68,8 @@ function List({ courseId, filter }: { courseId: string; filter: StudentsFilter }
   if (error && !items.length) return <Failed error={error} onRetry={reload} />;
   if (!items.length) {
     return (
-      <Empty title={filter.kind === "demo" ? "No demo requests" : filter.status === "cancelled" ? "Nobody has cancelled" : "No students yet"}>
-        <p>{filter.kind === "demo" ? "People who book a demo class show up here with their number, so you can follow up." : "They show up here as soon as they pay."}</p>
+      <Empty title={filter.status === "cancelled" ? "Nothing cancelled" : filter.kind === "demo" ? "No demo classes booked" : "No students yet"}>
+          {filter.status !== "cancelled" && <p>{filter.kind === "demo" ? "Demo bookings show up here." : "Students show up here once they’ve paid."}</p>}
       </Empty>
     );
   }

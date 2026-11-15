@@ -9,16 +9,18 @@ import { ButtonLink, Icon, Skeleton } from "@/components/ui";
 import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { myBusinesses, teamCoupons, updateTeamCoupon, updateVendorCoupon, vendorCoupons } from "@/lib/api/vendor";
+import { couponBusinesses } from "@/lib/coupons";
 import styles from "@/components/vendor/vendor.module.css";
 
 /**
- * A vendor's coupons for their print shops: what each takes off, how often it's used, and changing them. Same as the app.
+ * A vendor's coupons for their print shops, events and coaching businesses: what each takes off, how often it's used,
+ * and changing them. Same as the app.
  * With `placeId` it is one shop's coupons for someone on its team, who changes only the ones for that shop alone.
  */
 export function VendorCouponsScreen({ placeId }: { placeId?: string }) {
   const onSignedOut = useOnSignedOut();
   const businesses = useLoad(() => (placeId ? Promise.resolve([]) : myBusinesses()), placeId);
-  const shops = (businesses.data ?? []).filter((b) => b.module === "pod").map((b) => ({ id: b.id, name: b.name }));
+  const shops = couponBusinesses(businesses.data ?? []);
   const load = useCallback((cursor?: string) => (placeId ? teamCoupons(placeId, cursor) : vendorCoupons(cursor)), [placeId]);
   const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
   const sentinel = useNearEnd(more, hasMore && !error);
@@ -47,7 +49,9 @@ export function VendorCouponsScreen({ placeId }: { placeId?: string }) {
       {items.length === 0 ? (
         <div className={styles.card}>
           <h2 className={styles.cardHead}>No coupons yet</h2>
-          <p className={styles.muted}>{placeId ? "Make one to bring customers to this shop." : "Make one to bring customers to your print shops."}</p>
+          <p className={styles.muted}>
+            {placeId ? "Make one to bring customers to this shop." : "Make one to bring customers to your print shops, events and courses."}
+          </p>
         </div>
       ) : (
         <ul className={list.list}>
