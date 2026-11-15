@@ -72,7 +72,8 @@ export default function PrivacyPage() {
       <h2>Changes and contact</h2>
       <p>
         When this policy changes we update this page and its date, and tell you in the app or by email about any change that
-        matters. Questions or requests go to <a href="mailto:admin@ruxstar.com">admin@ruxstar.com</a>. The rules for using
+        matters. Questions or requests go to <a href="mailto:admin@ruxstar.com">admin@ruxstar.com</a>, and other ways to reach us
+        are on <Link href="/contact">Contact us</Link>. The rules for using
         Ruxstar are in the <Link href="/terms">Terms of Service</Link>.
       </p>
     </article>

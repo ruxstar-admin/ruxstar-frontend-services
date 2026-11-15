@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { StarMark } from "@/components/brand/StarMark";
 import { ButtonLink } from "@/components/ui";
@@ -41,7 +42,17 @@ export default async function ComingSoon() {
         </div>
       </section>
 
-      <footer className={styles.foot}>© 2026 Ruxstar</footer>
+      <footer className={styles.foot}>
+        <span>© 2026 Ruxstar</span>
+        <nav aria-label="Policies" className={styles.links}>
+          <Link href="/terms">Terms</Link>
+          <Link href="/privacy">Privacy</Link>
+          <Link href="/refunds">Refunds</Link>
+          <Link href="/shipping">Shipping</Link>
+          <Link href="/contact">Contact</Link>
+          <Link href="/delete-account">Delete account</Link>
+        </nav>
+      </footer>
     </main>
   );
 }

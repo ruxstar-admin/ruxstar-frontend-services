@@ -46,7 +46,8 @@ export default function TermsPage() {
       <h2>Businesses on Ruxstar</h2>
       <p>
         Print shops, event hosts, coaches and stays on Ruxstar are independent businesses. Each is responsible for what it
-        offers. The price, what is included and the refund rules are shown before you pay.
+        offers. The price, what is included and the refund rules are shown before you pay. How cancellations and refunds work is
+        in our <Link href="/refunds">Refund &amp; cancellation policy</Link>.
       </p>
 
       <h2>Ending your account</h2>
