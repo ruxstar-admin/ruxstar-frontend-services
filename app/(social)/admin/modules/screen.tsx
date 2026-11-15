@@ -387,6 +387,125 @@ function CoachingRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: Co
   );
 }
 
+type TurfRules = NonNullable<ModuleSettings["turfRules"]>;
+type TurfKey = Exclude<keyof TurfRules, "slotLengths">;
+type SlotLength = TurfRules["slotLengths"][number];
+const SLOT_LENGTHS: { value: SlotLength; label: string }[] = [
+  { value: 30, label: "30-minute slots" },
+  { value: 60, label: "1-hour slots" },
+  { value: 90, label: "1½-hour slots" },
+];
+
+/** The API's limits for each turf rule. */
+const TURF_RULES: { key: TurfKey; min: number; max: number; label: string; unit: string; hint: string }[] = [
+  { key: "refundFullHours", min: 0, max: 168, label: "New grounds: full refund from", unit: "hours", hint: "Hours before the slot. Owners can change it within the limits below." },
+  { key: "refundHalfHours", min: 0, max: 168, label: "New grounds: part refund from", unit: "hours", hint: "Until the full-refund hours. The same number means no part refund." },
+  { key: "halfPercent", min: 0, max: 100, label: "Part refund", unit: "%", hint: "The share refunded in the middle tier." },
+  { key: "minFullHours", min: 0, max: 168, label: "Owners’ full-refund hours, at least", unit: "hours", hint: "A ground outside new limits is held to them from its next booking." },
+  { key: "maxFullHours", min: 0, max: 168, label: "Owners’ full-refund hours, at most", unit: "hours", hint: "Bookings already made keep their rule." },
+  { key: "maxRepeatWeeks", min: 1, max: 52, label: "Weekly repeat, at most", unit: "weeks", hint: "The first week included, all paid at once." },
+  { key: "holdMinutes", min: 5, max: 60, label: "Slots held for checkout", unit: "minutes", hint: "Unpaid slots free up after this." },
+  { key: "maxSlots", min: 1, max: 48, label: "Back-to-back slots in one booking", unit: "", hint: "The most a player can pick on one court and day." },
+  { key: "bookAheadDays", min: 1, max: 180, label: "Players can book ahead", unit: "days", hint: "How far ahead the first slot can be." },
+  { key: "maxGrounds", min: 1, max: 100, label: "Grounds per business", unit: "", hint: "Drafts count too." },
+  { key: "maxCourts", min: 1, max: 100, label: "Courts per ground", unit: "", hint: "Paused courts count too." },
+  { key: "maxAddOns", min: 0, max: 30, label: "Add-ons per court", unit: "", hint: "0 turns add-ons off for new changes." },
+];
+
+const turfText = (rules: TurfRules) => Object.fromEntries(TURF_RULES.map((f) => [f.key, String(rules[f.key])])) as Record<TurfKey, string>;
+const turfFact = (f: (typeof TURF_RULES)[number], value: number) => (f.unit === "%" ? `${value}%` : plural(value, f.unit));
+
+/** Sports and turf only: refund defaults and limits, weekly repeats, the checkout hold, slot lengths and limits per business. Same as the app. */
+function TurfRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: TurfRules; onSaved: (m: ModuleSettings) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const [text, setText] = useState(() => turfText(rules));
+  const [lengths, setLengths] = useState<SlotLength[]>(() => rules.slotLengths);
+  const [busy, setBusy] = useState(false);
+
+  const typed = Object.fromEntries(TURF_RULES.map((f) => [f.key, wholeOf(text[f.key])])) as Record<TurfKey, number>;
+  const errors = Object.fromEntries(
+    TURF_RULES.map((f) => [f.key, typed[f.key] >= f.min && typed[f.key] <= f.max ? undefined : `Enter a whole number from ${f.min} to ${f.max.toLocaleString("en-IN")}`]),
+  ) as Record<TurfKey, string | undefined>;
+  if (!errors.refundHalfHours && !errors.refundFullHours && typed.refundHalfHours > typed.refundFullHours) errors.refundHalfHours = "No more than the full-refund hours";
+  if (!errors.maxFullHours && !errors.minFullHours && typed.maxFullHours < typed.minFullHours) errors.maxFullHours = "At least the lowest full-refund hours";
+  const invalid = TURF_RULES.some((f) => errors[f.key]) || lengths.length === 0;
+  const changes = Object.fromEntries(TURF_RULES.filter((f) => typed[f.key] !== rules[f.key]).map((f) => [f.key, typed[f.key]])) as Partial<TurfRules>;
+  const sortedLengths = [...lengths].sort((a, b) => a - b);
+  if (sortedLengths.join() !== [...rules.slotLengths].sort((a, b) => a - b).join()) changes.slotLengths = sortedLengths;
+  const changed = Object.keys(changes).length > 0;
+
+  async function save() {
+    setBusy(true);
+    try {
+      const done = await updateModule(m.module, { turfRules: changes });
+      onSaved(done);
+      if (done.turfRules) {
+        setText(turfText(done.turfRules));
+        setLengths(done.turfRules.slotLengths);
+      }
+      toast("Turf rules saved.", "success");
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <div className={styles.group}>
+        <h3 className={styles.label}>Sports and turf rules</h3>
+        <p className={styles.muted}>Every ground follows these. Bookings already made keep the refund rule they were made with.</p>
+      </div>
+      {canManage ? (
+        <div className={styles.group}>
+          {TURF_RULES.map((f) => (
+            <Input
+              key={f.key}
+              label={f.label}
+              inputMode="numeric"
+              value={text[f.key]}
+              onChange={(e) => whole((v) => setText((all) => ({ ...all, [f.key]: v })))(e.target.value)}
+              suffix={f.unit || undefined}
+              hint={errors[f.key] ? undefined : f.hint}
+              error={errors[f.key]}
+              maxLength={3}
+            />
+          ))}
+          <div className={styles.group}>
+            <span className={styles.label}>Slot lengths courts can use</span>
+            {SLOT_LENGTHS.map((l) => (
+              <Switch
+                key={l.value}
+                checked={lengths.includes(l.value)}
+                onChange={(on) => setLengths((all) => (on ? [...all, l.value] : all.filter((x) => x !== l.value)))}
+                description={lengths.length === 1 && lengths.includes(l.value) ? "Keep at least one" : undefined}
+              >
+                {l.label}
+              </Switch>
+            ))}
+            <p className={styles.muted}>Courts already using a length you turn off keep it until their owner changes it.</p>
+          </div>
+          <div>
+            <Button variant="secondary" disabled={invalid || !changed} loading={busy} onClick={() => void save()}>
+              Save turf rules
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <dl className={styles.facts}>
+          {TURF_RULES.map((f) => (
+            <Fact key={f.key} label={f.label} value={turfFact(f, rules[f.key])} />
+          ))}
+          <Fact label="Slot lengths" value={SLOT_LENGTHS.filter((l) => rules.slotLengths.includes(l.value)).map((l) => l.label).join(", ")} />
+        </dl>
+      )}
+    </>
+  );
+}
+
 function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
@@ -526,6 +645,7 @@ function Module({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings
       {m.delivery && <DeliveryRates m={m} delivery={m.delivery} onSaved={onSaved} />}
       {m.eventRules && <EventRulesForm m={m} rules={m.eventRules} onSaved={onSaved} />}
       {m.coachingRules && <CoachingRulesForm m={m} rules={m.coachingRules} onSaved={onSaved} />}
+      {m.turfRules && <TurfRulesForm m={m} rules={m.turfRules} onSaved={onSaved} />}
     </Card>
   );
 }

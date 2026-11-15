@@ -40,6 +40,8 @@ const ICONS: Record<Notification["type"], IconName> = {
   "event.updated": "ticket",
   "coaching.enrolled": "book",
   "coaching.updated": "book",
+  "turf.booked": "ball",
+  "turf.updated": "ball",
 };
 
 function hrefOf(link: Notification["link"]) {
@@ -83,6 +85,12 @@ function hrefOf(link: Notification["link"]) {
       return `/classes/${link.id}`;
     case "vendor_course":
       return `/vendor/courses/${link.id}`;
+    case "turf_ground":
+      return `/grounds/${link.id}`;
+    case "turf_order":
+      return `/bookings/${link.id}`;
+    case "vendor_ground":
+      return `/board/${link.id}`;
     default:
       return `/p/${link.id}`;
   }

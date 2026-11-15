@@ -187,8 +187,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -290,8 +290,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -381,7 +381,7 @@ export interface paths {
                     to?: string;
                     /** @description MongoDB ObjectId as hex */
                     orderId?: string;
-                    /** @description turf and ecommerce have defaults ready for when they open */
+                    /** @description ecommerce has defaults ready for when it opens */
                     module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                 };
                 header?: never;
@@ -410,10 +410,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description turf and ecommerce have defaults ready for when they open */
+                                /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -595,10 +595,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description turf and ecommerce have defaults ready for when they open */
+                                /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -7203,7 +7203,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7318,7 +7318,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7426,7 +7426,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7537,7 +7537,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7689,7 +7689,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7876,7 +7876,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -8567,12 +8567,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated" | "coaching.enrolled" | "coaching.updated";
+                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated" | "coaching.enrolled" | "coaching.updated" | "turf.booked" | "turf.updated";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches; `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches, `turf_ground` a ground's page, `turf_order` your turf booking, `vendor_ground` a ground's board for its owner or team; `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch" | "turf_ground" | "turf_order" | "vendor_ground";
                                     id: string;
                                 };
                                 read: boolean;
@@ -8974,7 +8974,7 @@ export interface paths {
                                 amount: number;
                                 /** Format: date-time */
                                 at: string;
-                                module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
                                 /** @description Set on order lines */
                                 order: {
                                     /** @description MongoDB ObjectId as hex */
@@ -9227,7 +9227,7 @@ export interface paths {
                     to?: string;
                     /** @description MongoDB ObjectId as hex */
                     orderId?: string;
-                    /** @description turf and ecommerce have defaults ready for when they open */
+                    /** @description ecommerce has defaults ready for when it opens */
                     module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                 };
                 header?: never;
@@ -9256,10 +9256,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description turf and ecommerce have defaults ready for when they open */
+                                /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -9505,10 +9505,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description turf and ecommerce have defaults ready for when they open */
+                                /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -11399,7 +11399,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -11486,7 +11486,7 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Your print shops, events and coaching businesses it works at */
+                        /** @description Your print shops, events, coaching and turf businesses it works at */
                         businessIds: string[];
                     };
                 };
@@ -11516,7 +11516,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -11617,7 +11617,7 @@ export interface paths {
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
                         active?: boolean;
-                        /** @description Your print shops, events and coaching businesses it works at */
+                        /** @description Your print shops, events, coaching and turf businesses it works at */
                         businessIds?: string[];
                     };
                 };
@@ -11647,7 +11647,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -11744,7 +11744,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -11761,11 +11761,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -11818,7 +11818,7 @@ export interface paths {
                     "application/json": {
                         /** @description Their Ruxstar username, without the @ */
                         username: string;
-                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                         pay?: {
                             /** @description In paise, at least ₹1 */
                             amount: number;
@@ -11850,7 +11850,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -11983,7 +11983,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                         /** @description Only while they're invited: the offer can't change once they accept */
                         pay?: {
                             /** @description In paise, at least ₹1 */
@@ -12016,7 +12016,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -15422,6 +15422,1942 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/vendor/businesses/{id}/grounds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A sports business's grounds, oldest first, with their courts */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Make a ground as a draft
+         * @description Add photos and courts next, then publish it. Refund hours default to Ruxstar's and must be within GET /v1/turf/rules' limits.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        description?: string | null;
+                        venue: {
+                            address: string;
+                            city: string;
+                            pincode?: string | null;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        };
+                        amenities?: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                        /** @description When customers get money back for cancelling */
+                        refunds?: {
+                            /** @description Full refund this many hours or more before the slot. Within GET /v1/turf/rules' limits */
+                            fullHours: number;
+                            /** @description The partial refund (the rules' `halfPercent`) from this many hours until `fullHours`. At most `fullHours`; equal means none */
+                            halfHours: number;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/grounds/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of your grounds, with its courts and what it needs to publish */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a draft ground, with its courts and photos
+         * @description Published grounds stay; pause their courts instead.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Change a ground's details, amenities or refund hours
+         * @description New refund hours apply to bookings made from now; earlier ones keep theirs.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        description?: string | null;
+                        venue?: {
+                            address: string;
+                            city: string;
+                            pincode?: string | null;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        };
+                        amenities?: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                        /** @description When customers get money back for cancelling */
+                        refunds?: {
+                            /** @description Full refund this many hours or more before the slot. Within GET /v1/turf/rules' limits */
+                            fullHours: number;
+                            /** @description The partial refund (the rules' `halfPercent`) from this many hours until `fullHours`. At most `fullHours`; equal means none */
+                            halfHours: number;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/vendor/grounds/{id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a photo to the ground
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. Up to 8; the first is the cover.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/grounds/{id}/photos/{photoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a photo from the ground
+         * @description A published ground keeps at least one.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    photoId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/grounds/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Put a draft ground up for bookings
+         * @description Needs the business published, a photo, and a court open for bookings with opening hours. Everything missing comes back at once.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/grounds/{id}/courts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a court to the ground
+         * @description Its slots run from opening every `slotMinutes` while a whole slot fits before closing. Sports come from GET /v1/turf/sports.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        sports: string[];
+                        /** @description Minutes. One of the rules' `slotLengths` */
+                        slotMinutes: 30 | 60 | 90;
+                        /** @description One entry per open weekday; leave a day out to close it */
+                        hours: {
+                            /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                            day: number;
+                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                            open: string;
+                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                            close: string;
+                        }[];
+                        prices: {
+                            /** @description Paise per slot, at least ₹1 */
+                            base: number;
+                            /** @description Saturday and Sunday; null for the base price */
+                            weekend: number | null;
+                            /** @description A slot starting in a window costs its price, before the weekend price */
+                            peak: {
+                                days: number[];
+                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                start: string;
+                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                end: string;
+                                /** @description Paise per slot, at least ₹1 */
+                                price: number;
+                            }[];
+                        };
+                        addOns?: {
+                            /** @description Keep an add-on's id when changing it; leave out for a new one */
+                            id?: string;
+                            name: string;
+                            price: number;
+                            /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                            per: "booking" | "slot";
+                        }[];
+                        /** @description paused: shown but not bookable */
+                        status?: "live" | "paused";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/courts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a court
+         * @description Not while it has paid or unpaid bookings still to come: cancel them from the desk first. Its future blocks go with it.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Change a court: name, sports, hours, slot length, prices, add-ons, or pause it
+         * @description New hours or slot length must keep every booked and blocked slot still to come; the slot that wouldn't fit comes back as a CONFLICT. Bookings already made keep their prices. Pausing stops new bookings; existing ones stay.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        sports?: string[];
+                        /** @description Minutes. One of the rules' `slotLengths` */
+                        slotMinutes?: 30 | 60 | 90;
+                        /** @description One entry per open weekday; leave a day out to close it */
+                        hours?: {
+                            /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                            day: number;
+                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                            open: string;
+                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                            close: string;
+                        }[];
+                        prices?: {
+                            /** @description Paise per slot, at least ₹1 */
+                            base: number;
+                            /** @description Saturday and Sunday; null for the base price */
+                            weekend: number | null;
+                            /** @description A slot starting in a window costs its price, before the weekend price */
+                            peak: {
+                                days: number[];
+                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                start: string;
+                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                end: string;
+                                /** @description Paise per slot, at least ₹1 */
+                                price: number;
+                            }[];
+                        };
+                        addOns?: {
+                            /** @description Keep an add-on's id when changing it; leave out for a new one */
+                            id?: string;
+                            name: string;
+                            price: number;
+                            /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                            per: "booking" | "slot";
+                        }[];
+                        /** @description paused: shown but not bookable */
+                        status?: "live" | "paused";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/v1/vendor/businesses/{id}/activity": {
         parameters: {
             query?: never;
@@ -15571,11 +17507,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -15682,11 +17618,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -15767,11 +17703,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -15839,8 +17775,8 @@ export interface paths {
                         "application/json": {
                             data: {
                                 categories: {
-                                    /** @description pod is print on demand */
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     label: string;
                                     description: string;
                                     live: boolean;
@@ -15853,7 +17789,7 @@ export interface paths {
                                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                          * @enum {unknown}
                                          */
-                                        id: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                        id: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                         label: string;
                                         description: string;
                                         examples: string;
@@ -15954,13 +17890,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -16101,13 +18037,13 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description pod is print on demand */
-                        module: "pod" | "events" | "coaching" | "stays";
+                        /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                        module: "pod" | "events" | "coaching" | "stays" | "turf";
                         /**
                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                          * @enum {unknown}
                          */
-                        type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                        type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                         name: string;
                         /** @description 10-digit mobile number */
                         phone: string;
@@ -16141,13 +18077,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -16308,13 +18244,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -16546,13 +18482,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -16762,13 +18698,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -16930,13 +18866,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -17104,13 +19040,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -17275,13 +19211,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -17447,13 +19383,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -17619,13 +19555,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -19582,11 +21518,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -19676,11 +21612,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -19831,11 +21767,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -19993,7 +21929,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -20094,7 +22030,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -21053,11 +22989,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -21147,11 +23083,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -21302,11 +23238,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -24322,11 +26258,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -24416,11 +26352,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -24571,11 +26507,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -26855,6 +28791,3368 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/turf/desk/grounds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Grounds you run: your own, and those whose team gave you turf permissions
+         * @description Team members need to be verified to see them.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                status: "draft" | "live" | "removed";
+                                courts: number;
+                                owner: boolean;
+                                /** @description The owner has every one */
+                                permissions: string[];
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/desk/grounds/{id}/board": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The day's board: every court's slots, booked, held, blocked or free, with who booked
+         * @description Today in India when `date` is left out. Team members need turf.bookings.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description YYYY-MM-DD, in India */
+                    date?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                /** @description YYYY-MM-DD, in India */
+                                date: string;
+                                courts: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    slotMinutes: number;
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                    open: boolean;
+                                    slots: {
+                                        /** Format: date-time */
+                                        startAt: string;
+                                        /** Format: date-time */
+                                        endAt: string;
+                                        start: string;
+                                        end: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        peak: boolean;
+                                        past: boolean;
+                                        /** @description held: someone is paying for it now */
+                                        state: "free" | "held" | "booked" | "blocked";
+                                        booking: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            orderNo: number;
+                                            /** @description Which date of the booking */
+                                            n: number;
+                                            weeks: number;
+                                            customerName: string;
+                                            customerPhone: string | null;
+                                            status: "awaiting_payment" | "confirmed" | "cancelled";
+                                            arrival: ("arrived" | "no_show") | null;
+                                            /** Format: date-time */
+                                            startAt: string;
+                                            /** Format: date-time */
+                                            endAt: string;
+                                        } | null;
+                                        block: {
+                                            note: string | null;
+                                            by: string | null;
+                                        } | null;
+                                    }[];
+                                }[];
+                                totals: {
+                                    booked: number;
+                                    blocked: number;
+                                    free: number;
+                                    arrived: number;
+                                    noShow: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/desk/slots/block": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Block free slots of a court, with a note, so nobody can book them
+         * @description All or none: a slot that's booked, held or blocked already stops the lot with a CONFLICT naming it. Team members need turf.block.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description MongoDB ObjectId as hex */
+                        courtId: string;
+                        /** @description Slots of the court, by their start */
+                        startAts: string[];
+                        /** @description For example "Maintenance" or "Booked by phone" */
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Slots changed */
+                                done: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/desk/slots/unblock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unblock slots of a court
+         * @description Slots that aren't blocked are left as they are; `done` counts the ones freed. Team members need turf.block.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description MongoDB ObjectId as hex */
+                        courtId: string;
+                        /** @description Slots of the court, by their start */
+                        startAts: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Slots changed */
+                                done: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/desk/courts/{id}/prices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Change a court's prices, peak windows and add-ons
+         * @description Bookings already made keep what they paid. Team members need turf.prices.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        prices?: {
+                            /** @description Paise per slot, at least ₹1 */
+                            base: number;
+                            /** @description Saturday and Sunday; null for the base price */
+                            weekend: number | null;
+                            /** @description A slot starting in a window costs its price, before the weekend price */
+                            peak: {
+                                days: number[];
+                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                start: string;
+                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                end: string;
+                                /** @description Paise per slot, at least ₹1 */
+                                price: number;
+                            }[];
+                        };
+                        addOns?: {
+                            /** @description Keep an add-on's id when changing it; leave out for a new one */
+                            id?: string;
+                            name: string;
+                            price: number;
+                            /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                            per: "booking" | "slot";
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What it needs before it can be published */
+                                missing: string[];
+                                /** @description Paid bookings with a date still to come */
+                                upcoming: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/desk/grounds/{id}/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A ground's bookings: upcoming ones by first date, or past and all newest first
+         * @description Team members need turf.bookings.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description upcoming: paid, with a date still to come */
+                    view?: "upcoming" | "past" | "all";
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                court: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                sport: {
+                                    key: string;
+                                    name: string;
+                                } | null;
+                                slotMinutes: number;
+                                addOns: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                    per: "booking" | "slot";
+                                    quantity: number;
+                                }[];
+                                weeks: number;
+                                occurrences: {
+                                    /** @description 1 for the first date, 2 the week after, … */
+                                    n: number;
+                                    /** Format: date-time */
+                                    startAt: string;
+                                    /** Format: date-time */
+                                    endAt: string;
+                                    slots: {
+                                        /** Format: date-time */
+                                        startAt: string;
+                                        /** Format: date-time */
+                                        endAt: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        peak: boolean;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    paid: number;
+                                    status: "booked" | "cancelled";
+                                    /** @description Cancelled: what came back */
+                                    refund: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                    cancelledBy: ("customer" | "ground" | "ruxstar") | null;
+                                    cancelReason: string | null;
+                                    arrival: ("arrived" | "no_show") | null;
+                                    canCancel: boolean;
+                                    /** @description What cancelling it now gives back */
+                                    refundIfCancelled: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refundRule: string;
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                reason: string | null;
+                                /** @description Unpaid, the slots go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Some date hasn't ended */
+                                canCancel: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/desk/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One booking at your ground, with the customer's phone
+         * @description Team members need turf.bookings.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                court: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                sport: {
+                                    key: string;
+                                    name: string;
+                                } | null;
+                                slotMinutes: number;
+                                addOns: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                    per: "booking" | "slot";
+                                    quantity: number;
+                                }[];
+                                weeks: number;
+                                occurrences: {
+                                    /** @description 1 for the first date, 2 the week after, … */
+                                    n: number;
+                                    /** Format: date-time */
+                                    startAt: string;
+                                    /** Format: date-time */
+                                    endAt: string;
+                                    slots: {
+                                        /** Format: date-time */
+                                        startAt: string;
+                                        /** Format: date-time */
+                                        endAt: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        peak: boolean;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    paid: number;
+                                    status: "booked" | "cancelled";
+                                    /** @description Cancelled: what came back */
+                                    refund: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                    cancelledBy: ("customer" | "ground" | "ruxstar") | null;
+                                    cancelReason: string | null;
+                                    arrival: ("arrived" | "no_show") | null;
+                                    canCancel: boolean;
+                                    /** @description What cancelling it now gives back */
+                                    refundIfCancelled: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refundRule: string;
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                reason: string | null;
+                                /** @description Unpaid, the slots go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Some date hasn't ended */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/desk/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a booking, or some of its dates, refunding the customer in full
+         * @description The platform fee comes back too, and the slots are freed. Dates that have ended can't be cancelled. Team members need turf.cancel.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Dates to cancel by their `n`; leave out for every one still to come */
+                        occurrences?: number[];
+                        /** @description The customer is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                court: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                sport: {
+                                    key: string;
+                                    name: string;
+                                } | null;
+                                slotMinutes: number;
+                                addOns: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                    per: "booking" | "slot";
+                                    quantity: number;
+                                }[];
+                                weeks: number;
+                                occurrences: {
+                                    /** @description 1 for the first date, 2 the week after, … */
+                                    n: number;
+                                    /** Format: date-time */
+                                    startAt: string;
+                                    /** Format: date-time */
+                                    endAt: string;
+                                    slots: {
+                                        /** Format: date-time */
+                                        startAt: string;
+                                        /** Format: date-time */
+                                        endAt: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        peak: boolean;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    paid: number;
+                                    status: "booked" | "cancelled";
+                                    /** @description Cancelled: what came back */
+                                    refund: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                    cancelledBy: ("customer" | "ground" | "ruxstar") | null;
+                                    cancelReason: string | null;
+                                    arrival: ("arrived" | "no_show") | null;
+                                    canCancel: boolean;
+                                    /** @description What cancelling it now gives back */
+                                    refundIfCancelled: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refundRule: string;
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                reason: string | null;
+                                /** @description Unpaid, the slots go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Some date hasn't ended */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/desk/orders/{id}/arrival": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark whether the customer came for one date
+         * @description Arrived from 30 minutes before the slot; no-show from its start; until a day after it ends. Marking again changes it. Team members need turf.arrivals.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        n: number;
+                        status: "arrived" | "no_show";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                court: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                sport: {
+                                    key: string;
+                                    name: string;
+                                } | null;
+                                slotMinutes: number;
+                                addOns: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                    per: "booking" | "slot";
+                                    quantity: number;
+                                }[];
+                                weeks: number;
+                                occurrences: {
+                                    /** @description 1 for the first date, 2 the week after, … */
+                                    n: number;
+                                    /** Format: date-time */
+                                    startAt: string;
+                                    /** Format: date-time */
+                                    endAt: string;
+                                    slots: {
+                                        /** Format: date-time */
+                                        startAt: string;
+                                        /** Format: date-time */
+                                        endAt: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        peak: boolean;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    paid: number;
+                                    status: "booked" | "cancelled";
+                                    /** @description Cancelled: what came back */
+                                    refund: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                    cancelledBy: ("customer" | "ground" | "ruxstar") | null;
+                                    cancelReason: string | null;
+                                    arrival: ("arrived" | "no_show") | null;
+                                    canCancel: boolean;
+                                    /** @description What cancelling it now gives back */
+                                    refundIfCancelled: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refundRule: string;
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                reason: string | null;
+                                /** @description Unpaid, the slots go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Amount in paise */
+                                vendorShare: number;
+                                /** @description Some date hasn't ended */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/orders/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your review of one of your bookings
+         * @description Null until you review it. One Ruxstar removed comes back with its reason; it can't be changed or written again.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Review a booking, or change your review
+         * @description Once a date of it has been played (it ended, or the ground marked you arrived), until 30 days after its last date; paid dates not cancelled. 1 to 5 stars and, if you like, a few words; one review per booking. Leaving out `text` keeps what you wrote; null or blank clears it. The business is told about a new review.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        rating: number;
+                        text?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Delete your review of a booking
+         * @description You can review the booking again while it is still open for reviews.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A ground's reviews, newest first
+         * @description No sign-in needed. The business's rating covers all its reviews and is on the detail.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/reviews/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report a review to Ruxstar
+         * @description One open report per review you report; reporting it again while it is open changes nothing. The writer isn't told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: "spam" | "fake" | "abuse" | "other";
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ruxstar's rules for sports grounds: refund limits, repeat weeks, hold time, slot lengths and fees
+         * @description No sign-in needed.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description New grounds' default: a full refund when the customer cancels this many hours or more before the slot */
+                                refundFullHours: number;
+                                /** @description New grounds' default: `halfPercent` back from this many hours until the full-refund hours. At most `refundFullHours` */
+                                refundHalfHours: number;
+                                /** @description The share refunded in the middle tier */
+                                halfPercent: number;
+                                /** @description Owners pick their full-refund hours between this and `maxFullHours` */
+                                minFullHours: number;
+                                maxFullHours: number;
+                                /** @description A weekly repeat books this many weeks at most, the first included */
+                                maxRepeatWeeks: number;
+                                /** @description Unpaid slots are held this long for the checkout */
+                                holdMinutes: number;
+                                /** @description Slot lengths, in minutes, a court can use */
+                                slotLengths: (30 | 60 | 90)[];
+                                /** @description Back-to-back slots in one booking */
+                                maxSlots: number;
+                                /** @description How far ahead the first slot can be */
+                                bookAheadDays: number;
+                                /** @description Grounds per business */
+                                maxGrounds: number;
+                                /** @description Courts per ground */
+                                maxCourts: number;
+                                /** @description Add-ons per court */
+                                maxAddOns: number;
+                                commissionBps: number;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/sports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The sports grounds can offer, for filters and court setup
+         * @description No sign-in needed. Ruxstar keeps the list.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Grounds taking bookings, newest first
+         * @description No sign-in needed. Filter by city, sport (a key from /sports) or words in the name. Empty while Ruxstar has turf switched off.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    city?: string;
+                    /** @description A key from GET /v1/turf/sports */
+                    sport?: string;
+                    /** @description Words in the ground's or business's name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your turf bookings: current ones by first date, or past ones newest first
+         * @description Current: unpaid, or paid with a date still to come. Past: everything else.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description current: a date still to come, or unpaid */
+                    view?: "current" | "past";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                court: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                sport: {
+                                    key: string;
+                                    name: string;
+                                } | null;
+                                slotMinutes: number;
+                                addOns: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                    per: "booking" | "slot";
+                                    quantity: number;
+                                }[];
+                                weeks: number;
+                                occurrences: {
+                                    /** @description 1 for the first date, 2 the week after, … */
+                                    n: number;
+                                    /** Format: date-time */
+                                    startAt: string;
+                                    /** Format: date-time */
+                                    endAt: string;
+                                    slots: {
+                                        /** Format: date-time */
+                                        startAt: string;
+                                        /** Format: date-time */
+                                        endAt: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        peak: boolean;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    paid: number;
+                                    status: "booked" | "cancelled";
+                                    /** @description Cancelled: what came back */
+                                    refund: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                    cancelledBy: ("customer" | "ground" | "ruxstar") | null;
+                                    cancelReason: string | null;
+                                    arrival: ("arrived" | "no_show") | null;
+                                    canCancel: boolean;
+                                    /** @description What cancelling it now gives back */
+                                    refundIfCancelled: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refundRule: string;
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                reason: string | null;
+                                /** @description Unpaid, the slots go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Some date can be cancelled now, or it is unpaid */
+                                canCancel: boolean;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One booking: its dates and slots, add-ons, what cancelling gives back, refunds and invoices
+         * @description While it waits for payment, Cashfree is asked whether it was paid.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                court: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                sport: {
+                                    key: string;
+                                    name: string;
+                                } | null;
+                                slotMinutes: number;
+                                addOns: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                    per: "booking" | "slot";
+                                    quantity: number;
+                                }[];
+                                weeks: number;
+                                occurrences: {
+                                    /** @description 1 for the first date, 2 the week after, … */
+                                    n: number;
+                                    /** Format: date-time */
+                                    startAt: string;
+                                    /** Format: date-time */
+                                    endAt: string;
+                                    slots: {
+                                        /** Format: date-time */
+                                        startAt: string;
+                                        /** Format: date-time */
+                                        endAt: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        peak: boolean;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    paid: number;
+                                    status: "booked" | "cancelled";
+                                    /** @description Cancelled: what came back */
+                                    refund: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                    cancelledBy: ("customer" | "ground" | "ruxstar") | null;
+                                    cancelReason: string | null;
+                                    arrival: ("arrived" | "no_show") | null;
+                                    canCancel: boolean;
+                                    /** @description What cancelling it now gives back */
+                                    refundIfCancelled: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refundRule: string;
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                reason: string | null;
+                                /** @description Unpaid, the slots go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Some date can be cancelled now, or it is unpaid */
+                                canCancel: boolean;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/orders/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A fresh checkout link for a booking waiting for payment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a booking, or some of its dates
+         * @description Unpaid: the slots go back. Paid: each date is refunded by the booking's tiers, platform fee included (see `refundIfCancelled` on each date). Dates that have started can't be cancelled. Leave out `occurrences` for every date still to come.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Dates to cancel by their `n`; leave out for every one still to come */
+                        occurrences?: number[];
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                status: "awaiting_payment" | "confirmed" | "cancelled";
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    address: string;
+                                    city: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Taken down by Ruxstar */
+                                    removed: boolean;
+                                };
+                                court: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                sport: {
+                                    key: string;
+                                    name: string;
+                                } | null;
+                                slotMinutes: number;
+                                addOns: {
+                                    id: string;
+                                    name: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                    per: "booking" | "slot";
+                                    quantity: number;
+                                }[];
+                                weeks: number;
+                                occurrences: {
+                                    /** @description 1 for the first date, 2 the week after, … */
+                                    n: number;
+                                    /** Format: date-time */
+                                    startAt: string;
+                                    /** Format: date-time */
+                                    endAt: string;
+                                    slots: {
+                                        /** Format: date-time */
+                                        startAt: string;
+                                        /** Format: date-time */
+                                        endAt: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        peak: boolean;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    paid: number;
+                                    status: "booked" | "cancelled";
+                                    /** @description Cancelled: what came back */
+                                    refund: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                    cancelledBy: ("customer" | "ground" | "ruxstar") | null;
+                                    cancelReason: string | null;
+                                    arrival: ("arrived" | "no_show") | null;
+                                    canCancel: boolean;
+                                    /** @description What cancelling it now gives back */
+                                    refundIfCancelled: {
+                                        percent: number;
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                    } | null;
+                                }[];
+                                /** Format: date-time */
+                                firstAt: string;
+                                /** Format: date-time */
+                                lastEndsAt: string;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                refundRule: string;
+                                refunds: {
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                reason: string | null;
+                                /** @description Unpaid, the slots go back after this */
+                                payBy: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Some date can be cancelled now, or it is unpaid */
+                                canCancel: boolean;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/courts/{id}/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A court's slots for one day: free, booked or blocked, with each slot's price
+         * @description No sign-in needed. Today in India when `date` is left out. Slots that have started aren't listed. Peak slots have `peak` true.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description YYYY-MM-DD, in India */
+                    date?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                court: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    slotMinutes: number;
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                };
+                                /** @description YYYY-MM-DD, in India */
+                                date: string;
+                                /** @description False when the court is closed that day */
+                                open: boolean;
+                                /** @description Within how far ahead bookings go, and the court and ground are taking bookings */
+                                bookable: boolean;
+                                /** @description Slots that haven't started, in order */
+                                slots: {
+                                    /** Format: date-time */
+                                    startAt: string;
+                                    /** Format: date-time */
+                                    endAt: string;
+                                    /** @description HH:MM in India */
+                                    start: string;
+                                    end: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    peak: boolean;
+                                    /** @description booked includes slots held for someone's checkout */
+                                    state: "free" | "booked" | "blocked";
+                                }[];
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/courts/{id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Coupons that work on these slots, best first
+         * @description Send the slots, add-ons and weeks you're about to book; with `code`, that code is checked too.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Back-to-back slots of the court on one day, by their start */
+                        startAts: string[];
+                        addOns?: {
+                            id: string;
+                            quantity: number;
+                        }[];
+                        /**
+                         * @description Book the same slots this many weeks running, the first included; all paid now
+                         * @default 1
+                         */
+                        weeks?: number;
+                        /** @description Check this code too */
+                        code?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                offers: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    label: string;
+                                    terms: string | null;
+                                    /** @description Paise it takes off this order; 0 when it doesn't apply yet */
+                                    discount: number;
+                                    problem: string | null;
+                                }[];
+                                /** @description With `code` */
+                                checked: {
+                                    code: string;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    problem: string | null;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/courts/{id}/book": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Book back-to-back slots of a court, with add-ons, once or every week
+         * @description Paid in full up front; a weekly repeat pays for every week now, and every date must be free. Returns a checkout link; the slots are held for the rules' `holdMinutes` while you pay. Someone else holding or booking one of the slots gets a CONFLICT naming it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Back-to-back slots of the court on one day, by their start */
+                        startAts: string[];
+                        /** @description A key from GET /v1/turf/sports */
+                        sport?: string;
+                        addOns?: {
+                            id: string;
+                            quantity: number;
+                        }[];
+                        /**
+                         * @description Book the same slots this many weeks running, the first included; all paid now
+                         * @default 1
+                         */
+                        weeks?: number;
+                        coupon?: string;
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                booking: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    status: "awaiting_payment" | "confirmed" | "cancelled";
+                                    ground: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        address: string;
+                                        city: string;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                        photo: {
+                                            id: string;
+                                            url: string;
+                                            width: number;
+                                            height: number;
+                                        } | null;
+                                        /** @description Taken down by Ruxstar */
+                                        removed: boolean;
+                                    };
+                                    court: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    sport: {
+                                        key: string;
+                                        name: string;
+                                    } | null;
+                                    slotMinutes: number;
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                        quantity: number;
+                                    }[];
+                                    weeks: number;
+                                    occurrences: {
+                                        /** @description 1 for the first date, 2 the week after, … */
+                                        n: number;
+                                        /** Format: date-time */
+                                        startAt: string;
+                                        /** Format: date-time */
+                                        endAt: string;
+                                        slots: {
+                                            /** Format: date-time */
+                                            startAt: string;
+                                            /** Format: date-time */
+                                            endAt: string;
+                                            /** @description Amount in paise */
+                                            price: number;
+                                            peak: boolean;
+                                        }[];
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        paid: number;
+                                        status: "booked" | "cancelled";
+                                        /** @description Cancelled: what came back */
+                                        refund: {
+                                            percent: number;
+                                            /** @description Amount in paise */
+                                            amount: number;
+                                        } | null;
+                                        cancelledBy: ("customer" | "ground" | "ruxstar") | null;
+                                        cancelReason: string | null;
+                                        arrival: ("arrived" | "no_show") | null;
+                                        canCancel: boolean;
+                                        /** @description What cancelling it now gives back */
+                                        refundIfCancelled: {
+                                            percent: number;
+                                            /** @description Amount in paise */
+                                            amount: number;
+                                        } | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    firstAt: string;
+                                    /** Format: date-time */
+                                    lastEndsAt: string;
+                                    price: {
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        discount: number;
+                                        /** @description Amount in paise */
+                                        platformFee: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    };
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    refundRule: string;
+                                    refunds: {
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        status: "pending" | "done";
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    }[];
+                                    reason: string | null;
+                                    /** @description Unpaid, the slots go back after this */
+                                    payBy: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    /** @description Some date can be cancelled now, or it is unpaid */
+                                    canCancel: boolean;
+                                    /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                    invoices?: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                        kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                        number: string;
+                                        /** @description Whose document it is: the business's, or Ruxstar's */
+                                        issuer: "vendor" | "ruxstar";
+                                        /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                        role: "supply" | "fee";
+                                        /** @description Amount in paise */
+                                        total: number;
+                                        /** @description Credit notes: the refund behind it */
+                                        refundId: string | null;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                    }[];
+                                    /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                    canReview?: boolean;
+                                    /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                    reviewUntil?: string | null;
+                                };
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/turf/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One ground: photos, amenities, its courts with hours, prices and add-ons, and the refund rule
+         * @description No sign-in needed; signed out, grounds Ruxstar took down aren't found. Slots come from /courts/{id}/slots.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                description: string | null;
+                                venue: {
+                                    address: string;
+                                    city: string;
+                                    pincode: string | null;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                };
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                /** @description Bookable and paused courts, in the ground's order */
+                                courtList: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    slotMinutes: number;
+                                    hours: {
+                                        /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                        day: number;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        open: string;
+                                        /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                        close: string;
+                                    }[];
+                                    prices: {
+                                        /** @description Paise per slot, at least ₹1 */
+                                        base: number;
+                                        /** @description Saturday and Sunday; null for the base price */
+                                        weekend: number | null;
+                                        /** @description A slot starting in a window costs its price, before the weekend price */
+                                        peak: {
+                                            days: number[];
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            start: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            end: string;
+                                            /** @description Paise per slot, at least ₹1 */
+                                            price: number;
+                                        }[];
+                                    };
+                                    addOns: {
+                                        id: string;
+                                        name: string;
+                                        /** @description Amount in paise */
+                                        price: number;
+                                        /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                        per: "booking" | "slot";
+                                    }[];
+                                    /** @description paused: shown but not bookable */
+                                    status: "live" | "paused";
+                                }[];
+                                refunds: {
+                                    fullHours: number;
+                                    halfHours: number;
+                                    halfPercent: number;
+                                };
+                                /** @description The refund rule in one sentence, for above the Pay button */
+                                refundRule: string;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "removed";
+                                canBook: boolean;
+                                whyNot: string | null;
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/employment/{id}/orders": {
         parameters: {
             query?: never;
@@ -27073,7 +32371,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                             }[];
                             meta: {
                                 requestId: string;
@@ -27320,7 +32618,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                             };
                             meta: {
                                 requestId: string;
@@ -27579,7 +32877,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                             };
                             meta: {
                                 requestId: string;
@@ -27837,7 +33135,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                             };
                             meta: {
                                 requestId: string;
@@ -28175,7 +33473,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                             };
                             meta: {
                                 requestId: string;
@@ -28409,7 +33707,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                             };
                             meta: {
                                 requestId: string;
@@ -28544,13 +33842,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -28729,13 +34027,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -28945,13 +34243,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -29113,13 +34411,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -29287,13 +34585,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -29458,13 +34756,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -29630,13 +34928,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand */
-                                module: "pod" | "events" | "coaching" | "stays";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -29817,7 +35115,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -29935,7 +35233,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -30066,7 +35364,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -30179,11 +35477,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -30290,11 +35588,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -30378,11 +35676,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events or coaching */
-                                module?: "pod" | "events" | "coaching";
+                                /** @description The kind of business: print, events, coaching or turf */
+                                module?: "pod" | "events" | "coaching" | "turf";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course";
+                                    type: "event" | "course" | "ground";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -30457,7 +35755,7 @@ export interface paths {
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                         name: string;
-                                        module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
                                         type: string;
                                         city: string | null;
                                         /** @description The cover photo's URL */
@@ -30468,7 +35766,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -30490,7 +35788,7 @@ export interface paths {
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                         name: string;
-                                        module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
                                         type: string;
                                         city: string | null;
                                         /** @description The cover photo's URL */
@@ -30501,7 +35799,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                                     /** @description The pay they accepted */
                                     pay: {
                                         /** @description In paise, at least ₹1 */
@@ -30518,11 +35816,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -30600,7 +35898,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
                                     type: string;
                                     city: string | null;
                                     /** @description The cover photo's URL */
@@ -30611,7 +35909,7 @@ export interface paths {
                                 owner: {
                                     name: string;
                                 };
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                                 /** @description The pay they accepted */
                                 pay: {
                                     /** @description In paise, at least ₹1 */
@@ -33360,7 +38658,7 @@ export interface paths {
                                     suspended: number;
                                 } | null;
                                 modules: {
-                                    module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
                                     live: boolean;
                                 }[] | null;
                                 orders: {
@@ -34535,11 +39833,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events or coaching */
-                                    module?: "pod" | "events" | "coaching";
+                                    /** @description The kind of business: print, events, coaching or turf */
+                                    module?: "pod" | "events" | "coaching" | "turf";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course";
+                                        type: "event" | "course" | "ground";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -34665,11 +39963,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events or coaching */
-                                    module?: "pod" | "events" | "coaching";
+                                    /** @description The kind of business: print, events, coaching or turf */
+                                    module?: "pod" | "events" | "coaching" | "turf";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course";
+                                        type: "event" | "course" | "ground";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -34802,11 +40100,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events or coaching */
-                                    module?: "pod" | "events" | "coaching";
+                                    /** @description The kind of business: print, events, coaching or turf */
+                                    module?: "pod" | "events" | "coaching" | "turf";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course";
+                                        type: "event" | "course" | "ground";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -35891,7 +41189,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
-                                module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -36085,7 +41383,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -36172,8 +41470,8 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Where it works: print orders, event tickets, coaching enrolments, or any of them. Print only when left out */
-                        modules?: ("pod" | "events" | "coaching")[];
+                        /** @description Where it works: print orders, event tickets, coaching enrolments, turf bookings, or any of them. Print only when left out */
+                        modules?: ("pod" | "events" | "coaching" | "turf")[];
                     };
                 };
             };
@@ -36202,7 +41500,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -36331,7 +41629,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -37173,8 +42471,8 @@ export interface paths {
                     limit?: number;
                     /** @description The start of a business name word, or an id */
                     q?: string;
-                    /** @description pod is print on demand */
-                    module?: "pod" | "events" | "coaching" | "stays";
+                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                    module?: "pod" | "events" | "coaching" | "stays" | "turf";
                     state?: "draft" | "live" | "suspended";
                 };
                 header?: never;
@@ -37194,13 +42492,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand */
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -37378,13 +42676,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand */
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -37584,13 +42882,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand */
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -37781,13 +43079,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand */
-                                    module: "pod" | "events" | "coaching" | "stays";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "turf" | "sports_complex" | "court";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -37983,7 +43281,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -38000,11 +43298,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -39914,6 +45212,688 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/turf/grounds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every ground, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "draft" | "live" | "removed";
+                    /** @description Words in the ground's or business's name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                address: string;
+                                /** @description The first photo */
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                sports: {
+                                    key: string;
+                                    name: string;
+                                }[];
+                                amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                /** @description The lowest base price of a bookable court */
+                                priceFrom: number | null;
+                                /** @description Bookable courts */
+                                courts: number;
+                                status: "draft" | "live" | "removed";
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/turf/grounds/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One ground, with its courts and booking counts */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    city: string;
+                                    address: string;
+                                    /** @description The first photo */
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                    /** @description The lowest base price of a bookable court */
+                                    priceFrom: number | null;
+                                    /** @description Bookable courts */
+                                    courts: number;
+                                    description: string | null;
+                                    venue: {
+                                        address: string;
+                                        city: string;
+                                        pincode: string | null;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                    };
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    courtList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        sports: {
+                                            key: string;
+                                            name: string;
+                                        }[];
+                                        slotMinutes: number;
+                                        hours: {
+                                            /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                            day: number;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            open: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            close: string;
+                                        }[];
+                                        prices: {
+                                            /** @description Paise per slot, at least ₹1 */
+                                            base: number;
+                                            /** @description Saturday and Sunday; null for the base price */
+                                            weekend: number | null;
+                                            /** @description A slot starting in a window costs its price, before the weekend price */
+                                            peak: {
+                                                days: number[];
+                                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                                start: string;
+                                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                                end: string;
+                                                /** @description Paise per slot, at least ₹1 */
+                                                price: number;
+                                            }[];
+                                        };
+                                        addOns: {
+                                            id: string;
+                                            name: string;
+                                            /** @description Amount in paise */
+                                            price: number;
+                                            /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                            per: "booking" | "slot";
+                                        }[];
+                                        /** @description paused: shown but not bookable */
+                                        status: "live" | "paused";
+                                    }[];
+                                    refunds: {
+                                        fullHours: number;
+                                        halfHours: number;
+                                        halfPercent: number;
+                                    };
+                                    /** @description The refund rule in one sentence, for above the Pay button */
+                                    refundRule: string;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    status: "draft" | "live" | "removed";
+                                    canBook: boolean;
+                                    whyNot: string | null;
+                                    /** @description Live reviews */
+                                    rating?: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
+                                    publishedAt: string | null;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    /** @description What it needs before it can be published */
+                                    missing: string[];
+                                    /** @description Paid bookings with a date still to come */
+                                    upcoming: number;
+                                };
+                                bookings: {
+                                    upcoming: number;
+                                    total: number;
+                                    cancelled: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/turf/grounds/{id}/take-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a ground down
+         * @description It leaves the listings, and every booking with a date still to come is cancelled: those dates are refunded in full, platform fee included, and the owner and customers are told why. Dates already played aren't refunded automatically. It can't be undone.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The owner and every customer refunded are told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                ground: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    city: string;
+                                    address: string;
+                                    /** @description The first photo */
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    sports: {
+                                        key: string;
+                                        name: string;
+                                    }[];
+                                    amenities: ("parking" | "washrooms" | "changing_rooms" | "showers" | "drinking_water" | "floodlights" | "seating" | "cafe" | "first_aid" | "equipment" | "lockers" | "wifi")[];
+                                    /** @description The lowest base price of a bookable court */
+                                    priceFrom: number | null;
+                                    /** @description Bookable courts */
+                                    courts: number;
+                                    description: string | null;
+                                    venue: {
+                                        address: string;
+                                        city: string;
+                                        pincode: string | null;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                    };
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    courtList: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        sports: {
+                                            key: string;
+                                            name: string;
+                                        }[];
+                                        slotMinutes: number;
+                                        hours: {
+                                            /** @description 0 Sunday, 1 Monday … 6 Saturday */
+                                            day: number;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            open: string;
+                                            /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                            close: string;
+                                        }[];
+                                        prices: {
+                                            /** @description Paise per slot, at least ₹1 */
+                                            base: number;
+                                            /** @description Saturday and Sunday; null for the base price */
+                                            weekend: number | null;
+                                            /** @description A slot starting in a window costs its price, before the weekend price */
+                                            peak: {
+                                                days: number[];
+                                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                                start: string;
+                                                /** @description HH:MM in India, on the hour or half hour. 24:00 is midnight at the end of the day */
+                                                end: string;
+                                                /** @description Paise per slot, at least ₹1 */
+                                                price: number;
+                                            }[];
+                                        };
+                                        addOns: {
+                                            id: string;
+                                            name: string;
+                                            /** @description Amount in paise */
+                                            price: number;
+                                            /** @description booking: once per booking (per date of a repeat). slot: for each slot */
+                                            per: "booking" | "slot";
+                                        }[];
+                                        /** @description paused: shown but not bookable */
+                                        status: "live" | "paused";
+                                    }[];
+                                    refunds: {
+                                        fullHours: number;
+                                        halfHours: number;
+                                        halfPercent: number;
+                                    };
+                                    /** @description The refund rule in one sentence, for above the Pay button */
+                                    refundRule: string;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    status: "draft" | "live" | "removed";
+                                    canBook: boolean;
+                                    whyNot: string | null;
+                                    /** @description Live reviews */
+                                    rating?: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
+                                    publishedAt: string | null;
+                                    removal: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    /** @description What it needs before it can be published */
+                                    missing: string[];
+                                    /** @description Paid bookings with a date still to come */
+                                    upcoming: number;
+                                };
+                                /** @description Bookings with dates refunded */
+                                refunded: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/turf/sports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The sports list, inactive ones too, in order */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                                active: boolean;
+                                order: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a sport grounds can offer
+         * @description The key can't change later. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description A key from GET /v1/turf/sports */
+                        key: string;
+                        name: string;
+                        order?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                                active: boolean;
+                                order: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/turf/sports/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Rename a sport, reorder it, or stop it being picked
+         * @description Inactive sports stay on the courts that have them. Audited.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description A key from GET /v1/turf/sports */
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        /** @description Inactive sports stay on the courts that have them but can't be picked */
+                        active?: boolean;
+                        order?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                                active: boolean;
+                                order: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/v1/ruxstar/invoices": {
         parameters: {
             query?: never;
@@ -39940,7 +45920,7 @@ export interface paths {
                     to?: string;
                     /** @description MongoDB ObjectId as hex */
                     orderId?: string;
-                    /** @description turf and ecommerce have defaults ready for when they open */
+                    /** @description ecommerce has defaults ready for when it opens */
                     module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                 };
                 header?: never;
@@ -39969,10 +45949,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description turf and ecommerce have defaults ready for when they open */
+                                /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -40154,10 +46134,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description turf and ecommerce have defaults ready for when they open */
+                                /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -40402,7 +46382,7 @@ export interface paths {
                                     updatedAt: string | null;
                                 };
                                 modules: {
-                                    /** @description turf and ecommerce have defaults ready for when they open */
+                                    /** @description ecommerce has defaults ready for when it opens */
                                     module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                     /** @description Issue GST documents for this module's orders */
                                     enabled: boolean;
@@ -40506,7 +46486,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description turf and ecommerce have defaults ready for when they open */
+                    /** @description ecommerce has defaults ready for when it opens */
                     module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                 };
                 cookie?: never;
@@ -40568,7 +46548,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                /** @description turf and ecommerce have defaults ready for when they open */
+                                /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 /** @description Issue GST documents for this module's orders */
                                 enabled: boolean;
@@ -40863,7 +46843,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
                                 live: boolean;
                                 signupsOpen: boolean;
                                 /** @description Commission in basis points. 1000 = 10% */
@@ -40920,6 +46900,33 @@ export interface paths {
                                     maxDemoSeats: number;
                                     /** @description An online class's link shows this many minutes before it starts */
                                     joinMinutes: number;
+                                } | null;
+                                turfRules: {
+                                    /** @description New grounds' default: a full refund when the customer cancels this many hours or more before the slot */
+                                    refundFullHours: number;
+                                    /** @description New grounds' default: `halfPercent` back from this many hours until the full-refund hours. At most `refundFullHours` */
+                                    refundHalfHours: number;
+                                    /** @description The share refunded in the middle tier */
+                                    halfPercent: number;
+                                    /** @description Owners pick their full-refund hours between this and `maxFullHours` */
+                                    minFullHours: number;
+                                    maxFullHours: number;
+                                    /** @description A weekly repeat books this many weeks at most, the first included */
+                                    maxRepeatWeeks: number;
+                                    /** @description Unpaid slots are held this long for the checkout */
+                                    holdMinutes: number;
+                                    /** @description Slot lengths, in minutes, a court can use */
+                                    slotLengths: (30 | 60 | 90)[];
+                                    /** @description Back-to-back slots in one booking */
+                                    maxSlots: number;
+                                    /** @description How far ahead the first slot can be */
+                                    bookAheadDays: number;
+                                    /** @description Grounds per business */
+                                    maxGrounds: number;
+                                    /** @description Courts per ground */
+                                    maxCourts: number;
+                                    /** @description Add-ons per court */
+                                    maxAddOns: number;
                                 } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
@@ -40979,7 +46986,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
                 };
                 cookie?: never;
             };
@@ -41039,6 +47046,34 @@ export interface paths {
                             /** @description An online class's link shows this many minutes before it starts */
                             joinMinutes?: number;
                         };
+                        /** @description Turf only. Send only what changes. A ground outside new refund limits is held to them from its next booking; bookings made keep their rule. */
+                        turfRules?: {
+                            /** @description New grounds' default: a full refund when the customer cancels this many hours or more before the slot */
+                            refundFullHours?: number;
+                            /** @description New grounds' default: `halfPercent` back from this many hours until the full-refund hours. At most `refundFullHours` */
+                            refundHalfHours?: number;
+                            /** @description The share refunded in the middle tier */
+                            halfPercent?: number;
+                            /** @description Owners pick their full-refund hours between this and `maxFullHours` */
+                            minFullHours?: number;
+                            maxFullHours?: number;
+                            /** @description A weekly repeat books this many weeks at most, the first included */
+                            maxRepeatWeeks?: number;
+                            /** @description Unpaid slots are held this long for the checkout */
+                            holdMinutes?: number;
+                            /** @description Slot lengths, in minutes, a court can use */
+                            slotLengths?: (30 | 60 | 90)[];
+                            /** @description Back-to-back slots in one booking */
+                            maxSlots?: number;
+                            /** @description How far ahead the first slot can be */
+                            bookAheadDays?: number;
+                            /** @description Grounds per business */
+                            maxGrounds?: number;
+                            /** @description Courts per ground */
+                            maxCourts?: number;
+                            /** @description Add-ons per court */
+                            maxAddOns?: number;
+                        };
                     };
                 };
             };
@@ -41051,7 +47086,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                module: "pod" | "events" | "coaching" | "stays" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
                                 live: boolean;
                                 signupsOpen: boolean;
                                 /** @description Commission in basis points. 1000 = 10% */
@@ -41108,6 +47143,33 @@ export interface paths {
                                     maxDemoSeats: number;
                                     /** @description An online class's link shows this many minutes before it starts */
                                     joinMinutes: number;
+                                } | null;
+                                turfRules: {
+                                    /** @description New grounds' default: a full refund when the customer cancels this many hours or more before the slot */
+                                    refundFullHours: number;
+                                    /** @description New grounds' default: `halfPercent` back from this many hours until the full-refund hours. At most `refundFullHours` */
+                                    refundHalfHours: number;
+                                    /** @description The share refunded in the middle tier */
+                                    halfPercent: number;
+                                    /** @description Owners pick their full-refund hours between this and `maxFullHours` */
+                                    minFullHours: number;
+                                    maxFullHours: number;
+                                    /** @description A weekly repeat books this many weeks at most, the first included */
+                                    maxRepeatWeeks: number;
+                                    /** @description Unpaid slots are held this long for the checkout */
+                                    holdMinutes: number;
+                                    /** @description Slot lengths, in minutes, a court can use */
+                                    slotLengths: (30 | 60 | 90)[];
+                                    /** @description Back-to-back slots in one booking */
+                                    maxSlots: number;
+                                    /** @description How far ahead the first slot can be */
+                                    bookAheadDays: number;
+                                    /** @description Grounds per business */
+                                    maxGrounds: number;
+                                    /** @description Courts per ground */
+                                    maxCourts: number;
+                                    /** @description Add-ons per court */
+                                    maxAddOns: number;
                                 } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */

@@ -30,7 +30,7 @@ export function ListingReviews({ module, id, initial }: { module: ListingModule;
 
   return (
     <section className={order.section}>
-      <h2 className={order.overline}>{module === "events" ? "Reviews of this event" : "Reviews of this course"}</h2>
+      <h2 className={order.overline}>{module === "events" ? "Reviews of this event" : module === "turf" ? "Reviews of this ground" : "Reviews of this course"}</h2>
       <div className={styles.list}>
         {items.map((review) =>
           reporting === review.id ? (

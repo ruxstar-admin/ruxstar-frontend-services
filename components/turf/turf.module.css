@@ -1,0 +1,703 @@
+/* Sports & Turf: ground cards, the date strip, the slot grid, add-ons, weekly repeats, the owner's board and court forms. Layout comes from the shop, order and vendor styles. */
+
+/* Ground page */
+.gallery {
+  display: grid;
+  grid-auto-columns: minmax(260px, 78%);
+  grid-auto-flow: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+  border-radius: var(--radius-card);
+}
+
+.gallery li {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--raised);
+  border-radius: var(--radius-card);
+  scroll-snap-align: start;
+}
+
+.gallery img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.amenities li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  font: var(--type-small);
+  background: var(--raised);
+  border-radius: var(--radius-pill);
+}
+
+.courts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.court {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.court[data-paused] {
+  opacity: 0.7;
+}
+
+.courtHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.courtName {
+  font: 600 16px/22px var(--font);
+}
+
+/* Date strip: 14 days, scrolling sideways. */
+.strip {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 2px 2px var(--space-2);
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x proximity;
+}
+
+.day {
+  display: grid;
+  flex: none;
+  place-items: center;
+  gap: 2px;
+  width: 76px;
+  height: 56px;
+  padding: 0;
+  font: 600 14px/18px var(--font);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.day small {
+  font: var(--type-caption);
+  color: var(--ink-3);
+}
+
+.day:hover:not(:disabled) {
+  border-color: var(--ink-3);
+}
+
+.day[aria-pressed="true"] {
+  color: #fff;
+  background: var(--accent-deep);
+  border-color: var(--accent);
+}
+
+.day[aria-pressed="true"] small {
+  color: var(--accent-soft);
+}
+
+.day[data-closed] {
+  color: var(--ink-3);
+  text-decoration: line-through;
+}
+
+.day[data-closed] small {
+  text-decoration: none;
+}
+
+.day:focus-visible,
+.slot:focus-visible,
+.cell:focus-visible,
+.step:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Slot grid: every slot of a court on one day. Each look has its own icon, so colour is never the only signal. */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slot {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 64px;
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  contain: layout paint;
+}
+
+.slot:hover:not(:disabled) {
+  border-color: var(--ink-3);
+}
+
+.slotTime {
+  font: 600 14px/20px var(--font);
+  font-variant-numeric: tabular-nums;
+}
+
+.slotPrice {
+  font: var(--type-caption);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.slotIcon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--ink-3);
+}
+
+.slot[data-state="peak"] {
+  border-color: var(--logo-blue);
+}
+
+.slot[data-state="peak"] .slotIcon {
+  color: var(--logo-blue);
+}
+
+.slot[data-state="booked"],
+.slot[data-state="blocked"] {
+  color: var(--ink-3);
+  background: var(--raised);
+  border-color: var(--raised);
+  cursor: not-allowed;
+}
+
+.slot[data-state="booked"] .slotPrice {
+  text-decoration: line-through;
+}
+
+.slot[data-state="blocked"] {
+  background: var(--bg);
+  border: 1px dashed var(--ink-3);
+}
+
+.slot[aria-pressed="true"] {
+  background: var(--accent-deep);
+  border-color: var(--accent);
+}
+
+.slot[aria-pressed="true"] .slotIcon,
+.slot[aria-pressed="true"] .slotPrice {
+  color: #fff;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--type-caption);
+  color: var(--ink-2);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swatch {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  color: var(--ink-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.swatch[data-state="peak"] {
+  color: var(--logo-blue);
+  border-color: var(--logo-blue);
+}
+
+.swatch[data-state="selected"] {
+  color: #fff;
+  background: var(--accent-deep);
+  border-color: var(--accent);
+}
+
+.swatch[data-state="booked"] {
+  background: var(--raised);
+  border-color: var(--raised);
+}
+
+.swatch[data-state="held"] {
+  color: var(--warning);
+  background: var(--raised);
+  border: 1px dashed var(--warning);
+}
+
+.swatch[data-state="blocked"] {
+  background: var(--bg);
+  border: 1px dashed var(--ink-3);
+}
+
+.swatch[data-state="arrived"] {
+  color: var(--success);
+  background: var(--raised);
+  border-color: var(--success);
+}
+
+/* Add-ons and weeks */
+.addOns {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.addOns > li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 60px;
+  padding: var(--space-2) var(--space-4);
+}
+
+.addOns > li + li {
+  border-top: 1px solid var(--line);
+}
+
+.addOnText {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.stepper {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stepper output {
+  min-width: 24px;
+  font: 600 15px/22px var(--font);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.step {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--ink);
+  background: var(--raised);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.step:disabled {
+  color: var(--disabled-ink);
+  background: var(--disabled);
+  cursor: default;
+}
+
+.dates {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dates li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: var(--type-small);
+}
+
+.dates li[data-ok="true"] svg {
+  color: var(--success);
+}
+
+.dates li[data-ok="false"] {
+  color: var(--danger);
+}
+
+.pickRow {
+  cursor: pointer;
+}
+
+.pickRow input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--danger);
+}
+
+.struck {
+  text-decoration: line-through;
+}
+
+/* The desk is wider than other pages, so the board shows more of the day. */
+.deskPage {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.deskPanel {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.deskPanel h2 {
+  font: 700 18px/24px var(--font);
+}
+
+/* The owner's board: courts down the side, half hours across, one cell per slot. Scrolls sideways with court names pinned. */
+.boardWrap {
+  max-width: 100%;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  overscroll-behavior-x: contain;
+}
+
+.board {
+  display: grid;
+  gap: 4px;
+  width: max-content;
+  padding: var(--space-2);
+}
+
+.corner,
+.colHead,
+.rowHead {
+  position: sticky;
+  z-index: 1;
+  background: var(--surface);
+}
+
+.corner {
+  top: 0;
+  left: 0;
+  z-index: 2;
+  font: 600 11px/28px var(--font);
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+}
+
+.colHead {
+  top: 0;
+  font: var(--type-caption);
+  line-height: 28px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.rowHead {
+  left: 0;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  width: 112px;
+  padding-right: var(--space-2);
+}
+
+.rowHead strong {
+  overflow: hidden;
+  font: 600 14px/18px var(--font);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowHead span {
+  font: var(--type-caption);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.cell {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 2px;
+  min-width: 0;
+  height: 56px;
+  padding: 0 4px;
+  font: 600 11px/14px var(--font);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  contain: layout paint;
+}
+
+.cell > span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell:hover {
+  border-color: var(--ink-3);
+}
+
+.cell svg {
+  color: var(--ink-3);
+}
+
+.cell[data-state="peak"] {
+  border-color: var(--logo-blue);
+}
+
+.cell[data-state="peak"] svg {
+  color: var(--logo-blue);
+}
+
+.cell[data-state="booked"] {
+  background: var(--raised);
+  border-color: var(--raised);
+}
+
+.cell[data-state="arrived"] {
+  background: var(--raised);
+  border-color: var(--success);
+}
+
+.cell[data-state="arrived"] svg {
+  color: var(--success);
+}
+
+.cell[data-state="held"] {
+  color: var(--ink-3);
+  background: var(--raised);
+  border: 1px dashed var(--warning);
+}
+
+.cell[data-state="held"] svg {
+  color: var(--warning);
+}
+
+.cell[data-state="blocked"] {
+  color: var(--ink-3);
+  background: var(--bg);
+  border: 1px dashed var(--ink-3);
+}
+
+.cell[data-past] {
+  opacity: 0.55;
+}
+
+.cell[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.closed {
+  display: grid;
+  place-items: center;
+  height: 56px;
+  font: var(--type-caption);
+  color: var(--ink-3);
+  background: repeating-linear-gradient(135deg, transparent 0 8px, var(--raised) 8px 9px);
+  border-radius: 8px;
+}
+
+.totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.dayNav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dayNav input {
+  height: 40px;
+  padding: 0 var(--space-3);
+  font: inherit;
+  color: var(--ink);
+  color-scheme: dark;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+}
+
+/* Court form */
+.hours {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hours > li {
+  display: grid;
+  grid-template-columns: minmax(96px, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 52px;
+}
+
+.hours > li > p {
+  grid-column: 1 / -1;
+  margin: 0 0 var(--space-2);
+}
+
+.hours > li + li {
+  border-top: 1px solid var(--line);
+}
+
+.hours label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: 600 15px/22px var(--font);
+  cursor: pointer;
+}
+
+.hours input[type="checkbox"],
+.peakDays input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+.hours select,
+.peak select {
+  min-width: 108px;
+}
+
+.peak {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--raised);
+  border-radius: var(--radius-card);
+}
+
+.peakTimes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.peakDays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: 48px repeat(7, minmax(36px, 1fr));
+  gap: 2px;
+  font: var(--type-caption);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.preview > span {
+  display: grid;
+  place-items: center;
+  height: 24px;
+  color: var(--ink-2);
+  border-radius: 4px;
+}
+
+.preview > span[data-kind="base"] {
+  background: var(--raised);
+}
+
+.preview > span[data-kind="weekend"] {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 35%, var(--surface));
+}
+
+.preview > span[data-kind="peak"] {
+  color: var(--bg);
+  background: var(--logo-blue);
+}
+
+.preview > span[data-kind="closed"] {
+  background: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slot,
+  .cell,
+  .day {
+    transition:
+      background-color 120ms var(--ease-out),
+      border-color 120ms var(--ease-out);
+  }
+}

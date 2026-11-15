@@ -29,6 +29,13 @@ const WORK_AREAS: { title: string; line: string; icon: IconName; allowed: (permi
   { title: "Post as the business", line: "It goes out under the owner’s name", icon: "edit", allowed: has("posts.create"), path: "post" },
   { title: "Scan tickets", line: "Check people in at this business’s events", icon: "ticket", allowed: has("tickets.scan"), path: "/gate" },
   { title: "Classes", line: "Today’s classes, attendance and your batches", icon: "book", allowed: has("classes.view"), path: "/teach" },
+  {
+    title: "Grounds",
+    line: "The day’s board, bookings, blocks and prices",
+    icon: "ball",
+    allowed: has("turf.bookings", "turf.block", "turf.cancel", "turf.arrivals", "turf.prices"),
+    path: "/board",
+  },
 ];
 
 /** Areas whose `path` starts with "/" live outside Work: the gate and classes serve owners and their team alike. */

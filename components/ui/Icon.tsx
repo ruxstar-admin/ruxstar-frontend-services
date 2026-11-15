@@ -316,6 +316,20 @@ const ICONS = {
       <path d="M5 13h9.5a4.5 4.5 0 0 0 4.5-4.5V6" />
     </>
   ),
+  ball: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="m12 7.5 4 2.9-1.5 4.7h-5L8 10.4z" />
+      <path d="M12 3.5v4M20 10.4l-4 0M17.3 18.6l-2.8-3.5M6.7 18.6l2.8-3.5M4 10.4h4" />
+    </>
+  ),
+  flame: <path d="M12 21a6 6 0 0 0 6-6c0-3.5-2.5-5.5-3.5-8.5-1 2-2 2.8-3 3.3C11 7.5 10.5 5 9 3c0 4-3 6.5-3 12a6 6 0 0 0 6 6z" />,
+  lock: (
+    <>
+      <rect x="5" y="10.5" width="14" height="10" rx="2" />
+      <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+    </>
+  ),
 } satisfies Record<string, ReactElement>;
 
 export type IconName = keyof typeof ICONS;

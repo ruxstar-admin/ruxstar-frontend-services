@@ -198,7 +198,7 @@ export const updateTeamCoupon = async (placeId: string, couponId: string, body: 
 
 // Words and lines, the same as the app.
 
-export const MODULE_ICON = { pod: "print", events: "ticket", coaching: "book", stays: "home" } as const satisfies Record<BusinessModule, string>;
+export const MODULE_ICON = { pod: "print", events: "ticket", coaching: "book", stays: "home", turf: "ball" } as const satisfies Record<BusinessModule, string>;
 export const TYPE_ICON = {
   print_shop: "print",
   concert: "ticket",
@@ -207,6 +207,9 @@ export const TYPE_ICON = {
   coaching: "book",
   pg: "home",
   hostel: "home",
+  turf: "ball",
+  sports_complex: "ball",
+  court: "ball",
 } as const satisfies Record<Business["type"], string>;
 
 export const MISSING_LABEL: Record<BusinessMissing, string> = {

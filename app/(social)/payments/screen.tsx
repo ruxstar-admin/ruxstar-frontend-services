@@ -13,7 +13,8 @@ import { ago, exact } from "@/lib/time";
 import social from "@/components/social/social.module.css";
 import styles from "@/components/shop/order.module.css";
 
-const MODULE_ICON: Record<BusinessModule, IconName> = { pod: "print", events: "ticket", coaching: "book", stays: "home" };
+const MODULE_ICON: Record<BusinessModule, IconName> = { pod: "print", events: "ticket", coaching: "book", stays: "home", turf: "ball" };
+const ORDER_PATH: Record<BusinessModule, string> = { pod: "/orders", events: "/tickets", coaching: "/classes", stays: "/orders", turf: "/bookings" };
 
 function PaymentItem({ payment, open, onToggle }: { payment: Payment; open: boolean; onToggle: () => void }) {
   const toast = useToast();
@@ -87,7 +88,7 @@ function PaymentItem({ payment, open, onToggle }: { payment: Payment; open: bool
             </div>
           )}
           <div className={styles.actions}>
-            <ButtonLink href={`/orders/${payment.order.id}`} variant="secondary">
+            <ButtonLink href={`${ORDER_PATH[payment.module]}/${payment.order.id}`} variant="secondary">
               View order
             </ButtonLink>
           </div>

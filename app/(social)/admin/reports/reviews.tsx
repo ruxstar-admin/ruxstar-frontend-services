@@ -101,7 +101,13 @@ function ReviewDetail({ c, onDone }: { c: ReviewCase; onDone: (message: string) 
           <div className={styles.actions}>
             {review?.status === "live" && (
               <Link href={reviewsHref(review, review.shop.id)} className={styles.muted} target="_blank">
-                {kind === "events" ? "Open the event’s page" : kind === "coaching" ? "Open the course page" : "Open the shop’s reviews"}
+                {kind === "events"
+                  ? "Open the event’s page"
+                  : kind === "coaching"
+                    ? "Open the course page"
+                    : kind === "turf"
+                      ? "Open the ground’s page"
+                      : "Open the shop’s reviews"}
               </Link>
             )}
             <Button variant="secondary" onClick={() => act("keep")} loading={busy === "keep"} disabled={!!busy}>

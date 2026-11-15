@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Icon, Input } from "@/components/ui";
 import { money } from "@/lib/api/shops";
-import { cleanCode, offerWord } from "@/lib/coupons";
+import { cleanCode, offerWord, type CouponModule } from "@/lib/coupons";
 import styles from "./coupons.module.css";
 
 /** An offer as print, events and coaching checkouts all list them. */
@@ -27,7 +27,7 @@ interface CheckoutCouponsProps {
   onApply: (code: string) => void;
   onRemove: () => void;
   /** Names the business's own offers: a shop's, an organiser's or an institute's. */
-  module?: "pod" | "events" | "coaching";
+  module?: CouponModule;
   /** While a code is being checked. */
   busy?: boolean;
 }

@@ -31,6 +31,7 @@ const WHEN: Record<ReviewModule, string> = {
   pod: "Customers review delivered orders for 30 days.",
   events: "People review their booking once they’re checked in or the event ends, for 30 days after it.",
   coaching: "Students review their enrolment once the first class is held, until 30 days after the last class.",
+  turf: "Players review their booking once they’ve played, until 30 days after its last date.",
 };
 
 /** Where the owner (or the team, for print) opens what was reviewed. */
@@ -38,6 +39,7 @@ function reviewedLink(review: ShopReview, team: boolean): { href: string; label:
   const module = moduleOf(review);
   if (module === "pod") return { href: team ? `/work/order/${review.orderId}` : `/vendor/orders/${review.orderId}`, label: "Open order" };
   if (team || !review.listing) return null;
+  if (review.listing.type === "ground") return { href: `/board/bookings/${review.orderId}`, label: "Open booking" };
   return review.listing.type === "event"
     ? { href: `/vendor/events/${review.listing.id}/bookings`, label: "See bookings" }
     : { href: `/vendor/courses/${review.listing.id}/students`, label: "See students" };

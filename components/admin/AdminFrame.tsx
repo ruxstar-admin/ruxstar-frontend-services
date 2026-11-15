@@ -22,6 +22,8 @@ const SECTIONS: { href: string; label: string; icon: IconName; need: Need }[] = 
   { href: "/admin/businesses", label: "Businesses", icon: "store", need: "businesses.view" },
   { href: "/admin/events", label: "Events", icon: "calendar", need: "businesses.view" },
   { href: "/admin/courses", label: "Courses", icon: "book", need: "businesses.view" },
+  { href: "/admin/grounds", label: "Grounds", icon: "ball", need: "businesses.view" },
+  { href: "/admin/sports", label: "Sports", icon: "ball", need: "businesses.view" },
   { href: "/admin/modules", label: "Modules", icon: "stack", need: "modules.view" },
   { href: "/admin/gst", label: "GST", icon: "receipt", need: "modules.view" },
   { href: "/admin/payouts", label: "Payouts", icon: "wallet", need: "payouts.view" },

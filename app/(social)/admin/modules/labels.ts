@@ -5,6 +5,7 @@ export const MODULE_LABEL: Record<ModuleName, string> = {
   events: "Events",
   coaching: "Coaching",
   stays: "PG and hostel stays",
+  turf: "Sports & turf",
   delivery: "Delivery",
   ledger: "Payments and ledger",
 };

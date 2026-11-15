@@ -13,6 +13,8 @@ import social from "@/components/social/social.module.css";
 import styles from "@/components/shop/shop.module.css";
 
 const DEBOUNCE_MS = 300;
+/** Categories the website can show; the rest say "coming soon". */
+const OPEN_ON_WEB: BusinessModule[] = ["pod", "events", "coaching", "turf"];
 
 /** Its own chunk: people who never open Events don't download it. */
 const EventResults = dynamic(() => import("@/components/events/EventResults"), {
@@ -25,6 +27,15 @@ const EventResults = dynamic(() => import("@/components/events/EventResults"), {
 });
 
 const CourseResults = dynamic(() => import("@/components/coaching/CourseResults"), {
+  loading: () => (
+    <div className={styles.grid} aria-busy>
+      <ShopCardSkeleton />
+      <ShopCardSkeleton />
+    </div>
+  ),
+});
+
+const GroundResults = dynamic(() => import("@/components/turf/GroundResults"), {
   loading: () => (
     <div className={styles.grid} aria-busy>
       <ShopCardSkeleton />
@@ -111,12 +122,14 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
   }, []);
 
   const picked = categories.find((c) => c.module === category);
-  const comingSoon = picked ? !picked.live || (picked.module !== "pod" && picked.module !== "events" && picked.module !== "coaching") : false;
+  const comingSoon = picked ? !picked.live || !OPEN_ON_WEB.includes(picked.module) : false;
   const printOpen = categories.some((c) => c.module === "pod" && c.live) && category !== "pod";
   const eventsOpen = categories.some((c) => c.module === "events" && c.live);
   const coachingOpen = categories.some((c) => c.module === "coaching" && c.live);
+  const turfOpen = categories.some((c) => c.module === "turf" && c.live);
   const showEvents = category === "events" && !comingSoon;
   const showCourses = category === "coaching" && !comingSoon;
+  const showGrounds = category === "turf" && !comingSoon;
   const filters: ShopFilters = { ...(q ? { q } : {}), ...(category === "pod" && product ? { product } : {}) };
 
   const pickCategory = (next: BusinessModule | null) => {
@@ -144,6 +157,12 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
               Your classes
             </ButtonLink>
           )}
+          {turfOpen && (
+            <ButtonLink href="/bookings" variant="secondary">
+              <Icon name="ball" size={18} />
+              Your bookings
+            </ButtonLink>
+          )}
           <ButtonLink href="/orders" variant="secondary">
             <Icon name="receipt" size={18} />
             Your orders
@@ -161,8 +180,8 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
           type="search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={showEvents ? "Event, organiser or city" : showCourses ? "Course or institute" : "Shop, what they print, or a city"}
-          aria-label={showEvents ? "Search events" : showCourses ? "Search courses" : "Search businesses"}
+          placeholder={showEvents ? "Event, organiser or city" : showCourses ? "Course or institute" : showGrounds ? "Ground or business" : "Shop, what they print, or a city"}
+          aria-label={showEvents ? "Search events" : showCourses ? "Search courses" : showGrounds ? "Search grounds" : "Search businesses"}
           autoComplete="off"
           spellCheck={false}
         />
@@ -206,6 +225,8 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
         <EventResults q={q} />
       ) : showCourses ? (
         <CourseResults q={q} />
+      ) : showGrounds ? (
+        <GroundResults q={q} />
       ) : (
         <Results key={`${q}|${category ?? ""}|${product ?? ""}`} filters={filters} />
       )}
