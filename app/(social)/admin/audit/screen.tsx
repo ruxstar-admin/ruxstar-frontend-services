@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { Needs, useCan } from "@/components/admin/AdminFrame";
 import { Failed, MoreFailed, Rows, styles } from "@/components/admin/parts";
 import { useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { Button, Icon, Skeleton, Tag } from "@/components/ui";
 import { auditLog, type AuditEntry, type AuditFilter } from "@/lib/api/admin";
-import { ago, exact } from "@/lib/time";
+import { ago, exact, istDate } from "@/lib/time";
 import { MODULE_LABEL } from "../modules/labels";
+import { WhoFilter } from "./who";
+import { isDate, isWhen, WHEN, whenRange, type When } from "./when";
 
 const ACTIONS: Record<string, string> = {
   "kyc.approve": "Approved verification",
@@ -139,7 +141,7 @@ function Entry({ e }: { e: AuditEntry }) {
   );
 }
 
-function Log({ filter }: { filter: AuditFilter }) {
+function Log({ filter, filtered }: { filter: AuditFilter; filtered: boolean }) {
   const onSignedOut = useOnSignedOut();
   const load = useCallback((cursor?: string) => auditLog(filter, cursor), [filter]);
   const { items, loading, loadingMore, hasMore, error, moreFailed, more, reload } = usePages(load);
@@ -151,7 +153,7 @@ function Log({ filter }: { filter: AuditFilter }) {
 
   if (loading) return <Rows count={6} />;
   if (error && items.length === 0) return <Failed error={error} onRetry={reload} />;
-  if (items.length === 0) return <p className={styles.empty}>Nothing logged for this filter.</p>;
+  if (items.length === 0) return <p className={styles.empty}>{filtered ? "No entries for these filters" : "Nothing logged yet."}</p>;
 
   return (
     <ul className={styles.list}>
@@ -169,17 +171,26 @@ export function AuditScreen() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+  const canSeePeople = useCan("users.view");
+  const ids = { when: useId(), from: useId(), to: useId(), area: useId(), action: useId() };
   const area = params.get("module") ?? "";
   const action = params.get("action") ?? "";
   const target = params.get("target") ?? "";
   const actor = params.get("actor") ?? "";
+  const whenParam = params.get("when");
+  const when: When = isWhen(whenParam) ? whenParam : "";
+  const from = when === "custom" ? (params.get("from") ?? "") : "";
+  const to = when === "custom" ? (params.get("to") ?? "") : "";
+  const today = istDate();
 
-  const setParam = (key: string, value: string) => {
+  const setParams = (changes: Record<string, string>) => {
     const next = new URLSearchParams(params);
-    if (value) next.set(key, value);
-    else next.delete(key);
+    for (const [key, value] of Object.entries(changes)) {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    }
     const query = next.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname);
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
   const filter: AuditFilter = {
@@ -187,48 +198,120 @@ export function AuditScreen() {
     ...(action ? { action } : {}),
     ...(target ? { target } : {}),
     ...(actor ? { actor } : {}),
+    ...whenRange(when, from, to),
   };
+  const filtered = !!(area || action || target || actor || when);
 
   return (
     <Needs need="audit.view">
       <div className={styles.page}>
         <div>
           <h1 className={styles.title}>Audit log</h1>
-          <p className={styles.muted}>Every change made by the team, and account changes people make themselves. Newest first.</p>
+          <p className={styles.muted}>Every change made by the team, and account changes people make themselves. Newest first. Days are India time.</p>
         </div>
-        <div className={styles.toolbar}>
-          <select className={styles.select} aria-label="Area" value={area} onChange={(e) => setParam("module", e.target.value)}>
-            <option value="">Every area</option>
-            {Object.entries(AREA_LABEL).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <select className={styles.select} aria-label="Action" value={action} onChange={(e) => setParam("action", e.target.value)}>
-            <option value="">Every action</option>
-            {Object.entries(ACTIONS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </div>
-        {(target || actor) && (
-          <div className={styles.tags}>
-            {target && (
-              <Button variant="secondary" onClick={() => setParam("target", "")} icon={<Icon name="close" size={16} />}>
-                Only {target.slice(-6)}
-              </Button>
-            )}
-            {actor && (
-              <Button variant="secondary" onClick={() => setParam("actor", "")} icon={<Icon name="close" size={16} />}>
+        <div className={styles.filters} role="group" aria-label="Filters">
+          <div className={styles.filter}>
+            <label className={styles.filterLabel} htmlFor={ids.when}>
+              When
+            </label>
+            <select
+              id={ids.when}
+              className={styles.filterControl}
+              data-set={when ? true : undefined}
+              value={when}
+              onChange={(e) => setParams({ when: e.target.value, from: "", to: "" })}
+            >
+              {WHEN.map((w) => (
+                <option key={w.value} value={w.value}>
+                  {w.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {when === "custom" && (
+            <>
+              <div className={styles.filter}>
+                <label className={styles.filterLabel} htmlFor={ids.from}>
+                  From
+                </label>
+                <input
+                  id={ids.from}
+                  type="date"
+                  className={styles.filterControl}
+                  value={isDate(from) ? from : ""}
+                  max={isDate(to) ? to : today}
+                  onChange={(e) => setParams({ from: e.target.value })}
+                />
+              </div>
+              <div className={styles.filter}>
+                <label className={styles.filterLabel} htmlFor={ids.to}>
+                  To
+                </label>
+                <input
+                  id={ids.to}
+                  type="date"
+                  className={styles.filterControl}
+                  value={isDate(to) ? to : ""}
+                  min={isDate(from) ? from : undefined}
+                  max={today}
+                  onChange={(e) => setParams({ to: e.target.value })}
+                />
+              </div>
+            </>
+          )}
+          {canSeePeople ? (
+            <WhoFilter actor={actor} onChange={(id) => setParams({ actor: id })} />
+          ) : (
+            actor && (
+              <Button variant="secondary" onClick={() => setParams({ actor: "" })} icon={<Icon name="close" size={16} />}>
                 By {actor.slice(-6)}
               </Button>
-            )}
+            )
+          )}
+          <div className={styles.filter}>
+            <label className={styles.filterLabel} htmlFor={ids.area}>
+              Module
+            </label>
+            <select id={ids.area} className={styles.filterControl} data-set={area ? true : undefined} value={area} onChange={(e) => setParams({ module: e.target.value })}>
+              <option value="">Any module</option>
+              {Object.entries(AREA_LABEL).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
-        <Log key={`${area}|${action}|${target}|${actor}`} filter={filter} />
+          <div className={styles.filter}>
+            <label className={styles.filterLabel} htmlFor={ids.action}>
+              Action
+            </label>
+            <select
+              id={ids.action}
+              className={styles.filterControl}
+              data-set={action ? true : undefined}
+              value={action}
+              onChange={(e) => setParams({ action: e.target.value })}
+            >
+              <option value="">Any action</option>
+              {Object.entries(ACTIONS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {target && (
+            <Button variant="secondary" onClick={() => setParams({ target: "" })} icon={<Icon name="close" size={16} />}>
+              Only {target.slice(-6)}
+            </Button>
+          )}
+          {filtered && (
+            <button type="button" className={styles.clear} onClick={() => router.replace(pathname, { scroll: false })}>
+              Clear filters
+            </button>
+          )}
+        </div>
+        <Log key={JSON.stringify(filter)} filter={filter} filtered={filtered} />
       </div>
     </Needs>
   );

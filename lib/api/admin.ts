@@ -24,7 +24,8 @@ export type ModuleSettings = Json<"/v1/ruxstar/modules", "get">["data"][number];
 export type ModuleName = ModuleSettings["module"];
 export type ModulePatch = paths["/v1/ruxstar/modules/{module}"]["patch"]["requestBody"]["content"]["application/json"];
 export type AuditEntry = Json<"/v1/ruxstar/audit", "get">["data"][number];
-export type AuditFilter = Omit<Query<"/v1/ruxstar/audit">, "cursor" | "limit">;
+/** `from` is inclusive and `to` exclusive, both ISO date-times. */
+export type AuditFilter = Omit<Query<"/v1/ruxstar/audit">, "cursor" | "limit"> & { from?: string; to?: string };
 
 const toPage = <T>(envelope: { data: T[]; meta: { nextCursor?: string | null } }): Page<T> => ({
   items: envelope.data,

@@ -20,5 +20,19 @@ export const exact = (iso: string) => full.format(new Date(iso));
 /** "11:02 am", India time. */
 export const clock = (iso: string) => time.format(new Date(iso));
 
+const ymd = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" });
+
+/** "2026-11-15": the India date of a moment, `days` later (or earlier when negative). */
+export function istDate(at: Date | string = new Date(), days = 0): string {
+  const [y, m, d] = ymd.format(new Date(at)).split("-").map(Number) as [number, number, number];
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+}
+
+/** When an India date ("2026-11-15") starts, as an ISO date-time. */
+export const istDayStart = (date: string) => new Date(`${date}T00:00:00+05:30`).toISOString();
+
+/** "11:02 am" today, otherwise the date too. India time. */
+export const stamp = (iso: string) => (istDate(iso) === istDate() ? clock(iso) : exact(iso));
+
 /** 999, 1.2K, 3.4M. */
 export const compact = (n: number) => (n < 1000 ? String(n) : new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(n));

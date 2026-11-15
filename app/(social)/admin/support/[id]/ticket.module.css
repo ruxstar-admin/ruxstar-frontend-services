@@ -1,0 +1,187 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.heading {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.heading h1 {
+  overflow-wrap: anywhere;
+}
+
+.headActions {
+  display: flex;
+  flex: none;
+  gap: var(--space-1);
+}
+
+/* Details, then the conversation; side by side on wide screens. */
+.layout {
+  display: grid;
+  align-items: start;
+  gap: var(--space-5);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.section + .section {
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  font: 700 17px/24px var(--font);
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 60px;
+  margin: 0 calc(-1 * var(--space-3));
+  padding: var(--space-2) var(--space-3);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-control);
+  transition: background var(--dur-quick) var(--ease-out);
+}
+
+a.person:hover {
+  background: var(--raised);
+}
+
+.info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-5);
+  margin: 0;
+}
+
+.info > div > dd {
+  font: 600 16px/22px var(--font);
+}
+
+.editGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.menuLink {
+  text-decoration: none;
+}
+
+/* The conversation: theirs on the left, Ruxstar's on the right. */
+.thread {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.message {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1);
+}
+
+.message[data-mine] {
+  justify-items: end;
+}
+
+.byline {
+  font: var(--type-caption);
+  color: var(--ink-2);
+}
+
+.bubble {
+  display: grid;
+  gap: var(--space-2);
+  max-width: min(520px, 88%);
+  padding: var(--space-3) var(--space-4);
+  color: var(--ink);
+  background: var(--raised);
+  border: 1px solid transparent;
+  border-radius: var(--radius-card) var(--radius-card) var(--radius-card) 6px;
+}
+
+.message[data-mine] .bubble {
+  background: color-mix(in srgb, var(--accent-deep) 55%, var(--surface));
+  border-radius: var(--radius-card) var(--radius-card) 6px var(--radius-card);
+}
+
+.message[data-internal] .bubble {
+  background: color-mix(in srgb, var(--warning) 10%, var(--surface));
+  border: 1px dashed var(--warning);
+}
+
+.text {
+  font: var(--type-body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.noteTag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font: 600 12px/16px var(--font);
+  color: var(--warning);
+}
+
+.toggle {
+  justify-self: stretch;
+  min-height: var(--size-touch);
+  padding: 0 var(--space-5);
+  font: 600 15px/20px var(--font);
+  color: var(--ink);
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--dur-quick) var(--ease-out);
+}
+
+.toggle:hover {
+  background: color-mix(in srgb, var(--raised) 70%, var(--line));
+}
+
+.composer {
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 1200px) {
+  .layout {
+    grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .info {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

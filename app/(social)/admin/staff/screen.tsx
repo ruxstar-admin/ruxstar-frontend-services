@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Needs, useAccess } from "@/components/admin/AdminFrame";
 import { Failed, Rows, styles } from "@/components/admin/parts";
+import { useUserSearch } from "@/components/admin/people";
 import { Avatar } from "@/components/profile/Avatar";
 import { useOnSignedOut } from "@/components/social/session";
 import { Button, Card, Icon, Input, Switch, Tag, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
-import { findUsers, listStaff, removeStaff, saveStaff, type Permission, type StaffMember, type UserRow } from "@/lib/api/admin";
+import { listStaff, removeStaff, saveStaff, type Permission, type StaffMember, type UserRow } from "@/lib/api/admin";
 import { ago } from "@/lib/time";
 
 const AREA: Record<string, string> = {
@@ -90,34 +91,25 @@ function Grant({
   );
 }
 
-/** Find the person to add. Admins and current staff are left out. */
+/** Find the person to add. Admins and current staff are shown but can't be picked. */
 function AddMember({ staff, onAdded, onCancel }: { staff: StaffMember[]; onAdded: (m: StaffMember) => void; onCancel: () => void }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
   const [text, setText] = useState("");
-  const [results, setResults] = useState<UserRow[] | null>(null);
+  const { results, searching, error } = useUserSearch(text, "active");
   const [chosen, setChosen] = useState<UserRow | null>(null);
   const key = useRef(crypto.randomUUID());
-
-  useEffect(() => {
-    const q = text.trim();
-    if (q.length < 2) return;
-    let live = true;
-    const t = setTimeout(() => {
-      findUsers(q, "active").then(
-        (page) => {
-          if (!live) return;
-          const current = new Set(staff.filter((m) => m.status === "active").map((m) => m.user.id));
-          setResults(page.items.filter((u) => !u.roles.admin && !current.has(u.id)).slice(0, 8));
-        },
-        (err) => live && !onSignedOut(err) && toast(formError(err).message, "danger"),
-      );
-    }, 300);
-    return () => {
-      live = false;
-      clearTimeout(t);
-    };
-  }, [text, staff, onSignedOut, toast]);
+  const current = new Set(staff.filter((m) => m.status === "active").map((m) => m.user.id));
+  const taken = (u: UserRow) => (u.roles.admin ? "Admin" : current.has(u.id) || u.roles.ruxstarStaff ? "Already staff" : null);
+  const note = error
+    ? formError(error).message
+    : searching && !results
+      ? "Searching…"
+      : results?.length === 0
+        ? "Nobody matches that."
+        : results
+          ? `${results.length === 1 ? "1 person" : `${results.length} people`} found.`
+          : "";
 
   if (chosen) {
     const before = staff.find((m) => m.user.id === chosen.id);
@@ -156,38 +148,50 @@ function AddMember({ staff, onAdded, onCancel }: { staff: StaffMember[]; onAdded
         </Button>
       </div>
       <Input
-        label="Find their account"
+        label="Search people"
         hint="Phone number, @username or name. They need a Ruxstar account first."
         type="search"
         value={text}
-        onChange={(e) => {
-          setText(e.target.value);
-          if (e.target.value.trim().length < 2) setResults(null);
-        }}
+        onChange={(e) => setText(e.target.value)}
         autoFocus
         autoComplete="off"
       />
-      {results &&
-        (results.length === 0 ? (
-          <p className={styles.muted}>Nobody to add matches that.</p>
-        ) : (
-          <ul className={styles.list}>
-            {results.map((u) => (
-              <li key={u.id} className={styles.item}>
-                <button type="button" className={styles.row} onClick={() => setChosen(u)}>
-                  <Avatar name={u.name || u.username} url={u.avatarUrl} size={40} />
-                  <span className={styles.whoRow}>
-                    <span className={styles.name}>{u.name || "No name"}</span>
-                    <span className={styles.muted}>
-                      @{u.username} · {u.phone}
-                    </span>
+      <p className={styles.muted} role="status" aria-live="polite">
+        {note}
+      </p>
+      {results && results.length > 0 && (
+        <ul className={styles.list} aria-label="Search results" aria-busy={searching || undefined}>
+          {results.map((u) => {
+            const tag = taken(u);
+            const who = (
+              <>
+                <Avatar name={u.name || u.username} url={u.avatarUrl} size={40} />
+                <span className={styles.whoRow}>
+                  <span className={styles.name}>{u.name || "No name"}</span>
+                  <span className={`${styles.muted} ${styles.line}`}>
+                    @{u.username} · {u.phone}
                   </span>
-                  <Icon name="plus" size={20} className={styles.chevron} />
-                </button>
+                </span>
+              </>
+            );
+            return (
+              <li key={u.id} className={styles.item}>
+                {tag ? (
+                  <div className={styles.row} data-disabled>
+                    {who}
+                    <Tag>{tag}</Tag>
+                  </div>
+                ) : (
+                  <button type="button" className={styles.row} onClick={() => setChosen(u)}>
+                    {who}
+                    <Icon name="plus" size={20} className={styles.chevron} />
+                  </button>
+                )}
               </li>
-            ))}
-          </ul>
-        ))}
+            );
+          })}
+        </ul>
+      )}
     </Card>
   );
 }
@@ -279,6 +283,12 @@ function StaffList() {
   const [error, setError] = useState<unknown>(null);
   const [attempt, setAttempt] = useState(0);
   const [adding, setAdding] = useState(false);
+  const filterId = useId();
+  const [find, setFind] = useState("");
+  const needle = find.trim().toLowerCase().replace(/^@/, "");
+  const shown = needle
+    ? (staff ?? []).filter((m) => [m.user.name, m.user.username, m.title].some((s) => s?.toLowerCase().includes(needle)))
+    : (staff ?? []);
 
   useEffect(() => {
     let live = true;
@@ -336,18 +346,45 @@ function StaffList() {
       ) : staff.length === 0 ? (
         <p className={styles.empty}>No staff yet. Add someone to share the work.</p>
       ) : (
-        <ul className={styles.list}>
-          {staff.map((m) => (
-            <Member
-              key={m.user.id}
-              m={m}
-              onChanged={(done, message) => {
-                put(done);
-                toast(message, "success");
-              }}
-            />
-          ))}
-        </ul>
+        <>
+          <div className={styles.filters}>
+            <div className={styles.filter}>
+              <label className={styles.filterLabel} htmlFor={filterId}>
+                Filter staff
+              </label>
+              <input
+                id={filterId}
+                type="search"
+                className={`${styles.filterControl} ${styles.filterSearch}`}
+                placeholder="Name, @username or title"
+                value={find}
+                onChange={(e) => setFind(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+            {needle && (
+              <span className={styles.muted} role="status">
+                {shown.length === 1 ? "1 match" : `${shown.length} matches`}
+              </span>
+            )}
+          </div>
+          {shown.length === 0 ? (
+            <p className={styles.empty}>Nobody on staff matches that.</p>
+          ) : (
+            <ul className={styles.list}>
+              {shown.map((m) => (
+                <Member
+                  key={m.user.id}
+                  m={m}
+                  onChanged={(done, message) => {
+                    put(done);
+                    toast(message, "success");
+                  }}
+                />
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );
