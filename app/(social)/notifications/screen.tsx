@@ -44,6 +44,8 @@ const ICONS: Record<Notification["type"], IconName> = {
   "turf.updated": "ball",
   "stays.reserved": "bed",
   "stays.updated": "bed",
+  "shop.ordered": "bag",
+  "shop.updated": "bag",
 };
 
 function hrefOf(link: Notification["link"]) {
@@ -99,6 +101,14 @@ function hrefOf(link: Notification["link"]) {
       return `/reservations/${link.id}`;
     case "vendor_property":
       return `/beds/${link.id}`;
+    case "store":
+      return `/shops/${link.id}`;
+    case "store_product":
+      return `/products/${link.id}`;
+    case "store_order":
+      return `/orders/shop/${link.id}`;
+    case "vendor_store_order":
+      return `/store/orders/${link.id}`;
     default:
       return `/p/${link.id}`;
   }

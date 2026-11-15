@@ -19,6 +19,7 @@ export function TeamScreen({ id }: { id: string }) {
   const coaches = data.permissions.some((p) => p.key === "classes.view");
   const groundStaff = data.permissions.some((p) => p.key === "turf.bookings");
   const wardens = data.permissions.some((p) => p.key.startsWith("stays."));
+  const shopStaff = data.permissions.some((p) => p.key.startsWith("store."));
 
   return (
     <div className={styles.page}>
@@ -62,7 +63,9 @@ export function TeamScreen({ id }: { id: string }) {
                   ? "Invite ground staff to run the day’s board, block slots for maintenance or phone bookings, and mark who turned up."
                   : wardens
                     ? "Invite wardens to mark tenants moved in, mark beds full, and see reservations and tenants."
-                    : "Invite someone to help with orders, the shop or posts."}
+                    : shopStaff
+                      ? "Invite shop staff to accept and pack orders, deliver them, handle returns and keep stock up to date."
+                      : "Invite someone to help with orders, the shop or posts."}
           </p>
         </Empty>
       )}

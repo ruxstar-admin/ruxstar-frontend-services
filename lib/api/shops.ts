@@ -30,6 +30,7 @@ export const MODULE_LABEL: Record<BusinessModule, string> = {
   coaching: "Coaching",
   stays: "PG & hostels",
   turf: "Sports",
+  shop: "Shops",
 };
 
 let catalog: Promise<Pick<Catalog, "categories" | "podProducts">> | null = null;

@@ -187,8 +187,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -290,8 +290,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -413,7 +413,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -598,7 +598,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -7203,7 +7203,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7318,7 +7318,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7426,7 +7426,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7537,7 +7537,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7689,7 +7689,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7876,7 +7876,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -8567,12 +8567,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated" | "coaching.enrolled" | "coaching.updated" | "turf.booked" | "turf.updated" | "stays.reserved" | "stays.updated";
+                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated" | "coaching.enrolled" | "coaching.updated" | "turf.booked" | "turf.updated" | "stays.reserved" | "stays.updated" | "shop.ordered" | "shop.updated";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches, `turf_ground` a ground's page, `turf_order` your turf booking, `vendor_ground` a ground's board for its owner or team, `stay_property` a PG or hostel's page, `stay_order` your PG or hostel reservation, `vendor_property` a property's bed board for its owner or team; `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch" | "turf_ground" | "turf_order" | "vendor_ground" | "stay_property" | "stay_order" | "vendor_property";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches, `turf_ground` a ground's page, `turf_order` your turf booking, `vendor_ground` a ground's board for its owner or team, `stay_property` a PG or hostel's page, `stay_order` your PG or hostel reservation, `vendor_property` a property's bed board for its owner or team, `store` a local shop's page, `store_product` one of its products, `store_order` your order at a local shop, `vendor_store_order` an order at the desk of a local shop you own or work at; `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch" | "turf_ground" | "turf_order" | "vendor_ground" | "stay_property" | "stay_order" | "vendor_property" | "store" | "store_product" | "store_order" | "vendor_store_order";
                                     id: string;
                                 };
                                 read: boolean;
@@ -8974,7 +8974,7 @@ export interface paths {
                                 amount: number;
                                 /** Format: date-time */
                                 at: string;
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
                                 /** @description Set on order lines */
                                 order: {
                                     /** @description MongoDB ObjectId as hex */
@@ -9259,7 +9259,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -9508,7 +9508,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -11399,7 +11399,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -11486,7 +11486,7 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Your print shops, events, coaching, turf and stays businesses it works at */
+                        /** @description Your print shops, events, coaching, turf, stays and local shop businesses it works at */
                         businessIds: string[];
                     };
                 };
@@ -11516,7 +11516,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -11617,7 +11617,7 @@ export interface paths {
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
                         active?: boolean;
-                        /** @description Your print shops, events, coaching, turf and stays businesses it works at */
+                        /** @description Your print shops, events, coaching, turf, stays and local shop businesses it works at */
                         businessIds?: string[];
                     };
                 };
@@ -11647,7 +11647,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -11744,7 +11744,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -11761,11 +11761,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -11818,7 +11818,7 @@ export interface paths {
                     "application/json": {
                         /** @description Their Ruxstar username, without the @ */
                         username: string;
-                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                        permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                         pay?: {
                             /** @description In paise, at least ₹1 */
                             amount: number;
@@ -11850,7 +11850,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -11983,7 +11983,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                        permissions?: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                         /** @description Only while they're invited: the offer can't change once they accept */
                         pay?: {
                             /** @description In paise, at least ₹1 */
@@ -12016,7 +12016,7 @@ export interface paths {
                                 };
                                 /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                 status: "invited" | "waiting" | "active";
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                                 pay: {
                                     /** @description In paise, at least ₹1 */
                                     amount: number;
@@ -19652,6 +19652,1035 @@ export interface paths {
         };
         trace?: never;
     };
+    "/v1/vendor/businesses/{id}/shop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A local shop's delivery, pickup, delivery fee, smallest order and return policy */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Delivers in its city */
+                                delivery: boolean;
+                                /** @description Customers can collect from the shop */
+                                pickup: boolean;
+                                /** @description Road km it delivers to; null for anywhere in its city */
+                                radiusKm: number | null;
+                                /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                deliveryFee: {
+                                    /** @description Amount in paise */
+                                    base: number;
+                                    /** @description Km the base covers */
+                                    includedKm: number;
+                                    /** @description Amount in paise */
+                                    perKm: number;
+                                };
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                /** @description Takes returns within Ruxstar's return days; false is "No returns" */
+                                returns: boolean;
+                                notes: string | null;
+                                /** @description Ruxstar's return days, when returns are on */
+                                returnDays: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set delivery or pickup, how far and for how much you deliver, the smallest order, and returns
+         * @description Changes what's sent. Delivery is in your city only, by your team, Ruxstar partners or yourself; `radiusKm` limits it by road km. The delivery fee is up to Ruxstar's most (see GET /v1/vendor/catalog). Returns on means within Ruxstar's return days (`returnDays`), off is "No returns"; orders keep the policy they were placed with.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description At least one of delivery and pickup stays on */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        delivery?: boolean;
+                        pickup?: boolean;
+                        radiusKm?: number | null;
+                        /** @description Up to the most Ruxstar allows */
+                        deliveryFee?: {
+                            base: number;
+                            includedKm: number;
+                            perKm: number;
+                        };
+                        minOrder?: number;
+                        /** @description true: returns within Ruxstar's return days. false: "No returns" */
+                        returns?: boolean;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Delivers in its city */
+                                delivery: boolean;
+                                /** @description Customers can collect from the shop */
+                                pickup: boolean;
+                                /** @description Road km it delivers to; null for anywhere in its city */
+                                radiusKm: number | null;
+                                /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                deliveryFee: {
+                                    /** @description Amount in paise */
+                                    base: number;
+                                    /** @description Km the base covers */
+                                    includedKm: number;
+                                    /** @description Amount in paise */
+                                    perKm: number;
+                                };
+                                /** @description Amount in paise */
+                                minOrder: number;
+                                /** @description Takes returns within Ruxstar's return days; false is "No returns" */
+                                returns: boolean;
+                                notes: string | null;
+                                /** @description Ruxstar's return days, when returns are on */
+                                returnDays: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/businesses/{id}/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A local shop's products, newest first, with every variant's price and stock */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                    status?: "live" | "hidden" | "removed";
+                    q?: string;
+                    /** @description Only products with a variant at or under this stock */
+                    lowStock?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a product with its variant table
+         * @description Up to the rules' `maxOptions` options (such as Size and Colour) and one variant row per combination you sell, each with its price, MRP, stock and SKU. Without options, one row. Live as soon as it's saved unless `status` is hidden; add its photo next. Words on Ruxstar's banned list are refused, saying which.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        description?: string | null;
+                        /** @description Up to the rules' `maxOptions`, such as Size and Colour */
+                        options?: {
+                            name: string;
+                            /** @description Up to the rules' `maxValues` */
+                            values: string[];
+                        }[];
+                        /** @description The variant table: one row per combination sold, each with its price, MRP, stock and SKU. Without options, one row */
+                        variants: {
+                            /** @description One per option, in order; left out without options */
+                            values?: string[];
+                            /** @description Paise, at least ₹1 */
+                            price: number;
+                            mrp?: number | null;
+                            /** @description How many are left to sell */
+                            stock: number;
+                            sku?: string | null;
+                        }[];
+                        hsn?: string | null;
+                        gstRateBps?: number | null;
+                        /** @description Default live */
+                        status?: "live" | "hidden";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vendor/products/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of your products */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a product
+         * @description Orders keep what was bought. To stop selling it for a while, set `status` to hidden instead.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Change a product: words, options and the variant table, tax, or take it off sale
+         * @description Sending `variants` replaces the table, stock included; if an order took stock since you loaded it, you're asked to refresh. Variants keep their ids by their values.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Sending `variants` replaces the table, stock included; with `options`, send `variants` too */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title?: string;
+                        description?: string | null;
+                        /** @description Up to the rules' `maxOptions`, such as Size and Colour */
+                        options?: {
+                            name: string;
+                            /** @description Up to the rules' `maxValues` */
+                            values: string[];
+                        }[];
+                        /** @description The variant table: one row per combination sold, each with its price, MRP, stock and SKU. Without options, one row */
+                        variants?: {
+                            /** @description One per option, in order; left out without options */
+                            values?: string[];
+                            /** @description Paise, at least ₹1 */
+                            price: number;
+                            mrp?: number | null;
+                            /** @description How many are left to sell */
+                            stock: number;
+                            sku?: string | null;
+                        }[];
+                        hsn?: string | null;
+                        gstRateBps?: number | null;
+                        /** @description Default live */
+                        status?: "live" | "hidden";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/vendor/products/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the product's photo
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. One photo per product; a new one replaces it.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Remove the product's photo */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/vendor/businesses/{id}/activity": {
         parameters: {
             query?: never;
@@ -19801,11 +20830,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -19912,11 +20941,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -19997,11 +21026,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -20069,8 +21098,8 @@ export interface paths {
                         "application/json": {
                             data: {
                                 categories: {
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     label: string;
                                     description: string;
                                     live: boolean;
@@ -20083,7 +21112,7 @@ export interface paths {
                                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                          * @enum {unknown}
                                          */
-                                        id: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                        id: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                         label: string;
                                         description: string;
                                         examples: string;
@@ -20184,13 +21213,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -20331,13 +21360,13 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                        module: "pod" | "events" | "coaching" | "stays" | "turf";
+                        /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                         /**
                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                          * @enum {unknown}
                          */
-                        type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                        type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                         name: string;
                         /** @description 10-digit mobile number */
                         phone: string;
@@ -20371,13 +21400,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -20538,13 +21567,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -20776,13 +21805,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -20992,13 +22021,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -21160,13 +22189,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -21334,13 +22363,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -21505,13 +22534,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -21677,13 +22706,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -21849,13 +22878,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -23812,11 +24841,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -23906,11 +24935,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -24061,11 +25090,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -24223,7 +25252,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -24324,7 +25353,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -25283,11 +26312,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -25377,11 +26406,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -25532,11 +26561,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -28552,11 +29581,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -28646,11 +29675,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -28801,11 +29830,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -33391,11 +34420,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -33485,11 +34514,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -33640,11 +34669,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -37530,11 +38559,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -37624,11 +38653,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -37779,11 +38808,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -39473,6 +40502,5332 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/shop/desk/stores": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Local shops you run: your own, and those whose team gave you store permissions
+         * @description With the orders waiting and returns open at each. Team members need to be verified to see them.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                owner: boolean;
+                                /** @description The owner has every one */
+                                permissions: string[];
+                                /** @description Orders paid and not delivered */
+                                open: number;
+                                /** @description Returns open */
+                                returns: number;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/desk/stores/{id}/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The shop's paid orders, newest first: the queue to accept, pack and send
+         * @description Team members need store.orders. Orders waiting for payment aren't shown.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description open: paid and not delivered. returns: a return is open. done: delivered or cancelled */
+                    view?: "open" | "returns" | "done" | "all";
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/desk/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One order: items with their variants and SKUs, the customer, delivery, return and your share
+         * @description Team members need store.orders.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/desk/orders/{id}/move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move an order on: accept, packed, out for delivery or ready for pickup, delivered
+         * @description One step at a time (see `next`). Out for delivery and delivered are for delivering it yourself; a rider's trip moves it by itself. Delivered (or picked up) starts the return window, and your share is released at the later of its end and the rules' `releaseHours`. Team members need store.move.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description One step at a time. out_for_delivery and delivered are for your own delivery; a rider's trip moves it by itself */
+                        status: "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/desk/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a paid order: the customer gets everything back and the stock goes back
+         * @description Before delivery; not once a rider has picked it up. Team members need store.cancel.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The customer is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/desk/orders/{id}/delivery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who can deliver a packed order: your team, or a Ruxstar partner and what they'd be paid
+         * @description You can always deliver it yourself instead. Team members need store.move.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                orderStatus: string;
+                                /** @description The order is ready and nobody has it, so a rider can be picked now */
+                                canAssign: boolean;
+                                reason: string | null;
+                                /** @description People on the team with "Deliver orders" */
+                                team: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    placeId: string;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                    vehicle: {
+                                        type: "bike" | "scooter";
+                                        /** @description The number plate */
+                                        number: string;
+                                    } | null;
+                                    /** @description Delivery verified, so they can take it in the Ruxstar Delivery app */
+                                    ready: boolean;
+                                }[];
+                                partner: {
+                                    available: boolean;
+                                    reason: string | null;
+                                    /** @description Amount in paise */
+                                    pay: number;
+                                    distanceKm: number | null;
+                                    /** @description Partners online in the shop's city now */
+                                    online: number;
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Hand a packed order to someone on your team, or offer it to Ruxstar partners nearby
+         * @description A partner offer goes to partners online in your city; the first to accept gets it, and their pay comes out of your share at delivery. The customer gets a code to give the rider at the door. Team members need store.move.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        carrier: "team";
+                        /** @description MongoDB ObjectId as hex */
+                        placeId: string;
+                    } | {
+                        /** @enum {string} */
+                        carrier: "partner";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Take the delivery back before the rider picks it up
+         * @description The order stays packed. Team members need store.move.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/desk/orders/{id}/return/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept a return or turn it down
+         * @description Turning it down needs a note; the customer can still take it to Ruxstar. Team members need store.returns.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        decision: "approve" | "reject";
+                        /** @description The customer is told; needed to reject */
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/desk/orders/{id}/return/received": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * The returned items are back: refund the customer
+         * @description The refund comes out of your share for the order; the rest is released when it's due. Returned stock isn't added back by itself. Team members need store.returns.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/desk/stores/{id}/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The shop's products with every variant's stock, newest first
+         * @description Team members need store.stock. `lowStock` lists products with a variant at or under that many left.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                    status?: "live" | "hidden" | "removed";
+                    q?: string;
+                    /** @description Only products with a variant at or under this stock */
+                    lowStock?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/desk/products/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change a product: its words, options and variant table, tax, or take it off sale
+         * @description Sending `variants` replaces the table, stock included. The photo is the owner's, from /v1/vendor. Team members need store.products.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Sending `variants` replaces the table, stock included; with `options`, send `variants` too */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title?: string;
+                        description?: string | null;
+                        /** @description Up to the rules' `maxOptions`, such as Size and Colour */
+                        options?: {
+                            name: string;
+                            /** @description Up to the rules' `maxValues` */
+                            values: string[];
+                        }[];
+                        /** @description The variant table: one row per combination sold, each with its price, MRP, stock and SKU. Without options, one row */
+                        variants?: {
+                            /** @description One per option, in order; left out without options */
+                            values?: string[];
+                            /** @description Paise, at least ₹1 */
+                            price: number;
+                            mrp?: number | null;
+                            /** @description How many are left to sell */
+                            stock: number;
+                            sku?: string | null;
+                        }[];
+                        hsn?: string | null;
+                        gstRateBps?: number | null;
+                        /** @description Default live */
+                        status?: "live" | "hidden";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/shop/desk/products/{id}/stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set how many are left of some variants
+         * @description Each variant sent is set to its number, as counted on the shelf. Team members need store.stock.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Each set to the number given */
+                        variants: {
+                            /** @description MongoDB ObjectId as hex */
+                            variantId: string;
+                            /** @description How many are left to sell */
+                            stock: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ruxstar's rules for local shops: return days, options per product, when shops are paid, checkout time and fees
+         * @description No sign-in needed.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description Shops that take returns take them for this many days after delivery. Orders made keep their days */
+                                returnDays: number;
+                                /** @description Option dimensions on one product, such as size and colour */
+                                maxOptions: number;
+                                /** @description The shop's money is released this long after delivery, or when the return window ends if that is later */
+                                releaseHours: number;
+                                /** @description An unpaid order's checkout works this long. Stock is only taken when it's paid */
+                                holdMinutes: number;
+                                /** @description A paid order the shop hasn't accepted in this long is cancelled and fully refunded */
+                                acceptHours: number;
+                                /** @description Products per shop */
+                                maxProducts: number;
+                                /** @description Variants (option combinations) on one product */
+                                maxVariants: number;
+                                /** @description Values of one option */
+                                maxValues: number;
+                                /** @description Lines in one order */
+                                maxLines: number;
+                                /** @description Of one variant in one order */
+                                maxQuantity: number;
+                                commissionBps: number;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Local shops, newest first
+         * @description No sign-in needed. Filter by city, type and name. Empty while Ruxstar has local shops switched off.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    city?: string;
+                    /** @description A business type of local shops */
+                    type?: string;
+                    /** @description Words in the shop's name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description clothing, electronics, grocery, gifts, bakery or general_store */
+                                type: string;
+                                /** @description The business's first photo */
+                                photoUrl: string | null;
+                                city: string;
+                                area: string | null;
+                                open: boolean;
+                                delivery: boolean;
+                                pickup: boolean;
+                                /** @description The return rule in one sentence */
+                                returnRule: string;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Products for sale at local shops, newest first
+         * @description No sign-in needed. Filter by city, one shop, words in the title, and in stock. A shop's own page lists its products with `shop`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    city?: string;
+                    /** @description MongoDB ObjectId as hex */
+                    shop?: string;
+                    /** @description Words in the product's title */
+                    q?: string;
+                    inStock?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/products/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One product: its photo, options and every variant's price, MRP and stock, for the variant picker
+         * @description No sign-in needed. A combination missing from `variants` isn't sold. Products the shop hid or Ruxstar took down aren't found, except by the shop's owner.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/products/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A product's reviews, newest first
+         * @description No sign-in needed. The product's rating is on its detail.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your local shop orders, newest first
+         * @description current: waiting for payment, the shop, or delivery. past: delivered or cancelled.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description current: not delivered or cancelled yet */
+                    view?: "current" | "past" | "all";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Null while the shop delivers it itself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    dropCode: string | null;
+                                } | null;
+                                /** @description Unpaid, or paid and not packed yet: a full refund */
+                                canCancel: boolean;
+                                /** @description Delivered, the shop takes returns and the window is open */
+                                canReturn: boolean;
+                                /** @description Each product in the order, reviewed on its own once delivered */
+                                reviewable: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    title: string;
+                                    canReview: boolean;
+                                    reviewUntil: string | null;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One order: items, tracking, the rider's drop code, return, refunds and invoices
+         * @description While it waits for payment, Cashfree is asked whether it was paid.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Null while the shop delivers it itself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    dropCode: string | null;
+                                } | null;
+                                /** @description Unpaid, or paid and not packed yet: a full refund */
+                                canCancel: boolean;
+                                /** @description Delivered, the shop takes returns and the window is open */
+                                canReturn: boolean;
+                                /** @description Each product in the order, reviewed on its own once delivered */
+                                reviewable: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    title: string;
+                                    canReview: boolean;
+                                    reviewUntil: string | null;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/orders/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A fresh checkout link for an order waiting for payment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel an order before the shop packs it
+         * @description Unpaid: the checkout closes. Paid and not packed yet: everything back, platform fee included, and the stock goes back. Once packed, ask for a return after delivery instead.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Null while the shop delivers it itself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    dropCode: string | null;
+                                } | null;
+                                /** @description Unpaid, or paid and not packed yet: a full refund */
+                                canCancel: boolean;
+                                /** @description Delivered, the shop takes returns and the window is open */
+                                canReturn: boolean;
+                                /** @description Each product in the order, reviewed on its own once delivered */
+                                reviewable: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    title: string;
+                                    canReview: boolean;
+                                    reviewUntil: string | null;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/orders/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask to return some or all of a delivered order
+         * @description Within the shop's return window (see `returnUntil`); not for shops with "No returns". Once per order. The shop pays the trip back when it sent the wrong item or it arrived damaged; otherwise one delivery fee comes off the refund. You're refunded once the shop has the items back. The shop's money for the order waits until it's settled.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                        reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                        note?: string;
+                        /** @description What goes back; left out, everything */
+                        lines?: {
+                            /** @description MongoDB ObjectId as hex */
+                            lineId: string;
+                            quantity: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** @description Null while the shop delivers it itself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    dropCode: string | null;
+                                } | null;
+                                /** @description Unpaid, or paid and not packed yet: a full refund */
+                                canCancel: boolean;
+                                /** @description Delivered, the shop takes returns and the window is open */
+                                canReturn: boolean;
+                                /** @description Each product in the order, reviewed on its own once delivered */
+                                reviewable: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    title: string;
+                                    canReview: boolean;
+                                    reviewUntil: string | null;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/orders/{id}/products/{productId}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your review of a product you bought in this order
+         * @description Null until you review it. One Ruxstar removed comes back with its reason; it can't be changed or written again.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    productId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Review a product you bought, or change your review
+         * @description Once the order is delivered (or picked up), until 30 days after. 1 to 5 stars and, if you like, a few words; one review per product per order. Leaving out `text` keeps what you wrote; null or blank clears it. The shop is told about a new review.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    productId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        rating: number;
+                        text?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Delete your review of a product
+         * @description You can review it again while the order is still open for reviews.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    /** @description MongoDB ObjectId as hex */
+                    productId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/reviews/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report a review to Ruxstar
+         * @description One open report per review you report; reporting it again while it is open changes nothing. The writer isn't told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: "spam" | "fake" | "abuse" | "other";
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/{id}/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Price a cart at one shop: each line, delivery or pickup, the platform fee, and the coupons that work
+         * @description The cart is kept on the device; this prices it as it is now. Nothing is held: stock is only taken when an order is paid. A line from another shop, a sold-out variant or too few left is an error naming the item. With `code`, that coupon is checked too.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description From one shop; up to the rules' `maxLines` */
+                        lines: {
+                            /** @description MongoDB ObjectId as hex */
+                            productId: string;
+                            /** @description MongoDB ObjectId as hex */
+                            variantId: string;
+                            /** @description Up to the rules' `maxQuantity` */
+                            quantity: number;
+                        }[];
+                        method: "delivery" | "pickup";
+                        /** @description Where it goes, as far as filled in, to price delivery by distance */
+                        address?: {
+                            line?: string;
+                            city?: string;
+                            pincode?: string;
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        };
+                        /** @description Check this coupon too */
+                        code?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    stock: number;
+                                }[];
+                                /** @description Amount in paise */
+                                items: number;
+                                /** @description Amount in paise */
+                                delivery: number;
+                                deliveryKm: number | null;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                /** @description Amount in paise */
+                                discount: number;
+                                /** @description Amount in paise */
+                                total: number;
+                                returnRule: string;
+                                offers: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    label: string;
+                                    terms: string | null;
+                                    /** @description Paise it takes off this order; 0 when it doesn't apply yet */
+                                    discount: number;
+                                    problem: string | null;
+                                }[];
+                                /** @description With `code` */
+                                checked: {
+                                    code: string;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    problem: string | null;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/{id}/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Order from one shop: delivery to an address in its city, or pickup
+         * @description Every line must be from this shop. Stock is checked now and taken when the payment goes through; if something sold out meanwhile, the order is cancelled and refunded in full at once. Returns a checkout link, open for the rules' `holdMinutes`. Once paid, the shop has the rules' `acceptHours` to accept or you're refunded.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Delivery needs `address`, in the shop's city */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description From one shop; up to the rules' `maxLines` */
+                        lines: {
+                            /** @description MongoDB ObjectId as hex */
+                            productId: string;
+                            /** @description MongoDB ObjectId as hex */
+                            variantId: string;
+                            /** @description Up to the rules' `maxQuantity` */
+                            quantity: number;
+                        }[];
+                        method: "delivery" | "pickup";
+                        address?: {
+                            name: string;
+                            /** @description 10 digits */
+                            phone: string;
+                            /** @description House, street and area */
+                            line: string;
+                            city: string;
+                            pincode: string;
+                            /** @description From the phone's location. Without it the address is looked up on the map, which is less exact. */
+                            point?: {
+                                lat: number;
+                                lng: number;
+                            } | null;
+                        };
+                        coupon?: string;
+                        /** @description For the shop */
+                        note?: string;
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    business: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description MongoDB ObjectId as hex */
+                                        productId: string;
+                                        /** @description MongoDB ObjectId as hex */
+                                        variantId: string;
+                                        title: string;
+                                        /** @description As it was when ordered */
+                                        options: {
+                                            name: string;
+                                            value: string;
+                                        }[];
+                                        photoUrl: string | null;
+                                        sku: string | null;
+                                        /** @description Amount in paise */
+                                        unitPrice: number;
+                                        mrp: number | null;
+                                        quantity: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    }[];
+                                    method: "delivery" | "pickup";
+                                    /** @description Null for pickup */
+                                    address: {
+                                        name: string;
+                                        /** @description 10 digits */
+                                        phone: string;
+                                        /** @description House, street and area */
+                                        line: string;
+                                        city: string;
+                                        pincode: string;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                    } | null;
+                                    /** @description Pickup: where to collect it */
+                                    pickupAt: {
+                                        address: string;
+                                        point: {
+                                            lat: number;
+                                            lng: number;
+                                        } | null;
+                                        phone: string | null;
+                                    } | null;
+                                    price: {
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        delivery: number;
+                                        deliveryKm: number | null;
+                                        /** @description Amount in paise */
+                                        platformFee: number;
+                                        /** @description Amount in paise */
+                                        discount: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    };
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    note: string | null;
+                                    timeline: {
+                                        /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                        status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                        /** Format: date-time */
+                                        at: string;
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    }[];
+                                    /** @description Unpaid: the checkout closes then */
+                                    payBy: string | null;
+                                    paidAt: string | null;
+                                    /** @description Paid: refunded if the shop hasn't accepted by then */
+                                    acceptBy: string | null;
+                                    deliveredAt: string | null;
+                                    returnRule: string;
+                                    /** @description The last moment to ask for a return */
+                                    returnUntil: string | null;
+                                    return: {
+                                        /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                        reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                        note: string | null;
+                                        lines: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            lineId: string;
+                                            quantity: number;
+                                        }[];
+                                        /** @description requested and approved hold the shop's money until refunded or rejected */
+                                        status: "requested" | "approved" | "rejected" | "refunded";
+                                        tripPaidBy: "shop" | "customer";
+                                        /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                        tripFee: number;
+                                        /** @description Paise. What the customer gets back */
+                                        amount: number;
+                                        /** Format: date-time */
+                                        requestedAt: string;
+                                        decision: {
+                                            by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                            note: string | null;
+                                            /** Format: date-time */
+                                            at: string;
+                                        } | null;
+                                        receivedAt: string | null;
+                                    } | null;
+                                    refunds: {
+                                        kind: "full" | "return";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        reason: string | null;
+                                        status: "pending" | "done";
+                                        /** Format: date-time */
+                                        at: string;
+                                    }[];
+                                    /** @description Amount in paise */
+                                    refunded: number;
+                                    cancellation: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                    invoices?: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                        kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                        number: string;
+                                        /** @description Whose document it is: the business's, or Ruxstar's */
+                                        issuer: "vendor" | "ruxstar";
+                                        /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                        role: "supply" | "fee";
+                                        /** @description Amount in paise */
+                                        total: number;
+                                        /** @description Credit notes: the refund behind it */
+                                        refundId: string | null;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                    }[];
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                    /** @description Null while the shop delivers it itself */
+                                    delivery: {
+                                        /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                        carrier: "team" | "partner";
+                                        /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                        status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                        /** @description Once someone accepted it */
+                                        rider: {
+                                            name: string;
+                                            avatarUrl: string | null;
+                                            phone: string;
+                                            vehicle: {
+                                                type: "bike" | "scooter";
+                                                /** @description The number plate */
+                                                number: string;
+                                            };
+                                        } | null;
+                                        dropCode: string | null;
+                                    } | null;
+                                    /** @description Unpaid, or paid and not packed yet: a full refund */
+                                    canCancel: boolean;
+                                    /** @description Delivered, the shop takes returns and the window is open */
+                                    canReturn: boolean;
+                                    /** @description Each product in the order, reviewed on its own once delivered */
+                                    reviewable: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        productId: string;
+                                        title: string;
+                                        canReview: boolean;
+                                        reviewUntil: string | null;
+                                    }[];
+                                    /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                    canReview?: boolean;
+                                    /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                    reviewUntil?: string | null;
+                                };
+                                /** @description Open it to pay */
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A shop's product reviews, newest first
+         * @description No sign-in needed. The shop's rating covers all of them and is on its detail.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shop/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One local shop: photos, address, delivery or pickup, delivery fee, smallest order and return rule
+         * @description No sign-in needed. Its products come from /products?shop={id}.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description clothing, electronics, grocery, gifts, bakery or general_store */
+                                type: string;
+                                /** @description The business's first photo */
+                                photoUrl: string | null;
+                                city: string;
+                                area: string | null;
+                                open: boolean;
+                                delivery: boolean;
+                                pickup: boolean;
+                                /** @description The return rule in one sentence */
+                                returnRule: string;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                photos: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                phone: string | null;
+                                address: string;
+                                point: {
+                                    lat: number;
+                                    lng: number;
+                                } | null;
+                                setup: {
+                                    /** @description Delivers in its city */
+                                    delivery: boolean;
+                                    /** @description Customers can collect from the shop */
+                                    pickup: boolean;
+                                    /** @description Road km it delivers to; null for anywhere in its city */
+                                    radiusKm: number | null;
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    /** @description Takes returns within Ruxstar's return days; false is "No returns" */
+                                    returns: boolean;
+                                    notes: string | null;
+                                };
+                                returnDays: number | null;
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description Live products */
+                                products: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/employment/{id}/orders": {
         parameters: {
             query?: never;
@@ -39691,7 +46046,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                             }[];
                             meta: {
                                 requestId: string;
@@ -39938,7 +46293,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                             };
                             meta: {
                                 requestId: string;
@@ -40197,7 +46552,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                             };
                             meta: {
                                 requestId: string;
@@ -40455,7 +46810,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                             };
                             meta: {
                                 requestId: string;
@@ -40793,7 +47148,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                             };
                             meta: {
                                 requestId: string;
@@ -41027,7 +47382,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 placeId: string;
                                 /** @description What you may do at this shop */
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                             };
                             meta: {
                                 requestId: string;
@@ -41162,13 +47517,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -41347,13 +47702,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -41563,13 +47918,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -41731,13 +48086,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -41905,13 +48260,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -42076,13 +48431,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -42248,13 +48603,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -42435,7 +48790,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -42553,7 +48908,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -42684,7 +49039,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -42797,11 +49152,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -42908,11 +49263,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -42996,11 +49351,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property";
+                                    type: "event" | "course" | "ground" | "property" | "product";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -43075,7 +49430,7 @@ export interface paths {
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                         name: string;
-                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
+                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
                                         type: string;
                                         city: string | null;
                                         /** @description The cover photo's URL */
@@ -43086,7 +49441,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -43108,7 +49463,7 @@ export interface paths {
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                         name: string;
-                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
+                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
                                         type: string;
                                         city: string | null;
                                         /** @description The cover photo's URL */
@@ -43119,7 +49474,7 @@ export interface paths {
                                     owner: {
                                         name: string;
                                     };
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                                     /** @description The pay they accepted */
                                     pay: {
                                         /** @description In paise, at least ₹1 */
@@ -43136,11 +49491,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -43218,7 +49573,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
                                     type: string;
                                     city: string | null;
                                     /** @description The cover photo's URL */
@@ -43229,7 +49584,7 @@ export interface paths {
                                 owner: {
                                     name: string;
                                 };
-                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                                 /** @description The pay they accepted */
                                 pay: {
                                     /** @description In paise, at least ₹1 */
@@ -45978,7 +52333,7 @@ export interface paths {
                                     suspended: number;
                                 } | null;
                                 modules: {
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
                                     live: boolean;
                                 }[] | null;
                                 orders: {
@@ -47153,11 +53508,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                    module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                    /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course" | "ground" | "property";
+                                        type: "event" | "course" | "ground" | "property" | "product";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -47283,11 +53638,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                    module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                    /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course" | "ground" | "property";
+                                        type: "event" | "course" | "ground" | "property" | "product";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -47420,11 +53775,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events, coaching, turf or stays (PG and hostels) */
-                                    module?: "pod" | "events" | "coaching" | "turf" | "stays";
+                                    /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
+                                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course" | "ground" | "property";
+                                        type: "event" | "course" | "ground" | "property" | "product";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -48509,7 +54864,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -48703,7 +55058,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -48790,8 +55145,8 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Where it works: print orders, event tickets, coaching enrolments, turf bookings, PG and hostel reservations, or any of them. Print only when left out */
-                        modules?: ("pod" | "events" | "coaching" | "turf" | "stays")[];
+                        /** @description Where it works: print orders, event tickets, coaching enrolments, turf bookings, PG and hostel reservations, local shop orders, or any of them. Print only when left out */
+                        modules?: ("pod" | "events" | "coaching" | "turf" | "stays" | "shop")[];
                     };
                 };
             };
@@ -48820,7 +55175,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -48949,7 +55304,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -49791,8 +56146,8 @@ export interface paths {
                     limit?: number;
                     /** @description The start of a business name word, or an id */
                     q?: string;
-                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                    module?: "pod" | "events" | "coaching" | "stays" | "turf";
+                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                     state?: "draft" | "live" | "suspended";
                 };
                 header?: never;
@@ -49812,13 +56167,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -49996,13 +56351,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -50202,13 +56557,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -50399,13 +56754,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -50601,7 +56956,7 @@ export interface paths {
                                     };
                                     /** @description `invited` hasn't accepted yet; `waiting` accepted but isn't verified, so only what doesn't need verification (scanning tickets) works yet */
                                     status: "invited" | "waiting" | "active";
-                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing")[];
+                                    permissions: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock")[];
                                     pay: {
                                         /** @description In paise, at least ₹1 */
                                         amount: number;
@@ -50618,11 +56973,11 @@ export interface paths {
                                 }[];
                                 permissions: {
                                     /** @description What the owner lets this person do at the business. Each kind of business offers its own; GET its team lists them */
-                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing";
+                                    key: "orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock";
                                     label: string;
                                     hint: string | null;
                                     /** @description Given with this one, since it can't work without it */
-                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing") | null;
+                                    needs: ("orders.view" | "orders.move" | "orders.reject" | "orders.refund" | "earnings.view" | "shop.open" | "shop.catalog" | "shop.details" | "coupons.manage" | "posts.create" | "reviews.reply" | "orders.deliver" | "tickets.scan" | "tickets.guests" | "classes.view" | "classes.attendance" | "classes.message" | "classes.materials" | "classes.reschedule" | "turf.bookings" | "turf.block" | "turf.cancel" | "turf.prices" | "turf.arrivals" | "stays.reservations" | "stays.movein" | "stays.beds" | "stays.cancel" | "stays.listing" | "store.orders" | "store.move" | "store.cancel" | "store.returns" | "store.products" | "store.stock") | null;
                                     /** @description Works only once the person's identity is verified. Scanning tickets doesn't need it */
                                     verify: boolean;
                                 }[];
@@ -54399,6 +60754,1930 @@ export interface paths {
         };
         trace?: never;
     };
+    "/v1/ruxstar/shop/stores": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every local shop, newest first, with its product and order counts */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    city?: string;
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                /** @description clothing, electronics, grocery, gifts, bakery or general_store */
+                                type: string;
+                                /** @description The business's first photo */
+                                photoUrl: string | null;
+                                city: string;
+                                area: string | null;
+                                open: boolean;
+                                delivery: boolean;
+                                pickup: boolean;
+                                /** @description The return rule in one sentence */
+                                returnRule: string;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description MongoDB ObjectId as hex */
+                                ownerId: string;
+                                /** @description The business's status */
+                                status: string;
+                                suspended: boolean;
+                                /** @description Not removed */
+                                products: number;
+                                /** @description Paid, all time */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/stores/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One local shop: its setup, open orders and open returns */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                store: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    /** @description clothing, electronics, grocery, gifts, bakery or general_store */
+                                    type: string;
+                                    /** @description The business's first photo */
+                                    photoUrl: string | null;
+                                    city: string;
+                                    area: string | null;
+                                    open: boolean;
+                                    delivery: boolean;
+                                    pickup: boolean;
+                                    /** @description The return rule in one sentence */
+                                    returnRule: string;
+                                    /** @description Live reviews */
+                                    rating: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
+                                    /** @description MongoDB ObjectId as hex */
+                                    ownerId: string;
+                                    /** @description The business's status */
+                                    status: string;
+                                    suspended: boolean;
+                                    /** @description Not removed */
+                                    products: number;
+                                    /** @description Paid, all time */
+                                    orders: number;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                };
+                                setup: {
+                                    /** @description Delivers in its city */
+                                    delivery: boolean;
+                                    /** @description Customers can collect from the shop */
+                                    pickup: boolean;
+                                    /** @description Road km it delivers to; null for anywhere in its city */
+                                    radiusKm: number | null;
+                                    /** @description What the shop charges customers to deliver: the base, then per km after includedKm. All 0 is free. */
+                                    deliveryFee: {
+                                        /** @description Amount in paise */
+                                        base: number;
+                                        /** @description Km the base covers */
+                                        includedKm: number;
+                                        /** @description Amount in paise */
+                                        perKm: number;
+                                    };
+                                    /** @description Amount in paise */
+                                    minOrder: number;
+                                    /** @description Takes returns within Ruxstar's return days; false is "No returns" */
+                                    returns: boolean;
+                                    notes: string | null;
+                                } | null;
+                                openOrders: number;
+                                openReturns: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every local shop product, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                    status?: "live" | "hidden" | "removed";
+                    /** @description MongoDB ObjectId as hex */
+                    shop?: string;
+                    city?: string;
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/products/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One local shop product, with every variant */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/products/{id}/take-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a product down
+         * @description It leaves the listings and can't be changed or sold again; the shop is told why. Orders already placed go on. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The shop is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                photo: {
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                city: string;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The MRP of the cheapest variant */
+                                mrpFrom: number | null;
+                                /** @description Some variant has stock */
+                                inStock: boolean;
+                                /** @description Live reviews */
+                                rating: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string | null;
+                                /** @description Up to the rules' `maxOptions` */
+                                options: {
+                                    /** @description Such as Size or Colour */
+                                    name: string;
+                                    /** @description In the shop's order */
+                                    values: string[];
+                                }[];
+                                /** @description One per combination sold; a combination missing here isn't sold */
+                                variants: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description One per option, in the options' order; empty without options */
+                                    values: string[];
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    /** @description The printed MRP, when given; at least the price */
+                                    mrp: number | null;
+                                    /** @description Left to sell; stock only goes down when an order is paid */
+                                    stock: number;
+                                    sku: string | null;
+                                }[];
+                                /** @description hidden: the shop took it off sale. removed: Ruxstar took it down */
+                                status: "live" | "hidden" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                returnRule: string;
+                                delivery: boolean;
+                                pickup: boolean;
+                                hsn: string | null;
+                                gstRateBps: number | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/banned": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The banned categories list: words and phrases products can't use
+         * @description Starts with Ruxstar's defaults the first time it's read.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                                words: string[];
+                                active: boolean;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a banned category
+         * @description New and changed products using one of its words are refused from now; products saved before stay until taken down. The key can't change later. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        key: string;
+                        name: string;
+                        /** @description Words or phrases; a product whose title, description or options use one as a whole word, in any case, is refused */
+                        words: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                                words: string[];
+                                active: boolean;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/banned/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Rename a banned category, change its words, or stop checking it
+         * @description Audited.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        /** @description Words or phrases; a product whose title, description or options use one as a whole word, in any case, is refused */
+                        words?: string[];
+                        /** @description Inactive: not checked. Products saved meanwhile stay */
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                key: string;
+                                name: string;
+                                words: string[];
+                                active: boolean;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Local shop orders, newest first
+         * @description Filter by shop, status, or returns: open ones hold the shop's money; rejected ones can still be approved here.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description MongoDB ObjectId as hex */
+                    shop?: string;
+                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                    status?: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                    /** @description open: requested or approved. rejected: the shop turned it down; Ruxstar can still approve */
+                    returns?: "open" | "rejected";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                                /** @description MongoDB ObjectId as hex */
+                                customerId: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                                releasedAt: string | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One local shop order */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                                /** @description MongoDB ObjectId as hex */
+                                customerId: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                                releasedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel an order before delivery and refund it in full
+         * @description The stock goes back and a rider's trip is stopped. The customer and the shop are told. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The customer and the shop are told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                                /** @description MongoDB ObjectId as hex */
+                                customerId: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                                releasedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/shop/orders/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide a return: approve, reject, or refund it now
+         * @description Ruxstar can approve or refund one the shop turned down. Refund pays the customer out of the shop's pending share. Both sides are told. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description refund: the items are back (or needn't be), refund now */
+                        decision: "approve" | "reject" | "refund";
+                        /** @description Both sides are told */
+                        note: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                business: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                lines: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    productId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    variantId: string;
+                                    title: string;
+                                    /** @description As it was when ordered */
+                                    options: {
+                                        name: string;
+                                        value: string;
+                                    }[];
+                                    photoUrl: string | null;
+                                    sku: string | null;
+                                    /** @description Amount in paise */
+                                    unitPrice: number;
+                                    mrp: number | null;
+                                    quantity: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                }[];
+                                method: "delivery" | "pickup";
+                                /** @description Null for pickup */
+                                address: {
+                                    name: string;
+                                    /** @description 10 digits */
+                                    phone: string;
+                                    /** @description House, street and area */
+                                    line: string;
+                                    city: string;
+                                    pincode: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                } | null;
+                                /** @description Pickup: where to collect it */
+                                pickupAt: {
+                                    address: string;
+                                    point: {
+                                        lat: number;
+                                        lng: number;
+                                    } | null;
+                                    phone: string | null;
+                                } | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    delivery: number;
+                                    deliveryKm: number | null;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                note: string | null;
+                                timeline: {
+                                    /** @description paid: waiting for the shop to accept. delivered also covers picked up from the shop */
+                                    status: "awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                }[];
+                                /** @description Unpaid: the checkout closes then */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid: refunded if the shop hasn't accepted by then */
+                                acceptBy: string | null;
+                                deliveredAt: string | null;
+                                returnRule: string;
+                                /** @description The last moment to ask for a return */
+                                returnUntil: string | null;
+                                return: {
+                                    /** @description wrong_item and damaged: the shop pays the trip back. Otherwise one delivery fee comes off the refund */
+                                    reason: "wrong_item" | "damaged" | "not_as_described" | "changed_mind" | "other";
+                                    note: string | null;
+                                    lines: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        lineId: string;
+                                        quantity: number;
+                                    }[];
+                                    /** @description requested and approved hold the shop's money until refunded or rejected */
+                                    status: "requested" | "approved" | "rejected" | "refunded";
+                                    tripPaidBy: "shop" | "customer";
+                                    /** @description Paise. Taken off the refund when the customer pays the trip back */
+                                    tripFee: number;
+                                    /** @description Paise. What the customer gets back */
+                                    amount: number;
+                                    /** Format: date-time */
+                                    requestedAt: string;
+                                    decision: {
+                                        by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    receivedAt: string | null;
+                                } | null;
+                                refunds: {
+                                    kind: "full" | "return";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    reason: string | null;
+                                    status: "pending" | "done";
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Amount in paise */
+                                refunded: number;
+                                cancellation: {
+                                    by: "customer" | "vendor" | "staff" | "system" | "rider";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                                customer: {
+                                    name: string;
+                                    phone: string | null;
+                                };
+                                /** @description Null while you deliver it yourself */
+                                delivery: {
+                                    /** @description Someone on the shop's team, or a Ruxstar delivery partner */
+                                    carrier: "team" | "partner";
+                                    /** @description `offered` waits for a rider to accept; `cancelled` sent it back to the shop */
+                                    status: "offered" | "accepted" | "picked_up" | "delivered" | "cancelled";
+                                    /** @description Once someone accepted it */
+                                    rider: {
+                                        name: string;
+                                        avatarUrl: string | null;
+                                        phone: string;
+                                        vehicle: {
+                                            type: "bike" | "scooter";
+                                            /** @description The number plate */
+                                            number: string;
+                                        };
+                                    } | null;
+                                    /** @description MongoDB ObjectId as hex */
+                                    jobId: string;
+                                    /** @description Paise. To the Ruxstar partner, out of your share at delivery; 0 for your team */
+                                    pay: number;
+                                    /** @description A partner offer nobody accepts is cancelled then */
+                                    offerUntil: string | null;
+                                } | null;
+                                /** @description Amount in paise */
+                                commission: number;
+                                /** @description Paise. Items and delivery, less your coupon, Ruxstar's commission, a partner's pay and returns */
+                                vendorShare: number;
+                                /** @description Your share. waiting: until the return window and the hold are over. return: a return is open */
+                                payout: "none" | "waiting" | "return" | "released";
+                                releaseAt: string | null;
+                                /** @description The steps you can move it to now */
+                                next: ("awaiting_payment" | "paid" | "accepted" | "packed" | "out_for_delivery" | "ready_for_pickup" | "delivered" | "cancelled")[];
+                                /** @description Paid and not delivered; always a full refund */
+                                canCancel: boolean;
+                                /** @description MongoDB ObjectId as hex */
+                                customerId: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                                releasedAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/invoices": {
         parameters: {
             query?: never;
@@ -54457,7 +62736,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -54642,7 +62921,7 @@ export interface paths {
                                 /** @description ecommerce has defaults ready for when it opens */
                                 module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -55348,7 +63627,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
                                 live: boolean;
                                 signupsOpen: boolean;
                                 /** @description Commission in basis points. 1000 = 10% */
@@ -55455,6 +63734,28 @@ export interface paths {
                                     /** @description Beds per room */
                                     maxBeds: number;
                                 } | null;
+                                shopRules: {
+                                    /** @description Shops that take returns take them for this many days after delivery. Orders made keep their days */
+                                    returnDays: number;
+                                    /** @description Option dimensions on one product, such as size and colour */
+                                    maxOptions: number;
+                                    /** @description The shop's money is released this long after delivery, or when the return window ends if that is later */
+                                    releaseHours: number;
+                                    /** @description An unpaid order's checkout works this long. Stock is only taken when it's paid */
+                                    holdMinutes: number;
+                                    /** @description A paid order the shop hasn't accepted in this long is cancelled and fully refunded */
+                                    acceptHours: number;
+                                    /** @description Products per shop */
+                                    maxProducts: number;
+                                    /** @description Variants (option combinations) on one product */
+                                    maxVariants: number;
+                                    /** @description Values of one option */
+                                    maxValues: number;
+                                    /** @description Lines in one order */
+                                    maxLines: number;
+                                    /** @description Of one variant in one order */
+                                    maxQuantity: number;
+                                } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
                                 updatedAt: string;
@@ -55513,7 +63814,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
+                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
                 };
                 cookie?: never;
             };
@@ -55624,6 +63925,29 @@ export interface paths {
                             /** @description Beds per room */
                             maxBeds?: number;
                         };
+                        /** @description Local shops only. Send only what changes. Orders made keep their return days. */
+                        shopRules?: {
+                            /** @description Shops that take returns take them for this many days after delivery. Orders made keep their days */
+                            returnDays?: number;
+                            /** @description Option dimensions on one product, such as size and colour */
+                            maxOptions?: number;
+                            /** @description The shop's money is released this long after delivery, or when the return window ends if that is later */
+                            releaseHours?: number;
+                            /** @description An unpaid order's checkout works this long. Stock is only taken when it's paid */
+                            holdMinutes?: number;
+                            /** @description A paid order the shop hasn't accepted in this long is cancelled and fully refunded */
+                            acceptHours?: number;
+                            /** @description Products per shop */
+                            maxProducts?: number;
+                            /** @description Variants (option combinations) on one product */
+                            maxVariants?: number;
+                            /** @description Values of one option */
+                            maxValues?: number;
+                            /** @description Lines in one order */
+                            maxLines?: number;
+                            /** @description Of one variant in one order */
+                            maxQuantity?: number;
+                        };
                     };
                 };
             };
@@ -55636,7 +63960,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
                                 live: boolean;
                                 signupsOpen: boolean;
                                 /** @description Commission in basis points. 1000 = 10% */
@@ -55742,6 +64066,28 @@ export interface paths {
                                     maxRooms: number;
                                     /** @description Beds per room */
                                     maxBeds: number;
+                                } | null;
+                                shopRules: {
+                                    /** @description Shops that take returns take them for this many days after delivery. Orders made keep their days */
+                                    returnDays: number;
+                                    /** @description Option dimensions on one product, such as size and colour */
+                                    maxOptions: number;
+                                    /** @description The shop's money is released this long after delivery, or when the return window ends if that is later */
+                                    releaseHours: number;
+                                    /** @description An unpaid order's checkout works this long. Stock is only taken when it's paid */
+                                    holdMinutes: number;
+                                    /** @description A paid order the shop hasn't accepted in this long is cancelled and fully refunded */
+                                    acceptHours: number;
+                                    /** @description Products per shop */
+                                    maxProducts: number;
+                                    /** @description Variants (option combinations) on one product */
+                                    maxVariants: number;
+                                    /** @description Values of one option */
+                                    maxValues: number;
+                                    /** @description Lines in one order */
+                                    maxLines: number;
+                                    /** @description Of one variant in one order */
+                                    maxQuantity: number;
                                 } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */

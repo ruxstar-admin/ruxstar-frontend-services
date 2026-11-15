@@ -13,8 +13,8 @@ import { ago, exact } from "@/lib/time";
 import social from "@/components/social/social.module.css";
 import styles from "@/components/shop/order.module.css";
 
-const MODULE_ICON: Record<BusinessModule, IconName> = { pod: "print", events: "ticket", coaching: "book", stays: "home", turf: "ball" };
-const ORDER_PATH: Record<BusinessModule, string> = { pod: "/orders", events: "/tickets", coaching: "/classes", stays: "/reservations", turf: "/bookings" };
+const MODULE_ICON: Record<BusinessModule, IconName> = { pod: "print", events: "ticket", coaching: "book", stays: "home", turf: "ball", shop: "bag" };
+const ORDER_PATH: Record<BusinessModule, string> = { pod: "/orders", events: "/tickets", coaching: "/classes", stays: "/reservations", turf: "/bookings", shop: "/orders/shop" };
 
 function PaymentItem({ payment, open, onToggle }: { payment: Payment; open: boolean; onToggle: () => void }) {
   const toast = useToast();

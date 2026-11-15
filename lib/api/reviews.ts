@@ -15,22 +15,24 @@ export type MyReview = NonNullable<Data<paths["/v1/pod/orders/{id}/review"]["get
 export type ShopReview = Data<paths["/v1/vendor/businesses/{id}/reviews"]["get"]["responses"][200]>[number];
 export type ReviewCase = Data<paths["/v1/ruxstar/reports/reviews"]["get"]["responses"][200]>[number];
 export type ReviewReportReason = NonNullable<paths["/v1/pod/reviews/{id}/report"]["post"]["requestBody"]>["content"]["application/json"]["reason"];
-/** Print, events, coaching, turf or stays. Print reviews written before the others came have no `module`. */
+/** Print, events, coaching, turf, stays or shop. Print reviews written before the others came have no `module`. */
 export type ReviewModule = NonNullable<Review["module"]>;
-/** Modules whose reviews are of an event, a course, a ground or a property. */
+/** Modules whose reviews are of an event, a course, a ground, a property or a product. */
 export type ListingModule = Exclude<ReviewModule, "pod">;
 /** What a listing review is about. */
 export type ListingType = NonNullable<Review["listing"]>["type"];
 
 const path = (id: string) => ({ params: { path: { id } } });
 const pageOf = <T>(envelope: { data: T[]; meta: { nextCursor?: string | null } }): Page<T> => ({ items: envelope.data, nextCursor: envelope.meta.nextCursor ?? null });
+/** A shop order has a review per product. */
+const productPath = (orderId: string, productId = "") => ({ params: { path: { id: orderId, productId } } });
 
 // The customer's side. Each module has the same review routes under its own path.
 
 type Mine = { data: MyReview | null };
 
-/** Null until the customer reviews the order. */
-export const myReview = async (orderId: string, module: ReviewModule = "pod") =>
+/** Null until the customer reviews the order. A shop order's reviews are per product. */
+export const myReview = async (orderId: string, module: ReviewModule = "pod", productId?: string) =>
   (
     await signedIn(() =>
       unwrap<Mine>(
@@ -42,13 +44,15 @@ export const myReview = async (orderId: string, module: ReviewModule = "pod") =>
               ? api.GET("/v1/turf/orders/{id}/review", path(orderId))
               : module === "stays"
                 ? api.GET("/v1/stays/orders/{id}/review", path(orderId))
-                : api.GET("/v1/pod/orders/{id}/review", path(orderId)),
+                : module === "shop"
+                  ? api.GET("/v1/shop/orders/{id}/products/{productId}/review", productPath(orderId, productId))
+                  : api.GET("/v1/pod/orders/{id}/review", path(orderId)),
       ),
     )
   ).data;
 
 /** While the order is open for reviews. Leaving out `text` keeps it; null clears it. */
-export const writeReview = async (orderId: string, body: { rating: number; text?: string | null }, module: ReviewModule = "pod") =>
+export const writeReview = async (orderId: string, body: { rating: number; text?: string | null }, module: ReviewModule = "pod", productId?: string) =>
   (
     await signedIn(() =>
       unwrap<Mine>(
@@ -60,12 +64,14 @@ export const writeReview = async (orderId: string, body: { rating: number; text?
               ? api.PUT("/v1/turf/orders/{id}/review", { ...path(orderId), body })
               : module === "stays"
                 ? api.PUT("/v1/stays/orders/{id}/review", { ...path(orderId), body })
-                : api.PUT("/v1/pod/orders/{id}/review", { ...path(orderId), body }),
+                : module === "shop"
+                  ? api.PUT("/v1/shop/orders/{id}/products/{productId}/review", { ...productPath(orderId, productId), body })
+                  : api.PUT("/v1/pod/orders/{id}/review", { ...path(orderId), body }),
       ),
     )
   ).data!;
 
-export const deleteReview = async (orderId: string, module: ReviewModule = "pod") => {
+export const deleteReview = async (orderId: string, module: ReviewModule = "pod", productId?: string) => {
   await signedIn(() =>
     unwrap<unknown>(
       module === "events"
@@ -76,7 +82,9 @@ export const deleteReview = async (orderId: string, module: ReviewModule = "pod"
             ? api.DELETE("/v1/turf/orders/{id}/review", path(orderId))
             : module === "stays"
               ? api.DELETE("/v1/stays/orders/{id}/review", path(orderId))
-              : api.DELETE("/v1/pod/orders/{id}/review", path(orderId)),
+              : module === "shop"
+                ? api.DELETE("/v1/shop/orders/{id}/products/{productId}/review", productPath(orderId, productId))
+                : api.DELETE("/v1/pod/orders/{id}/review", path(orderId)),
     ),
   );
 };
@@ -84,7 +92,7 @@ export const deleteReview = async (orderId: string, module: ReviewModule = "pod"
 export const shopReviews = async (shopId: string, cursor?: string): Promise<Page<Review>> =>
   pageOf(await signedIn(() => unwrap(api.GET("/v1/pod/shops/{id}/reviews", { params: { path: { id: shopId }, query: { cursor } } }))));
 
-/** An event's, a course's, a ground's or a property's live reviews, newest first. No sign-in needed. */
+/** An event's, a course's, a ground's, a property's or a product's live reviews, newest first. No sign-in needed. */
 export const listingReviews = async (module: ListingModule, id: string, cursor?: string, limit?: number): Promise<Page<Review>> => {
   const params = { params: { path: { id }, query: { cursor, limit } } };
   return pageOf(
@@ -96,20 +104,23 @@ export const listingReviews = async (module: ListingModule, id: string, cursor?:
             ? api.GET("/v1/turf/{id}/reviews", params)
             : module === "stays"
               ? api.GET("/v1/stays/{id}/reviews", params)
-              : api.GET("/v1/coaching/{id}/reviews", params),
+              : module === "shop"
+                ? api.GET("/v1/shop/products/{id}/reviews", params)
+                : api.GET("/v1/coaching/{id}/reviews", params),
       ),
     ),
   );
 };
 
 /**
- * For the server: the first few reviews of an event, a course or a ground, cached for a minute like the page. Null when
- * the API doesn't answer; the page then shows none.
+ * For the server: the first few reviews of an event, a course, a ground or a product, cached for a minute like the page.
+ * Null when the API doesn't answer; the page then shows none.
  */
 export async function fetchListingReviews(module: ListingModule, id: string, limit: number): Promise<Page<Review> | null> {
   if (!/^[a-f0-9]{24}$/.test(id)) return null;
+  const at = module === "shop" ? `shop/products/${id}` : `${module}/${id}`;
   try {
-    const res = await fetch(`${API_URL}/v1/${module}/${id}/reviews?limit=${limit}`, { headers: { "X-Client": "web" }, next: { revalidate: 60 } });
+    const res = await fetch(`${API_URL}/v1/${at}/reviews?limit=${limit}`, { headers: { "X-Client": "web" }, next: { revalidate: 60 } });
     if (!res.ok) return null;
     return pageOf((await res.json()) as { data: Review[]; meta: { nextCursor?: string | null } });
   } catch {
@@ -130,7 +141,9 @@ export const reportReview = async (reviewId: string, reason: ReviewReportReason,
             ? api.POST("/v1/turf/reviews/{id}/report", { ...path(reviewId), body })
             : module === "stays"
               ? api.POST("/v1/stays/reviews/{id}/report", { ...path(reviewId), body })
-              : api.POST("/v1/pod/reviews/{id}/report", { ...path(reviewId), body }),
+              : module === "shop"
+                ? api.POST("/v1/shop/reviews/{id}/report", { ...path(reviewId), body })
+                : api.POST("/v1/pod/reviews/{id}/report", { ...path(reviewId), body }),
     ),
   );
 };
@@ -210,19 +223,28 @@ export const REPLY_FROM: Record<ReviewModule, string> = {
   coaching: "From the institute",
   turf: "From the ground",
   stays: "From the property",
+  shop: "From the shop",
 };
 
 /** What was reviewed, for people who see reviews of every kind: "Event", "Course", or "Order" for print. */
-export const REVIEWED_WORD: Record<ReviewModule, string> = { pod: "Order", events: "Event", coaching: "Course", turf: "Ground", stays: "Property" };
+export const REVIEWED_WORD: Record<ReviewModule, string> = { pod: "Order", events: "Event", coaching: "Course", turf: "Ground", stays: "Property", shop: "Product" };
 
 /** The order a review came from: "Order #1234", "Booking #1234", "Enrolment #1234". */
-export const ORDER_WORD: Record<ReviewModule, string> = { pod: "Order", events: "Booking", coaching: "Enrolment", turf: "Booking", stays: "Reservation" };
+export const ORDER_WORD: Record<ReviewModule, string> = { pod: "Order", events: "Booking", coaching: "Enrolment", turf: "Booking", stays: "Reservation", shop: "Order" };
 
 /** Where anyone can read the reviews it sits with. */
 export function reviewsHref(review: { module?: ReviewModule; listing?: { type: ListingType; id: string } | null }, shopId: string): string {
   if (review.listing) {
     const { type, id } = review.listing;
-    return type === "event" ? `/events/${id}` : type === "course" ? `/courses/${id}` : type === "property" ? `/stays/${id}` : `/grounds/${id}`;
+    return type === "event"
+      ? `/events/${id}`
+      : type === "course"
+        ? `/courses/${id}`
+        : type === "property"
+          ? `/stays/${id}`
+          : type === "product"
+            ? `/products/${id}`
+            : `/grounds/${id}`;
   }
   return `/b/${shopId}/reviews`;
 }

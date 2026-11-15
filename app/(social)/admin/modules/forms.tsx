@@ -592,15 +592,103 @@ function StaysRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: Stays
   );
 }
 
-/** Whichever rules this module has: events, coaching, sports and turf, or PG and hostels. */
+type ShopRules = NonNullable<ModuleSettings["shopRules"]>;
+type ShopKey = keyof ShopRules;
+
+/** The API's limits for each local shop rule. */
+const SHOP_RULES: { key: ShopKey; min: number; max: number; label: string; unit: string; hint: string }[] = [
+  { key: "returnDays", min: 1, max: 30, label: "Returns can be asked for", unit: "days", hint: "After delivery, at shops that take returns. Orders made keep their days." },
+  { key: "releaseHours", min: 1, max: 720, label: "Shop is paid after", unit: "hours", hint: "After delivery, or when the return window ends if that is later." },
+  { key: "acceptHours", min: 1, max: 72, label: "Shop must accept within", unit: "hours", hint: "A paid order not accepted by then is cancelled and refunded in full." },
+  { key: "holdMinutes", min: 5, max: 60, label: "Checkout works for", unit: "minutes", hint: "Stock is only taken once it’s paid." },
+  { key: "maxOptions", min: 1, max: 2, label: "Options per product", unit: "", hint: "Like size and colour." },
+  { key: "maxValues", min: 1, max: 30, label: "Values per option", unit: "", hint: "Like S, M, L and XL." },
+  { key: "maxVariants", min: 1, max: 100, label: "Variants per product", unit: "", hint: "Each combination sold, like M in blue." },
+  { key: "maxProducts", min: 1, max: 5000, label: "Products per shop", unit: "", hint: "Hidden ones count too." },
+  { key: "maxLines", min: 1, max: 50, label: "Lines in one order", unit: "", hint: "Different variants in one cart." },
+  { key: "maxQuantity", min: 1, max: 100, label: "Of one variant in an order", unit: "", hint: "The most a customer can add at once." },
+];
+
+const shopText = (rules: ShopRules) => Object.fromEntries(SHOP_RULES.map((f) => [f.key, String(rules[f.key])])) as Record<ShopKey, string>;
+
+/** Local shops only: the return window, when shops are paid and must accept, the checkout hold and limits per product and order. */
+function ShopRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: ShopRules; onSaved: (m: ModuleSettings) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const [text, setText] = useState(() => shopText(rules));
+  const [busy, setBusy] = useState(false);
+
+  const typed = Object.fromEntries(SHOP_RULES.map((f) => [f.key, wholeOf(text[f.key])])) as Record<ShopKey, number>;
+  const errors = Object.fromEntries(
+    SHOP_RULES.map((f) => [f.key, typed[f.key] >= f.min && typed[f.key] <= f.max ? undefined : `Enter a whole number from ${f.min} to ${f.max.toLocaleString("en-IN")}`]),
+  ) as Record<ShopKey, string | undefined>;
+  const invalid = SHOP_RULES.some((f) => errors[f.key]);
+  const changes = Object.fromEntries(SHOP_RULES.filter((f) => typed[f.key] !== rules[f.key]).map((f) => [f.key, typed[f.key]])) as Partial<ShopRules>;
+  const changed = Object.keys(changes).length > 0;
+
+  async function save() {
+    setBusy(true);
+    try {
+      const done = await updateModule(m.module, { shopRules: changes });
+      onSaved(done);
+      if (done.shopRules) setText(shopText(done.shopRules));
+      toast("Local shop rules saved.", "success");
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <div className={styles.group}>
+        <h3 className={styles.label}>Local shop rules</h3>
+        <p className={styles.muted}>Every shop follows these. Orders already made keep their return days.</p>
+      </div>
+      {canManage ? (
+        <div className={styles.group}>
+          {SHOP_RULES.map((f) => (
+            <Input
+              key={f.key}
+              label={f.label}
+              inputMode="numeric"
+              value={text[f.key]}
+              onChange={(e) => whole((v) => setText((all) => ({ ...all, [f.key]: v })))(e.target.value)}
+              suffix={f.unit || undefined}
+              hint={errors[f.key] ? undefined : f.hint}
+              error={errors[f.key]}
+              maxLength={4}
+            />
+          ))}
+          <div>
+            <Button variant="secondary" disabled={invalid || !changed} loading={busy} onClick={() => void save()}>
+              Save local shop rules
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <dl className={styles.facts}>
+          {SHOP_RULES.map((f) => (
+            <Fact key={f.key} label={f.label} value={plural(rules[f.key], f.unit)} />
+          ))}
+        </dl>
+      )}
+    </>
+  );
+}
+
+/** Whichever rules this module has: events, coaching, sports and turf, PG and hostels, or local shops. */
 export function Rules({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
-  if (!m.eventRules && !m.coachingRules && !m.turfRules && !m.staysRules) return null;
+  if (!m.eventRules && !m.coachingRules && !m.turfRules && !m.staysRules && !m.shopRules) return null;
   return (
     <Card as="section" padding="lg" className={styles.page}>
       {m.eventRules && <EventRulesForm m={m} rules={m.eventRules} onSaved={onSaved} />}
       {m.coachingRules && <CoachingRulesForm m={m} rules={m.coachingRules} onSaved={onSaved} />}
       {m.turfRules && <TurfRulesForm m={m} rules={m.turfRules} onSaved={onSaved} />}
       {m.staysRules && <StaysRulesForm m={m} rules={m.staysRules} onSaved={onSaved} />}
+      {m.shopRules && <ShopRulesForm m={m} rules={m.shopRules} onSaved={onSaved} />}
     </Card>
   );
 }

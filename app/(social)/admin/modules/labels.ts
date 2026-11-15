@@ -9,6 +9,7 @@ export const MODULE_LABEL: Record<ModuleName, string> = {
   coaching: "Coaching",
   stays: "PG and hostel stays",
   turf: "Sports & turf",
+  shop: "Local shops",
   delivery: "Delivery",
   ledger: "Payments and ledger",
 };
@@ -19,6 +20,7 @@ export const MODULE_ICON: Record<ModuleName, IconName> = {
   coaching: "book",
   stays: "bed",
   turf: "ball",
+  shop: "bag",
   delivery: "bicycle",
   ledger: "wallet",
 };

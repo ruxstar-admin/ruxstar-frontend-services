@@ -5,12 +5,14 @@ type Props = { searchParams: Promise<{ category?: string }> };
 
 export const metadata: Metadata = { title: "Discover · Ruxstar", robots: { index: false } };
 
-/** `?category=events`, `coaching`, `turf` or `stays` opens straight on that category, for links from tickets, classes, bookings, stays and their pages. */
+/** `?category=events`, `coaching`, `turf`, `stays` or `shop` opens straight on that category, for links from tickets, classes, bookings, stays, orders and their pages. */
 export default async function DiscoverPage({ searchParams }: Props) {
   const { category } = await searchParams;
   return (
     <DiscoverScreen
-      initialCategory={category === "events" || category === "coaching" || category === "turf" || category === "stays" ? category : null}
+      initialCategory={
+        category === "events" || category === "coaching" || category === "turf" || category === "stays" || category === "shop" ? category : null
+      }
     />
   );
 }

@@ -55,6 +55,8 @@ function Settings({ module }: { module: ModuleName }) {
   }, [module, attempt, onSignedOut]);
 
   if (m === null) return <NotFound body="This module isn't on Ruxstar any more." />;
+  // GST calls local shops "ecommerce".
+  const gstModule = module === "shop" ? "ecommerce" : module;
 
   return (
     <div className={styles.page}>
@@ -99,9 +101,9 @@ function Settings({ module }: { module: ModuleName }) {
             </Card>
           )}
           <Rules m={m} onSaved={setM} />
-          {isGstModule(module) && (
+          {isGstModule(gstModule) && (
             <Card as="section" interactive padding="lg">
-              <Link href={`/admin/gst?module=${module}`} className={styles.linkRow}>
+              <Link href={`/admin/gst?module=${gstModule}`} className={styles.linkRow}>
                 <Icon name="receipt" size={22} />
                 <span className={styles.whoRow}>
                   <span className={styles.name}>GST rates and invoices</span>

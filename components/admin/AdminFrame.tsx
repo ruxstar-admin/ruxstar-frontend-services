@@ -41,6 +41,10 @@ const GROUPS: { title: string | null; sections: Section[] }[] = [
       { href: "/admin/sports", label: "Sports list", icon: "ball", need: "businesses.view" },
       { href: "/admin/properties", label: "PGs & hostels", icon: "bed", need: "businesses.view" },
       { href: "/admin/facilities", label: "Facilities", icon: "home", need: "businesses.view" },
+      { href: "/admin/stores", label: "Local shops", icon: "bag", need: "businesses.view" },
+      { href: "/admin/store-products", label: "Shop products", icon: "tag", need: "businesses.view" },
+      { href: "/admin/store-orders", label: "Shop orders", icon: "receipt", need: "orders.view" },
+      { href: "/admin/banned-words", label: "Banned categories", icon: "flag", need: "businesses.view" },
     ],
   },
   {

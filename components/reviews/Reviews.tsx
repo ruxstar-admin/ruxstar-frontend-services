@@ -116,6 +116,7 @@ export interface RateWords {
 function WriteForm({
   orderId,
   module,
+  productId,
   words,
   review,
   start,
@@ -125,6 +126,7 @@ function WriteForm({
 }: {
   orderId: string;
   module: ReviewModule;
+  productId?: string;
   words: RateWords;
   review: MyReview | null;
   start: number;
@@ -141,7 +143,7 @@ function WriteForm({
     setSaving(true);
     setError(null);
     try {
-      onSaved(await writeReview(orderId, { rating, text: text.trim() || null }, module));
+      onSaved(await writeReview(orderId, { rating, text: text.trim() || null }, module, productId));
     } catch (err) {
       setError(formError(err).message);
     } finally {
@@ -156,11 +158,11 @@ function WriteForm({
         <StarPicker value={rating} onChange={setRating} disabled={saving} />
         <span className={styles.muted}>{rating ? STAR_WORDS[rating] : "Pick the stars"}</span>
       </div>
-      <label className={order.label} htmlFor="review-text">
+      <label className={order.label} htmlFor={`review-text${productId ? `-${productId}` : ""}`}>
         Tell others about it (optional)
       </label>
       <textarea
-        id="review-text"
+        id={`review-text${productId ? `-${productId}` : ""}`}
         className={order.textarea}
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -192,9 +194,24 @@ function WriteForm({
 
 /**
  * "Rate …" while the order is open for a review and has none, then just the stars given, changeable and deletable
- * until `until`. `open` comes from the order (`reviewUntil` for print, `canReview` for events and coaching).
+ * until `until`. `open` comes from the order (`reviewUntil` for print, `canReview` for events and coaching). A shop order
+ * has one per product, so it takes the `productId`.
  */
-export function Rate({ orderId, module, open, until, words }: { orderId: string; module: ReviewModule; open: boolean; until: string | null; words: RateWords }) {
+export function Rate({
+  orderId,
+  module,
+  productId,
+  open,
+  until,
+  words,
+}: {
+  orderId: string;
+  module: ReviewModule;
+  productId?: string;
+  open: boolean;
+  until: string | null;
+  words: RateWords;
+}) {
   const [review, setReview] = useState<MyReview | null | undefined>(undefined);
   const [writing, setWriting] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -203,14 +220,14 @@ export function Rate({ orderId, module, open, until, words }: { orderId: string;
 
   useEffect(() => {
     let live = true;
-    myReview(orderId, module).then(
+    myReview(orderId, module, productId).then(
       (r) => live && setReview(r),
       () => live && setReview(null),
     );
     return () => {
       live = false;
     };
-  }, [orderId, module]);
+  }, [orderId, module, productId]);
 
   if (review === undefined) return null;
 
@@ -218,7 +235,7 @@ export function Rate({ orderId, module, open, until, words }: { orderId: string;
     setBusy(true);
     setError(null);
     try {
-      await deleteReview(orderId, module);
+      await deleteReview(orderId, module, productId);
       setReview(null);
       setDeleting(false);
     } catch (err) {
@@ -233,6 +250,7 @@ export function Rate({ orderId, module, open, until, words }: { orderId: string;
       <WriteForm
         orderId={orderId}
         module={module}
+        productId={productId}
         words={words}
         review={review}
         start={writing}

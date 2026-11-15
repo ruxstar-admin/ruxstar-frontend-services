@@ -43,6 +43,13 @@ const WORK_AREAS: { title: string; line: string; icon: IconName; allowed: (permi
     allowed: (permissions) => permissions.some((p) => p.startsWith("stays.")),
     path: "/beds",
   },
+  {
+    title: "Shop desk",
+    line: "Orders to pack and deliver, returns, products and stock",
+    icon: "bag",
+    allowed: (permissions) => permissions.some((p) => p.startsWith("store.")),
+    path: "/store",
+  },
 ];
 
 /** Areas whose `path` starts with "/" live outside Work: the gate and classes serve owners and their team alike. */

@@ -19,7 +19,7 @@ export const MAX_PER_CUSTOMER = 100;
 const MAX_MIN_ORDER_RUPEES = 5_00_000;
 
 /** Kinds of business whose orders take coupons, and what a coupon comes off there. */
-export const COUPON_MODULES = ["pod", "events", "coaching", "turf", "stays"] as const;
+export const COUPON_MODULES = ["pod", "events", "coaching", "turf", "stays", "shop"] as const;
 export type CouponModule = (typeof COUPON_MODULES)[number];
 export const COUPON_WHERE: Record<CouponModule, string> = {
   pod: "print orders",
@@ -27,8 +27,9 @@ export const COUPON_WHERE: Record<CouponModule, string> = {
   coaching: "coaching fees",
   turf: "turf bookings",
   stays: "PG and hostel reservations",
+  shop: "local shop orders",
 };
-const KIND_WORD: Record<CouponModule, string> = { pod: "Print", events: "Events", coaching: "Coaching", turf: "Sports", stays: "Stays" };
+const KIND_WORD: Record<CouponModule, string> = { pod: "Print", events: "Events", coaching: "Coaching", turf: "Sports", stays: "Stays", shop: "Shops" };
 
 const takesCoupons = (module: string): module is CouponModule => (COUPON_MODULES as readonly string[]).includes(module);
 

@@ -124,6 +124,7 @@ function Details({
   const coaching = b.module === "coaching";
   const turf = b.module === "turf";
   const stays = b.module === "stays";
+  const store = b.module === "shop";
 
   return (
     <div className={styles.page}>
@@ -288,6 +289,19 @@ function Details({
               <Tile href="/beds" icon="grid" title="Bed map" subtitle="Every bed for the week, reservations and moving in" />
             </>
           )}
+          {!team && store && (
+            <>
+              <Tile
+                href={`/store/${id}/products`}
+                icon="tag"
+                title="Products & stock"
+                subtitle={b.status === "live" ? "Products, sizes and colours, prices, MRP and stock" : "Add products now; publish the business to sell"}
+                disabled={!editable}
+              />
+              <Tile href={`/vendor/businesses/${id}/store`} icon="truck" title="Delivery & returns" subtitle="Delivery, pickup, fees, minimum order and returns" disabled={!editable} />
+              <Tile href={`/store/${id}`} icon="bag" title="Orders" subtitle="Accept, pack and deliver orders; handle returns" />
+            </>
+          )}
           {!team && b.pod && editable && (
             <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team" subtitle="Invite people to help with orders, the shop and posts" />
           )}
@@ -303,7 +317,10 @@ function Details({
           {!team && stays && editable && (
             <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team & wardens" subtitle="Invite wardens to mark moved in, beds full and see tenants" />
           )}
-          {!team && (b.pod || events || coaching || turf || stays) && b.status === "live" && (
+          {!team && store && editable && (
+            <Tile href={`/vendor/businesses/${id}/team`} icon="users" title="Team & shop staff" subtitle="Invite people to pack orders, deliver, handle returns and stock" />
+          )}
+          {!team && (b.pod || events || coaching || turf || stays || store) && b.status === "live" && (
             <Tile href={`/vendor/businesses/${id}/reviews`} icon="star" title="Reviews" subtitle={ratingLine(b.rating)} />
           )}
           {!team && b.pod && (

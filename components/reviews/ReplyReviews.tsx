@@ -34,6 +34,7 @@ const WHEN: Record<ReviewModule, string> = {
   coaching: "Students review their enrolment once the first class is held, until 30 days after the last class.",
   turf: "Players review their booking once they’ve played, until 30 days after its last date.",
   stays: "Tenants review their stay once they’ve moved in, for 30 days after that.",
+  shop: "Customers review each product they bought once it’s delivered, for 30 days.",
 };
 
 /** Where the owner (or the team, for print) opens what was reviewed. */
@@ -42,6 +43,7 @@ function reviewedLink(review: ShopReview, team: boolean): { href: string; label:
   if (module === "pod") return { href: team ? `/work/order/${review.orderId}` : `/vendor/orders/${review.orderId}`, label: "Open order" };
   if (team || !review.listing) return null;
   const type: ListingType = review.listing.type;
+  if (type === "product") return { href: `/store/orders/${review.orderId}`, label: "Open order" };
   if (type === "ground") return { href: `/board/bookings/${review.orderId}`, label: "Open booking" };
   if (type === "property") return { href: `/beds/reservations/${review.orderId}`, label: "Open reservation" };
   return type === "event"

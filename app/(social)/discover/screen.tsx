@@ -14,7 +14,7 @@ import styles from "@/components/shop/shop.module.css";
 
 const DEBOUNCE_MS = 300;
 /** Categories the website can show; the rest say "coming soon". */
-const OPEN_ON_WEB: BusinessModule[] = ["pod", "events", "coaching", "turf", "stays"];
+const OPEN_ON_WEB: BusinessModule[] = ["pod", "events", "coaching", "turf", "stays", "shop"];
 
 /** Its own chunk: people who never open Events don't download it. */
 const EventResults = dynamic(() => import("@/components/events/EventResults"), {
@@ -45,6 +45,15 @@ const GroundResults = dynamic(() => import("@/components/turf/GroundResults"), {
 });
 
 const PropertyResults = dynamic(() => import("@/components/stays/PropertyResults"), {
+  loading: () => (
+    <div className={styles.grid} aria-busy>
+      <ShopCardSkeleton />
+      <ShopCardSkeleton />
+    </div>
+  ),
+});
+
+const StoreResults = dynamic(() => import("@/components/store/StoreResults"), {
   loading: () => (
     <div className={styles.grid} aria-busy>
       <ShopCardSkeleton />
@@ -141,6 +150,7 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
   const staysOpen = categories.some((c) => c.module === "stays" && c.live);
   const showGrounds = category === "turf" && !comingSoon;
   const showStays = category === "stays" && !comingSoon;
+  const showStores = category === "shop" && !comingSoon;
   const filters: ShopFilters = { ...(q ? { q } : {}), ...(category === "pod" && product ? { product } : {}) };
 
   const pickCategory = (next: BusinessModule | null) => {
@@ -180,7 +190,13 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
               Your stays
             </ButtonLink>
           )}
-          <ButtonLink href="/orders" variant="secondary">
+          {showStores && (
+            <ButtonLink href="/cart" variant="secondary">
+              <Icon name="bag" size={18} />
+              Cart
+            </ButtonLink>
+          )}
+          <ButtonLink href={showStores ? "/orders?tab=shops" : "/orders"} variant="secondary">
             <Icon name="receipt" size={18} />
             Your orders
           </ButtonLink>
@@ -206,10 +222,22 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
                   ? "Ground or business"
                   : showStays
                     ? "PG, hostel or business"
-                    : "Shop, what they print, or a city"
+                    : showStores
+                      ? "Shop name"
+                      : "Shop, what they print, or a city"
           }
           aria-label={
-            showEvents ? "Search events" : showCourses ? "Search courses" : showGrounds ? "Search grounds" : showStays ? "Search PGs and hostels" : "Search businesses"
+            showEvents
+              ? "Search events"
+              : showCourses
+                ? "Search courses"
+                : showGrounds
+                  ? "Search grounds"
+                  : showStays
+                    ? "Search PGs and hostels"
+                    : showStores
+                      ? "Search shops"
+                      : "Search businesses"
           }
           autoComplete="off"
           spellCheck={false}
@@ -258,6 +286,8 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
         <GroundResults q={q} />
       ) : showStays ? (
         <PropertyResults q={q} />
+      ) : showStores ? (
+        <StoreResults q={q} />
       ) : (
         <Results key={`${q}|${category ?? ""}|${product ?? ""}`} filters={filters} />
       )}
