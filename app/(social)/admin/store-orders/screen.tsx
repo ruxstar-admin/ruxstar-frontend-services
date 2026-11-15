@@ -55,8 +55,8 @@ function Results({ filter }: { filter: ConsoleOrderFilters }) {
 }
 
 /** Local shop orders, newest first: new ones waiting for a shop, returns that hold a shop's money, and returns a shop turned down. */
-export function StoreOrdersScreen({ shop }: { shop?: string }) {
-  const [view, setView] = useState<View>("all");
+export function StoreOrdersScreen({ shop, openReturns }: { shop?: string; openReturns?: boolean }) {
+  const [view, setView] = useState<View>(openReturns ? "returns" : "all");
   const filter = filterOf(view, shop);
 
   return (

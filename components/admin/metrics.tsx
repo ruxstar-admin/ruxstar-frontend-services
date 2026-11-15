@@ -8,7 +8,7 @@ import { Button, Card, Icon, Skeleton, type IconName } from "@/components/ui";
 import { clock, exact } from "@/lib/time";
 
 type Tone = "warn" | "good" | "quiet";
-type Tint = "amber" | "blue" | "purple" | "green";
+export type Tint = "amber" | "blue" | "purple" | "green";
 
 export const count = (n: number) => n.toLocaleString("en-IN");
 export const waiting = (n: number): Tone | undefined => (n > 0 ? "warn" : undefined);
@@ -40,15 +40,12 @@ export function Group({
   icon,
   tint,
   aside,
-  wide,
   children,
 }: {
   title: string;
   icon: IconName;
   tint?: Tint;
   aside?: ReactNode;
-  /** Room for module cards instead of single numbers. */
-  wide?: boolean;
   children: ReactNode;
 }) {
   const id = `metrics-${title.toLowerCase().replace(/[^a-z]+/g, "-")}`;
@@ -70,8 +67,45 @@ export function Group({
       ) : (
         head
       )}
-      <div className={wide ? styles.moduleGrid : styles.metrics}>{children}</div>
+      <div className={styles.metrics}>{children}</div>
     </Card>
+  );
+}
+
+/** A tile that opens a deeper page: the area's icon and name, and one line on what is happening there. Inside `SectionTiles`. */
+export function SectionTile({ href, icon, label, line, tint, warn }: { href: string; icon: IconName; label: string; line?: string; tint?: Tint; warn?: boolean }) {
+  return (
+    <li>
+      <Link href={href} className={styles.tile} aria-label={line ? `${label}: ${line}` : label}>
+        <span className={`${styles.metricIcon} ${styles.moduleIcon}`} data-tint={tint}>
+          <Icon name={icon} size={22} />
+        </span>
+        <span className={styles.tileLabel}>{label}</span>
+        {line && (
+          <span className={styles.tileLine} data-warn={warn || undefined}>
+            {line}
+          </span>
+        )}
+      </Link>
+    </li>
+  );
+}
+
+export function SectionTiles({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <ul className={styles.tiles} aria-label={label}>
+      {children}
+    </ul>
+  );
+}
+
+export function TileCells({ n }: { n: number }) {
+  return (
+    <div className={styles.tiles} aria-busy>
+      {Array.from({ length: n }, (_, i) => (
+        <Skeleton key={i} height={128} radius={18} />
+      ))}
+    </div>
   );
 }
 

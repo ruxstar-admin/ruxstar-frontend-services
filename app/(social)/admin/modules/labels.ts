@@ -8,7 +8,7 @@ export const MODULE_LABEL: Record<ModuleName, string> = {
   events: "Events",
   coaching: "Coaching",
   stays: "PG and hostel stays",
-  turf: "Sports & turf",
+  turf: "Sports and turf",
   shop: "Local shops",
   delivery: "Delivery",
   ledger: "Payments and ledger",
