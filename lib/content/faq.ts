@@ -1,5 +1,6 @@
 /**
- * Questions on the home page (ruxstar.com/#faq). Edit freely; keep each answer to a few sentences.
+ * Questions on the home page (ruxstar.com/#faq). Edit freely; keep each answer to a few sentences, and don't repeat what
+ * the sections above already say.
  * `link` adds one link after the answer.
  */
 export interface Faq {
@@ -12,34 +13,14 @@ export const FAQ: Faq[] = [
   {
     question: "Do I need an account to look around?",
     answer:
-      "No. Events, courses, sports grounds, PGs and hostels, and local shops are open to browse without signing in. We ask you to sign in when you book, buy, pay, follow, message or post, and bring you back to the same page afterwards.",
+      "No. You only sign in when you book, buy, follow, message or post, and we bring you back to the page you were on.",
     link: { href: "/discover", label: "Start browsing" },
   },
   {
-    question: "Which cities is Ruxstar in?",
-    answer: "Vijayawada, Gudivada and Hyderabad. Some businesses, like print shops, can deliver further; each one shows where it delivers.",
-  },
-  {
-    question: "How do I pay, and is it safe?",
+    question: "How do I cancel a booking or order?",
     answer:
-      "You pay at checkout through Cashfree, our payment gateway. Your card and bank details go to Cashfree, not to Ruxstar or the business.",
-  },
-  {
-    question: "What if I need to cancel?",
-    answer:
-      "Every event, course, ground, stay and shop shows its own cancellation and refund rule before you pay, so you know where you stand. Refunds go back to the way you paid.",
+      "Open it in the app and cancel from there. Whether you get money back, and how much, depends on the rule shown on the listing when you paid.",
     link: { href: "/refunds", label: "Read the refund policy" },
-  },
-  {
-    question: "How are businesses checked?",
-    answer:
-      "Before a business can take payments, its owner passes an identity check with Aadhaar, PAN and a selfie. Only people who booked or bought from a business can review it.",
-  },
-  {
-    question: "I run a business. How do I join?",
-    answer:
-      "Create an account, add your business, pass the identity check and list what you offer. Ruxstar takes 0% commission at launch, and bookings, orders, your team and payouts all live in one app.",
-    link: { href: "/signin", label: "List your business" },
   },
   {
     question: "How do I get help with an order?",

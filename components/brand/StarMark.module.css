@@ -2,14 +2,9 @@
   display: block;
   width: 100%;
   height: auto;
+  /* The halves start outside the box as they fly in. */
+  overflow: visible;
   animation: drift 7s var(--ease-in-out) 1.4s infinite alternate;
-}
-
-.tile {
-  fill: var(--surface);
-  transform-box: view-box;
-  transform-origin: 512px 512px;
-  animation: tile-in var(--dur-slow) var(--ease-out) both;
 }
 
 .half {
@@ -25,13 +20,6 @@
 .blue {
   fill: var(--logo-blue);
   animation: from-bottom-right var(--dur-hero) var(--ease-spring) 250ms both;
-}
-
-@keyframes tile-in {
-  from {
-    opacity: 0;
-    transform: scale(0.94);
-  }
 }
 
 @keyframes from-top-left {
@@ -59,7 +47,6 @@
     animation: none;
   }
 
-  .tile,
   .yellow,
   .blue {
     animation-name: fade;

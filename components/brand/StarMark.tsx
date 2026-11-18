@@ -5,7 +5,7 @@ export const YELLOW =
 export const BLUE =
   "M588.4 416.8L525.9 478.5 526.5 485.1C526.9 488.7 529.3 507.4 531.9 526.6L536.7 561.5 521.6 580C513.4 590.2 495.8 611.8 482.6 628C469.4 644.2 455.7 661.1 452 665.5C445.7 673 379.4 755.5 372.1 764.9C368.9 768.8 368.9 769.2 371.1 768C374.5 766.2 421.3 738.4 462.5 713.6C481.8 702.1 499.9 691.8 502.9 690.8C510 688.5 519.2 688.5 526.3 690.9C529.4 692 547.7 702.7 567.7 715.3C656.2 770.7 653.7 769.4 668.5 768.8C679.8 768.3 686.6 765.4 694.9 757.5C708.5 744.6 712.7 727.5 708.1 704.9C706.4 696.9 693.9 640.5 682.8 591C679.2 574.6 678.9 565.3 681.9 555.8C685.3 545.3 689.9 539.8 712 519.9C755.3 481.2 798 441.9 800.4 438.8C804.6 433.2 809.1 422.5 810.1 415.4C812.2 400.2 805.4 384.2 793.2 375.8C783.4 369 783.3 369 699.5 360.5C674.8 358 653.7 355.8 652.7 355.6C651.4 355.3 633 372.8 588.4 416.8";
 
-/** The app icon at display size. The two halves of the star meet once when the page opens. */
+/** The star on its own, filling the box. The two halves meet once when the page opens. */
 export function StarMark({ className }: { className?: string }) {
   return (
     <svg
@@ -14,8 +14,7 @@ export function StarMark({ className }: { className?: string }) {
       role="img"
       aria-label="Ruxstar"
     >
-      <rect className={styles.tile} width="1024" height="1024" rx="229" />
-      <g transform="translate(512 512) scale(1.07) translate(-514 -484)">
+      <g transform="translate(512 512) scale(1.55) translate(-512 -473)">
         <path className={`${styles.half} ${styles.yellow}`} d={YELLOW} />
         <path className={`${styles.half} ${styles.blue}`} d={BLUE} />
       </g>

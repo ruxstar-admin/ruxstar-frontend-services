@@ -58,7 +58,7 @@ const guestCatalog = (): DiscoverCatalog => ({
 /** The categories and what print shops can make, for the Discover filters. Fetched once per visit. */
 export function discoverCatalog() {
   catalog ??= signedIn(() => unwrap(api.GET("/v1/vendor/catalog")))
-    .then((r) => ({ categories: r.data.categories, podProducts: r.data.podProducts, guest: false }))
+    .then((r) => ({ categories: r.data.categories.filter((c) => c.module in MODULE_LABEL), podProducts: r.data.podProducts, guest: false }))
     .catch((err) => {
       catalog = null;
       if (isSignedOut(err)) return guestCatalog();

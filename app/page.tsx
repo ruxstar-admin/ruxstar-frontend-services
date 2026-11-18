@@ -2,21 +2,22 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import { StarMark } from "@/components/brand/StarMark";
 import { HomeEffects } from "@/components/home/HomeEffects";
-import { AppListing, Chip, Shot, type ShotKind } from "@/components/home/shots";
+import { Roadmap } from "@/components/home/Roadmap";
+import { Scene, type SceneKind } from "@/components/home/scenes";
+import { AppListing } from "@/components/home/shots";
 import { ButtonLink, Icon, Tag, type IconName } from "@/components/ui";
 import { ABOUT } from "@/lib/content/about";
 import { FAQ } from "@/lib/content/faq";
-import { BOARD, FOUNDERS, initialsOf, type Person } from "@/lib/content/team";
 import styles from "./page.module.css";
 
 const SITE = "https://ruxstar.com";
 const EMAIL = "admin@ruxstar.com";
 const TITLE = "Ruxstar · Everything local, in one place";
 const DESCRIPTION =
-  "Ruxstar is a social marketplace where you discover, book and pay local businesses in Vijayawada, Gudivada and Hyderabad: print, events, coaching, sports grounds, stays and shops. Follow them, chat and post too.";
+  "Ruxstar is a social marketplace where you discover, book and pay local businesses in Hyderabad: print, events, coaching, sports grounds, stays and shops. Follow them, chat and post too.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -26,11 +27,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
 };
 
-const CITIES = [
-  { name: "Vijayawada", state: "Andhra Pradesh" },
-  { name: "Gudivada", state: "Andhra Pradesh" },
-  { name: "Hyderabad", state: "Telangana" },
-];
+const CITY = "Hyderabad";
 
 const ORGANIZATION = {
   "@context": "https://schema.org",
@@ -40,7 +37,7 @@ const ORGANIZATION = {
   logo: `${SITE}/apple-icon.png`,
   email: EMAIL,
   description: DESCRIPTION,
-  areaServed: CITIES.map((c) => ({ "@type": "City", name: c.name })),
+  areaServed: [{ "@type": "City", name: CITY }],
   contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: EMAIL, url: `${SITE}/contact` },
 };
 
@@ -48,10 +45,9 @@ const NAV = [
   { href: "#businesses", label: "Businesses" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#about", label: "About" },
-  { href: "#team", label: "Team" },
 ];
 
-const BUSINESSES: { kind: ShotKind; icon: IconName; name: string; line: string; href?: string }[] = [
+const BUSINESSES: { kind: SceneKind; icon: IconName; name: string; line: string; href?: string }[] = [
   {
     kind: "pod",
     icon: "print",
@@ -73,133 +69,63 @@ const BUSINESSES: { kind: ShotKind; icon: IconName; name: string; line: string; 
   { kind: "freelance", icon: "briefcase", name: "Freelancers", line: "Hire skilled people near you, booked and paid through Ruxstar." },
 ];
 
-const TRACKS: { title: string; steps: { lead: string; text: string; chip: ReactNode }[] }[] = [
-  {
-    title: "If you’re buying",
-    steps: [
-      {
-        lead: "First, find it.",
-        text: "Browse businesses, events, grounds, stays and shops near you. No account needed to look.",
-        chip: (
-          <Chip icon="search" tone="field">
-            turf near Benz Circle
-          </Chip>
-        ),
-      },
-      {
-        lead: "Then, pay safely.",
-        text: "Sign in, choose a slot, a seat or a size, and pay through Cashfree.",
-        chip: (
-          <Chip icon="lock" tone="pay">
-            Pay ₹800
-          </Chip>
-        ),
-      },
-      {
-        lead: "Finally, get it.",
-        text: "Your ticket, booking or order is in the app, with updates until it’s done.",
-        chip: (
-          <Chip icon="check" tone="ok">
-            Booked · Court 2 · Sat 7–8 PM
-          </Chip>
-        ),
-      },
-    ],
-  },
-  {
-    title: "If you’re selling",
-    steps: [
-      {
-        lead: "First, list it.",
-        text: "Add your business, pass a quick identity check and put up what you offer.",
-        chip: (
-          <Chip icon="verified" tone="ok">
-            Identity check passed
-          </Chip>
-        ),
-      },
-      {
-        lead: "Then, get orders.",
-        text: "Bookings and orders come into one place, where your whole team can see them.",
-        chip: <Chip icon="bell">New booking · Court 2 · 7 PM</Chip>,
-      },
-      {
-        lead: "Finally, get paid.",
-        text: "Payments go out to your bank account, with a statement you can download.",
-        chip: <Chip icon="wallet">Payout sent to your bank</Chip>,
-      },
-    ],
-  },
+const TRUST: { icon: IconName; title: string; text: string }[] = [
+  { icon: "verified", title: "Verified businesses", text: "Every owner passes an identity check before they can take a single payment." },
+  { icon: "lock", title: "Safe payments", text: "Pay online in a few taps. Your card and bank details are never kept by Ruxstar or the business." },
+  { icon: "return", title: "Clear refunds", text: "The cancellation rule is on every listing before you pay, and refunds go back the way you paid." },
+  { icon: "star", title: "Real reviews", text: "Only people who actually booked or bought from a business can review it." },
 ];
 
-const TRUST: { title: string; text: string }[] = [
-  {
-    title: "Verified businesses",
-    text: "Every business owner passes an identity check with Aadhaar, PAN and a selfie before they can take payments.",
-  },
-  { title: "Secure payments", text: "Payments go through Cashfree. Card and bank details are handled by Cashfree, not kept by Ruxstar." },
-  {
-    title: "Clear refund rules",
-    text: "Every listing shows its cancellation and refund rule before you pay. Refunds go back to the way you paid.",
-  },
-  { title: "Honest reviews", text: "Only people who booked or bought from a business can review it." },
-  { title: "Help in the app", text: "Open Help & support from your profile to talk to the Ruxstar team. We reply within 2 working days." },
-];
-
-const SOCIAL: { line: string; more: string; on: boolean; colour: string }[] = [
-  { line: "Follow the places you love", more: "Their new events, offers and posts show up in your feed.", on: true, colour: "var(--logo-yellow)" },
-  { line: "Like and comment on posts", more: "Say what you thought of the gig, the class or the cake, where others can see it.", on: false, colour: "var(--logo-blue)" },
-  { line: "Message a business directly", more: "Ask about a size, a slot or a seat before you pay.", on: true, colour: "var(--accent-soft)" },
-  { line: "Share posts of your own", more: "Photos from the match, the show or the trip, for the people who follow you.", on: false, colour: "var(--ink)" },
-];
-
-const POLICIES = [
-  { href: "/terms", label: "Terms" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/refunds", label: "Refunds" },
-  { href: "/shipping", label: "Shipping" },
-  { href: "/contact", label: "Contact" },
-  { href: "/delete-account", label: "Delete account" },
+/** `field` fills the band with a colour; the others sit on the page with their icon in `tint`. */
+const SOCIAL: { icon: IconName; line: string; more: string; field?: string; tint?: string }[] = [
+  { icon: "heart", line: "Follow the places you love", more: "Their new events, offers and posts show up in your feed.", field: "var(--logo-yellow)" },
+  { icon: "comment", line: "Like and comment on posts", more: "Say what you thought of the gig, the class or the cake, where others can see it.", tint: "var(--logo-blue)" },
+  { icon: "chat", line: "Message a business directly", more: "Ask about a size, a slot or a seat before you pay.", field: "var(--accent-soft)" },
+  { icon: "camera", line: "Share posts of your own", more: "Photos from the match, the show or the trip, for the people who follow you.", tint: "var(--logo-yellow)" },
 ];
 
 const RIDER_MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent("I want to deliver with Ruxstar")}&body=${encodeURIComponent(
   "Hi Ruxstar team,\n\nI'd like to become a delivery partner.\n\nName:\nCity:\nPhone:\nVehicle:\n",
 )}`;
 
+const FOOT_LINKS: { title: string; links: { href: string; label: string }[] }[] = [
+  {
+    title: "Explore",
+    links: [
+      { href: "/discover", label: "Browse" },
+      { href: "#businesses", label: "Businesses" },
+      { href: "#how-it-works", label: "How it works" },
+      { href: "#about", label: "About" },
+    ],
+  },
+  {
+    title: "Work with us",
+    links: [
+      { href: "/signin", label: "List your business" },
+      { href: RIDER_MAIL, label: "Deliver with Ruxstar" },
+    ],
+  },
+  {
+    title: "Help",
+    links: [
+      { href: "/contact", label: "Contact" },
+      { href: "#faq", label: "Questions" },
+      { href: "/delete-account", label: "Delete account" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { href: "/terms", label: "Terms" },
+      { href: "/privacy", label: "Privacy" },
+      { href: "/refunds", label: "Refunds" },
+      { href: "/shipping", label: "Shipping" },
+    ],
+  },
+];
+
 /** Stagger step for `[data-reveal]`: each step waits 80 ms more. */
 const delay = (i: number) => ({ "--d": i }) as CSSProperties;
-
-function PersonCard({ person, large, index }: { person: Person; large?: boolean; index: number }) {
-  return (
-    <li className={large ? `${styles.person} ${styles.personLarge}` : styles.person} data-reveal style={delay(index)}>
-      {person.photo ? (
-        <img
-          className={styles.avatar}
-          src={person.photo}
-          width={large ? 96 : 72}
-          height={large ? 96 : 72}
-          alt=""
-          loading="lazy"
-          decoding="async"
-        />
-      ) : (
-        <span className={styles.avatar} data-tone={index % 2 ? "blue" : "yellow"} aria-hidden>
-          {initialsOf(person.name)}
-        </span>
-      )}
-      <span className={styles.personText}>
-        <h4 className={styles.personName}>{person.name}</h4>
-        <span className={styles.personRole}>{person.role}</span>
-      </span>
-      <p className={styles.personBio}>{person.bio}</p>
-      {person.linkedin && (
-        <a className={styles.textLink} href={person.linkedin} target="_blank" rel="noreferrer">
-          LinkedIn<span className="sr-only">: {person.name}</span>
-        </a>
-      )}
-    </li>
-  );
-}
 
 /** The public home page. Signed-in people go straight to their feed. */
 export default async function Home() {
@@ -260,7 +186,7 @@ export default async function Home() {
                   List your business
                 </ButtonLink>
               </div>
-              <p className={styles.heroNote}>No account needed to look around. In Vijayawada, Gudivada and Hyderabad.</p>
+              <p className={styles.heroNote}>No account needed to look around. Now in Hyderabad.</p>
             </div>
             <div className={styles.heroMark}>
               <StarMark className={styles.mark} />
@@ -309,7 +235,7 @@ export default async function Home() {
               <div className={styles.stage} aria-hidden>
                 {BUSINESSES.map((b, i) => (
                   <div key={b.kind} className={styles.shot} data-shot={b.kind} data-on={i === 0 ? "" : undefined}>
-                    <Shot kind={b.kind} />
+                    <Scene kind={b.kind} />
                   </div>
                 ))}
               </div>
@@ -322,26 +248,10 @@ export default async function Home() {
             <h2 id="how-title" className={styles.h2} data-reveal>
               How it works
             </h2>
-            <div className={styles.tracks}>
-              {TRACKS.map((track, t) => (
-                <div key={track.title} className={t ? `${styles.track} ${styles.trackFilled}` : styles.track}>
-                  <h3 className={styles.h3} data-reveal>
-                    {track.title}
-                  </h3>
-                  <ol className={styles.steps}>
-                    {track.steps.map((step, i) => (
-                      <li key={step.lead} className={styles.step} data-reveal style={delay(i + 1)}>
-                        <p className={styles.stepLead}>{step.lead}</p>
-                        <p className={styles.stepText}>{step.text}</p>
-                        <div className={styles.stepChip} aria-hidden>
-                          {step.chip}
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              ))}
-            </div>
+            <p className={`${styles.intro} ${styles.howIntro}`} data-reveal style={delay(1)}>
+              From the first tap to the last, here is the way.
+            </p>
+            <Roadmap />
           </div>
         </section>
 
@@ -352,10 +262,11 @@ export default async function Home() {
                 <h2 id="trust-title" className={styles.h2}>
                   Why people trust Ruxstar
                 </h2>
-                <p className={styles.tileLeadText}>Paying someone new should feel safe. This is how we make sure it does.</p>
+                <p className={styles.tileLeadText}>Paying someone new should feel safe. Here’s how we make sure it does.</p>
               </li>
               {TRUST.map((t, i) => (
                 <li key={t.title} className={styles.tile} data-reveal style={delay(i + 1)}>
+                  <Icon name={t.icon} size={28} className={styles.tileIcon} />
                   <h3 className={styles.tileTitle}>{t.title}</h3>
                   <p>{t.text}</p>
                 </li>
@@ -375,22 +286,24 @@ export default async function Home() {
               </p>
             </div>
           </div>
-          <div className={styles.bands}>
+          <ul className={styles.bands}>
             {SOCIAL.map((s) => (
-              <label key={s.line} className={styles.band} style={{ "--on": s.colour } as CSSProperties}>
-                <span className={styles.bandInner}>
-                  <span className={styles.bandText}>
-                    <span className={styles.bandLine}>{s.line}</span>
-                    <span className={styles.bandMore}>{s.more}</span>
-                  </span>
-                  <span className={styles.switch} data-ui>
-                    <input type="checkbox" role="switch" className={styles.switchInput} defaultChecked={s.on} />
-                    <span className={styles.knob} aria-hidden />
-                  </span>
-                </span>
-              </label>
+              <li
+                key={s.line}
+                className={styles.band}
+                data-field={s.field ? "" : undefined}
+                style={{ "--field": s.field, "--tint": s.tint } as CSSProperties}
+              >
+                <div className={styles.bandInner}>
+                  <div className={styles.bandText} data-reveal>
+                    <h3 className={styles.bandLine}>{s.line}</h3>
+                    <p className={styles.bandMore}>{s.more}</p>
+                  </div>
+                  <Icon name={s.icon} size={48} className={styles.bandIcon} />
+                </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
 
         <section className={styles.section} aria-label="Businesses and delivery partners">
@@ -447,47 +360,26 @@ export default async function Home() {
         </section>
 
         <section id="about" className={styles.section} aria-labelledby="about-title">
-          <div className={styles.letter}>
-            <img className={styles.letterMark} src="/logo.svg" width={48} height={48} alt="" loading="lazy" decoding="async" />
-            <h2 id="about-title" className={styles.h2} data-reveal>
-              {ABOUT.heading}
-            </h2>
-            {ABOUT.paragraphs.map((p, i) => (
-              <p key={i} className={styles.letterText} data-reveal>
-                {p}
+          <div className={`${styles.wrap} ${styles.about}`}>
+            <div className={styles.aboutHead}>
+              <h2 id="about-title" className={styles.h2} data-reveal>
+                {ABOUT.heading}
+              </h2>
+              <p className={styles.aboutLead} data-reveal style={delay(1)}>
+                {ABOUT.lead}
               </p>
-            ))}
-            <p className={styles.signOff} data-reveal>
-              {ABOUT.signOff}
-            </p>
-          </div>
-        </section>
-
-        <section id="team" className={styles.section} aria-labelledby="team-title">
-          <div className={styles.wrap}>
-            <h2 id="team-title" className={styles.h2} data-reveal>
-              The people behind Ruxstar
-            </h2>
-            <div className={styles.group}>
-              <h3 className={styles.h3} data-reveal>
-                Founders
-              </h3>
-              <ul className={styles.founders}>
-                {FOUNDERS.map((p, i) => (
-                  <PersonCard key={i} person={p} large index={i} />
-                ))}
-              </ul>
+              <ButtonLink href="/contact" size="lg" variant="secondary" className={styles.aboutButton}>
+                Say hello
+              </ButtonLink>
             </div>
-            <div className={styles.group}>
-              <h3 className={styles.h3} data-reveal>
-                Board
-              </h3>
-              <ul className={styles.board}>
-                {BOARD.map((p, i) => (
-                  <PersonCard key={i} person={p} index={i + 1} />
-                ))}
-              </ul>
-            </div>
+            <ol className={styles.aboutPoints}>
+              {ABOUT.points.map((p, i) => (
+                <li key={p.title} className={styles.aboutPoint} data-reveal style={delay(i + 1)}>
+                  <h3 className={styles.tileTitle}>{p.title}</h3>
+                  <p className={styles.aboutText}>{p.text}</p>
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
@@ -498,16 +390,12 @@ export default async function Home() {
                 Where you’ll find us
               </h2>
               <p className={`${styles.intro} ${styles.citiesIntro}`} data-reveal style={delay(1)}>
-                We’re starting in Andhra Pradesh and Telangana, close to the people we build for.
+                We’re starting in Hyderabad, close to the people we build for. More cities soon.
               </p>
-              <ul className={styles.cities}>
-                {CITIES.map((c, i) => (
-                  <li key={c.name} className={styles.city} data-reveal style={delay(i + 2)}>
-                    <span className={styles.cityDot} data-tone={c.state === "Telangana" ? "blue" : "yellow"} aria-hidden />
-                    <span className={styles.cityName}>{c.name}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className={styles.city} data-reveal style={delay(2)}>
+                <span className={styles.cityDot} aria-hidden />
+                {CITY}
+              </p>
             </div>
             <div className={styles.app}>
               <h2 className={styles.h2} data-reveal>
@@ -557,38 +445,48 @@ export default async function Home() {
       </main>
 
       <footer className={styles.footer}>
-        <div className={styles.footTiles}>
-          <div className={`${styles.footTile} ${styles.footStatement}`}>
-            <p className={styles.footSay}>Everything local, in one place.</p>
-            <p className={styles.footSmall}>© 2026 Ruxstar</p>
+        <div className={styles.footInner}>
+          <div className={styles.footCta}>
+            <p className={styles.footCtaTitle}>Find something local today.</p>
+            <div className={styles.footCtaActions}>
+              <ButtonLink href="/discover" size="lg">
+                Explore Ruxstar
+              </ButtonLink>
+              <ButtonLink href="/signin" size="lg" variant="secondary">
+                List your business
+              </ButtonLink>
+            </div>
           </div>
-          <nav className={`${styles.footTile} ${styles.footNav}`} aria-label="Policies">
-            <ul>
-              {POLICIES.map((p) => (
-                <li key={p.href}>
-                  <Link href={p.href}>{p.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div className={`${styles.footTile} ${styles.footCities}`}>
-            <p className={styles.footSmall}>Cities</p>
-            <p>{CITIES.map((c) => c.name).join(", ")}</p>
+
+          <div className={styles.footGrid}>
+            <div className={styles.footBrand}>
+              <span className={styles.footLogo}>
+                <img src="/logo.svg" width={40} height={40} alt="" loading="lazy" decoding="async" />
+                ruxstar
+              </span>
+              <p className={styles.footSay}>Everything local, in one place.</p>
+              <a className={styles.footMail} href={`mailto:${EMAIL}`}>
+                {EMAIL}
+              </a>
+            </div>
+            {FOOT_LINKS.map((group) => (
+              <nav key={group.title} className={styles.footCol} aria-label={group.title}>
+                <p className={styles.footHead}>{group.title}</p>
+                <ul>
+                  {group.links.map((l) => (
+                    <li key={l.label}>
+                      {l.href.startsWith("/") ? <Link href={l.href}>{l.label}</Link> : <a href={l.href}>{l.label}</a>}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
           </div>
-          <div className={`${styles.footTile} ${styles.footMail}`}>
-            <p className={styles.footSmall}>Write to us</p>
-            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+
+          <div className={styles.footBottom}>
+            <span>© 2026 Ruxstar</span>
+            <span>Made in Hyderabad</span>
           </div>
-          <div className={`${styles.footTile} ${styles.footWord}`}>
-            <img src="/logo.svg" width={72} height={72} alt="" loading="lazy" decoding="async" />
-            <span>ruxstar</span>
-          </div>
-          <Link href="/signin" className={`${styles.footTile} ${styles.footGo}`}>
-            <span>Get started</span>
-            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" aria-hidden>
-              <path d="M10 46 46 10M18 10h28v28" />
-            </svg>
-          </Link>
         </div>
       </footer>
 

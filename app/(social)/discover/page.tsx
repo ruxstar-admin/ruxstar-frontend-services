@@ -5,7 +5,7 @@ type Props = { searchParams: Promise<{ category?: string }> };
 
 export const metadata: Metadata = {
   title: "Discover local businesses · Ruxstar",
-  description: "Browse events, courses, sports grounds, PGs and hostels, and local shops in Vijayawada, Gudivada and Hyderabad. No account needed to look.",
+  description: "Browse events, courses, sports grounds, PGs and hostels, and local shops in Hyderabad. No account needed to look.",
   alternates: { canonical: "/discover" },
 };
 

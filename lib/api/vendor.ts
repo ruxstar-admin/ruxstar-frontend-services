@@ -34,8 +34,11 @@ export type StatementLine = Data<paths["/v1/vendor/payments/statement"]["get"]["
 
 const byId = (id: string) => ({ params: { path: { id } } });
 
-/** Categories with their types and module state, states and cities, and print products. */
-export const businessCatalog = async () => (await signedIn(() => unwrap(api.GET("/v1/vendor/catalog")))).data;
+/** Categories with their types and module state, states and cities, and print products. Freelancers sign up from their own screens, not as a business. */
+export const businessCatalog = async () => {
+  const catalog = (await signedIn(() => unwrap(api.GET("/v1/vendor/catalog")))).data;
+  return { ...catalog, categories: catalog.categories.filter((c) => (c.module as string) !== "gigs") };
+};
 
 let catalogOnce: Promise<BusinessCatalog> | null = null;
 

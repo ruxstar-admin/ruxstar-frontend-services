@@ -1,0 +1,263 @@
+/* The road draws itself from the first stop to the last; each stop pops up as the line reaches it. */
+
+.roadmap {
+  display: grid;
+  gap: clamp(32px, 4vw, 56px);
+  margin-top: 24px;
+}
+
+.switch {
+  display: inline-flex;
+  justify-self: start;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink-2);
+  font: 600 16px/1 var(--font);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-quick) var(--ease-out),
+    color var(--dur-quick) var(--ease-out);
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tab[aria-selected="true"] {
+  background: var(--action);
+  color: var(--on-action);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--logo-blue);
+  outline-offset: 2px;
+}
+
+.road {
+  position: relative;
+}
+
+.trip {
+  position: relative;
+}
+
+.path {
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 120px;
+  overflow: visible;
+}
+
+.base,
+.trail {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.base {
+  stroke: var(--line);
+  stroke-width: 4;
+  stroke-dasharray: 2 12;
+}
+
+.trail {
+  stroke: var(--logo-yellow);
+  stroke-width: 4;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 1.6s var(--ease-in-out) 0.2s forwards;
+}
+
+.stops {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stop {
+  --y: 30px;
+  --delay: calc(0.2s + var(--i) * 0.38s);
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  padding: 0 12px;
+  text-align: center;
+}
+
+.stop[data-low] {
+  --y: 90px;
+}
+
+.spot {
+  position: relative;
+  width: 100%;
+  height: 120px;
+}
+
+.pin {
+  position: absolute;
+  top: calc(var(--y) - 30px);
+  left: calc(50% - 30px);
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border: 4px solid var(--bg);
+  border-radius: 50%;
+  background: var(--raised);
+  color: var(--ink);
+  animation: pop 0.5s var(--ease-out) var(--delay) both;
+}
+
+.stop:last-child .pin {
+  background: var(--logo-yellow);
+  color: var(--on-action);
+}
+
+.title,
+.text {
+  animation: rise 0.5s var(--ease-out) var(--delay) both;
+}
+
+.title {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.text {
+  max-width: 26ch;
+  margin-top: 8px;
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Wait until the road scrolls into view. */
+:global(html[data-reveal]) .road:not([data-shown]) .trail,
+:global(html[data-reveal]) .road:not([data-shown]) .pin,
+:global(html[data-reveal]) .road:not([data-shown]) .title,
+:global(html[data-reveal]) .road:not([data-shown]) .text {
+  animation-play-state: paused;
+}
+
+@media (max-width: 900px) {
+  .path {
+    display: none;
+  }
+
+  .stops {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .stop {
+    position: relative;
+    grid-template-columns: 60px minmax(0, 1fr);
+    justify-items: start;
+    column-gap: 18px;
+    padding: 0;
+    text-align: left;
+  }
+
+  .stop:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: 60px;
+    bottom: -28px;
+    left: 28px;
+    width: 4px;
+    border-radius: 2px;
+    background: var(--logo-yellow);
+    transform-origin: top;
+    animation: grow 0.38s linear calc(var(--delay) + 0.2s) both;
+  }
+
+  :global(html[data-reveal]) .road:not([data-shown]) .stop::before {
+    animation-play-state: paused;
+  }
+
+  .spot {
+    grid-row: 1 / span 2;
+    width: 60px;
+    height: 60px;
+  }
+
+  .pin {
+    top: 0;
+    left: 0;
+  }
+
+  .title,
+  .text {
+    grid-column: 2;
+  }
+
+  .title {
+    margin-top: 6px;
+  }
+
+  .text {
+    max-width: none;
+    margin-top: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trail,
+  .pin,
+  .title,
+  .text,
+  .stop::before {
+    animation: none;
+  }
+
+  .trail {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes grow {
+  from {
+    transform: scaleY(0);
+  }
+}

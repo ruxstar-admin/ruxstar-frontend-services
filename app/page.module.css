@@ -20,6 +20,11 @@
   scroll-behavior: smooth;
 }
 
+.page ::selection {
+  background: var(--logo-yellow);
+  color: var(--on-field);
+}
+
 .wrap {
   width: 100%;
   max-width: var(--max);
@@ -99,15 +104,6 @@
   isolation: isolate;
 }
 
-/* The mark's column is one tone lighter, out to the right edge. Its left edge sits at 60% of the content width. */
-.hero::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0 0 0 calc(50% + 0.1 * (min(100%, var(--max)) - 2 * var(--margin)));
-  background: var(--surface);
-}
-
 .heroInner {
   display: grid;
   grid-template-columns: 3fr 2fr;
@@ -175,7 +171,7 @@
 }
 
 .heroMark .mark {
-  width: min(100%, 440px);
+  width: min(100%, 560px);
 }
 
 /* ---------- Sections ---------- */
@@ -348,52 +344,8 @@
 
 /* ---------- How it works ---------- */
 
-.tracks {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: clamp(40px, 5vw, 64px);
-}
-
-.track {
-  display: grid;
-  align-content: start;
-  gap: 32px;
-  padding: clamp(24px, 3.5vw, 48px) clamp(24px, 3.5vw, 48px) clamp(24px, 3.5vw, 48px) 0;
-}
-
-.trackFilled {
-  padding-left: clamp(24px, 3.5vw, 48px);
-  border-radius: var(--radius-card);
-  background: var(--surface);
-}
-
-.steps {
-  display: grid;
-  gap: 40px;
-  padding: 0;
-  list-style: none;
-}
-
-.step {
-  display: grid;
-  gap: 8px;
-}
-
-.stepLead {
-  font-size: var(--h3);
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.stepText {
-  max-width: 44ch;
-  font-size: var(--body);
-  line-height: 1.55;
-}
-
-.stepChip {
-  margin-top: 8px;
+.howIntro {
+  margin-top: 20px;
 }
 
 /* ---------- Trust: a board of filled tiles ---------- */
@@ -410,7 +362,7 @@
   display: grid;
   align-content: start;
   gap: 12px;
-  min-height: 260px;
+  min-height: 220px;
   padding: clamp(24px, 2.4vw, 32px);
   border-radius: var(--radius-card);
   background: var(--surface);
@@ -425,8 +377,13 @@
   letter-spacing: -0.01em;
 }
 
+.tileIcon {
+  color: var(--logo-yellow);
+}
+
 .tileLead {
   grid-column: span 2;
+  grid-row: span 2;
   align-content: space-between;
   background: var(--logo-yellow);
   color: var(--on-field);
@@ -437,27 +394,17 @@
   font-size: var(--body);
 }
 
-.tile:last-child {
-  grid-column: span 2;
-}
-
-/* ---------- Social: sentences with switches ---------- */
+/* ---------- Social: full-width sentences, every other one on a colour field ---------- */
 
 .bands {
   display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.band {
-  display: block;
-  cursor: pointer;
-  color: var(--ink-2);
-  transition:
-    background-color var(--dur-base) var(--ease-out),
-    color var(--dur-base) var(--ease-out);
-}
-
-.band:has(.switchInput:checked) {
-  background: var(--on);
+.band[data-field] {
+  background: var(--field);
   color: var(--on-field);
 }
 
@@ -486,77 +433,19 @@
 
 .bandMore {
   max-width: 52ch;
+  color: var(--ink-2);
   font-size: var(--body);
   font-weight: 500;
   line-height: 1.5;
-  opacity: 0;
-  transform: translateY(-6px);
-  transition:
-    opacity var(--dur-base) var(--ease-out),
-    transform var(--dur-base) var(--ease-out);
 }
 
-.band:has(.switchInput:checked) .bandMore {
-  opacity: 1;
-  transform: none;
+.band[data-field] .bandMore {
+  color: inherit;
 }
 
-.switch {
-  position: relative;
+.bandIcon {
   flex-shrink: 0;
-  width: 64px;
-  height: 36px;
-}
-
-.switchInput {
-  position: absolute;
-  inset: -4px;
-  z-index: 1;
-  width: calc(100% + 8px);
-  height: calc(100% + 8px);
-  margin: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.knob {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-pill);
-  background: var(--raised);
-  transition: background-color var(--dur-base) var(--ease-out);
-}
-
-.knob::after {
-  content: "";
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--ink-2);
-  transition:
-    transform var(--dur-base) var(--ease-spring),
-    background-color var(--dur-base) var(--ease-out);
-}
-
-.switchInput:checked + .knob {
-  background: var(--on-field);
-}
-
-.switchInput:checked + .knob::after {
-  background: var(--on);
-  transform: translateX(28px);
-}
-
-.switchInput:focus-visible + .knob {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.band:has(.switchInput:checked) .switchInput:focus-visible + .knob {
-  outline-color: var(--on-field);
+  color: var(--tint, currentColor);
 }
 
 /* ---------- Grow and deliver ---------- */
@@ -634,125 +523,56 @@
   background: color-mix(in srgb, var(--ink) 14%, transparent);
 }
 
-/* ---------- About: a letter ---------- */
+/* ---------- About: the story on the left, four short answers on the right ---------- */
 
-.letter {
+.about {
   display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: start;
+}
+
+.aboutHead {
+  position: sticky;
+  top: calc(var(--bar) + 24px);
+  display: grid;
+  justify-items: start;
   gap: 24px;
-  max-width: calc(640px + 2 * var(--margin));
-  margin: 0 auto;
-  padding: 0 var(--margin);
 }
 
-.letterMark {
-  display: block;
-  border-radius: 12px;
-}
-
-.letterText {
+.aboutLead {
+  max-width: 40ch;
   font-size: var(--body);
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
-.signOff {
-  font-size: var(--h3);
-  font-weight: 600;
+.aboutButton {
+  margin-top: 8px;
 }
 
-/* ---------- Team ---------- */
-
-.group {
+.aboutPoints {
   display: grid;
-  gap: 24px;
-  margin-top: clamp(40px, 5vw, 64px);
-}
-
-.founders,
-.board {
-  display: grid;
-  gap: 8px;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.founders {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.board {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.person {
+.aboutPoint {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 16px 20px;
-  padding: clamp(20px, 2.4vw, 32px);
-  border-radius: var(--radius-card);
-  background: var(--surface);
+  gap: 8px;
+  padding: 28px 0;
+  border-top: 1px solid var(--line);
 }
 
-.personLarge {
-  gap: 20px 24px;
+.aboutPoint:first-child {
+  padding-top: 0;
+  border-top: 0;
 }
 
-.avatar {
-  display: grid;
-  place-items: center;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: var(--raised);
-  color: var(--on-field);
-  font-size: var(--h3);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-
-.personLarge .avatar {
-  width: 96px;
-  height: 96px;
-}
-
-.avatar[data-tone="yellow"] {
-  background: var(--logo-yellow);
-}
-
-.avatar[data-tone="blue"] {
-  background: var(--logo-blue);
-}
-
-.personText {
-  display: grid;
-  gap: 4px;
-}
-
-.personName {
-  font-size: var(--h3);
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.personRole {
+.aboutText {
   color: var(--ink-2);
-  font-size: var(--small);
-}
-
-.personBio,
-.person .textLink {
-  grid-column: 1 / -1;
-}
-
-.personBio {
-  font-size: 16px;
-  line-height: 1.55;
-}
-
-.person .textLink {
-  justify-self: start;
+  font-size: var(--body);
+  line-height: 1.6;
 }
 
 /* ---------- Cities and the app ---------- */
@@ -767,38 +587,23 @@
   margin-top: 20px;
 }
 
-.cities {
-  display: grid;
-  gap: 8px;
-  margin-top: 32px;
-  padding: 0;
-  list-style: none;
-}
-
 .city {
-  display: grid;
-  grid-template-columns: auto 1fr;
+  display: flex;
   align-items: center;
   gap: 16px;
-  min-height: 64px;
-}
-
-.cityDot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--logo-yellow);
-}
-
-.cityDot[data-tone="blue"] {
-  background: var(--logo-blue);
-}
-
-.cityName {
+  margin-top: 32px;
   font-size: var(--h2);
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.03em;
+}
+
+.cityDot {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--logo-blue);
 }
 
 .app {
@@ -875,134 +680,135 @@
   justify-self: start;
 }
 
-/* ---------- Footer: a board of tiles ---------- */
+/* ---------- Footer: a call to action, then the brand and links ---------- */
 
 .footer {
   padding: var(--gap-section) 0 var(--margin);
 }
 
-.footTiles {
+.footInner {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 8px;
+  gap: clamp(48px, 6vw, 80px);
   max-width: var(--max);
   margin: 0 auto;
   padding: 0 var(--margin);
 }
 
-.footTile {
-  display: grid;
-  align-content: space-between;
-  gap: 16px;
-  min-height: 200px;
-  padding: 24px;
+.footCta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px 40px;
+  padding: clamp(28px, 4vw, 48px);
   border-radius: var(--radius-card);
-  background: var(--surface);
-  font-size: 16px;
-  line-height: 1.5;
+  background: var(--logo-yellow);
+  color: var(--on-field);
 }
 
-.footStatement {
-  grid-column: span 3;
+.footCtaTitle {
+  max-width: 18ch;
+  font-size: var(--h2);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.footCtaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footCtaActions > :first-child {
+  background: var(--on-field);
+  color: var(--logo-yellow);
+}
+
+.footCtaActions > :last-child {
+  border-color: var(--on-field);
+  color: var(--on-field);
+}
+
+.footGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(4, minmax(0, 1fr));
+  gap: 40px 32px;
+}
+
+.footBrand {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 16px;
+}
+
+.footLogo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.footLogo img {
+  border-radius: 22%;
 }
 
 .footSay {
-  font-size: var(--h3);
-  font-weight: 600;
-  line-height: 1.3;
+  max-width: 22ch;
+  color: var(--ink-2);
+  font-size: var(--body);
+  line-height: 1.5;
 }
 
-.footSmall {
+.footMail {
+  color: var(--ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.footHead {
+  margin-bottom: 16px;
   color: var(--ink-2);
   font-size: var(--small);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.footNav {
-  grid-column: span 4;
-  align-content: start;
-}
-
-.footNav ul {
+.footCol ul {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 16px;
+  gap: 12px;
   padding: 0;
   list-style: none;
 }
 
-.footNav a,
-.footMail a {
+.footCol a {
   color: var(--ink);
+  font-size: 16px;
   text-decoration: none;
 }
 
-.footNav a:hover,
-.footMail a:hover {
+.footCol a:hover,
+.footMail:hover {
   text-decoration: underline;
   text-decoration-color: var(--logo-yellow);
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
 }
 
-.footCities {
-  grid-column: span 2;
-}
-
-.footMail {
-  grid-column: span 3;
-}
-
-.footMail a {
-  overflow-wrap: anywhere;
-  font-weight: 600;
-}
-
-.footWord {
-  grid-column: span 8;
+.footBottom {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(12px, 2vw, 28px);
-  min-height: clamp(160px, 22vw, 300px);
-  background: var(--ink);
-  color: var(--on-field);
-}
-
-.footWord img {
-  width: clamp(44px, 6vw, 88px);
-  height: auto;
-  border-radius: 22%;
-}
-
-.footWord span {
-  font-size: clamp(56px, 10vw, 150px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.05em;
-}
-
-.footGo {
-  grid-column: span 4;
-  background: var(--logo-yellow);
-  color: var(--on-field);
-  font-size: clamp(24px, 2.4vw, 32px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-}
-
-.footGo svg {
-  justify-self: end;
-  transition: transform var(--dur-base) var(--ease-out);
-}
-
-.footGo:hover svg {
-  transform: translate(6px, -6px);
-}
-
-.footGo:focus-visible {
-  outline-color: var(--ink);
-  outline-offset: 3px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--small);
 }
 
 /* ---------- Reveal on scroll (set up by HomeEffects) ---------- */
@@ -1057,31 +863,16 @@
 
   .tileLead {
     grid-column: 1 / -1;
+    grid-row: auto;
     min-height: 0;
   }
 
-  .board {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .footGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .footStatement,
-  .footNav {
-    grid-column: span 6;
-  }
-
-  .footCities,
-  .footMail {
-    grid-column: span 6;
-    min-height: 140px;
-  }
-
-  .footWord {
+  .footBrand {
     grid-column: 1 / -1;
-  }
-
-  .footGo {
-    grid-column: 1 / -1;
-    min-height: 160px;
   }
 }
 
@@ -1094,15 +885,6 @@
     margin-left: auto;
   }
 
-  .hero {
-    --mark-block: clamp(220px, 46vw, 380px);
-  }
-
-  .hero::after {
-    inset: 0 0 auto 0;
-    height: var(--mark-block);
-  }
-
   .heroInner {
     grid-template-columns: 1fr;
     min-height: 0;
@@ -1110,21 +892,24 @@
 
   .heroMark {
     order: -1;
-    height: var(--mark-block);
-    padding: 32px 0;
+    padding: 32px 0 0;
   }
 
   .heroMark .mark {
-    width: auto;
-    height: 100%;
+    width: clamp(150px, 38vw, 300px);
   }
 
   .heroCopy {
     padding: 40px 0 0;
   }
 
-  .biz {
+  .biz,
+  .about {
     grid-template-columns: 1fr;
+  }
+
+  .aboutHead {
+    position: static;
   }
 
   .stage {
@@ -1161,14 +946,6 @@
 
   .shot > * {
     max-width: none;
-  }
-
-  .tracks {
-    grid-template-columns: 1fr;
-  }
-
-  .track {
-    padding-right: 0;
   }
 
   .work,
@@ -1224,18 +1001,12 @@
     justify-self: start;
   }
 
-  .tiles,
-  .founders,
-  .board {
+  .tiles {
     grid-template-columns: 1fr;
   }
 
   .tile {
     min-height: 0;
-  }
-
-  .tile:last-child {
-    grid-column: auto;
   }
 
   .tileLead {
@@ -1250,6 +1021,11 @@
     font-size: 15px;
   }
 
+  .bandIcon {
+    width: 32px;
+    height: 32px;
+  }
+
   .faqQuestion {
     padding: 16px 18px;
     font-size: 17px;
@@ -1259,27 +1035,13 @@
     padding: 0 18px 20px;
   }
 
-  .footTiles {
+  .footGrid {
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
   }
 
-  .footGo {
-    order: -2;
-    grid-column: 1 / -1;
-  }
-
-  .footWord {
-    order: -1;
-    grid-column: 1 / -1;
-  }
-
-  .footStatement,
-  .footNav,
-  .footCities,
-  .footMail {
-    grid-column: 1 / -1;
-    min-height: 0;
+  .footCtaActions,
+  .footCtaActions > * {
+    width: 100%;
   }
 }
 
@@ -1304,13 +1066,8 @@
   }
 
   :global(html[data-reveal]) .page [data-reveal]:not([data-shown]),
-  .shot,
-  .bandMore {
+  .shot {
     transform: none;
-  }
-
-  .knob::after {
-    transition-timing-function: var(--ease-out);
   }
 
   .bizRow:active {
