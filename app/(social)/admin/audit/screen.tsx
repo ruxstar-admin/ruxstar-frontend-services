@@ -71,6 +71,22 @@ const ACTIONS: Record<string, string> = {
   "support.note": "Added a note to a help ticket",
   "support.update": "Changed a help ticket",
   "support.settings": "Changed help reply-by times",
+  "freelancer.start": "Started freelancing",
+  "freelancer.update": "Changed a freelancer profile",
+  "gig.create": "Made a gig",
+  "gig.update": "Changed a gig's details",
+  "gig.delete": "Deleted a gig",
+  "gig.publish": "Published a gig",
+  "gig.pause": "Paused a gig",
+  "gig.take_down": "Took a gig down",
+  "gig_quote.withdraw": "Withdrew a custom offer",
+  "gig_order.accept": "Accepted a freelance order",
+  "gig_order.deliver": "Delivered a freelance order",
+  "gig_order.approve": "Approved a delivery",
+  "gig_order.revision": "Asked for changes",
+  "gig_order.dispute": "Reported a problem with a freelance order",
+  "gig_order.decide": "Decided a freelance problem",
+  "gig_order.cancel": "Cancelled a freelance order",
 };
 
 const AREA_LABEL: Record<string, string> = {

@@ -8,16 +8,18 @@ import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { SkeletonRows } from "@/app/(social)/notifications/screen";
 import { OrderRow } from "@/components/shop/OrderParts";
 import { StoreOrderRow } from "@/components/store/StoreOrderRow";
+import { MyGigOrders } from "@/components/gigs/MyGigOrders";
 import { formError } from "@/lib/api/account";
 import { myOrders, STATUS_LABEL } from "@/lib/api/orders";
 import { myStoreOrders } from "@/lib/api/store";
 import social from "@/components/social/social.module.css";
 import styles from "@/components/shop/order.module.css";
 
-type Tab = "print" | "shops";
+type Tab = "print" | "shops" | "freelance";
 const TABS = [
   { value: "print", label: "Print" },
   { value: "shops", label: "Shops" },
+  { value: "freelance", label: "Freelance" },
 ] as const satisfies readonly { value: Tab; label: string }[];
 
 const loadStoreOrders = (cursor?: string) => myStoreOrders("all", cursor);
@@ -94,20 +96,20 @@ function ShopOrders() {
   );
 }
 
-/** Your print orders and local shop orders, newest first. */
+/** Your print orders, local shop orders and freelance orders, newest first. */
 export function OrdersScreen({ tab: initial }: { tab: Tab }) {
   const [tab, setTab] = useState<Tab>(initial);
 
   const pick = (next: Tab) => {
     setTab(next);
-    window.history.replaceState(null, "", next === "shops" ? "/orders?tab=shops" : "/orders");
+    window.history.replaceState(null, "", next === "print" ? "/orders" : `/orders?tab=${next}`);
   };
 
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Your orders</h1>
       <Segmented label="Which orders" options={TABS} value={tab} onChange={pick} />
-      {tab === "shops" ? <ShopOrders /> : <PrintOrders />}
+      {tab === "shops" ? <ShopOrders /> : tab === "freelance" ? <MyGigOrders /> : <PrintOrders />}
     </div>
   );
 }

@@ -46,7 +46,9 @@ export const myReview = async (orderId: string, module: ReviewModule = "pod", pr
                 ? api.GET("/v1/stays/orders/{id}/review", path(orderId))
                 : module === "shop"
                   ? api.GET("/v1/shop/orders/{id}/products/{productId}/review", productPath(orderId, productId))
-                  : api.GET("/v1/pod/orders/{id}/review", path(orderId)),
+                  : module === "gigs"
+                    ? api.GET("/v1/gigs/orders/{id}/review", path(orderId))
+                    : api.GET("/v1/pod/orders/{id}/review", path(orderId)),
       ),
     )
   ).data;
@@ -66,7 +68,9 @@ export const writeReview = async (orderId: string, body: { rating: number; text?
                 ? api.PUT("/v1/stays/orders/{id}/review", { ...path(orderId), body })
                 : module === "shop"
                   ? api.PUT("/v1/shop/orders/{id}/products/{productId}/review", { ...productPath(orderId, productId), body })
-                  : api.PUT("/v1/pod/orders/{id}/review", { ...path(orderId), body }),
+                  : module === "gigs"
+                    ? api.PUT("/v1/gigs/orders/{id}/review", { ...path(orderId), body })
+                    : api.PUT("/v1/pod/orders/{id}/review", { ...path(orderId), body }),
       ),
     )
   ).data!;
@@ -84,7 +88,9 @@ export const deleteReview = async (orderId: string, module: ReviewModule = "pod"
               ? api.DELETE("/v1/stays/orders/{id}/review", path(orderId))
               : module === "shop"
                 ? api.DELETE("/v1/shop/orders/{id}/products/{productId}/review", productPath(orderId, productId))
-                : api.DELETE("/v1/pod/orders/{id}/review", path(orderId)),
+                : module === "gigs"
+                  ? api.DELETE("/v1/gigs/orders/{id}/review", path(orderId))
+                  : api.DELETE("/v1/pod/orders/{id}/review", path(orderId)),
     ),
   );
 };
@@ -106,7 +112,9 @@ export const listingReviews = async (module: ListingModule, id: string, cursor?:
               ? api.GET("/v1/stays/{id}/reviews", params)
               : module === "shop"
                 ? api.GET("/v1/shop/products/{id}/reviews", params)
-                : api.GET("/v1/coaching/{id}/reviews", params),
+                : module === "gigs"
+                  ? api.GET("/v1/gigs/{id}/reviews", params)
+                  : api.GET("/v1/coaching/{id}/reviews", params),
       ),
     ),
   );
@@ -143,7 +151,9 @@ export const reportReview = async (reviewId: string, reason: ReviewReportReason,
               ? api.POST("/v1/stays/reviews/{id}/report", { ...path(reviewId), body })
               : module === "shop"
                 ? api.POST("/v1/shop/reviews/{id}/report", { ...path(reviewId), body })
-                : api.POST("/v1/pod/reviews/{id}/report", { ...path(reviewId), body }),
+                : module === "gigs"
+                  ? api.POST("/v1/gigs/reviews/{id}/report", { ...path(reviewId), body })
+                  : api.POST("/v1/pod/reviews/{id}/report", { ...path(reviewId), body }),
     ),
   );
 };
@@ -224,13 +234,22 @@ export const REPLY_FROM: Record<ReviewModule, string> = {
   turf: "From the ground",
   stays: "From the property",
   shop: "From the shop",
+  gigs: "From the freelancer",
 };
 
 /** What was reviewed, for people who see reviews of every kind: "Event", "Course", or "Order" for print. */
-export const REVIEWED_WORD: Record<ReviewModule, string> = { pod: "Order", events: "Event", coaching: "Course", turf: "Ground", stays: "Property", shop: "Product" };
+export const REVIEWED_WORD: Record<ReviewModule, string> = { pod: "Order", events: "Event", coaching: "Course", turf: "Ground", stays: "Property", shop: "Product", gigs: "Gig" };
 
 /** The order a review came from: "Order #1234", "Booking #1234", "Enrolment #1234". */
-export const ORDER_WORD: Record<ReviewModule, string> = { pod: "Order", events: "Booking", coaching: "Enrolment", turf: "Booking", stays: "Reservation", shop: "Order" };
+export const ORDER_WORD: Record<ReviewModule, string> = {
+  pod: "Order",
+  events: "Booking",
+  coaching: "Enrolment",
+  turf: "Booking",
+  stays: "Reservation",
+  shop: "Order",
+  gigs: "Order",
+};
 
 /** Where anyone can read the reviews it sits with. */
 export function reviewsHref(review: { module?: ReviewModule; listing?: { type: ListingType; id: string } | null }, shopId: string): string {
@@ -244,7 +263,11 @@ export function reviewsHref(review: { module?: ReviewModule; listing?: { type: L
           ? `/stays/${id}`
           : type === "product"
             ? `/products/${id}`
-            : `/grounds/${id}`;
+            : type === "gig"
+              ? `/gigs/${id}`
+              : `/grounds/${id}`;
   }
+  // A custom offer's review has no gig; it shows with the freelancer.
+  if (review.module === "gigs") return `/gigs/freelancer/${shopId}`;
   return `/b/${shopId}/reviews`;
 }

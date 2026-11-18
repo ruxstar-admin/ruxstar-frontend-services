@@ -35,6 +35,9 @@ export function WaitingArea({ q, o }: { q: NonNullable<Stats["queues"]>; o?: Ove
       {q.shopReturns !== null && (
         <Metric href="/admin/store-orders?returns=open" label="Shop returns open" value={count(q.shopReturns)} tone={waiting(q.shopReturns)} />
       )}
+      {q.gigDisputes !== null && (
+        <Metric href="/admin/gig-orders?status=disputed" label="Freelance problems" value={count(q.gigDisputes)} tone={waiting(q.gigDisputes)} />
+      )}
     </Group>
   );
 }

@@ -9,6 +9,8 @@ import { InvoiceTable } from "@/components/invoices/InvoiceTable";
 import { formError } from "@/lib/api/account";
 import { exportVendorInvoices, vendorInvoices, type InvoiceKind, type VendorInvoiceFilter } from "@/lib/api/invoices";
 import { myBusinesses, type Business } from "@/lib/api/vendor";
+import type { InvoiceAudience } from "@/lib/invoices";
+import { Back } from "@/components/vendor/parts";
 import vendor from "@/components/vendor/vendor.module.css";
 import styles from "@/components/invoices/invoices.module.css";
 
@@ -80,7 +82,7 @@ function Choice<T extends string>({ label, value, options, onChange }: { label: 
   );
 }
 
-function List({ filter, month, showBusiness }: { filter: VendorInvoiceFilter; month: string; showBusiness: boolean }) {
+function List({ filter, month, showBusiness, audience }: { filter: VendorInvoiceFilter; month: string; showBusiness: boolean; audience: InvoiceAudience }) {
   const onSignedOut = useOnSignedOut();
   const load = useCallback((cursor?: string) => vendorInvoices(filter, cursor), [filter]);
   const { items, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
@@ -117,7 +119,7 @@ function List({ filter, month, showBusiness }: { filter: VendorInvoiceFilter; mo
   }
   return (
     <>
-      <InvoiceTable items={items} audience="vendor" caption={month ? `Documents from ${monthLabel(month)}` : "Your documents, newest first"} showBusiness={showBusiness} />
+      <InvoiceTable items={items} audience={audience} caption={month ? `Documents from ${monthLabel(month)}` : "Your documents, newest first"} showBusiness={showBusiness} />
       {error && (
         <p className={vendor.error} role="alert">
           {formError(error).message}
@@ -134,8 +136,11 @@ function List({ filter, month, showBusiness }: { filter: VendorInvoiceFilter; mo
   );
 }
 
-/** Every GST document issued in the vendor's businesses' names, by month and type, with the CSV for GST returns. Same as the app. */
-export function VendorInvoicesScreen() {
+/**
+ * Every GST document issued in the vendor's businesses' names, by month and type, with the CSV for GST returns. Same as the app.
+ * `freelance` is the same under Freelancing, for freelancers who can't open the vendor portal.
+ */
+export function VendorInvoicesScreen({ freelance = false }: { freelance?: boolean }) {
   const onSignedOut = useOnSignedOut();
   const months = useMemo(recentMonths, []);
   const [month, setMonth] = useState("");
@@ -147,6 +152,7 @@ export function VendorInvoicesScreen() {
   const [exportError, setExportError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (freelance) return;
     let live = true;
     myBusinesses().then(
       (list) => live && setBusinesses(list),
@@ -155,7 +161,7 @@ export function VendorInvoicesScreen() {
     return () => {
       live = false;
     };
-  }, [onSignedOut]);
+  }, [onSignedOut, freelance]);
 
   const filter = useMemo<VendorInvoiceFilter>(
     () => ({ ...(kind ? { kind } : {}), ...(business ? { business } : {}), ...(module ? { module } : {}), ...(month ? monthBounds(month) : {}) }),
@@ -179,6 +185,7 @@ export function VendorInvoicesScreen() {
 
   return (
     <div className={vendor.page}>
+      {freelance && <Back href="/freelance">Freelancing</Back>}
       <div className={vendor.head}>
         <div>
           <h1 className={vendor.title}>GST invoices</h1>
@@ -217,7 +224,7 @@ export function VendorInvoicesScreen() {
           {exportError}
         </p>
       )}
-      <List key={`${month}|${kind}|${business}|${module}`} filter={filter} month={month} showBusiness={businesses.length > 1} />
+      <List key={`${month}|${kind}|${business}|${module}`} filter={filter} month={month} showBusiness={businesses.length > 1} audience={freelance ? "freelance" : "vendor"} />
     </div>
   );
 }

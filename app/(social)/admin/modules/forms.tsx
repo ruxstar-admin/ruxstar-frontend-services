@@ -7,6 +7,8 @@ import { useOnSignedOut } from "@/components/social/session";
 import { Button, Card, Input, Switch, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
 import { updateModule, type ModulePatch, type ModuleSettings } from "@/lib/api/admin";
+import type { GigCategory } from "@/lib/api/gigs";
+import { categoriesChanged, categoriesProblem, categoryKeyOf, MAX_CATEGORIES } from "@/lib/gigs";
 import { MODULE_LABEL } from "./labels";
 
 const percentOf = (bps: number) => String(bps / 100);
@@ -679,17 +681,222 @@ function ShopRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: ShopRu
   );
 }
 
-/** Whichever rules this module has: events, coaching, sports and turf, PG and hostels, or local shops. */
-export function Rules({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
-  if (!m.eventRules && !m.coachingRules && !m.turfRules && !m.staysRules && !m.shopRules) return null;
+type GigsRules = NonNullable<ModuleSettings["gigsRules"]>;
+type GigsKey = Exclude<keyof GigsRules, "categories">;
+
+/** The API's limits for each freelancer rule. `rupees` fields are paise in the API and typed in rupees here. */
+const GIGS_RULES: { key: GigsKey; min: number; max: number; label: string; unit: string; hint: string; rupees?: boolean }[] = [
+  { key: "acceptHours", min: 1, max: 72, label: "Freelancer must accept within", unit: "hours", hint: "A paid order not accepted by then is cancelled and refunded in full." },
+  {
+    key: "autoCompleteDays",
+    min: 1,
+    max: 30,
+    label: "Completes by itself after delivery",
+    unit: "days",
+    hint: "If the customer doesn’t approve, ask for changes or report a problem by then, the freelancer is paid.",
+  },
+  { key: "quoteDays", min: 1, max: 30, label: "A custom offer can be paid for", unit: "days", hint: "From when it’s sent in the chat." },
+  { key: "deliveryMaxMb", min: 1, max: 25, label: "Files in one delivery or brief", unit: "MB", hint: "Never more than 25." },
+  { key: "fileDays", min: 1, max: 365, label: "Files are kept after an order ends", unit: "days", hint: "The order and its messages stay." },
+  { key: "maxGigs", min: 1, max: 50, label: "Gigs per freelancer", unit: "", hint: "Drafts included." },
+  { key: "maxPackages", min: 1, max: 3, label: "Packages per gig", unit: "", hint: "Basic, then Standard, then Premium." },
+  { key: "minPrice", min: 1, max: 500_000, label: "Lowest price", unit: "₹", hint: "For a package or a custom offer.", rupees: true },
+  { key: "maxPrice", min: 1, max: 500_000, label: "Highest price", unit: "₹", hint: "At least the lowest price.", rupees: true },
+  { key: "minDays", min: 1, max: 365, label: "Fewest delivery days", unit: "days", hint: "For a package or a custom offer." },
+  { key: "maxDays", min: 1, max: 365, label: "Most delivery days", unit: "days", hint: "At least the fewest." },
+  { key: "maxRevisions", min: 0, max: 50, label: "Most revisions included", unit: "", hint: "0 turns revisions off for new and edited gigs." },
+];
+
+const gigsText = (rules: GigsRules) => Object.fromEntries(GIGS_RULES.map((f) => [f.key, String(f.rupees ? rules[f.key] / 100 : rules[f.key])])) as Record<GigsKey, string>;
+const gigsFact = (f: (typeof GIGS_RULES)[number], value: number) =>
+  f.rupees ? `₹${(value / 100).toLocaleString("en-IN")}` : f.unit === "MB" ? `${value} MB` : plural(value, f.unit);
+
+/** Freelancers only: accepting, completing, offers, files, and the limits on gigs, prices, days and revisions. Same as the app. */
+function GigsRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: GigsRules; onSaved: (m: ModuleSettings) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const [text, setText] = useState(() => gigsText(rules));
+  const [busy, setBusy] = useState(false);
+
+  const typed = Object.fromEntries(GIGS_RULES.map((f) => [f.key, wholeOf(text[f.key])])) as Record<GigsKey, number>;
+  const errors = Object.fromEntries(
+    GIGS_RULES.map((f) => [f.key, typed[f.key] >= f.min && typed[f.key] <= f.max ? undefined : `Enter a whole number from ${f.min} to ${f.max.toLocaleString("en-IN")}`]),
+  ) as Record<GigsKey, string | undefined>;
+  const invalid = GIGS_RULES.some((f) => errors[f.key]);
+  const values = Object.fromEntries(GIGS_RULES.map((f) => [f.key, f.rupees ? typed[f.key] * 100 : typed[f.key]])) as Record<GigsKey, number>;
+  const changes = Object.fromEntries(GIGS_RULES.filter((f) => values[f.key] !== rules[f.key]).map((f) => [f.key, values[f.key]])) as Partial<Omit<GigsRules, "categories">>;
+  const changed = Object.keys(changes).length > 0;
+
+  async function save() {
+    setBusy(true);
+    try {
+      const done = await updateModule(m.module, { gigsRules: changes });
+      onSaved(done);
+      if (done.gigsRules) setText(gigsText(done.gigsRules));
+      toast("Freelancer rules saved.", "success");
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <Card as="section" padding="lg" className={styles.page}>
-      {m.eventRules && <EventRulesForm m={m} rules={m.eventRules} onSaved={onSaved} />}
-      {m.coachingRules && <CoachingRulesForm m={m} rules={m.coachingRules} onSaved={onSaved} />}
-      {m.turfRules && <TurfRulesForm m={m} rules={m.turfRules} onSaved={onSaved} />}
-      {m.staysRules && <StaysRulesForm m={m} rules={m.staysRules} onSaved={onSaved} />}
-      {m.shopRules && <ShopRulesForm m={m} rules={m.shopRules} onSaved={onSaved} />}
-    </Card>
+    <>
+      <div className={styles.group}>
+        <h3 className={styles.label}>Freelancer rules</h3>
+        <p className={styles.muted}>Every freelancer’s gigs, offers and orders follow these. Orders already placed keep their package, price and days.</p>
+      </div>
+      {canManage ? (
+        <div className={styles.group}>
+          {GIGS_RULES.map((f) => (
+            <Input
+              key={f.key}
+              label={f.label}
+              inputMode="numeric"
+              value={text[f.key]}
+              onChange={(e) => whole((v) => setText((all) => ({ ...all, [f.key]: v })))(e.target.value)}
+              prefix={f.rupees ? "₹" : undefined}
+              suffix={!f.rupees && f.unit ? f.unit : undefined}
+              hint={errors[f.key] ? undefined : f.hint}
+              error={errors[f.key]}
+              maxLength={String(f.max).length}
+            />
+          ))}
+          <div>
+            <Button variant="secondary" disabled={invalid || !changed} loading={busy} onClick={() => void save()}>
+              Save freelancer rules
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <dl className={styles.facts}>
+          {GIGS_RULES.map((f) => (
+            <Fact key={f.key} label={f.label} value={gigsFact(f, rules[f.key])} />
+          ))}
+        </dl>
+      )}
+    </>
+  );
+}
+
+/** The freelancer categories: renaming, hiding and adding. Keys already used stay for ever, so none can be removed. Same as the app. */
+function GigCategoriesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: GigsRules; onSaved: (m: ModuleSettings) => void }) {
+  const toast = useToast();
+  const onSignedOut = useOnSignedOut();
+  const canManage = useCan("modules.manage");
+  const saved = rules.categories;
+  const [list, setList] = useState<GigCategory[]>(() => saved.map((c) => ({ ...c })));
+  const [adding, setAdding] = useState("");
+  const [busy, setBusy] = useState(false);
+  const problem = categoriesProblem(list);
+  const changed = categoriesChanged(list, saved);
+  const savedKeys = saved.map((c) => c.key);
+  const set = (key: string, patch: Partial<GigCategory>) => setList((all) => all.map((c) => (c.key === key ? { ...c, ...patch } : c)));
+
+  const add = () => {
+    const label = adding.trim();
+    if (!label) return;
+    setList((all) => [...all, { key: categoryKeyOf(label, all.map((c) => c.key)), label, hidden: false }]);
+    setAdding("");
+  };
+
+  async function save() {
+    setBusy(true);
+    try {
+      const done = await updateModule(m.module, { gigsRules: { categories: list.map((c) => ({ ...c, label: c.label.trim() })) } });
+      onSaved(done);
+      if (done.gigsRules) setList(done.gigsRules.categories.map((c) => ({ ...c })));
+      toast("Freelancer categories saved.", "success");
+    } catch (err) {
+      if (!onSignedOut(err)) toast(formError(err).message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!canManage) {
+    return (
+      <>
+        <h3 className={styles.label}>Freelancer categories</h3>
+        <dl className={styles.facts}>
+          {saved.map((c) => (
+            <Fact key={c.key} label={c.label} value={c.hidden ? "Hidden" : "Showing"} />
+          ))}
+        </dl>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className={styles.group}>
+        <h3 className={styles.label}>Freelancer categories</h3>
+        <p className={styles.muted}>What freelancers pick for their profile and gigs, and customers filter by. Hidden ones can’t be picked for new gigs; gigs already in one stay.</p>
+      </div>
+      <div className={styles.group}>
+        {list.map((c) => (
+          <div key={c.key} className={styles.toolbar}>
+            <Input label={savedKeys.includes(c.key) ? c.key : `${c.key} (new)`} value={c.label} onChange={(e) => set(c.key, { label: e.target.value })} maxLength={40} />
+            <Switch checked={c.hidden} onChange={(hidden) => set(c.key, { hidden })}>
+              Hidden
+            </Switch>
+            {!savedKeys.includes(c.key) && (
+              <Button variant="ghost" onClick={() => setList((all) => all.filter((x) => x.key !== c.key))}>
+                Remove
+              </Button>
+            )}
+          </div>
+        ))}
+        {list.length < MAX_CATEGORIES && (
+          <form
+            className={styles.toolbar}
+            onSubmit={(e) => {
+              e.preventDefault();
+              add();
+            }}
+          >
+            <Input label="New category" value={adding} onChange={(e) => setAdding(e.target.value)} maxLength={40} placeholder="Like “Voice overs”" />
+            <Button type="submit" variant="ghost" disabled={!adding.trim()}>
+              Add it
+            </Button>
+          </form>
+        )}
+        {changed && problem && (
+          <p className={styles.note} data-tone="danger" role="alert">
+            {problem}
+          </p>
+        )}
+        <div>
+          <Button variant="secondary" disabled={!changed || !!problem} loading={busy} onClick={() => void save()}>
+            Save categories
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/** Whichever rules this module has: events, coaching, sports and turf, PG and hostels, local shops, or freelancers (with their categories). */
+export function Rules({ m, onSaved }: { m: ModuleSettings; onSaved: (m: ModuleSettings) => void }) {
+  if (!m.eventRules && !m.coachingRules && !m.turfRules && !m.staysRules && !m.shopRules && !m.gigsRules) return null;
+  return (
+    <>
+      <Card as="section" padding="lg" className={styles.page}>
+        {m.eventRules && <EventRulesForm m={m} rules={m.eventRules} onSaved={onSaved} />}
+        {m.coachingRules && <CoachingRulesForm m={m} rules={m.coachingRules} onSaved={onSaved} />}
+        {m.turfRules && <TurfRulesForm m={m} rules={m.turfRules} onSaved={onSaved} />}
+        {m.staysRules && <StaysRulesForm m={m} rules={m.staysRules} onSaved={onSaved} />}
+        {m.shopRules && <ShopRulesForm m={m} rules={m.shopRules} onSaved={onSaved} />}
+        {m.gigsRules && <GigsRulesForm m={m} rules={m.gigsRules} onSaved={onSaved} />}
+      </Card>
+      {m.gigsRules && (
+        <Card as="section" padding="lg" className={styles.page}>
+          <GigCategoriesForm m={m} rules={m.gigsRules} onSaved={onSaved} />
+        </Card>
+      )}
+    </>
   );
 }
 

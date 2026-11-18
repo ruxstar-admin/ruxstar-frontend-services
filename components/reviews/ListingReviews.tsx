@@ -37,7 +37,9 @@ export function ListingReviews({ module, id, initial }: { module: ListingModule;
             ? "Reviews of this ground"
             : module === "stays"
               ? "Reviews of this place"
-              : "Reviews of this course"}
+              : module === "gigs"
+                ? "Reviews of this gig"
+                : "Reviews of this course"}
       </h2>
       <div className={styles.list}>
         {items.map((review) =>

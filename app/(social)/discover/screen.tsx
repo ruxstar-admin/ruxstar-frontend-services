@@ -25,7 +25,7 @@ import styles from "@/components/shop/shop.module.css";
 
 const DEBOUNCE_MS = 300;
 /** Categories the website can show; the rest say "coming soon". */
-const OPEN_ON_WEB: BusinessModule[] = ["pod", "events", "coaching", "turf", "stays", "shop"];
+const OPEN_ON_WEB: BusinessModule[] = ["pod", "events", "coaching", "turf", "stays", "shop", "gigs"];
 
 /** Its own chunk: people who never open Events don't download it. */
 const EventResults = dynamic(() => import("@/components/events/EventResults"), {
@@ -65,6 +65,15 @@ const PropertyResults = dynamic(() => import("@/components/stays/PropertyResults
 });
 
 const StoreResults = dynamic(() => import("@/components/store/StoreResults"), {
+  loading: () => (
+    <div className={styles.grid} aria-busy>
+      <ShopCardSkeleton />
+      <ShopCardSkeleton />
+    </div>
+  ),
+});
+
+const GigResults = dynamic(() => import("@/components/gigs/GigResults"), {
   loading: () => (
     <div className={styles.grid} aria-busy>
       <ShopCardSkeleton />
@@ -156,6 +165,7 @@ const SEARCH_HINT: Partial<Record<BusinessModule, { placeholder: string; label: 
   turf: { placeholder: "Ground or business", label: "Search grounds" },
   stays: { placeholder: "PG, hostel or business", label: "Search PGs and hostels" },
   shop: { placeholder: "Shop name", label: "Search shops" },
+  gigs: { placeholder: "Gig or freelancer", label: "Search freelancers" },
 };
 
 /**
@@ -227,7 +237,12 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
           {isLive("turf") && <Shortcut href="/bookings" icon="ball" label="Grounds" spoken="Your ground bookings" />}
           {isLive("stays") && <Shortcut href="/reservations" icon="home" label="Stays" spoken="Your stays" />}
           {shown === "shop" && <Shortcut href="/cart" icon="bag" label="Cart" spoken="Your cart" />}
-          <Shortcut href={shown === "shop" ? "/orders?tab=shops" : "/orders"} icon="receipt" label="Orders" spoken="Your orders" />
+          <Shortcut
+            href={shown === "shop" ? "/orders?tab=shops" : shown === "gigs" ? "/orders?tab=freelance" : "/orders"}
+            icon="receipt"
+            label="Orders"
+            spoken={shown === "gigs" ? "Your freelance orders" : "Your orders"}
+          />
           <Shortcut href="/payments" icon="wallet" label="Payments" spoken="Your payments" />
         </nav>
       )}
@@ -286,9 +301,11 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
         <PropertyResults q={q} />
       ) : shown === "shop" ? (
         <StoreResults q={q} />
+      ) : shown === "gigs" ? (
+        <GigResults q={q} />
       ) : shown === "pod" && guest ? (
         <Empty title="Sign in to see print shops">
-          <p>Events, courses, grounds, stays and local shops are open to browse without an account.</p>
+          <p>Events, courses, grounds, stays, local shops and freelancers are open to browse without an account.</p>
           <ButtonLink href={`/signin?next=${encodeURIComponent("/discover?category=pod")}`}>Sign in</ButtonLink>
         </Empty>
       ) : shown === "pod" ? (

@@ -10,6 +10,7 @@ export const MODULE_LABEL: Record<ModuleName, string> = {
   stays: "PG and hostel stays",
   turf: "Sports and turf",
   shop: "Local shops",
+  gigs: "Freelancers",
   delivery: "Delivery",
   ledger: "Payments and ledger",
 };
@@ -21,6 +22,7 @@ export const MODULE_ICON: Record<ModuleName, IconName> = {
   stays: "bed",
   turf: "ball",
   shop: "bag",
+  gigs: "briefcase",
   delivery: "bicycle",
   ledger: "wallet",
 };
@@ -33,6 +35,7 @@ export const MODULE_LIST: Record<StatsModule, string> = {
   turf: "/admin/grounds",
   stays: "/admin/properties",
   shop: "/admin/stores",
+  gigs: "/admin/freelancers",
   delivery: "/admin/modules/delivery",
 };
 
@@ -44,6 +47,7 @@ export const ORDERS_LABEL: Record<StatsModule, string> = {
   turf: "Bookings",
   stays: "Reservations",
   shop: "Orders",
+  gigs: "Orders",
   delivery: "Trips",
 };
 
@@ -53,6 +57,7 @@ export const LISTINGS_LABEL: Record<NonNullable<ModuleStats["listings"]>["kind"]
   ground: "Grounds",
   property: "PGs & hostels",
   product: "Products",
+  gig: "Gigs",
 };
 
 export const GST_MODULE_LABEL: Record<GstModule, string> = {
@@ -62,6 +67,7 @@ export const GST_MODULE_LABEL: Record<GstModule, string> = {
   stays: "PG and hostel stays",
   turf: "Turf",
   ecommerce: "E-commerce",
+  gigs: "Freelancers",
 };
 
 const has = (map: object, key: unknown): boolean => typeof key === "string" && Object.prototype.hasOwnProperty.call(map, key);

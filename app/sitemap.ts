@@ -19,6 +19,7 @@ const LISTINGS = [
   { list: "/v1/stays/", page: "/stays" },
   { list: "/v1/shop/", page: "/shops" },
   { list: "/v1/shop/products", page: "/products" },
+  { list: "/v1/gigs/", page: "/gigs" },
 ];
 
 const isId = (id: unknown): id is string => typeof id === "string" && /^[a-f0-9]{24}$/.test(id);

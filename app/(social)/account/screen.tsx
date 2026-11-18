@@ -17,6 +17,7 @@ import {
   type User,
 } from "@/lib/api/account";
 import { contactSupport } from "@/lib/support";
+import { loadGigsRules, loadMyFreelancer } from "@/components/gigs/use-gigs";
 import { DeletePanel } from "./delete";
 import { PasswordPanel } from "./password";
 import { ProfilePanel } from "./profile";
@@ -62,8 +63,21 @@ export function AccountScreen() {
   const [ending, setEnding] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
   const [savingActivity, setSavingActivity] = useState(false);
+  const [freelancing, setFreelancing] = useState<"started" | "open" | null>(null);
 
   const toSignIn = useCallback(() => router.replace("/signin?next=/account"), [router]);
+
+  // Shown once you've started, or while Ruxstar has freelancing on; as in the app's settings.
+  useEffect(() => {
+    let live = true;
+    Promise.all([loadMyFreelancer(), loadGigsRules()]).then(
+      ([me, rules]) => live && setFreelancing(me ? "started" : rules.live ? "open" : null),
+      () => undefined,
+    );
+    return () => {
+      live = false;
+    };
+  }, []);
 
   useEffect(() => {
     let live = true;
@@ -318,6 +332,21 @@ export function AccountScreen() {
                   <p className={styles.muted}>Accept invites from business owners, and see what you can do at each.</p>
                   <ButtonLink href="/work" variant="secondary">
                     Open
+                  </ButtonLink>
+                </div>
+              </div>
+            </Setting>
+          )}
+
+          {user && freelancing && (
+            <Setting id="freelancing" title="Freelancing" description={freelancing === "started" ? "Your gigs, offers and freelance orders" : "Sell your skills as gigs"}>
+              <div className={`${styles.panel} ${styles.devices}`}>
+                <div className={styles.device}>
+                  <p className={styles.muted}>
+                    {freelancing === "started" ? "Your profile, gigs, orders, offers and how you’re paid." : "Make gigs people can order, and get paid once they approve the work."}
+                  </p>
+                  <ButtonLink href="/freelance" variant="secondary">
+                    {freelancing === "started" ? "Open" : "Get started"}
                   </ButtonLink>
                 </div>
               </div>

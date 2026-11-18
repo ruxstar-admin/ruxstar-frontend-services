@@ -6,9 +6,9 @@ type Props = { searchParams: Promise<{ order?: string; tab?: string }> };
 
 export const metadata: Metadata = { title: "Your orders · Ruxstar", robots: { index: false } };
 
-/** The checkout page sends the customer back here with `?order=<id>`. `?tab=shops` opens local shop orders. */
+/** The checkout page sends the customer back here with `?order=<id>`. `?tab=shops` opens local shop orders, `?tab=freelance` freelance orders. */
 export default async function OrdersPage({ searchParams }: Props) {
   const { order, tab } = await searchParams;
   if (order && /^[a-f\d]{24}$/i.test(order)) redirect(`/orders/${order}`);
-  return <OrdersScreen tab={tab === "shops" ? "shops" : "print"} />;
+  return <OrdersScreen tab={tab === "shops" || tab === "freelance" ? tab : "print"} />;
 }

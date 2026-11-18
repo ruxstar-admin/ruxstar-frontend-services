@@ -46,6 +46,8 @@ const ICONS: Record<Notification["type"], IconName> = {
   "stays.updated": "bed",
   "shop.ordered": "bag",
   "shop.updated": "bag",
+  "gigs.ordered": "briefcase",
+  "gigs.updated": "briefcase",
 };
 
 /** Where a notification opens on the website, or null for screens that only exist in the app. */
@@ -112,6 +114,14 @@ function hrefOf(link: Notification["link"]): string | null {
       return `/orders/shop/${link.id}`;
     case "vendor_store_order":
       return `/store/orders/${link.id}`;
+    case "gig":
+      return `/gigs/${link.id}`;
+    case "gig_order":
+      return `/orders/freelance/${link.id}`;
+    case "vendor_gig_order":
+      return `/freelance/orders/${link.id}`;
+    case "freelance":
+      return "/freelance";
     default:
       return null;
   }

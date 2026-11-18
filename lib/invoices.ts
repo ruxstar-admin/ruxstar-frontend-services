@@ -1,7 +1,11 @@
 import type { TagTone } from "@/components/ui";
 import type { InvoiceKind, InvoiceRef } from "@/lib/api/invoices";
 
-export type InvoiceAudience = "customer" | "vendor" | "staff";
+/** `freelance` is a business owner's documents opened under Freelancing, for freelancers without the vendor portal; the API sees `vendor`. */
+export type InvoiceAudience = "customer" | "vendor" | "freelance" | "staff";
+
+/** The business owner reading their own sales documents. */
+export const isSeller = (audience: InvoiceAudience) => audience === "vendor" || audience === "freelance";
 
 export const INVOICE_KIND: Record<InvoiceKind, string> = {
   tax_invoice: "Tax invoice",
@@ -15,6 +19,7 @@ export const KIND_TONE: Record<InvoiceKind, TagTone> = { tax_invoice: "success",
 export const INVOICE_HOME: Record<InvoiceAudience, string> = {
   customer: "/invoices",
   vendor: "/vendor/invoices",
+  freelance: "/freelance/invoices",
   staff: "/admin/invoices",
 };
 

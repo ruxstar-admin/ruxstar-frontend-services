@@ -57,7 +57,8 @@ export const clockOf = (ms: number) => {
 
 /** What a reply shows of the message it answers, before the server has filled it in. */
 export function quoteOf(m: ShownMessage): ReplyPreview {
-  const text = m.kind === "photo" ? "Photo" : m.kind === "voice" ? "Voice message" : m.kind === "post" ? m.text || "Post" : m.text;
+  const text =
+    m.kind === "photo" ? "Photo" : m.kind === "voice" ? "Voice message" : m.kind === "post" ? m.text || "Post" : m.kind === "quote" ? `Offer: ${m.quote?.title ?? ""}` : m.text;
   return { id: m.id, available: true, sender: m.mine ? "You" : m.sender?.name || m.sender?.username || "Someone", mine: m.mine, kind: m.kind, text };
 }
 

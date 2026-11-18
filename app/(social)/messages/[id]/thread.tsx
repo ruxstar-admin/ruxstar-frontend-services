@@ -10,6 +10,8 @@ import { activeLabel, clockOf, layoutThread, quoteOf, type ThreadRow } from "@/c
 import { useThread } from "@/components/chat/use-thread";
 import { useVoiceRecorder, type VoiceRecording } from "@/components/chat/use-voice-recorder";
 import { VoiceNote } from "@/components/chat/VoiceNote";
+import { ChatQuote, OfferChip } from "@/components/gigs/ChatQuote";
+import type { QuoteCard } from "@/lib/api/gigs";
 import { Avatar } from "@/components/profile/Avatar";
 import { Lightbox } from "@/components/social/Lightbox";
 import { Empty } from "@/components/social/PostList";
@@ -141,7 +143,15 @@ function useMinute() {
   return now;
 }
 
-function Content({ message, onOpenPhoto }: { message: ShownMessage; onOpenPhoto: () => void }) {
+function Content({ message, peerName, onOpenPhoto, onQuote }: { message: ShownMessage; peerName: string; onOpenPhoto: () => void; onQuote: (quote: QuoteCard) => void }) {
+  if (message.quote) {
+    return (
+      <>
+        <ChatQuote quote={message.quote} mine={message.mine} peerName={peerName} onChanged={onQuote} />
+        {message.text && <PostText inline text={message.text} className={styles.bubble} linkClassName={styles.bubbleLink} />}
+      </>
+    );
+  }
   if (message.kind === "photo") {
     const photo = message.upload ?? message.photo;
     if (!photo) return null;
@@ -331,11 +341,13 @@ interface LineProps {
   seen: boolean;
   fresh: boolean;
   canRespond: boolean;
+  peerName: string;
   onMenu: (message: ShownMessage) => void;
   onReact: (message: ShownMessage, emoji: string) => void;
   onReply: (message: ShownMessage) => void;
   onOpenPhoto: (message: ShownMessage) => void;
   onRetry: (message: ShownMessage) => void;
+  onQuote: (message: ShownMessage, quote: QuoteCard) => void;
 }
 
 const replyLabel = (m: ShownMessage) => {
@@ -345,7 +357,7 @@ const replyLabel = (m: ShownMessage) => {
 };
 
 /** One message: bubbles in a run join up on the sender's side, and others' runs end with their photo, as in the app. */
-function Line({ row, isGroup, seen, fresh, canRespond, onMenu, onReact, onReply, onOpenPhoto, onRetry }: LineProps) {
+function Line({ row, isGroup, seen, fresh, canRespond, peerName, onMenu, onReact, onReply, onOpenPhoto, onRetry, onQuote }: LineProps) {
   const { message: m, position } = row;
   const pending = !!m.sendState;
   const responds = canRespond && !pending;
@@ -384,7 +396,7 @@ function Line({ row, isGroup, seen, fresh, canRespond, onMenu, onReact, onReply,
           onClick={m.sendState === "failed" ? () => onRetry(m) : undefined}
           {...handlers}
         >
-          <Content message={m} onOpenPhoto={() => onOpenPhoto(m)} />
+          <Content message={m} peerName={peerName} onOpenPhoto={() => onOpenPhoto(m)} onQuote={(q) => onQuote(m, q)} />
         </span>
         {!pending && (
           <span className={styles.lineActions}>
@@ -627,11 +639,13 @@ export function ThreadScreen({ id, initial }: { id: string; initial?: ChatDetail
               seen={m.id === seenId}
               fresh={fresh}
               canRespond={canRespond}
+              peerName={chat.title}
               onMenu={setMenuFor}
               onReact={react}
               onReply={setReplyingTo}
               onOpenPhoto={openPhoto}
               onRetry={thread.retry}
+              onQuote={(message, quote) => thread.setQuote(message.id, quote)}
             />,
           ];
         })}
@@ -673,15 +687,18 @@ export function ThreadScreen({ id, initial }: { id: string; initial?: ChatDetail
         ) : notice ? (
           <p className={styles.notice}>{notice}</p>
         ) : (
-          <Composer
-            onSend={take(thread.send)}
-            onPhoto={take(thread.sendFile)}
-            onVoice={take(thread.sendRecording)}
-            onTyping={thread.noteTyping}
-            replyingTo={replyingTo}
-            onCancelReply={() => setReplyingTo(null)}
-            onError={(message) => toast(message, "danger")}
-          />
+          <>
+            {chat.kind === "dm" && canRespond && <OfferChip chatId={id} peerName={chat.title} />}
+            <Composer
+              onSend={take(thread.send)}
+              onPhoto={take(thread.sendFile)}
+              onVoice={take(thread.sendRecording)}
+              onTyping={thread.noteTyping}
+              replyingTo={replyingTo}
+              onCancelReply={() => setReplyingTo(null)}
+              onError={(message) => toast(message, "danger")}
+            />
+          </>
         )}
       </div>
     </div>

@@ -16,7 +16,7 @@ export function ModuleFigures({ m, aside }: { m: ModuleStats; aside?: ReactNode 
   const { module, businesses: b, listings: l, orders: o, money: cash } = m;
   const list = MODULE_LIST[module];
   const orders = ORDERS_LABEL[module];
-  const ordersHref = module === "shop" ? "/admin/store-orders" : undefined;
+  const ordersHref = module === "shop" ? "/admin/store-orders" : module === "gigs" ? "/admin/gig-orders" : undefined;
   return (
     <Group title="Numbers" icon={MODULE_ICON[module]} tint="purple" aside={aside}>
       {b && (

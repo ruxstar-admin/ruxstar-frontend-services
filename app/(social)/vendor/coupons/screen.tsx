@@ -10,16 +10,21 @@ import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { myBusinesses, teamCoupons, updateTeamCoupon, updateVendorCoupon, vendorCoupons } from "@/lib/api/vendor";
 import { couponBusinesses } from "@/lib/coupons";
+import { loadMyFreelancer } from "@/components/gigs/use-gigs";
 import styles from "@/components/vendor/vendor.module.css";
 
 /**
  * A vendor's coupons for their print shops, events and coaching businesses: what each takes off, how often it's used,
  * and changing them. Same as the app.
  * With `placeId` it is one shop's coupons for someone on its team, who changes only the ones for that shop alone.
+ * With `freelance` it is a freelancer's coupons for their gigs, from Freelancing, for freelancers who aren't vendors.
  */
-export function VendorCouponsScreen({ placeId }: { placeId?: string }) {
+export function VendorCouponsScreen({ placeId, freelance = false }: { placeId?: string; freelance?: boolean }) {
   const onSignedOut = useOnSignedOut();
-  const businesses = useLoad(() => (placeId ? Promise.resolve([]) : myBusinesses()), placeId);
+  const businesses = useLoad(
+    () => (placeId ? Promise.resolve([]) : freelance ? loadMyFreelancer().then((me) => (me ? [{ id: me.businessId, name: me.name, module: "gigs" }] : [])) : myBusinesses()),
+    placeId ?? (freelance ? "freelance" : ""),
+  );
   const shops = couponBusinesses(businesses.data ?? []);
   const load = useCallback((cursor?: string) => (placeId ? teamCoupons(placeId, cursor) : vendorCoupons(cursor)), [placeId]);
   const { items, setItems, loading, loadingMore, hasMore, error, more, reload } = usePages(load);
@@ -34,10 +39,10 @@ export function VendorCouponsScreen({ placeId }: { placeId?: string }) {
 
   return (
     <div className={styles.page}>
-      {placeId ? <Back href={`/work/${placeId}`}>Work</Back> : <Back href="/vendor">Dashboard</Back>}
+      {placeId ? <Back href={`/work/${placeId}`}>Work</Back> : freelance ? <Back href="/freelance">Freelancing</Back> : <Back href="/vendor">Dashboard</Back>}
       <div className={styles.head}>
         <h1 className={styles.title}>Coupons</h1>
-        <ButtonLink href={placeId ? `/work/${placeId}/coupons/new` : "/vendor/coupons/new"} icon={<Icon name="plus" size={16} />}>
+        <ButtonLink href={placeId ? `/work/${placeId}/coupons/new` : freelance ? "/freelance/coupons/new" : "/vendor/coupons/new"} icon={<Icon name="plus" size={16} />}>
           New coupon
         </ButtonLink>
       </div>
@@ -50,7 +55,11 @@ export function VendorCouponsScreen({ placeId }: { placeId?: string }) {
         <div className={styles.card}>
           <h2 className={styles.cardHead}>No coupons yet</h2>
           <p className={styles.muted}>
-            {placeId ? "Make one to bring customers to this shop." : "Make one to bring customers to your print shops, events and courses."}
+            {placeId
+              ? "Make one to bring customers to this shop."
+              : freelance
+                ? "Make one to bring customers to your gigs and custom offers."
+                : "Make one to bring customers to your print shops, events and courses."}
           </p>
         </div>
       ) : (

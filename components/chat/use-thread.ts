@@ -215,6 +215,7 @@ export function useThread(chatId: string, initial?: ChatDetail) {
     mine: true,
     text: "",
     post: null,
+    quote: null,
     photo: null,
     voice: null,
     replyTo: replyTo ? quoteOf(replyTo) : null,
@@ -319,6 +320,10 @@ export function useThread(chatId: string, initial?: ChatDetail) {
     setAttempt((n) => n + 1);
   };
 
+  /** An offer's card after it changed here, e.g. withdrawn, ahead of the next update. */
+  const setQuote = (messageId: string, quote: NonNullable<ShownMessage["quote"]>) =>
+    setMessages((prev) => prev.map((m) => (m.id === messageId ? { ...m, quote } : m)));
+
   return {
     chat,
     setChat,
@@ -334,6 +339,7 @@ export function useThread(chatId: string, initial?: ChatDetail) {
     retry,
     unsend,
     react,
+    setQuote,
     noteTyping,
     loadOlder,
     hasOlder: olderCursor !== null,

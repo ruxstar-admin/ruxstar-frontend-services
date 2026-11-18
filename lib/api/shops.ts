@@ -31,6 +31,7 @@ export const MODULE_LABEL: Record<BusinessModule, string> = {
   stays: "Stays",
   turf: "Sports & turf",
   shop: "Local shops",
+  gigs: "Freelancers",
 };
 
 type DiscoverCatalog = Pick<Catalog, "categories" | "podProducts"> & { guest: boolean };
@@ -38,7 +39,7 @@ type DiscoverCatalog = Pick<Catalog, "categories" | "podProducts"> & { guest: bo
 let catalog: Promise<DiscoverCatalog> | null = null;
 
 /** Modules whose lists the API serves signed out. Print shops need an account to see. */
-export const GUEST_MODULES: readonly BusinessModule[] = ["events", "coaching", "turf", "stays", "shop"];
+export const GUEST_MODULES: readonly BusinessModule[] = ["events", "coaching", "turf", "stays", "shop", "gigs"];
 
 /** The catalog needs an account, so signed-out visitors get every module as open; lists with nothing in them stay hidden. */
 const guestCatalog = (): DiscoverCatalog => ({

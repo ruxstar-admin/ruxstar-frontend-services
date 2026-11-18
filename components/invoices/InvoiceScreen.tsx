@@ -9,7 +9,7 @@ import { formError } from "@/lib/api/account";
 import { ApiError } from "@/lib/api/client";
 import { myInvoice, myInvoices, staffInvoice, staffInvoices, vendorInvoice, vendorInvoices, type Invoice } from "@/lib/api/invoices";
 import { money } from "@/lib/api/shops";
-import { INVOICE_HOME, INVOICE_KIND, invoiceHref, issuedOn, KIND_TONE, percent, refTitle, type InvoiceAudience } from "@/lib/invoices";
+import { INVOICE_HOME, INVOICE_KIND, invoiceHref, isSeller, issuedOn, KIND_TONE, percent, refTitle, type InvoiceAudience } from "@/lib/invoices";
 import order from "@/components/shop/order.module.css";
 import shop from "@/components/shop/shop.module.css";
 import styles from "./invoices.module.css";
@@ -17,9 +17,9 @@ import styles from "./invoices.module.css";
 /** Signed PDF links work for 10 minutes; older ones are fetched again first. */
 const LINK_FRESH_MS = 8 * 60_000;
 
-const LOAD: Record<InvoiceAudience, (id: string) => Promise<Invoice>> = { customer: myInvoice, vendor: vendorInvoice, staff: staffInvoice };
+const LOAD: Record<InvoiceAudience, (id: string) => Promise<Invoice>> = { customer: myInvoice, vendor: vendorInvoice, freelance: vendorInvoice, staff: staffInvoice };
 
-const HOME_LABEL: Record<InvoiceAudience, string> = { customer: "Your invoices", vendor: "GST invoices", staff: "Invoices" };
+const HOME_LABEL: Record<InvoiceAudience, string> = { customer: "Your invoices", vendor: "GST invoices", freelance: "GST invoices", staff: "Invoices" };
 
 /**
  * The order's other documents: Ruxstar's fee invoice (not for businesses), and credit notes for refunds, asked for by
@@ -39,7 +39,7 @@ function kindNote(invoice: Invoice, audience: InvoiceAudience): string {
   const ruxstar = invoice.issuer === "ruxstar";
   if (invoice.kind === "credit_note") {
     if (audience === "customer") return "Credit note for your refund. It reduces the invoice below by the amount refunded.";
-    if (audience === "vendor") return "Credit note for a refund to the customer. It reduces the invoice below for your GST return.";
+    if (isSeller(audience)) return "Credit note for a refund to the customer. It reduces the invoice below for your GST return.";
     return "Credit note for a refund. It reduces the invoice below.";
   }
   if (invoice.kind === "bill_of_supply") {
@@ -73,9 +73,12 @@ function orderLink(invoice: Invoice, audience: InvoiceAudience): { href: string;
   const { type, id, orderNo } = invoice.order;
   if (audience === "customer") {
     if (type === "pod_order") return { href: `/orders/${id}`, label: "View order" };
+    if (type === "gig_order") return { href: `/orders/freelance/${id}`, label: "View order" };
     return type === "coaching_order" ? { href: `/classes/${id}`, label: "View enrolment" } : { href: `/tickets/${id}`, label: "View booking" };
   }
-  if (audience === "vendor") return type === "pod_order" ? { href: `/vendor/orders/${id}`, label: "View order" } : null;
+  if (isSeller(audience) && type === "gig_order") return { href: `/freelance/orders/${id}`, label: "View order" };
+  if (isSeller(audience)) return type === "pod_order" ? { href: `/vendor/orders/${id}`, label: "View order" } : null;
+  if (type === "gig_order") return { href: `/admin/gig-orders/${id}`, label: "View order" };
   return { href: `/admin/invoices?orderNo=${orderNo}`, label: `Every document for order #${orderNo}` };
 }
 
@@ -346,7 +349,7 @@ function InvoiceDocument({
         <div className={order.news}>
           <strong>{`TCS ${percent(tcs.rateBps)}: ${money(tcs.amount)}`}</strong>
           <p className={order.small}>
-            {audience === "vendor"
+            {isSeller(audience)
               ? "Tax collected at source: Ruxstar collects it on your sale as the e-commerce operator, for your GST return. It isn't taken from your payouts yet."
               : "Tax Ruxstar collects at source on the business's sale. It isn't taken from payouts yet."}
           </p>
@@ -361,7 +364,7 @@ function InvoiceDocument({
         </ul>
       )}
 
-      <Related title={audience === "vendor" && invoice.kind !== "credit_note" ? "Credit notes against it" : "Other documents for this order"} docs={related} audience={audience} />
+      <Related title={isSeller(audience) && invoice.kind !== "credit_note" ? "Credit notes against it" : "Other documents for this order"} docs={related} audience={audience} />
     </div>
   );
 }

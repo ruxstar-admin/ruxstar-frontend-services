@@ -142,6 +142,8 @@ export const momentText = (iso: string) => `${dayText(iso)}, ${timeText(iso)}`;
 
 export type StepState = "done" | "now" | "todo" | "problem";
 export interface TimelineStep {
+  /** When titles can repeat, like a freelance order's "Changes asked for". */
+  key?: string;
   title: string;
   detail?: string | null;
   state: StepState;

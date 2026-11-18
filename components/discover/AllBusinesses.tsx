@@ -7,12 +7,14 @@ import { useOnSignedOut } from "@/components/social/session";
 import { usePages } from "@/components/social/use-pages";
 import { CourseCard } from "@/components/coaching/CourseCard";
 import { EventCard } from "@/components/events/EventCard";
+import { GigCard } from "@/components/gigs/GigCard";
 import { ShopCard, ShopCardSkeleton } from "@/components/shop/ShopCard";
 import { PropertyCard } from "@/components/stays/PropertyCard";
 import { StoreCard } from "@/components/store/cards";
 import { GroundCard } from "@/components/turf/GroundCard";
 import { listCourses } from "@/lib/api/coaching";
 import { listEvents } from "@/lib/api/events";
+import { listGigs } from "@/lib/api/gigs";
 import { MODULE_LABEL, shops, type BusinessModule } from "@/lib/api/shops";
 import type { Page } from "@/lib/api/social";
 import { listProperties } from "@/lib/api/stays";
@@ -66,6 +68,12 @@ function load(module: BusinessModule, q: string): Promise<Page<ReactNode>> {
       return first(listStores(short), (s, i) => (
         <li key={s.id}>
           <StoreCard store={s} index={i} />
+        </li>
+      ));
+    case "gigs":
+      return first(listGigs(short), (g, i) => (
+        <li key={g.id}>
+          <GigCard gig={g} index={i} />
         </li>
       ));
     default:

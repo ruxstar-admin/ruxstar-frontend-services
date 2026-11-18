@@ -5,7 +5,7 @@ import { Button, ButtonLink, Icon, Input, Segmented, Tag, useToast, type IconNam
 import { useOnSignedOut } from "@/components/social/session";
 import { usePages } from "@/components/social/use-pages";
 import { SkeletonRows } from "@/app/(social)/notifications/screen";
-import { Failed, Loading } from "@/components/vendor/parts";
+import { Back, Failed, Loading } from "@/components/vendor/parts";
 import { useLoad } from "@/components/vendor/use-load";
 import { formError } from "@/lib/api/account";
 import { ApiError, keepIdempotencyKey, newIdempotencyKey } from "@/lib/api/client";
@@ -20,7 +20,7 @@ import {
   type PayoutMethod,
   type StatementLine,
 } from "@/lib/api/vendor";
-import { INVOICE_KIND, invoiceHref } from "@/lib/invoices";
+import { INVOICE_HOME, INVOICE_KIND, invoiceHref, type InvoiceAudience } from "@/lib/invoices";
 import { ago, exact } from "@/lib/time";
 import styles from "@/components/vendor/vendor.module.css";
 
@@ -284,7 +284,7 @@ function Fact({ label, value, copy }: { label: string; value: string; copy?: str
   );
 }
 
-function LineDetails({ line }: { line: StatementLine }) {
+function LineDetails({ line, audience }: { line: StatementLine; audience: InvoiceAudience }) {
   const { order, refund, payout } = line;
   return (
     <div className={styles.payDetails}>
@@ -319,12 +319,12 @@ function LineDetails({ line }: { line: StatementLine }) {
       {(order || line.invoice) && (
         <div className={styles.actions}>
           {order && (
-            <ButtonLink href={`/vendor/orders/${order.id}`} variant="secondary">
+            <ButtonLink href={line.module === "gigs" ? `/freelance/orders/${order.id}` : `/vendor/orders/${order.id}`} variant="secondary">
               View order
             </ButtonLink>
           )}
           {line.invoice && (
-            <ButtonLink href={invoiceHref("vendor", line.invoice.id)} variant="secondary" icon={<Icon name="receipt" size={16} />}>
+            <ButtonLink href={invoiceHref(audience, line.invoice.id)} variant="secondary" icon={<Icon name="receipt" size={16} />}>
               {`${INVOICE_KIND[line.invoice.kind]} ${line.invoice.number}`}
             </ButtonLink>
           )}
@@ -335,7 +335,7 @@ function LineDetails({ line }: { line: StatementLine }) {
 }
 
 /** Every change to the vendor's earnings, a page at a time. Each line opens its payment details. */
-function Statement() {
+function Statement({ audience }: { audience: InvoiceAudience }) {
   const onSignedOut = useOnSignedOut();
   const { items, loading, loadingMore, hasMore, error, more, reload } = usePages(vendorStatement);
   const [open, setOpen] = useState<string | null>(null);
@@ -381,7 +381,7 @@ function Statement() {
                 </span>
                 <Icon name={open === line.id ? "chevron-down" : "chevron-right"} size={16} />
               </button>
-              {open === line.id && <LineDetails line={line} />}
+              {open === line.id && <LineDetails line={line} audience={audience} />}
             </li>
           );
         })}
@@ -441,8 +441,12 @@ function Payouts({ payouts }: { payouts: Payout[] }) {
   );
 }
 
-/** What can be withdrawn, what's on hold and what was paid out; where the vendor is paid; the statement and payouts. Same as the app. */
-export function PaymentsScreen() {
+/**
+ * What can be withdrawn, what's on hold and what was paid out; where the vendor is paid; the statement and payouts. Same as the app.
+ * `freelance` is the same under Freelancing, for freelancers who aren't vendors.
+ */
+export function PaymentsScreen({ freelance = false }: { freelance?: boolean }) {
+  const audience: InvoiceAudience = freelance ? "freelance" : "vendor";
   const { data, error, reload, setData } = useLoad(vendorPayments);
   const [changing, setChanging] = useState(false);
   const [showPending, setShowPending] = useState(false);
@@ -458,9 +462,10 @@ export function PaymentsScreen() {
 
   return (
     <div className={styles.page}>
+      {freelance && <Back href="/freelance">Freelancing</Back>}
       <div className={styles.head}>
         <h1 className={styles.title}>Payments</h1>
-        <ButtonLink href="/vendor/invoices" variant="secondary" icon={<Icon name="receipt" size={18} />}>
+        <ButtonLink href={INVOICE_HOME[audience]} variant="secondary" icon={<Icon name="receipt" size={18} />}>
           Invoices
         </ButtonLink>
       </div>
@@ -545,7 +550,7 @@ export function PaymentsScreen() {
       )}
 
       <Segmented label="Show" options={TABS} value={tab} onChange={setTab} />
-      {tab === "statement" ? <Statement key={statementVersion} /> : <Payouts payouts={data.payouts} />}
+      {tab === "statement" ? <Statement key={statementVersion} audience={audience} /> : <Payouts payouts={data.payouts} />}
     </div>
   );
 }

@@ -118,7 +118,7 @@ export function Timeline({ steps }: { steps: TimelineStep[] }) {
       {steps.map((s) => {
         const icon = STEP_ICON[s.state];
         return (
-          <li key={s.title} data-state={s.state} aria-current={s.state === "now" ? "step" : undefined}>
+          <li key={s.key ?? s.title} data-state={s.state} aria-current={s.state === "now" ? "step" : undefined}>
             <span className={styles.mark} aria-hidden>
               {icon && <Icon name={icon} size={14} />}
             </span>

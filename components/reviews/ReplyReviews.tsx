@@ -35,6 +35,7 @@ const WHEN: Record<ReviewModule, string> = {
   turf: "Players review their booking once they’ve played, until 30 days after its last date.",
   stays: "Tenants review their stay once they’ve moved in, for 30 days after that.",
   shop: "Customers review each product they bought once it’s delivered, for 30 days.",
+  gigs: "Customers review an order once it’s completed, for 30 days after.",
 };
 
 /** Where the owner (or the team, for print) opens what was reviewed. */

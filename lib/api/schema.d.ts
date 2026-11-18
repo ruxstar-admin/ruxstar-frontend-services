@@ -187,8 +187,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -290,8 +290,8 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -381,8 +381,8 @@ export interface paths {
                     to?: string;
                     /** @description MongoDB ObjectId as hex */
                     orderId?: string;
-                    /** @description ecommerce has defaults ready for when it opens */
-                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                    /** @description ecommerce is local shops; gigs is freelancers */
+                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                 };
                 header?: never;
                 path?: never;
@@ -410,10 +410,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description ecommerce has defaults ready for when it opens */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                /** @description ecommerce is local shops; gigs is freelancers */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order" | "gig_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -595,10 +595,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description ecommerce has defaults ready for when it opens */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                /** @description ecommerce is local shops; gigs is freelancers */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order" | "gig_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -4567,7 +4567,8 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -4744,7 +4745,8 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -4815,7 +4817,8 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -4941,7 +4944,8 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -5058,7 +5062,8 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -5173,7 +5178,8 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -5268,7 +5274,8 @@ export interface paths {
                                 id: string;
                                 /** @description MongoDB ObjectId as hex */
                                 chatId: string;
-                                kind: "text" | "post" | "photo" | "voice" | "event";
+                                /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                 /** @description Null for group lines like "Asha added Ravi" */
                                 sender: {
                                     /** @description MongoDB ObjectId as hex */
@@ -5302,6 +5309,36 @@ export interface paths {
                                     /** @description A small copy of its first photo */
                                     photo: string | null;
                                 } | null;
+                                /** @description A custom offer; null on other kinds */
+                                quote: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                    status: "open" | "withdrawn" | "expired" | "paid";
+                                    title: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description A freelancers category key */
+                                    category: string;
+                                    /** @description Paise, before any coupon and the platform fee */
+                                    price: number;
+                                    /** @description Counted from when it's paid */
+                                    deliveryDays: number;
+                                    revisions: number;
+                                    /** Format: date-time */
+                                    expiresAt: string;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        name: string;
+                                    };
+                                    /** @description Yours, once you paid for it (the customer only) */
+                                    orderId: string | null;
+                                    /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                    canPay: boolean;
+                                    /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                    canWithdraw: boolean;
+                                } | null;
                                 photo: {
                                     /** @description Works for at least an hour */
                                     url: string;
@@ -5323,7 +5360,8 @@ export interface paths {
                                     /** @description Their name; "You" for your own */
                                     sender: string;
                                     mine: boolean;
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description The start of it, or "Photo", "Voice message" or "Post" */
                                     text: string;
                                 } | null;
@@ -5403,7 +5441,8 @@ export interface paths {
                                 id: string;
                                 /** @description MongoDB ObjectId as hex */
                                 chatId: string;
-                                kind: "text" | "post" | "photo" | "voice" | "event";
+                                /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                 /** @description Null for group lines like "Asha added Ravi" */
                                 sender: {
                                     /** @description MongoDB ObjectId as hex */
@@ -5437,6 +5476,36 @@ export interface paths {
                                     /** @description A small copy of its first photo */
                                     photo: string | null;
                                 } | null;
+                                /** @description A custom offer; null on other kinds */
+                                quote: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                    status: "open" | "withdrawn" | "expired" | "paid";
+                                    title: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description A freelancers category key */
+                                    category: string;
+                                    /** @description Paise, before any coupon and the platform fee */
+                                    price: number;
+                                    /** @description Counted from when it's paid */
+                                    deliveryDays: number;
+                                    revisions: number;
+                                    /** Format: date-time */
+                                    expiresAt: string;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        name: string;
+                                    };
+                                    /** @description Yours, once you paid for it (the customer only) */
+                                    orderId: string | null;
+                                    /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                    canPay: boolean;
+                                    /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                    canWithdraw: boolean;
+                                } | null;
                                 photo: {
                                     /** @description Works for at least an hour */
                                     url: string;
@@ -5458,7 +5527,8 @@ export interface paths {
                                     /** @description Their name; "You" for your own */
                                     sender: string;
                                     mine: boolean;
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description The start of it, or "Photo", "Voice message" or "Post" */
                                     text: string;
                                 } | null;
@@ -5545,7 +5615,8 @@ export interface paths {
                                     id: string;
                                     /** @description MongoDB ObjectId as hex */
                                     chatId: string;
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Null for group lines like "Asha added Ravi" */
                                     sender: {
                                         /** @description MongoDB ObjectId as hex */
@@ -5579,6 +5650,36 @@ export interface paths {
                                         /** @description A small copy of its first photo */
                                         photo: string | null;
                                     } | null;
+                                    /** @description A custom offer; null on other kinds */
+                                    quote: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                        status: "open" | "withdrawn" | "expired" | "paid";
+                                        title: string;
+                                        /** @description What's included */
+                                        description: string;
+                                        /** @description A freelancers category key */
+                                        category: string;
+                                        /** @description Paise, before any coupon and the platform fee */
+                                        price: number;
+                                        /** @description Counted from when it's paid */
+                                        deliveryDays: number;
+                                        revisions: number;
+                                        /** Format: date-time */
+                                        expiresAt: string;
+                                        freelancer: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            businessId: string;
+                                            name: string;
+                                        };
+                                        /** @description Yours, once you paid for it (the customer only) */
+                                        orderId: string | null;
+                                        /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                        canPay: boolean;
+                                        /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                        canWithdraw: boolean;
+                                    } | null;
                                     photo: {
                                         /** @description Works for at least an hour */
                                         url: string;
@@ -5600,7 +5701,8 @@ export interface paths {
                                         /** @description Their name; "You" for your own */
                                         sender: string;
                                         mine: boolean;
-                                        kind: "text" | "post" | "photo" | "voice" | "event";
+                                        /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                        kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                         /** @description The start of it, or "Photo", "Voice message" or "Post" */
                                         text: string;
                                     } | null;
@@ -5614,13 +5716,14 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                 }[];
-                                /** @description Older messages whose reactions changed since `since`. Replace the ones you have. */
+                                /** @description Older messages whose reactions or custom offer changed since `since`. Replace the ones you have. */
                                 updated: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     /** @description MongoDB ObjectId as hex */
                                     chatId: string;
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Null for group lines like "Asha added Ravi" */
                                     sender: {
                                         /** @description MongoDB ObjectId as hex */
@@ -5654,6 +5757,36 @@ export interface paths {
                                         /** @description A small copy of its first photo */
                                         photo: string | null;
                                     } | null;
+                                    /** @description A custom offer; null on other kinds */
+                                    quote: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                        status: "open" | "withdrawn" | "expired" | "paid";
+                                        title: string;
+                                        /** @description What's included */
+                                        description: string;
+                                        /** @description A freelancers category key */
+                                        category: string;
+                                        /** @description Paise, before any coupon and the platform fee */
+                                        price: number;
+                                        /** @description Counted from when it's paid */
+                                        deliveryDays: number;
+                                        revisions: number;
+                                        /** Format: date-time */
+                                        expiresAt: string;
+                                        freelancer: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            businessId: string;
+                                            name: string;
+                                        };
+                                        /** @description Yours, once you paid for it (the customer only) */
+                                        orderId: string | null;
+                                        /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                        canPay: boolean;
+                                        /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                        canWithdraw: boolean;
+                                    } | null;
                                     photo: {
                                         /** @description Works for at least an hour */
                                         url: string;
@@ -5675,7 +5808,8 @@ export interface paths {
                                         /** @description Their name; "You" for your own */
                                         sender: string;
                                         mine: boolean;
-                                        kind: "text" | "post" | "photo" | "voice" | "event";
+                                        /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                        kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                         /** @description The start of it, or "Photo", "Voice message" or "Post" */
                                         text: string;
                                     } | null;
@@ -5861,7 +5995,8 @@ export interface paths {
                                 id: string;
                                 /** @description MongoDB ObjectId as hex */
                                 chatId: string;
-                                kind: "text" | "post" | "photo" | "voice" | "event";
+                                /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                 /** @description Null for group lines like "Asha added Ravi" */
                                 sender: {
                                     /** @description MongoDB ObjectId as hex */
@@ -5895,6 +6030,36 @@ export interface paths {
                                     /** @description A small copy of its first photo */
                                     photo: string | null;
                                 } | null;
+                                /** @description A custom offer; null on other kinds */
+                                quote: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                    status: "open" | "withdrawn" | "expired" | "paid";
+                                    title: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description A freelancers category key */
+                                    category: string;
+                                    /** @description Paise, before any coupon and the platform fee */
+                                    price: number;
+                                    /** @description Counted from when it's paid */
+                                    deliveryDays: number;
+                                    revisions: number;
+                                    /** Format: date-time */
+                                    expiresAt: string;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        name: string;
+                                    };
+                                    /** @description Yours, once you paid for it (the customer only) */
+                                    orderId: string | null;
+                                    /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                    canPay: boolean;
+                                    /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                    canWithdraw: boolean;
+                                } | null;
                                 photo: {
                                     /** @description Works for at least an hour */
                                     url: string;
@@ -5916,7 +6081,196 @@ export interface paths {
                                     /** @description Their name; "You" for your own */
                                     sender: string;
                                     mine: boolean;
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
+                                    /** @description The start of it, or "Photo", "Voice message" or "Post" */
+                                    text: string;
+                                } | null;
+                                /** @description Each emoji once, in the order first used. One reaction per person. */
+                                reactions: {
+                                    emoji: string;
+                                    count: number;
+                                    /** @description This one is yours */
+                                    mine: boolean;
+                                }[];
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/social/chats/{id}/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a custom offer, as a freelancer
+         * @description 1:1 chats only, from someone with a freelancer profile who is verified. The other person can pay for it with POST /v1/gigs/quotes/{id}/pay, which makes an order that is accepted already. It can be paid for Ruxstar's quote days; withdraw it until then with POST /v1/gigs/desk/quotes/{id}/withdraw. It can't be unsent.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        /** @description What's included */
+                        description: string;
+                        /** @description A freelancers category key that isn't hidden */
+                        category: string;
+                        /** @description Paise, within Ruxstar's price range */
+                        price: number;
+                        /** @description Within Ruxstar's delivery days, counted from payment */
+                        deliveryDays: number;
+                        /** @description Up to Ruxstar's most */
+                        revisions: number;
+                        /** @description MongoDB ObjectId as hex */
+                        replyToId?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description MongoDB ObjectId as hex */
+                                chatId: string;
+                                /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
+                                /** @description Null for group lines like "Asha added Ravi" */
+                                sender: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string;
+                                    avatarUrl: string | null;
+                                    vendor: boolean;
+                                    /** @description Identity verified by Ruxstar */
+                                    verified: boolean;
+                                } | null;
+                                mine: boolean;
+                                text: string;
+                                post: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False when the post was deleted, or you can't see its author */
+                                    available: boolean;
+                                    author: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        username: string;
+                                        avatarUrl: string | null;
+                                        vendor: boolean;
+                                        /** @description Identity verified by Ruxstar */
+                                        verified: boolean;
+                                    } | null;
+                                    /** @description The start of the post */
+                                    text: string;
+                                    /** @description A small copy of its first photo */
+                                    photo: string | null;
+                                } | null;
+                                /** @description A custom offer; null on other kinds */
+                                quote: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                    status: "open" | "withdrawn" | "expired" | "paid";
+                                    title: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description A freelancers category key */
+                                    category: string;
+                                    /** @description Paise, before any coupon and the platform fee */
+                                    price: number;
+                                    /** @description Counted from when it's paid */
+                                    deliveryDays: number;
+                                    revisions: number;
+                                    /** Format: date-time */
+                                    expiresAt: string;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        name: string;
+                                    };
+                                    /** @description Yours, once you paid for it (the customer only) */
+                                    orderId: string | null;
+                                    /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                    canPay: boolean;
+                                    /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                    canWithdraw: boolean;
+                                } | null;
+                                photo: {
+                                    /** @description Works for at least an hour */
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                voice: {
+                                    /** @description AAC in MP4. Works for at least an hour and answers Range requests. */
+                                    url: string;
+                                    durationMs: number;
+                                    /** @description Loudness bars for its waveform; may be empty */
+                                    levels: number[];
+                                } | null;
+                                replyTo: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description False once that message was unsent */
+                                    available: boolean;
+                                    /** @description Their name; "You" for your own */
+                                    sender: string;
+                                    mine: boolean;
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description The start of it, or "Photo", "Voice message" or "Post" */
                                     text: string;
                                 } | null;
@@ -6005,7 +6359,8 @@ export interface paths {
                                 id: string;
                                 /** @description MongoDB ObjectId as hex */
                                 chatId: string;
-                                kind: "text" | "post" | "photo" | "voice" | "event";
+                                /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                 /** @description Null for group lines like "Asha added Ravi" */
                                 sender: {
                                     /** @description MongoDB ObjectId as hex */
@@ -6039,6 +6394,36 @@ export interface paths {
                                     /** @description A small copy of its first photo */
                                     photo: string | null;
                                 } | null;
+                                /** @description A custom offer; null on other kinds */
+                                quote: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                    status: "open" | "withdrawn" | "expired" | "paid";
+                                    title: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description A freelancers category key */
+                                    category: string;
+                                    /** @description Paise, before any coupon and the platform fee */
+                                    price: number;
+                                    /** @description Counted from when it's paid */
+                                    deliveryDays: number;
+                                    revisions: number;
+                                    /** Format: date-time */
+                                    expiresAt: string;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        name: string;
+                                    };
+                                    /** @description Yours, once you paid for it (the customer only) */
+                                    orderId: string | null;
+                                    /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                    canPay: boolean;
+                                    /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                    canWithdraw: boolean;
+                                } | null;
                                 photo: {
                                     /** @description Works for at least an hour */
                                     url: string;
@@ -6060,7 +6445,8 @@ export interface paths {
                                     /** @description Their name; "You" for your own */
                                     sender: string;
                                     mine: boolean;
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description The start of it, or "Photo", "Voice message" or "Post" */
                                     text: string;
                                 } | null;
@@ -6150,7 +6536,8 @@ export interface paths {
                                 id: string;
                                 /** @description MongoDB ObjectId as hex */
                                 chatId: string;
-                                kind: "text" | "post" | "photo" | "voice" | "event";
+                                /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                 /** @description Null for group lines like "Asha added Ravi" */
                                 sender: {
                                     /** @description MongoDB ObjectId as hex */
@@ -6184,6 +6571,36 @@ export interface paths {
                                     /** @description A small copy of its first photo */
                                     photo: string | null;
                                 } | null;
+                                /** @description A custom offer; null on other kinds */
+                                quote: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                    status: "open" | "withdrawn" | "expired" | "paid";
+                                    title: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description A freelancers category key */
+                                    category: string;
+                                    /** @description Paise, before any coupon and the platform fee */
+                                    price: number;
+                                    /** @description Counted from when it's paid */
+                                    deliveryDays: number;
+                                    revisions: number;
+                                    /** Format: date-time */
+                                    expiresAt: string;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        name: string;
+                                    };
+                                    /** @description Yours, once you paid for it (the customer only) */
+                                    orderId: string | null;
+                                    /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                    canPay: boolean;
+                                    /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                    canWithdraw: boolean;
+                                } | null;
                                 photo: {
                                     /** @description Works for at least an hour */
                                     url: string;
@@ -6205,7 +6622,8 @@ export interface paths {
                                     /** @description Their name; "You" for your own */
                                     sender: string;
                                     mine: boolean;
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description The start of it, or "Photo", "Voice message" or "Post" */
                                     text: string;
                                 } | null;
@@ -6273,7 +6691,8 @@ export interface paths {
                                 id: string;
                                 /** @description MongoDB ObjectId as hex */
                                 chatId: string;
-                                kind: "text" | "post" | "photo" | "voice" | "event";
+                                /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                 /** @description Null for group lines like "Asha added Ravi" */
                                 sender: {
                                     /** @description MongoDB ObjectId as hex */
@@ -6307,6 +6726,36 @@ export interface paths {
                                     /** @description A small copy of its first photo */
                                     photo: string | null;
                                 } | null;
+                                /** @description A custom offer; null on other kinds */
+                                quote: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                    status: "open" | "withdrawn" | "expired" | "paid";
+                                    title: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description A freelancers category key */
+                                    category: string;
+                                    /** @description Paise, before any coupon and the platform fee */
+                                    price: number;
+                                    /** @description Counted from when it's paid */
+                                    deliveryDays: number;
+                                    revisions: number;
+                                    /** Format: date-time */
+                                    expiresAt: string;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        name: string;
+                                    };
+                                    /** @description Yours, once you paid for it (the customer only) */
+                                    orderId: string | null;
+                                    /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                    canPay: boolean;
+                                    /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                    canWithdraw: boolean;
+                                } | null;
                                 photo: {
                                     /** @description Works for at least an hour */
                                     url: string;
@@ -6328,7 +6777,8 @@ export interface paths {
                                     /** @description Their name; "You" for your own */
                                     sender: string;
                                     mine: boolean;
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description The start of it, or "Photo", "Voice message" or "Post" */
                                     text: string;
                                 } | null;
@@ -6566,7 +7016,8 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -6836,7 +7287,8 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -7023,7 +7475,8 @@ export interface paths {
                                 /** @description 1:1 chats: your request hasn't been accepted, and you've sent your one message */
                                 waiting: boolean;
                                 last: {
-                                    kind: "text" | "post" | "photo" | "voice" | "event";
+                                    /** @description `quote` is a freelancer's custom offer; its card is in `quote` */
+                                    kind: "text" | "post" | "photo" | "voice" | "event" | "quote";
                                     /** @description Ready to show, for example "Sent a photo" or "Shared a post" */
                                     text: string;
                                     mine: boolean;
@@ -7203,7 +7656,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7318,7 +7771,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7426,7 +7879,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7537,7 +7990,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7689,7 +8142,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -7876,7 +8329,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /** @description A live print shop: show Order, which opens its order page */
                                     orderable: boolean;
                                 } | null;
@@ -8567,12 +9020,12 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 kind: "social" | "account";
-                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated" | "coaching.enrolled" | "coaching.updated" | "turf.booked" | "turf.updated" | "stays.reserved" | "stays.updated" | "shop.ordered" | "shop.updated";
+                                type: "post.like" | "post.comment" | "post.removed" | "post.mention" | "report.resolved" | "kyc.approved" | "kyc.rejected" | "business.suspended" | "business.restored" | "order.placed" | "order.updated" | "user.followed" | "payout.updated" | "team.invited" | "team.joined" | "team.ended" | "review.posted" | "review.replied" | "review.removed" | "delivery.offer" | "delivery.updated" | "support.replied" | "support.resolved" | "kyc.reopened" | "event.ticket" | "event.updated" | "coaching.enrolled" | "coaching.updated" | "turf.booked" | "turf.updated" | "stays.reserved" | "stays.updated" | "shop.ordered" | "shop.updated" | "gigs.ordered" | "gigs.updated";
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches, `turf_ground` a ground's page, `turf_order` your turf booking, `vendor_ground` a ground's board for its owner or team, `stay_property` a PG or hostel's page, `stay_order` your PG or hostel reservation, `vendor_property` a property's bed board for its owner or team, `store` a local shop's page, `store_product` one of its products, `store_order` your order at a local shop, `vendor_store_order` an order at the desk of a local shop you own or work at; `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch" | "turf_ground" | "turf_order" | "vendor_ground" | "stay_property" | "stay_order" | "vendor_property" | "store" | "store_product" | "store_order" | "vendor_store_order";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches, `turf_ground` a ground's page, `turf_order` your turf booking, `vendor_ground` a ground's board for its owner or team, `stay_property` a PG or hostel's page, `stay_order` your PG or hostel reservation, `vendor_property` a property's bed board for its owner or team, `store` a local shop's page, `store_product` one of its products, `store_order` your order at a local shop, `vendor_store_order` an order at the desk of a local shop you own or work at, `gig` a freelancer's gig, `gig_order` your freelance order, `vendor_gig_order` an order you are doing as a freelancer, `freelance` your Freelancing home (`id` is your freelancer business; apps that don't know a screen ignore it); `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch" | "turf_ground" | "turf_order" | "vendor_ground" | "stay_property" | "stay_order" | "vendor_property" | "store" | "store_product" | "store_order" | "vendor_store_order" | "gig" | "gig_order" | "vendor_gig_order" | "freelance";
                                     id: string;
                                 };
                                 read: boolean;
@@ -8974,7 +9427,7 @@ export interface paths {
                                 amount: number;
                                 /** Format: date-time */
                                 at: string;
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger";
                                 /** @description Set on order lines */
                                 order: {
                                     /** @description MongoDB ObjectId as hex */
@@ -9227,8 +9680,8 @@ export interface paths {
                     to?: string;
                     /** @description MongoDB ObjectId as hex */
                     orderId?: string;
-                    /** @description ecommerce has defaults ready for when it opens */
-                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                    /** @description ecommerce is local shops; gigs is freelancers */
+                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                 };
                 header?: never;
                 path?: never;
@@ -9256,10 +9709,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description ecommerce has defaults ready for when it opens */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                /** @description ecommerce is local shops; gigs is freelancers */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order" | "gig_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -9505,10 +9958,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description ecommerce has defaults ready for when it opens */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                /** @description ecommerce is local shops; gigs is freelancers */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order" | "gig_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -11399,7 +11852,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -11456,8 +11909,8 @@ export interface paths {
         };
         put?: never;
         /**
-         * Make a coupon for your print shops
-         * @description You pay for the discount: it comes out of your share, and commission is charged on the price after it. The code and the discount can't change afterwards. Each customer can use it once unless `perCustomer` says otherwise.
+         * Make a coupon for your businesses
+         * @description You pay for the discount: it comes out of your share, and commission is charged on the price after it. The code and the discount can't change afterwards. Each customer can use it once unless `perCustomer` says otherwise. Freelancers who aren't vendors can make them only for their freelancer profile.
          */
         post: {
             parameters: {
@@ -11486,7 +11939,7 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Your print shops, events, coaching, turf, stays and local shop businesses it works at */
+                        /** @description Your print shops, events, coaching, turf, stays, local shop and freelancer businesses it works at */
                         businessIds: string[];
                     };
                 };
@@ -11516,7 +11969,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -11590,7 +12043,7 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Change your coupon's shops, dates and limits, or switch it off or on
+         * Change your coupon's businesses, dates and limits, or switch it off or on
          * @description Send only what changes. A coupon Ruxstar switched off stays off until Ruxstar switches it back on.
          */
         patch: {
@@ -11617,7 +12070,7 @@ export interface paths {
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
                         active?: boolean;
-                        /** @description Your print shops, events, coaching, turf, stays and local shop businesses it works at */
+                        /** @description Your print shops, events, coaching, turf, stays, local shop and freelancer businesses it works at */
                         businessIds?: string[];
                     };
                 };
@@ -11647,7 +12100,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -20866,11 +21319,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -20977,11 +21430,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -21062,11 +21515,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -21114,7 +21567,7 @@ export interface paths {
         };
         /**
          * Categories, types, states and cities, and print products to choose from
-         * @description Each category is one module, with whether it is live and taking new businesses. The Ruxstar console reads it for labels.
+         * @description No sign-in needed. Each category is one module, with whether it is live and taking new businesses. The Ruxstar console reads it for labels. Freelancers (`gigs`) isn't made here: its profiles start with POST /v1/gigs/me, so leave it out of Add a business.
          */
         get: {
             parameters: {
@@ -21134,8 +21587,8 @@ export interface paths {
                         "application/json": {
                             data: {
                                 categories: {
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     label: string;
                                     description: string;
                                     live: boolean;
@@ -21148,7 +21601,7 @@ export interface paths {
                                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                          * @enum {unknown}
                                          */
-                                        id: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                        id: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                         label: string;
                                         description: string;
                                         examples: string;
@@ -21249,13 +21702,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -21396,13 +21849,13 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                        /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                         /**
                          * @description Belongs to one module; GET /v1/vendor/catalog lists them
                          * @enum {unknown}
                          */
-                        type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                        type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                         name: string;
                         /** @description 10-digit mobile number */
                         phone: string;
@@ -21436,13 +21889,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -21603,13 +22056,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -21841,13 +22294,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -22057,13 +22510,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -22225,13 +22678,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -22399,13 +22852,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -22570,13 +23023,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -22742,13 +23195,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -22914,13 +23367,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -24877,11 +25330,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -24971,11 +25424,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -25078,7 +25531,7 @@ export interface paths {
         };
         /**
          * A print shop's reviews, newest first
-         * @description The shop's rating is on the shop itself.
+         * @description No sign-in needed. The shop's rating is on the shop itself.
          */
         get: {
             parameters: {
@@ -25126,11 +25579,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -25254,7 +25707,7 @@ export interface paths {
         };
         /**
          * Print shops customers can order from, newest first
-         * @description Live shops that are not on hold. In each page, shops in your city (from your profile) come first, then open ones. Empty while Ruxstar has print on demand switched off.
+         * @description No sign-in needed. Live shops that are not on hold. In each page, shops in your city (from your profile, when signed in) come first, then open ones. Empty while Ruxstar has print on demand switched off.
          */
         get: {
             parameters: {
@@ -25288,7 +25741,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -25361,7 +25814,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** One print shop: photos, products and prices */
+        /**
+         * One print shop: photos, products and prices
+         * @description No sign-in needed.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -25389,7 +25845,7 @@ export interface paths {
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 typeLabel: string;
                                 cover: {
                                     url: string;
@@ -25521,7 +25977,7 @@ export interface paths {
         };
         /**
          * Payment conditions for print orders and print shops
-         * @description What customers see before paying and vendors before opening a shop. The commission and fees are Ruxstar's current settings.
+         * @description No sign-in needed. What customers see before paying and vendors before opening a shop. The commission and fees are Ruxstar's current settings.
          */
         get: {
             parameters: {
@@ -26348,11 +26804,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -26442,11 +26898,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -26597,11 +27053,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -29617,11 +30073,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -29711,11 +30167,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -29866,11 +30322,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -34507,11 +34963,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -34601,11 +35057,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -34756,11 +35212,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -38703,11 +39159,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -38797,11 +39253,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -38952,11 +39408,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -43819,11 +44275,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -45042,11 +45498,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -45138,11 +45594,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -45806,11 +46262,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -45940,6 +46396,7034 @@ export interface paths {
                                 whyNot: string | null;
                                 /** @description Live products */
                                 products: number;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/me/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your freelancer profile
+         * @description NOT_FOUND until you start freelancing.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description `live` once a gig is published */
+                                status: "draft" | "live";
+                                /** @description Base verification is done; publishing gigs and sending offers need it */
+                                verified: boolean;
+                                /** @description Ruxstar is holding the profile: nothing can be sold */
+                                suspended: boolean;
+                                /** @description Why and since when Ruxstar is holding the profile, while `suspended` */
+                                hold: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                gigs: {
+                                    total: number;
+                                    live: number;
+                                    max: number;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Start freelancing: your freelancer profile
+         * @description Anyone signed in can, once; one profile per person. It stays a draft until your first gig is published, which needs base verification. A payout account is only needed to withdraw. Freelancers work on their own; there's no team.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Your display name as a freelancer */
+                        name: string;
+                        /** @description One line, for example Logo designer for small brands */
+                        headline: string;
+                        bio: string | null;
+                        /** @description A key from GET /v1/gigs/rules `categories` */
+                        category: string;
+                        skills: string[];
+                        languages: string[];
+                        city: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description `live` once a gig is published */
+                                status: "draft" | "live";
+                                /** @description Base verification is done; publishing gigs and sending offers need it */
+                                verified: boolean;
+                                /** @description Ruxstar is holding the profile: nothing can be sold */
+                                suspended: boolean;
+                                /** @description Why and since when Ruxstar is holding the profile, while `suspended` */
+                                hold: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                gigs: {
+                                    total: number;
+                                    live: number;
+                                    max: number;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change your freelancer profile */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Send only what changes. The name and city show on your gigs too. */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Your display name as a freelancer */
+                        name?: string;
+                        /** @description One line, for example Logo designer for small brands */
+                        headline?: string;
+                        bio?: string | null;
+                        /** @description A key from GET /v1/gigs/rules `categories` */
+                        category?: string;
+                        skills?: string[];
+                        languages?: string[];
+                        city?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description `live` once a gig is published */
+                                status: "draft" | "live";
+                                /** @description Base verification is done; publishing gigs and sending offers need it */
+                                verified: boolean;
+                                /** @description Ruxstar is holding the profile: nothing can be sold */
+                                suspended: boolean;
+                                /** @description Why and since when Ruxstar is holding the profile, while `suspended` */
+                                hold: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                gigs: {
+                                    total: number;
+                                    live: number;
+                                    max: number;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/gigs/me/portfolio/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a photo to your portfolio
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. Up to 12 photos and links together.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description `live` once a gig is published */
+                                status: "draft" | "live";
+                                /** @description Base verification is done; publishing gigs and sending offers need it */
+                                verified: boolean;
+                                /** @description Ruxstar is holding the profile: nothing can be sold */
+                                suspended: boolean;
+                                /** @description Why and since when Ruxstar is holding the profile, while `suspended` */
+                                hold: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                gigs: {
+                                    total: number;
+                                    live: number;
+                                    max: number;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/me/portfolio/photos/{itemId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a portfolio photo */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    itemId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description `live` once a gig is published */
+                                status: "draft" | "live";
+                                /** @description Base verification is done; publishing gigs and sending offers need it */
+                                verified: boolean;
+                                /** @description Ruxstar is holding the profile: nothing can be sold */
+                                suspended: boolean;
+                                /** @description Why and since when Ruxstar is holding the profile, while `suspended` */
+                                hold: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                gigs: {
+                                    total: number;
+                                    live: number;
+                                    max: number;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/me/portfolio/links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a link to your portfolio
+         * @description Up to 12 photos and links together.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        url: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description `live` once a gig is published */
+                                status: "draft" | "live";
+                                /** @description Base verification is done; publishing gigs and sending offers need it */
+                                verified: boolean;
+                                /** @description Ruxstar is holding the profile: nothing can be sold */
+                                suspended: boolean;
+                                /** @description Why and since when Ruxstar is holding the profile, while `suspended` */
+                                hold: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                gigs: {
+                                    total: number;
+                                    live: number;
+                                    max: number;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/me/portfolio/links/{itemId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a portfolio link */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    itemId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description `live` once a gig is published */
+                                status: "draft" | "live";
+                                /** @description Base verification is done; publishing gigs and sending offers need it */
+                                verified: boolean;
+                                /** @description Ruxstar is holding the profile: nothing can be sold */
+                                suspended: boolean;
+                                /** @description Why and since when Ruxstar is holding the profile, while `suspended` */
+                                hold: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                gigs: {
+                                    total: number;
+                                    live: number;
+                                    max: number;
+                                };
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/me/gigs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your gigs, newest first, drafts included */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "draft" | "live" | "paused" | "removed";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Make a gig
+         * @description It starts as a draft. Add at least one photo, then publish it. Up to Ruxstar's gigs per freelancer, drafts included.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description For example I will design a logo for your brand */
+                        title: string;
+                        /** @description A key from GET /v1/gigs/rules `categories` */
+                        category: string;
+                        description: string;
+                        /** @description One to Ruxstar's most, Basic first */
+                        packages: {
+                            /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                            tier: "basic" | "standard" | "premium";
+                            /** @description Leave out for Basic, Standard or Premium */
+                            name?: string;
+                            /** @description What's included */
+                            description: string;
+                            /** @description Paise, within Ruxstar's price range */
+                            price: number;
+                            /** @description Within Ruxstar's delivery days, counted from acceptance */
+                            deliveryDays: number;
+                            /** @description Up to Ruxstar's most */
+                            revisions: number;
+                        }[];
+                        /** @description What to ask the customer when they order */
+                        questions: {
+                            text: string;
+                            required: boolean;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/me/gigs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of your gigs */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a gig
+         * @description Only gigs never ordered. Pause one that has orders instead.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Change a gig */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Send only what changes; packages and questions are replaced whole. Orders made keep what they bought. */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description For example I will design a logo for your brand */
+                        title?: string;
+                        /** @description A key from GET /v1/gigs/rules `categories` */
+                        category?: string;
+                        description?: string;
+                        /** @description One to Ruxstar's most, Basic first */
+                        packages?: {
+                            /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                            tier: "basic" | "standard" | "premium";
+                            /** @description Leave out for Basic, Standard or Premium */
+                            name?: string;
+                            /** @description What's included */
+                            description: string;
+                            /** @description Paise, within Ruxstar's price range */
+                            price: number;
+                            /** @description Within Ruxstar's delivery days, counted from acceptance */
+                            deliveryDays: number;
+                            /** @description Up to Ruxstar's most */
+                            revisions: number;
+                        }[];
+                        /** @description What to ask the customer when they order */
+                        questions?: {
+                            text: string;
+                            required: boolean;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/gigs/me/gigs/{id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a photo to a gig
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. Up to 5; the first is the cover.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/me/gigs/{id}/photos/{photoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a photo from a gig
+         * @description A live gig keeps at least one.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                    photoId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/me/gigs/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish a gig, or take orders for a paused one again
+         * @description Needs base verification and a photo. Your first published gig puts your freelancer profile on Ruxstar.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/me/gigs/{id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stop taking orders for a gig
+         * @description It leaves the listings; orders already placed go on. Publish it again to take orders.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/desk/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Orders for your gigs and offers, newest first
+         * @description Paid ones only. Filter by status: `paid` waits for you to accept.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                    status?: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/desk/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One order: the brief, files, deliveries and your share */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/desk/orders/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept a paid order
+         * @description Within Ruxstar's accept hours of payment, or the customer is refunded. It's due the package's delivery days from now.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/desk/orders/{id}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Turn down a paid order
+         * @description The customer gets everything back and is told why.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The customer is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/desk/orders/{id}/deliver": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Deliver an order: a message, links and files
+         * @description Upload the files first with POST /v1/gigs/files?use=delivery. They add up to at most Ruxstar's delivery size. The customer then approves it, asks for a revision while the package has them, or reports a problem; unanswered, it completes by itself.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        message: string;
+                        /** @description For example a shared drive folder */
+                        links: string[];
+                        /** @description Files you uploaded with POST /v1/gigs/files and haven't used yet */
+                        fileIds: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/desk/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel an order you can't finish
+         * @description Any time until it completes, unless a problem was reported. The customer gets everything back and is told why.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The customer is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/desk/quotes/{id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw a custom offer you sent
+         * @description Until it's paid. The offer in the chat shows it was withdrawn.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Everything the offer's card in the chat shows, and where it stands */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                status: "open" | "withdrawn" | "expired" | "paid";
+                                title: string;
+                                /** @description What's included */
+                                description: string;
+                                /** @description A freelancers category key */
+                                category: string;
+                                /** @description Paise, before any coupon and the platform fee */
+                                price: number;
+                                /** @description Counted from when it's paid */
+                                deliveryDays: number;
+                                revisions: number;
+                                /** Format: date-time */
+                                expiresAt: string;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    name: string;
+                                };
+                                /** @description Once it's paid */
+                                orderId: string | null;
+                                /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                canPay: boolean;
+                                /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                canWithdraw: boolean;
+                                /** @description MongoDB ObjectId as hex */
+                                chatId: string;
+                                withdrawnAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload a file to attach to an order or a delivery
+         * @description Send the file itself with Content-Type application/octet-stream and its name in `name`. Up to Ruxstar's delivery size (at most 25 MB); the files on one order or one delivery add up to that too. Allowed: pdf, jpg, jpeg, png, gif, webp, heic, psd, ai, eps, mp4, mov, webm, mp3, wav, m4a, zip, txt, csv, doc, docx, xls, xlsx, ppt, pptx, ttf, otf. Then pass its id in `fileIds`. Files not used within a day are deleted; used ones go a set number of days after the order ends.
+         */
+        post: {
+            parameters: {
+                query: {
+                    /** @description The file's name, with its extension */
+                    name: string;
+                    /** @description `brief`: to attach to an order you place. `delivery`: to deliver an order */
+                    use: "brief" | "delivery";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                name: string;
+                                contentType: string;
+                                bytes: number;
+                                /** @description `brief`: to attach to an order you place. `delivery`: to deliver an order */
+                                use: "brief" | "delivery";
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/orders/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your review of one of your freelance orders
+         * @description Null until you review it. One Ruxstar removed comes back with its reason; it can't be changed or written again.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Review a freelance order, or change your review
+         * @description Once it's complete, until 30 days after; not orders refunded in full. 1 to 5 stars and, if you like, a few words; one review per freelance order. Leaving out `text` keeps what you wrote; null or blank clears it. The business is told about a new review.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        rating: number;
+                        text?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Null before the customer reviews the order */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                                /** @description MongoDB ObjectId as hex */
+                                orderId: string;
+                                status: "live" | "removed";
+                                removedReason: string | null;
+                            } | null;
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Delete your review of a freelance order
+         * @description You can review the freelance order again while it is still open for reviews.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A gig's reviews, newest first
+         * @description No sign-in needed. The business's rating covers all its reviews and is on the detail.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                rating: number;
+                                text: string | null;
+                                /** @description What was bought: a print product such as Business cards, an event's title or a course's */
+                                product: string;
+                                author: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    username: string | null;
+                                    avatarUrl: string | null;
+                                } | null;
+                                /** @description The shop's answer */
+                                reply: {
+                                    text: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                    editedAt: string | null;
+                                } | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                editedAt: string | null;
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
+                                /** @description The event or course reviewed; null for print */
+                                listing?: {
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                } | null;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/reviews/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report a review to Ruxstar
+         * @description One open report per review you report; reporting it again while it is open changes nothing. The writer isn't told.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: "spam" | "fake" | "abuse" | "other";
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                done: true;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ruxstar's rules for freelancing: categories, prices, delivery days, revisions, file sizes, timers and fees
+         * @description No sign-in needed.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description The ones showing, in order */
+                                categories: {
+                                    key: string;
+                                    label: string;
+                                }[];
+                                /** @description A delivery the customer doesn't answer completes this many days later */
+                                autoCompleteDays: number;
+                                /** @description A paid order the freelancer doesn't accept in this long is refunded in full */
+                                acceptHours: number;
+                                /** @description A custom offer can be paid for this many days */
+                                quoteDays: number;
+                                /** @description Files in one delivery, or attached to an order, add up to at most this */
+                                deliveryMaxMb: number;
+                                /** @description An order's files are deleted this many days after it ends */
+                                fileDays: number;
+                                maxGigs: number;
+                                maxPackages: number;
+                                /** @description Amount in paise */
+                                minPrice: number;
+                                /** @description Amount in paise */
+                                maxPrice: number;
+                                minDays: number;
+                                maxDays: number;
+                                maxRevisions: number;
+                                commissionBps: number;
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                live: boolean;
+                                /** @description New freelancers can start */
+                                signupsOpen: boolean;
+                                /** @description Fixed by Ruxstar; not settings */
+                                limits: {
+                                    /** @description Photos and links on a profile, together */
+                                    portfolio: number;
+                                    gigPhotos: number;
+                                    /** @description On one gig */
+                                    questions: number;
+                                    /** @description On one order or one delivery */
+                                    files: number;
+                                    /** @description In one delivery */
+                                    links: number;
+                                    /** @description Characters in one answer to a gig's question */
+                                    answer: number;
+                                    /** @description The kinds of file that can be uploaded, by the name's extension */
+                                    extensions: string[];
+                                };
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Gigs, newest first
+         * @description No sign-in needed. Filter by category, city and words in the title. Empty while Ruxstar has freelancing switched off.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description A key from GET /v1/gigs/rules `categories` */
+                    category?: string;
+                    /** @description Freelancers who said they are there */
+                    city?: string;
+                    /** @description Words in the title or the freelancer's name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/freelancers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A freelancer's page: profile, portfolio and live gigs
+         * @description No sign-in needed. `id` is the freelancer's business id, as on a gig.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description MongoDB ObjectId as hex */
+                                userId: string;
+                                username: string | null;
+                                /** @description Live gigs, newest first */
+                                gigs: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    title: string;
+                                    category: string;
+                                    categoryLabel: string;
+                                    photo: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    } | null;
+                                    /** @description Amount in paise */
+                                    priceFrom: number;
+                                    /** @description The fewest delivery days of its packages */
+                                    fastestDays: number;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        /** @description MongoDB ObjectId as hex */
+                                        userId: string;
+                                        /** @description With `userId`, opens a 1:1 chat with them */
+                                        username: string | null;
+                                        name: string;
+                                        headline: string;
+                                        city: string | null;
+                                        avatarUrl: string | null;
+                                    };
+                                    /** @description Live reviews */
+                                    rating?: {
+                                        /** @description To one decimal; null until there are 3 reviews */
+                                        average: number | null;
+                                        count: number;
+                                    };
+                                }[];
+                                /** Format: date-time */
+                                memberSince: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Your freelance orders, newest first
+         * @description current: waiting for payment, the freelancer, you or Ruxstar. past: completed or cancelled.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description current: not completed or cancelled */
+                    view?: "current" | "past";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One order: the package, your brief, deliveries, revisions, refunds and invoices
+         * @description While it waits for payment, Cashfree is asked whether it was paid. File links work for 10 minutes; open the order again for fresh ones.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/orders/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A fresh checkout link for an order waiting for payment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                checkoutUrl: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel an order for a full refund
+         * @description Before the freelancer accepts it, or once it's past its due date with nothing delivered. Everything comes back, platform fee included.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/orders/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve the delivery
+         * @description The order completes and the freelancer is paid. You can then review it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/orders/{id}/revision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask for a revision
+         * @description While the package has revisions left. The order goes back to the freelancer with your note; its due date stays.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description What to change */
+                        note: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/orders/{id}/problem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report a problem with the delivery
+         * @description Opens a help ticket about the order. The money is held until Ruxstar decides a full, part or no refund.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description What's wrong. It opens a help ticket about the order */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/quotes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Where a custom offer stands
+         * @description For the customer it was sent to and the freelancer: its terms, as on its chat card, and whether it's open, paid, withdrawn or expired.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Everything the offer's card in the chat shows, and where it stands */
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                /** @description `open` can be paid for until `expiresAt`. `paid` made the order in `orderId` */
+                                status: "open" | "withdrawn" | "expired" | "paid";
+                                title: string;
+                                /** @description What's included */
+                                description: string;
+                                /** @description A freelancers category key */
+                                category: string;
+                                /** @description Paise, before any coupon and the platform fee */
+                                price: number;
+                                /** @description Counted from when it's paid */
+                                deliveryDays: number;
+                                revisions: number;
+                                /** Format: date-time */
+                                expiresAt: string;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    name: string;
+                                };
+                                /** @description Once it's paid */
+                                orderId: string | null;
+                                /** @description You are the customer and it is open: POST /v1/gigs/quotes/{id}/pay */
+                                canPay: boolean;
+                                /** @description You sent it and it is open: POST /v1/gigs/desk/quotes/{id}/withdraw */
+                                canWithdraw: boolean;
+                                /** @description MongoDB ObjectId as hex */
+                                chatId: string;
+                                withdrawnAt: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/quotes/{id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Coupons that work on a custom offer, best first, and checking a code
+         * @description Only the customer it was sent to, while it's open. With `code`, that code is checked too.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Check this code too */
+                    code?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                offers: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    label: string;
+                                    terms: string | null;
+                                    /** @description Paise it takes off this order; 0 when it doesn't apply yet */
+                                    discount: number;
+                                    problem: string | null;
+                                }[];
+                                /** @description With `code` */
+                                checked: {
+                                    code: string;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    problem: string | null;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/quotes/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept and pay for a custom offer
+         * @description Only the customer it was sent to, while it's open. The order is accepted already: it's due the offer's delivery days after payment. Asking again while an order for it waits for payment gives that order's checkout link.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Files you uploaded with POST /v1/gigs/files and haven't used yet */
+                        fileIds?: string[];
+                        note?: string | null;
+                        coupon?: string;
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** @description Whose view this is */
+                                    role: "customer" | "freelancer" | "staff";
+                                    title: string;
+                                    category: string;
+                                    /** @description Null for a custom offer */
+                                    gigId: string | null;
+                                    quoteId: string | null;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        /** @description MongoDB ObjectId as hex */
+                                        userId: string;
+                                        /** @description With `userId`, opens a 1:1 chat with them */
+                                        username: string | null;
+                                        name: string;
+                                        avatarUrl: string | null;
+                                    };
+                                    customer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    package: {
+                                        tier: ("basic" | "standard" | "premium") | null;
+                                        name: string;
+                                        description: string;
+                                        deliveryDays: number;
+                                        revisions: number;
+                                    };
+                                    answers: {
+                                        question: string;
+                                        answer: string;
+                                    }[];
+                                    /** @description The customer's files for the brief */
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    note: string | null;
+                                    price: {
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        discount: number;
+                                        /** @description Amount in paise */
+                                        platformFee: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    };
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                    share: number | null;
+                                    refunds: {
+                                        kind: "full" | "part";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        status: "pending" | "done";
+                                        reason: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    }[];
+                                    /** @description Unpaid, it is cancelled after this */
+                                    payBy: string | null;
+                                    paidAt: string | null;
+                                    /** @description Paid, the freelancer must accept by then or it is refunded */
+                                    acceptBy: string | null;
+                                    acceptedAt: string | null;
+                                    dueAt: string | null;
+                                    /** @description Past its due date with nothing delivered */
+                                    late: boolean;
+                                    revisions: {
+                                        included: number;
+                                        used: number;
+                                        left: number;
+                                    };
+                                    /** @description Oldest first */
+                                    deliveries: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        message: string;
+                                        links: string[];
+                                        files: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            name: string;
+                                            contentType: string;
+                                            bytes: number;
+                                            url: string | null;
+                                        }[];
+                                        /** Format: date-time */
+                                        at: string;
+                                        answer: {
+                                            kind: "approved" | "revision" | "problem";
+                                            note: string | null;
+                                            /** Format: date-time */
+                                            at: string;
+                                        } | null;
+                                    }[];
+                                    /** @description Delivered: it completes by itself then unless the customer answers */
+                                    autoCompleteAt: string | null;
+                                    completedAt: string | null;
+                                    dispute: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        openedAt: string;
+                                        /** @description MongoDB ObjectId as hex */
+                                        ticketId: string;
+                                        decision: {
+                                            outcome: "full" | "part" | "none";
+                                            /** @description Amount in paise */
+                                            amount: number;
+                                            note: string;
+                                            /** Format: date-time */
+                                            at: string;
+                                        } | null;
+                                    } | null;
+                                    cancellation: {
+                                        /** @description `vendor` is the freelancer */
+                                        by: "customer" | "vendor" | "staff" | "system";
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    /** @description Every change of status, oldest first */
+                                    timeline: {
+                                        /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                        status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                        /** Format: date-time */
+                                        at: string;
+                                        /** @description `vendor` is the freelancer */
+                                        by: "customer" | "vendor" | "staff" | "system";
+                                    }[];
+                                    /** @description Files go a set number of days after it ends; the order and messages stay */
+                                    filesDeleted: boolean;
+                                    can: {
+                                        pay: boolean;
+                                        /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                        cancel: boolean;
+                                        accept: boolean;
+                                        /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                        decline: boolean;
+                                        deliver: boolean;
+                                        approve: boolean;
+                                        revise: boolean;
+                                        report: boolean;
+                                    };
+                                    /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                    invoices?: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                        kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                        number: string;
+                                        /** @description Whose document it is: the business's, or Ruxstar's */
+                                        issuer: "vendor" | "ruxstar";
+                                        /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                        role: "supply" | "fee";
+                                        /** @description Amount in paise */
+                                        total: number;
+                                        /** @description Credit notes: the refund behind it */
+                                        refundId: string | null;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                    }[];
+                                    /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                    canReview?: boolean;
+                                    /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                    reviewUntil?: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                };
+                                checkoutUrl: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/{id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Coupons that work for one of a gig's packages, and checking a code */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                    tier: "basic" | "standard" | "premium";
+                    /** @description Check this code too */
+                    code?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                offers: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    label: string;
+                                    terms: string | null;
+                                    /** @description Paise it takes off this order; 0 when it doesn't apply yet */
+                                    discount: number;
+                                    problem: string | null;
+                                }[];
+                                /** @description With `code` */
+                                checked: {
+                                    code: string;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    problem: string | null;
+                                } | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/{id}/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Order one of a gig's packages
+         * @description Answer its required questions; attach files uploaded with POST /v1/gigs/files?use=brief. Returns a checkout link, open for 20 minutes. Once paid, the freelancer has Ruxstar's accept hours to accept or you get everything back.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                        tier: "basic" | "standard" | "premium";
+                        answers: {
+                            questionId: string;
+                            answer: string;
+                        }[];
+                        /** @description Files you uploaded with POST /v1/gigs/files and haven't used yet */
+                        fileIds?: string[];
+                        note?: string | null;
+                        coupon?: string;
+                        /** @description Where the checkout page sends the customer afterwards: this site, or the app's own link. `order=<id>` is added. */
+                        returnTo: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                order: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    orderNo: number;
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** @description Whose view this is */
+                                    role: "customer" | "freelancer" | "staff";
+                                    title: string;
+                                    category: string;
+                                    /** @description Null for a custom offer */
+                                    gigId: string | null;
+                                    quoteId: string | null;
+                                    freelancer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        businessId: string;
+                                        /** @description MongoDB ObjectId as hex */
+                                        userId: string;
+                                        /** @description With `userId`, opens a 1:1 chat with them */
+                                        username: string | null;
+                                        name: string;
+                                        avatarUrl: string | null;
+                                    };
+                                    customer: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    package: {
+                                        tier: ("basic" | "standard" | "premium") | null;
+                                        name: string;
+                                        description: string;
+                                        deliveryDays: number;
+                                        revisions: number;
+                                    };
+                                    answers: {
+                                        question: string;
+                                        answer: string;
+                                    }[];
+                                    /** @description The customer's files for the brief */
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    note: string | null;
+                                    price: {
+                                        /** @description Amount in paise */
+                                        items: number;
+                                        /** @description Amount in paise */
+                                        discount: number;
+                                        /** @description Amount in paise */
+                                        platformFee: number;
+                                        /** @description Amount in paise */
+                                        total: number;
+                                    };
+                                    coupon: {
+                                        code: string;
+                                        /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                        fundedBy: "ruxstar" | "vendor";
+                                        /** @description "Ruxstar offer" or "Shop offer" */
+                                        label: string;
+                                    } | null;
+                                    /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                    share: number | null;
+                                    refunds: {
+                                        kind: "full" | "part";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        status: "pending" | "done";
+                                        reason: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    }[];
+                                    /** @description Unpaid, it is cancelled after this */
+                                    payBy: string | null;
+                                    paidAt: string | null;
+                                    /** @description Paid, the freelancer must accept by then or it is refunded */
+                                    acceptBy: string | null;
+                                    acceptedAt: string | null;
+                                    dueAt: string | null;
+                                    /** @description Past its due date with nothing delivered */
+                                    late: boolean;
+                                    revisions: {
+                                        included: number;
+                                        used: number;
+                                        left: number;
+                                    };
+                                    /** @description Oldest first */
+                                    deliveries: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        message: string;
+                                        links: string[];
+                                        files: {
+                                            /** @description MongoDB ObjectId as hex */
+                                            id: string;
+                                            name: string;
+                                            contentType: string;
+                                            bytes: number;
+                                            url: string | null;
+                                        }[];
+                                        /** Format: date-time */
+                                        at: string;
+                                        answer: {
+                                            kind: "approved" | "revision" | "problem";
+                                            note: string | null;
+                                            /** Format: date-time */
+                                            at: string;
+                                        } | null;
+                                    }[];
+                                    /** @description Delivered: it completes by itself then unless the customer answers */
+                                    autoCompleteAt: string | null;
+                                    completedAt: string | null;
+                                    dispute: {
+                                        reason: string;
+                                        /** Format: date-time */
+                                        openedAt: string;
+                                        /** @description MongoDB ObjectId as hex */
+                                        ticketId: string;
+                                        decision: {
+                                            outcome: "full" | "part" | "none";
+                                            /** @description Amount in paise */
+                                            amount: number;
+                                            note: string;
+                                            /** Format: date-time */
+                                            at: string;
+                                        } | null;
+                                    } | null;
+                                    cancellation: {
+                                        /** @description `vendor` is the freelancer */
+                                        by: "customer" | "vendor" | "staff" | "system";
+                                        reason: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                    /** @description Every change of status, oldest first */
+                                    timeline: {
+                                        /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                        status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                        /** Format: date-time */
+                                        at: string;
+                                        /** @description `vendor` is the freelancer */
+                                        by: "customer" | "vendor" | "staff" | "system";
+                                    }[];
+                                    /** @description Files go a set number of days after it ends; the order and messages stay */
+                                    filesDeleted: boolean;
+                                    can: {
+                                        pay: boolean;
+                                        /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                        cancel: boolean;
+                                        accept: boolean;
+                                        /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                        decline: boolean;
+                                        deliver: boolean;
+                                        approve: boolean;
+                                        revise: boolean;
+                                        report: boolean;
+                                    };
+                                    /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                    invoices?: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                        kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                        number: string;
+                                        /** @description Whose document it is: the business's, or Ruxstar's */
+                                        issuer: "vendor" | "ruxstar";
+                                        /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                        role: "supply" | "fee";
+                                        /** @description Amount in paise */
+                                        total: number;
+                                        /** @description Credit notes: the refund behind it */
+                                        refundId: string | null;
+                                        /** Format: date-time */
+                                        issuedAt: string;
+                                    }[];
+                                    /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                    canReview?: boolean;
+                                    /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                    reviewUntil?: string | null;
+                                    /** Format: date-time */
+                                    createdAt: string;
+                                };
+                                checkoutUrl: string | null;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/gigs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One gig: photos, packages, the questions asked when ordering, and the order rules
+         * @description No sign-in needed. Drafts and gigs Ruxstar took down are only found by their freelancer.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
                             };
                             meta: {
                                 requestId: string;
@@ -47664,13 +55148,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -47849,13 +55333,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -48065,13 +55549,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -48233,13 +55717,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -48407,13 +55891,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -48578,13 +56062,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -48750,13 +56234,13 @@ export interface paths {
                             data: {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
-                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                 /**
                                  * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                  * @enum {unknown}
                                  */
-                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                 name: string;
                                 description: string | null;
                                 phone: string | null;
@@ -48937,7 +56421,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -49055,7 +56539,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -49186,7 +56670,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -49299,11 +56783,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -49410,11 +56894,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -49498,11 +56982,11 @@ export interface paths {
                                 /** Format: date-time */
                                 createdAt: string;
                                 editedAt: string | null;
-                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                 /** @description The event or course reviewed; null for print */
                                 listing?: {
-                                    type: "event" | "course" | "ground" | "property" | "product";
+                                    type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                 } | null;
@@ -49577,7 +57061,7 @@ export interface paths {
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                         name: string;
-                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
+                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger";
                                         type: string;
                                         city: string | null;
                                         /** @description The cover photo's URL */
@@ -49610,7 +57094,7 @@ export interface paths {
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                         name: string;
-                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
+                                        module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger";
                                         type: string;
                                         city: string | null;
                                         /** @description The cover photo's URL */
@@ -49720,7 +57204,7 @@ export interface paths {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     name: string;
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger";
                                     type: string;
                                     city: string | null;
                                     /** @description The cover photo's URL */
@@ -51928,7 +59412,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -51988,9 +59472,9 @@ export interface paths {
                         category: "orders" | "refunds" | "verification" | "business" | "delivery" | "account" | "safety" | "app" | "other";
                         subject: string;
                         text: string;
-                        /** @description What it is about: an order, business, coupon or post by id, verification by track (base or delivery), or a delivery job by id. It must be yours, except a post; a delivery must be one you are or were the rider on. */
+                        /** @description What it is about: an order, business, coupon or post by id, verification by track (base or delivery), a delivery job by id, or a freelance order (`gig_order`) you bought or sold by id. It must be yours, except a post; a delivery must be one you are or were the rider on. */
                         context?: {
-                            type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                            type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                             id: string;
                         };
                     };
@@ -52015,7 +59499,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -52116,7 +59600,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -52227,7 +59711,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -52332,7 +59816,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -52435,7 +59919,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     /** @description For example Order #1042 */
                                     label: string;
@@ -52620,7 +60104,7 @@ export interface paths {
                                     suspended: number;
                                 } | null;
                                 modules: {
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger";
                                     live: boolean;
                                 }[] | null;
                                 orders: {
@@ -52687,7 +60171,7 @@ export interface paths {
             parameters: {
                 query?: {
                     /** @description Only this module's block. `people`, `money` and `queues` are then null. */
-                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "delivery";
+                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs" | "delivery";
                 };
                 header?: never;
                 path?: never;
@@ -52709,7 +60193,7 @@ export interface paths {
                                  * @description When the oldest number here was counted. Numbers are kept for up to 60 seconds on each server.
                                  */
                                 asOf: string;
-                                module: ("pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "delivery") | null;
+                                module: ("pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs" | "delivery") | null;
                                 people: {
                                     /** @description Accounts not deleted */
                                     total: number;
@@ -52722,10 +60206,10 @@ export interface paths {
                                     /** @description Accounts on hold */
                                     onHold: number;
                                 } | null;
-                                /** @description Print, events, coaching, turf, stays, shop and delivery, in that order; just one with `module` */
+                                /** @description Print, events, coaching, turf, stays, shop, freelancers and delivery, in that order; just one with `module` */
                                 modules: {
                                     /** @description A business module, or `delivery` for Ruxstar partners' trips */
-                                    module: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "delivery";
+                                    module: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs" | "delivery";
                                     businesses: {
                                         /** @description Businesses in the module, drafts and taken down included */
                                         total: number;
@@ -52737,8 +60221,8 @@ export interface paths {
                                         takenDown: number;
                                     } | null;
                                     listings: {
-                                        /** @description What the module lists: events, courses, grounds, PG / hostel properties or shop products */
-                                        kind: "event" | "course" | "ground" | "property" | "product";
+                                        /** @description What the module lists: events, courses, grounds, PG / hostel properties, shop products or freelancers' gigs */
+                                        kind: "event" | "course" | "ground" | "property" | "product" | "gig";
                                         /** @description Published listings, past events included */
                                         live: number;
                                         /** @description Taken down by the Ruxstar team (events: cancelled by staff) */
@@ -52749,7 +60233,7 @@ export interface paths {
                                         today: number;
                                         /** @description Placed since Monday 00:00 India time and paid, or free; delivery: trips created */
                                         thisWeek: number;
-                                        /** @description Still under way. Print and shop: paid and not yet delivered or cancelled. Events: confirmed ticket orders for events that haven't ended. Coaching: confirmed batch enrolments in batches still running. Turf: confirmed bookings with a slot still to come. Stays: reservations confirmed or moved in. Delivery: trips offered, accepted or picked up. */
+                                        /** @description Still under way. Print and shop: paid and not yet delivered or cancelled. Events: confirmed ticket orders for events that haven't ended. Coaching: confirmed batch enrolments in batches still running. Turf: confirmed bookings with a slot still to come. Stays: reservations confirmed or moved in. Freelancers: paid and not yet completed or cancelled. Delivery: trips offered, accepted or picked up. */
                                         open: number;
                                     } | null;
                                     money: {
@@ -52812,6 +60296,7 @@ export interface paths {
                                     orderProblems: number | null;
                                     staysObjections: number | null;
                                     shopReturns: number | null;
+                                    gigDisputes: number | null;
                                 } | null;
                             };
                             meta: {
@@ -53971,11 +61456,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                    /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course" | "ground" | "property" | "product";
+                                        type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -54101,11 +61586,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                    /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course" | "ground" | "property" | "product";
+                                        type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -54238,11 +61723,11 @@ export interface paths {
                                     /** Format: date-time */
                                     createdAt: string;
                                     editedAt: string | null;
-                                    /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels) or a local shop */
-                                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop";
+                                    /** @description The kind of business: print, events, coaching, turf, stays (PG and hostels), a local shop or a freelancer */
+                                    module?: "pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs";
                                     /** @description The event or course reviewed; null for print */
                                     listing?: {
-                                        type: "event" | "course" | "ground" | "property" | "product";
+                                        type: "event" | "course" | "ground" | "property" | "product" | "gig";
                                         /** @description MongoDB ObjectId as hex */
                                         id: string;
                                     } | null;
@@ -55327,7 +62812,7 @@ export interface paths {
                                 /** @description MongoDB ObjectId as hex */
                                 id: string;
                                 orderNo: number;
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger";
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
@@ -55521,7 +63006,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -55608,8 +63093,8 @@ export interface paths {
                         firstOrderOnly?: boolean;
                         /** @description Show it in the offers at checkout (the default) */
                         listed?: boolean;
-                        /** @description Where it works: print orders, event tickets, coaching enrolments, turf bookings, PG and hostel reservations, local shop orders, or any of them. Print only when left out */
-                        modules?: ("pod" | "events" | "coaching" | "turf" | "stays" | "shop")[];
+                        /** @description Where it works: print orders, event tickets, coaching enrolments, turf bookings, PG and hostel reservations, local shop orders, freelance orders, or any of them. Print only when left out */
+                        modules?: ("pod" | "events" | "coaching" | "turf" | "stays" | "shop" | "gigs")[];
                     };
                 };
             };
@@ -55638,7 +63123,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -55767,7 +63252,7 @@ export interface paths {
                                     id: string;
                                     name: string;
                                 }[];
-                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger")[];
+                                modules: ("pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger")[];
                                 /** @description `percent` takes `value` percent off the items, up to `cap`; `flat` takes `value` paise off */
                                 kind: "percent" | "flat";
                                 value: number;
@@ -56609,8 +64094,8 @@ export interface paths {
                     limit?: number;
                     /** @description The start of a business name word, or an id */
                     q?: string;
-                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                     state?: "draft" | "live" | "suspended";
                 };
                 header?: never;
@@ -56630,13 +64115,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -56814,13 +64299,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -57020,13 +64505,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -57217,13 +64702,13 @@ export interface paths {
                                 business: {
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
-                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop";
+                                    /** @description pod is print on demand. turf is sports grounds and courts booked by the slot. shop is local shops that deliver in their city. gigs is a freelancer's profile, made with POST /v1/gigs/me rather than here */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs";
                                     /**
                                      * @description Belongs to one module; GET /v1/vendor/catalog lists them
                                      * @enum {unknown}
                                      */
-                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store";
+                                    type: "print_shop" | "concert" | "sports_event" | "meetup" | "coaching" | "pg" | "hostel" | "coliving" | "turf" | "sports_complex" | "court" | "clothing" | "electronics" | "grocery" | "gifts" | "bakery" | "general_store" | "freelancer";
                                     name: string;
                                     description: string | null;
                                     phone: string | null;
@@ -57606,7 +65091,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     label: string;
                                     state: string | null;
@@ -57842,7 +65327,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     label: string;
                                     state: string | null;
@@ -57969,7 +65454,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     label: string;
                                     state: string | null;
@@ -58102,7 +65587,7 @@ export interface paths {
                                 /** @description `waiting` is waiting on you. A resolved ticket can be reopened by replying for 7 days, then it is `closed`. */
                                 status: "open" | "waiting" | "resolved" | "closed";
                                 context: {
-                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery";
+                                    type: "order" | "business" | "verification" | "post" | "coupon" | "delivery" | "gig_order";
                                     id: string;
                                     label: string;
                                     state: string | null;
@@ -63162,6 +70647,1651 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ruxstar/gigs/freelancers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every freelancer, newest first, with their gig and order counts */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description Words in the name */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description MongoDB ObjectId as hex */
+                                ownerId: string;
+                                status: "draft" | "live";
+                                verified: boolean;
+                                /** @description On hold: POST /v1/ruxstar/gigs/freelancers/{id}/suspend and /restore, the same as the business hold */
+                                suspended: boolean;
+                                gigs: number;
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gigs/freelancers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One freelancer */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description MongoDB ObjectId as hex */
+                                ownerId: string;
+                                status: "draft" | "live";
+                                verified: boolean;
+                                /** @description On hold: POST /v1/ruxstar/gigs/freelancers/{id}/suspend and /restore, the same as the business hold */
+                                suspended: boolean;
+                                gigs: number;
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gigs/freelancers/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Put a freelancer on hold
+         * @description The business hold (POST /v1/ruxstar/businesses/{id}/suspend): their page and gigs leave Ruxstar, and they can't sell, change their profile or act on orders. They're told why. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Shown to the person, so be clear */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description MongoDB ObjectId as hex */
+                                ownerId: string;
+                                status: "draft" | "live";
+                                verified: boolean;
+                                /** @description On hold: POST /v1/ruxstar/gigs/freelancers/{id}/suspend and /restore, the same as the business hold */
+                                suspended: boolean;
+                                gigs: number;
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gigs/freelancers/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Lift a hold on a freelancer
+         * @description As POST /v1/ruxstar/businesses/{id}/restore: they come back as they were. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                businessId: string;
+                                name: string;
+                                headline: string;
+                                bio: string | null;
+                                category: string;
+                                categoryLabel: string;
+                                skills: string[];
+                                languages: string[];
+                                city: string | null;
+                                avatarUrl: string | null;
+                                portfolio: {
+                                    photos: {
+                                        id: string;
+                                        url: string;
+                                        width: number;
+                                        height: number;
+                                    }[];
+                                    links: {
+                                        id: string;
+                                        title: string;
+                                        url: string;
+                                    }[];
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                /** @description MongoDB ObjectId as hex */
+                                ownerId: string;
+                                status: "draft" | "live";
+                                verified: boolean;
+                                /** @description On hold: POST /v1/ruxstar/gigs/freelancers/{id}/suspend and /restore, the same as the business hold */
+                                suspended: boolean;
+                                gigs: number;
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gigs/listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every gig, newest first, drafts included */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    status?: "draft" | "live" | "paused" | "removed";
+                    /** @description MongoDB ObjectId as hex */
+                    freelancer?: string;
+                    /** @description Words in the title */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gigs/listings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One gig */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gigs/listings/{id}/take-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a gig down
+         * @description It leaves the listings and can't be changed or ordered again; the freelancer is told why. Orders already placed go on. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The freelancer is told */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                title: string;
+                                category: string;
+                                categoryLabel: string;
+                                photo: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                } | null;
+                                /** @description Amount in paise */
+                                priceFrom: number;
+                                /** @description The fewest delivery days of its packages */
+                                fastestDays: number;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    headline: string;
+                                    city: string | null;
+                                    avatarUrl: string | null;
+                                };
+                                /** @description Live reviews */
+                                rating?: {
+                                    /** @description To one decimal; null until there are 3 reviews */
+                                    average: number | null;
+                                    count: number;
+                                };
+                                description: string;
+                                photos: {
+                                    id: string;
+                                    url: string;
+                                    width: number;
+                                    height: number;
+                                }[];
+                                packages: {
+                                    /** @description Basic, Standard and Premium, in that order: a gig with two packages has basic and standard */
+                                    tier: "basic" | "standard" | "premium";
+                                    name: string;
+                                    /** @description What's included */
+                                    description: string;
+                                    /** @description Amount in paise */
+                                    price: number;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                }[];
+                                /** @description Asked when ordering */
+                                questions: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                }[];
+                                /** @description Amount in paise */
+                                platformFee: number;
+                                status: "draft" | "live" | "paused" | "removed";
+                                canOrder: boolean;
+                                whyNot: string | null;
+                                /** @description The order rules in a sentence or two, for above the Pay button */
+                                rules: string;
+                                publishedAt: string | null;
+                                removal: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description What publishing still needs, in words */
+                                missing: string[];
+                                /** @description Paid orders */
+                                orders: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                /** @description MongoDB ObjectId as hex */
+                                vendorId: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gigs/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Freelance orders, newest first
+         * @description Search by order number or words in the title; filter by status and freelancer. `disputed` ones wait for a refund decision.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                    status?: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                    /** @description MongoDB ObjectId as hex */
+                    freelancer?: string;
+                    /** @description An order number, or words in the title */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            meta: {
+                                requestId: string;
+                                nextCursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gigs/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One freelance order, with its files, deliveries and any dispute */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ruxstar/gigs/orders/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide a problem reported on an order: a full, part or no refund
+         * @description Full: everything back to the customer, platform fee included. Part: `amount` back, out of the freelancer's share, and the rest paid to them. None: the freelancer is paid. The order completes (or is cancelled, for full), both sides are told, and the note goes on the help ticket. Audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description MongoDB ObjectId as hex */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description full: everything back to the customer. part: `amount` back, out of the freelancer's share, and the rest to them. none: all of it to the freelancer */
+                        outcome: "full" | "part" | "none";
+                        /** @description Paise; part refunds only, less than what was paid and up to the freelancer's share */
+                        amount?: number;
+                        /** @description Both sides are told; it goes on the help ticket too */
+                        note: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** @description MongoDB ObjectId as hex */
+                                id: string;
+                                orderNo: number;
+                                /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                /** @description Whose view this is */
+                                role: "customer" | "freelancer" | "staff";
+                                title: string;
+                                category: string;
+                                /** @description Null for a custom offer */
+                                gigId: string | null;
+                                quoteId: string | null;
+                                freelancer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    businessId: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    userId: string;
+                                    /** @description With `userId`, opens a 1:1 chat with them */
+                                    username: string | null;
+                                    name: string;
+                                    avatarUrl: string | null;
+                                };
+                                customer: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                };
+                                package: {
+                                    tier: ("basic" | "standard" | "premium") | null;
+                                    name: string;
+                                    description: string;
+                                    deliveryDays: number;
+                                    revisions: number;
+                                };
+                                answers: {
+                                    question: string;
+                                    answer: string;
+                                }[];
+                                /** @description The customer's files for the brief */
+                                files: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    name: string;
+                                    contentType: string;
+                                    bytes: number;
+                                    url: string | null;
+                                }[];
+                                note: string | null;
+                                price: {
+                                    /** @description Amount in paise */
+                                    items: number;
+                                    /** @description Amount in paise */
+                                    discount: number;
+                                    /** @description Amount in paise */
+                                    platformFee: number;
+                                    /** @description Amount in paise */
+                                    total: number;
+                                };
+                                coupon: {
+                                    code: string;
+                                    /** @description Who pays for the discount: Ruxstar, or the vendor out of their share */
+                                    fundedBy: "ruxstar" | "vendor";
+                                    /** @description "Ruxstar offer" or "Shop offer" */
+                                    label: string;
+                                } | null;
+                                /** @description The freelancer's and the console's view: what the freelancer gets once it completes, after commission and part refunds */
+                                share: number | null;
+                                refunds: {
+                                    kind: "full" | "part";
+                                    /** @description Amount in paise */
+                                    amount: number;
+                                    status: "pending" | "done";
+                                    reason: string | null;
+                                    /** Format: date-time */
+                                    at: string;
+                                }[];
+                                /** @description Unpaid, it is cancelled after this */
+                                payBy: string | null;
+                                paidAt: string | null;
+                                /** @description Paid, the freelancer must accept by then or it is refunded */
+                                acceptBy: string | null;
+                                acceptedAt: string | null;
+                                dueAt: string | null;
+                                /** @description Past its due date with nothing delivered */
+                                late: boolean;
+                                revisions: {
+                                    included: number;
+                                    used: number;
+                                    left: number;
+                                };
+                                /** @description Oldest first */
+                                deliveries: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    message: string;
+                                    links: string[];
+                                    files: {
+                                        /** @description MongoDB ObjectId as hex */
+                                        id: string;
+                                        name: string;
+                                        contentType: string;
+                                        bytes: number;
+                                        url: string | null;
+                                    }[];
+                                    /** Format: date-time */
+                                    at: string;
+                                    answer: {
+                                        kind: "approved" | "revision" | "problem";
+                                        note: string | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                }[];
+                                /** @description Delivered: it completes by itself then unless the customer answers */
+                                autoCompleteAt: string | null;
+                                completedAt: string | null;
+                                dispute: {
+                                    reason: string;
+                                    /** Format: date-time */
+                                    openedAt: string;
+                                    /** @description MongoDB ObjectId as hex */
+                                    ticketId: string;
+                                    decision: {
+                                        outcome: "full" | "part" | "none";
+                                        /** @description Amount in paise */
+                                        amount: number;
+                                        note: string;
+                                        /** Format: date-time */
+                                        at: string;
+                                    } | null;
+                                } | null;
+                                cancellation: {
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                    reason: string;
+                                    /** Format: date-time */
+                                    at: string;
+                                } | null;
+                                /** @description Every change of status, oldest first */
+                                timeline: {
+                                    /** @description `paid` waits for the freelancer to accept. `in_progress` is being worked on (again, after a revision). `delivered` waits for the customer. `disputed`: a problem was reported and Ruxstar decides. `completed`: the freelancer is paid */
+                                    status: "awaiting_payment" | "paid" | "in_progress" | "delivered" | "disputed" | "completed" | "cancelled";
+                                    /** Format: date-time */
+                                    at: string;
+                                    /** @description `vendor` is the freelancer */
+                                    by: "customer" | "vendor" | "staff" | "system";
+                                }[];
+                                /** @description Files go a set number of days after it ends; the order and messages stay */
+                                filesDeleted: boolean;
+                                can: {
+                                    pay: boolean;
+                                    /** @description Customer: before it's accepted, or once late. Freelancer: until it completes or a problem is reported */
+                                    cancel: boolean;
+                                    accept: boolean;
+                                    /** @description Freelancer: a paid order waiting to be accepted can be turned down */
+                                    decline: boolean;
+                                    deliver: boolean;
+                                    approve: boolean;
+                                    revise: boolean;
+                                    report: boolean;
+                                };
+                                /** @description GST invoices and credit notes for it, oldest first. Open one with its invoice routes. */
+                                invoices?: {
+                                    /** @description MongoDB ObjectId as hex */
+                                    id: string;
+                                    /** @description tax_invoice: a sale with GST. bill_of_supply: a sale without GST, when the seller has no GSTIN. credit_note: money refunded against an invoice. */
+                                    kind: "tax_invoice" | "bill_of_supply" | "credit_note";
+                                    number: string;
+                                    /** @description Whose document it is: the business's, or Ruxstar's */
+                                    issuer: "vendor" | "ruxstar";
+                                    /** @description supply: what was bought. fee: Ruxstar's platform fee. */
+                                    role: "supply" | "fee";
+                                    /** @description Amount in paise */
+                                    total: number;
+                                    /** @description Credit notes: the refund behind it */
+                                    refundId: string | null;
+                                    /** Format: date-time */
+                                    issuedAt: string;
+                                }[];
+                                /** @description The order is open for a review now (write or change it), and Ruxstar hasn't removed one */
+                                canReview?: boolean;
+                                /** @description The last moment to write or change the review; null when it can't be reviewed now */
+                                reviewUntil?: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            };
+                            meta: {
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                "4XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Default Response */
+                "5XX": {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ruxstar/invoices": {
         parameters: {
             query?: never;
@@ -63188,8 +72318,8 @@ export interface paths {
                     to?: string;
                     /** @description MongoDB ObjectId as hex */
                     orderId?: string;
-                    /** @description ecommerce has defaults ready for when it opens */
-                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                    /** @description ecommerce is local shops; gigs is freelancers */
+                    module?: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                 };
                 header?: never;
                 path?: never;
@@ -63217,10 +72347,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description ecommerce has defaults ready for when it opens */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                /** @description ecommerce is local shops; gigs is freelancers */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order" | "gig_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -63402,10 +72532,10 @@ export interface paths {
                                 issuer: "vendor" | "ruxstar";
                                 /** @description supply: what was bought. fee: Ruxstar's platform fee. */
                                 role: "supply" | "fee";
-                                /** @description ecommerce has defaults ready for when it opens */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                /** @description ecommerce is local shops; gigs is freelancers */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                                 order: {
-                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order";
+                                    type: "pod_order" | "event_order" | "coaching_order" | "turf_booking" | "stay_reservation" | "shop_order" | "gig_order";
                                     /** @description MongoDB ObjectId as hex */
                                     id: string;
                                     orderNo: number;
@@ -63650,8 +72780,8 @@ export interface paths {
                                     updatedAt: string | null;
                                 };
                                 modules: {
-                                    /** @description ecommerce has defaults ready for when it opens */
-                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                    /** @description ecommerce is local shops; gigs is freelancers */
+                                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                                     /** @description Issue GST documents for this module's orders */
                                     enabled: boolean;
                                     /** @description vendor: the business sells and Ruxstar is the e-commerce operator. ruxstar: Ruxstar invoices the sale itself. */
@@ -63754,8 +72884,8 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ecommerce has defaults ready for when it opens */
-                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                    /** @description ecommerce is local shops; gigs is freelancers */
+                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                 };
                 cookie?: never;
             };
@@ -63816,8 +72946,8 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                /** @description ecommerce has defaults ready for when it opens */
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce";
+                                /** @description ecommerce is local shops; gigs is freelancers */
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "ecommerce" | "gigs";
                                 /** @description Issue GST documents for this module's orders */
                                 enabled: boolean;
                                 /** @description vendor: the business sells and Ruxstar is the e-commerce operator. ruxstar: Ruxstar invoices the sale itself. */
@@ -64113,7 +73243,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger";
                                 live: boolean;
                                 signupsOpen: boolean;
                                 /** @description Commission in basis points. 1000 = 10% */
@@ -64242,6 +73372,40 @@ export interface paths {
                                     /** @description Of one variant in one order */
                                     maxQuantity: number;
                                 } | null;
+                                gigsRules: {
+                                    /** @description A delivered order the customer hasn't answered is completed this many days after delivery */
+                                    autoCompleteDays: number;
+                                    /** @description A paid order the freelancer hasn't accepted in this long is cancelled and fully refunded */
+                                    acceptHours: number;
+                                    /** @description A custom offer can be paid for this many days after it is sent */
+                                    quoteDays: number;
+                                    /** @description Megabytes of files in one delivery, and in the files a customer attaches at checkout. Never more than 25 */
+                                    deliveryMaxMb: number;
+                                    /** @description Files on an order are deleted this many days after it is completed or cancelled. The order and its messages stay */
+                                    fileDays: number;
+                                    /** @description Gigs per freelancer, drafts included */
+                                    maxGigs: number;
+                                    /** @description Packages on one gig: Basic, then Standard, then Premium */
+                                    maxPackages: number;
+                                    /** @description Paise, the least a package or custom offer can cost */
+                                    minPrice: number;
+                                    /** @description Paise, the most a package or custom offer can cost. At least `minPrice` */
+                                    maxPrice: number;
+                                    /** @description The fewest delivery days a package or custom offer can have */
+                                    minDays: number;
+                                    /** @description The most delivery days. At least `minDays` */
+                                    maxDays: number;
+                                    /** @description The most revisions a package or custom offer can include */
+                                    maxRevisions: number;
+                                    /** @description Every category, hidden ones too. When changing, send the full list: a key already used can be renamed or hidden but not removed */
+                                    categories: {
+                                        /** @description Stays the same for ever; gigs, orders and GST items use it */
+                                        key: string;
+                                        label: string;
+                                        /** @description Hidden categories can't be picked for new gigs, and aren't offered as a filter. Gigs already in one stay */
+                                        hidden: boolean;
+                                    }[];
+                                } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
                                 updatedAt: string;
@@ -64300,7 +73464,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
+                    module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger";
                 };
                 cookie?: never;
             };
@@ -64434,6 +73598,41 @@ export interface paths {
                             /** @description Of one variant in one order */
                             maxQuantity?: number;
                         };
+                        /** @description Freelancers only. Send only what changes. Orders made keep their package, price and days; gigs outside new limits keep selling until edited. */
+                        gigsRules?: {
+                            /** @description A delivered order the customer hasn't answered is completed this many days after delivery */
+                            autoCompleteDays?: number;
+                            /** @description A paid order the freelancer hasn't accepted in this long is cancelled and fully refunded */
+                            acceptHours?: number;
+                            /** @description A custom offer can be paid for this many days after it is sent */
+                            quoteDays?: number;
+                            /** @description Megabytes of files in one delivery, and in the files a customer attaches at checkout. Never more than 25 */
+                            deliveryMaxMb?: number;
+                            /** @description Files on an order are deleted this many days after it is completed or cancelled. The order and its messages stay */
+                            fileDays?: number;
+                            /** @description Gigs per freelancer, drafts included */
+                            maxGigs?: number;
+                            /** @description Packages on one gig: Basic, then Standard, then Premium */
+                            maxPackages?: number;
+                            /** @description Paise, the least a package or custom offer can cost */
+                            minPrice?: number;
+                            /** @description Paise, the most a package or custom offer can cost. At least `minPrice` */
+                            maxPrice?: number;
+                            /** @description The fewest delivery days a package or custom offer can have */
+                            minDays?: number;
+                            /** @description The most delivery days. At least `minDays` */
+                            maxDays?: number;
+                            /** @description The most revisions a package or custom offer can include */
+                            maxRevisions?: number;
+                            /** @description Every category, hidden ones too. When changing, send the full list: a key already used can be renamed or hidden but not removed */
+                            categories?: {
+                                /** @description Stays the same for ever; gigs, orders and GST items use it */
+                                key: string;
+                                label: string;
+                                /** @description Hidden categories can't be picked for new gigs, and aren't offered as a filter. Gigs already in one stay */
+                                hidden: boolean;
+                            }[];
+                        };
                     };
                 };
             };
@@ -64446,7 +73645,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "delivery" | "ledger";
+                                module: "pod" | "events" | "coaching" | "stays" | "turf" | "shop" | "gigs" | "delivery" | "ledger";
                                 live: boolean;
                                 signupsOpen: boolean;
                                 /** @description Commission in basis points. 1000 = 10% */
@@ -64574,6 +73773,40 @@ export interface paths {
                                     maxLines: number;
                                     /** @description Of one variant in one order */
                                     maxQuantity: number;
+                                } | null;
+                                gigsRules: {
+                                    /** @description A delivered order the customer hasn't answered is completed this many days after delivery */
+                                    autoCompleteDays: number;
+                                    /** @description A paid order the freelancer hasn't accepted in this long is cancelled and fully refunded */
+                                    acceptHours: number;
+                                    /** @description A custom offer can be paid for this many days after it is sent */
+                                    quoteDays: number;
+                                    /** @description Megabytes of files in one delivery, and in the files a customer attaches at checkout. Never more than 25 */
+                                    deliveryMaxMb: number;
+                                    /** @description Files on an order are deleted this many days after it is completed or cancelled. The order and its messages stay */
+                                    fileDays: number;
+                                    /** @description Gigs per freelancer, drafts included */
+                                    maxGigs: number;
+                                    /** @description Packages on one gig: Basic, then Standard, then Premium */
+                                    maxPackages: number;
+                                    /** @description Paise, the least a package or custom offer can cost */
+                                    minPrice: number;
+                                    /** @description Paise, the most a package or custom offer can cost. At least `minPrice` */
+                                    maxPrice: number;
+                                    /** @description The fewest delivery days a package or custom offer can have */
+                                    minDays: number;
+                                    /** @description The most delivery days. At least `minDays` */
+                                    maxDays: number;
+                                    /** @description The most revisions a package or custom offer can include */
+                                    maxRevisions: number;
+                                    /** @description Every category, hidden ones too. When changing, send the full list: a key already used can be renamed or hidden but not removed */
+                                    categories: {
+                                        /** @description Stays the same for ever; gigs, orders and GST items use it */
+                                        key: string;
+                                        label: string;
+                                        /** @description Hidden categories can't be picked for new gigs, and aren't offered as a filter. Gigs already in one stay */
+                                        hidden: boolean;
+                                    }[];
                                 } | null;
                                 permissionCatalog: string[];
                                 /** Format: date-time */
