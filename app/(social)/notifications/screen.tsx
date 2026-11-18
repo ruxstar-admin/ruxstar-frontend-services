@@ -122,6 +122,8 @@ function hrefOf(link: Notification["link"]): string | null {
       return `/freelance/orders/${link.id}`;
     case "freelance":
       return "/freelance";
+    case "freelance_payments":
+      return "/freelance/payments";
     default:
       return null;
   }

@@ -189,7 +189,13 @@ export const dayText = (iso: string) => new Date(iso).toLocaleDateString("en-IN"
 /** A file link that downloads instead of opening in the browser. */
 export const downloadHref = (url: string) => `${url}${url.includes("?") ? "&" : "?"}download=1`;
 
-// Files: fixed by the API. GET /v1/gigs/rules sends them as `limits`.
+// Files: set by Ruxstar in the console. GET /v1/gigs/rules sends them as `limits`.
+
+/** Every file type the API can take, by extension. Ruxstar picks which of them are allowed. Same as the app. */
+export const FILE_TYPES = [
+  "pdf", "jpg", "jpeg", "png", "gif", "webp", "heic", "psd", "ai", "eps", "mp4", "mov", "webm", "mp3", "wav", "m4a",
+  "zip", "txt", "csv", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "ttf", "otf",
+] as const;
 
 const MB = 1024 * 1024;
 const extensionOf = (name: string) => /\.([a-z0-9]{2,5})$/i.exec(name.trim())?.[1]?.toLowerCase() ?? "";
@@ -198,8 +204,8 @@ export const allowedFile = (name: string, extensions: readonly string[]) => exte
 /** Why these picked files can't go with the ones already added, or null: a type the API refuses, too many, or more than `maxMb` in all. */
 export function filesProblem(picked: readonly { name: string; size: number }[], held: readonly { bytes: number }[], maxMb: number, limits: Pick<GigsLimits, "files" | "extensions">): string | null {
   const refused = picked.find((f) => !allowedFile(f.name, limits.extensions));
-  if (refused) return `${refused.name} can’t be sent. Use a PDF, an image, a video, audio, a zip or an Office file.`;
-  if (picked.length + held.length > limits.files) return `Up to ${limits.files} files.`;
+  if (refused) return `${refused.name} can’t be sent. Use one of these: ${limits.extensions.join(", ")}.`;
+  if (picked.length + held.length > limits.files) return `Up to ${limits.files} file${limits.files === 1 ? "" : "s"}.`;
   const bytes = picked.reduce((s, f) => s + f.size, 0) + held.reduce((s, f) => s + f.bytes, 0);
   if (bytes > maxMb * MB) return `Files can add up to ${maxMb} MB.`;
   return null;

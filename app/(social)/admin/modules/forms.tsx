@@ -8,7 +8,7 @@ import { Button, Card, Input, Switch, useToast } from "@/components/ui";
 import { formError } from "@/lib/api/account";
 import { updateModule, type ModulePatch, type ModuleSettings } from "@/lib/api/admin";
 import type { GigCategory } from "@/lib/api/gigs";
-import { categoriesChanged, categoriesProblem, categoryKeyOf, MAX_CATEGORIES } from "@/lib/gigs";
+import { categoriesChanged, categoriesProblem, categoryKeyOf, FILE_TYPES, MAX_CATEGORIES } from "@/lib/gigs";
 import { MODULE_LABEL } from "./labels";
 
 const percentOf = (bps: number) => String(bps / 100);
@@ -682,7 +682,8 @@ function ShopRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: ShopRu
 }
 
 type GigsRules = NonNullable<ModuleSettings["gigsRules"]>;
-type GigsKey = Exclude<keyof GigsRules, "categories">;
+type GigsKey = Exclude<keyof GigsRules, "categories" | "fileTypes">;
+type FileType = GigsRules["fileTypes"][number];
 
 /** The API's limits for each freelancer rule. `rupees` fields are paise in the API and typed in rupees here. */
 const GIGS_RULES: { key: GigsKey; min: number; max: number; label: string; unit: string; hint: string; rupees?: boolean }[] = [
@@ -705,27 +706,51 @@ const GIGS_RULES: { key: GigsKey; min: number; max: number; label: string; unit:
   { key: "minDays", min: 1, max: 365, label: "Fewest delivery days", unit: "days", hint: "For a package or a custom offer." },
   { key: "maxDays", min: 1, max: 365, label: "Most delivery days", unit: "days", hint: "At least the fewest." },
   { key: "maxRevisions", min: 0, max: 50, label: "Most revisions included", unit: "", hint: "0 turns revisions off for new and edited gigs." },
+  {
+    key: "maxPortfolio",
+    min: 1,
+    max: 30,
+    label: "Portfolio photos and links",
+    unit: "",
+    hint: "Together, on one freelancer’s profile. Profiles that already have more keep them but can’t add more.",
+  },
+  { key: "maxGigPhotos", min: 1, max: 10, label: "Photos per gig", unit: "", hint: "Publishing needs at least one. Gigs that already have more keep them." },
+  {
+    key: "maxQuestions",
+    min: 1,
+    max: 10,
+    label: "Questions per gig",
+    unit: "",
+    hint: "Asked when a customer orders. Gigs that already have more keep selling, and must fit when they’re next edited.",
+  },
+  { key: "maxFiles", min: 1, max: 20, label: "Files in one brief or delivery", unit: "", hint: "Together they still fit in the MB above." },
+  { key: "maxLinks", min: 1, max: 20, label: "Links in one delivery", unit: "", hint: "Like a shared drive folder." },
+  { key: "maxAnswer", min: 100, max: 2000, label: "Characters in one answer", unit: "characters", hint: "A customer’s answer to each of a gig’s questions." },
 ];
+const sameTypes = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((t) => b.includes(t));
 
 const gigsText = (rules: GigsRules) => Object.fromEntries(GIGS_RULES.map((f) => [f.key, String(f.rupees ? rules[f.key] / 100 : rules[f.key])])) as Record<GigsKey, string>;
 const gigsFact = (f: (typeof GIGS_RULES)[number], value: number) =>
   f.rupees ? `₹${(value / 100).toLocaleString("en-IN")}` : f.unit === "MB" ? `${value} MB` : plural(value, f.unit);
 
-/** Freelancers only: accepting, completing, offers, files, and the limits on gigs, prices, days and revisions. Same as the app. */
+/** Freelancers only: accepting, completing, offers, files, and the limits on gigs, prices, days, revisions, portfolios, questions, files and links. Same as the app. */
 function GigsRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: GigsRules; onSaved: (m: ModuleSettings) => void }) {
   const toast = useToast();
   const onSignedOut = useOnSignedOut();
   const canManage = useCan("modules.manage");
   const [text, setText] = useState(() => gigsText(rules));
+  const [types, setTypes] = useState<FileType[]>(() => rules.fileTypes);
+  const typeOptions = [...new Set<FileType>([...FILE_TYPES, ...rules.fileTypes])];
   const [busy, setBusy] = useState(false);
 
   const typed = Object.fromEntries(GIGS_RULES.map((f) => [f.key, wholeOf(text[f.key])])) as Record<GigsKey, number>;
   const errors = Object.fromEntries(
     GIGS_RULES.map((f) => [f.key, typed[f.key] >= f.min && typed[f.key] <= f.max ? undefined : `Enter a whole number from ${f.min} to ${f.max.toLocaleString("en-IN")}`]),
   ) as Record<GigsKey, string | undefined>;
-  const invalid = GIGS_RULES.some((f) => errors[f.key]);
+  const invalid = GIGS_RULES.some((f) => errors[f.key]) || types.length === 0;
   const values = Object.fromEntries(GIGS_RULES.map((f) => [f.key, f.rupees ? typed[f.key] * 100 : typed[f.key]])) as Record<GigsKey, number>;
   const changes = Object.fromEntries(GIGS_RULES.filter((f) => values[f.key] !== rules[f.key]).map((f) => [f.key, values[f.key]])) as Partial<Omit<GigsRules, "categories">>;
+  if (!sameTypes(types, rules.fileTypes)) changes.fileTypes = typeOptions.filter((t) => types.includes(t));
   const changed = Object.keys(changes).length > 0;
 
   async function save() {
@@ -733,7 +758,10 @@ function GigsRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: GigsRu
     try {
       const done = await updateModule(m.module, { gigsRules: changes });
       onSaved(done);
-      if (done.gigsRules) setText(gigsText(done.gigsRules));
+      if (done.gigsRules) {
+        setText(gigsText(done.gigsRules));
+        setTypes(done.gigsRules.fileTypes);
+      }
       toast("Freelancer rules saved.", "success");
     } catch (err) {
       if (!onSignedOut(err)) toast(formError(err).message, "danger");
@@ -764,6 +792,20 @@ function GigsRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: GigsRu
               maxLength={String(f.max).length}
             />
           ))}
+          <div className={styles.group}>
+            <span className={styles.label}>File types customers and freelancers can send</span>
+            <div className={styles.picks}>
+              {typeOptions.map((t) => {
+                const on = types.includes(t);
+                return (
+                  <button key={t} type="button" className={styles.pick} aria-pressed={on} onClick={() => setTypes(on ? types.filter((x) => x !== t) : [...types, t])}>
+                    {t.toUpperCase()}
+                  </button>
+                );
+              })}
+            </div>
+            <p className={styles.muted}>{types.length ? "For briefs and deliveries. Files already sent stay." : "Pick at least one."}</p>
+          </div>
           <div>
             <Button variant="secondary" disabled={invalid || !changed} loading={busy} onClick={() => void save()}>
               Save freelancer rules
@@ -775,6 +817,7 @@ function GigsRulesForm({ m, rules, onSaved }: { m: ModuleSettings; rules: GigsRu
           {GIGS_RULES.map((f) => (
             <Fact key={f.key} label={f.label} value={gigsFact(f, rules[f.key])} />
           ))}
+          <Fact label="File types" value={rules.fileTypes.map((t) => t.toUpperCase()).join(", ")} />
         </dl>
       )}
     </>

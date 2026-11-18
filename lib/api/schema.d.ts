@@ -9024,8 +9024,8 @@ export interface paths {
                                 title: string;
                                 body: string;
                                 link: {
-                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches, `turf_ground` a ground's page, `turf_order` your turf booking, `vendor_ground` a ground's board for its owner or team, `stay_property` a PG or hostel's page, `stay_order` your PG or hostel reservation, `vendor_property` a property's bed board for its owner or team, `store` a local shop's page, `store_product` one of its products, `store_order` your order at a local shop, `vendor_store_order` an order at the desk of a local shop you own or work at, `gig` a freelancer's gig, `gig_order` your freelance order, `vendor_gig_order` an order you are doing as a freelancer, `freelance` your Freelancing home (`id` is your freelancer business; apps that don't know a screen ignore it); `id` says which */
-                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch" | "turf_ground" | "turf_order" | "vendor_ground" | "stay_property" | "stay_order" | "vendor_property" | "store" | "store_product" | "store_order" | "vendor_store_order" | "gig" | "gig_order" | "vendor_gig_order" | "freelance";
+                                    /** @description `verification` opens the KYC screen (`id` is the track: base or delivery), `business` one of your businesses in the vendor portal, `order` one of your print orders, `shop_order` an order to your shop in the vendor portal, `profile` someone's profile (by user id), `payments` Payments in the vendor portal (`id` is the payout), `work` the Work area (`id` is the place on the team), `team` a business's Team in the vendor portal (`id` is the business), `work_order` an order to a shop you work at, in the Work area, `reviews` a business's reviews in the vendor portal (`id` is the business), `work_reviews` the reviews of a shop you work at (`id` is the place on the team), `delivery_job` a delivery in the Ruxstar Delivery app and `delivery_earnings` Earnings in the Ruxstar Delivery app (`id` is the payout), `support` one of your help tickets, `event` an event's page, `event_order` your tickets for an event (`id` is the ticket order), `vendor_event` one of your events in the vendor portal, `coaching_course` a course's page, `coaching_order` your enrolment or demo class, `vendor_course` one of your courses in the vendor portal, `coaching_batch` a batch's classes for its owner or coaches, `turf_ground` a ground's page, `turf_order` your turf booking, `vendor_ground` a ground's board for its owner or team, `stay_property` a PG or hostel's page, `stay_order` your PG or hostel reservation, `vendor_property` a property's bed board for its owner or team, `store` a local shop's page, `store_product` one of its products, `store_order` your order at a local shop, `vendor_store_order` an order at the desk of a local shop you own or work at, `gig` a freelancer's gig, `gig_order` your freelance order, `vendor_gig_order` an order you are doing as a freelancer, `freelance` your Freelancing home (`id` is your freelancer business), `freelance_payments` Payments in Freelancing, sent instead of `payments` when all your businesses are freelancer ones (`id` is the payout); apps that don't know a screen ignore it; `id` says which */
+                                    screen: "post" | "verification" | "business" | "order" | "shop_order" | "profile" | "payments" | "work" | "team" | "work_order" | "reviews" | "work_reviews" | "delivery_job" | "delivery_earnings" | "support" | "event" | "event_order" | "vendor_event" | "coaching_course" | "coaching_order" | "vendor_course" | "coaching_batch" | "turf_ground" | "turf_order" | "vendor_ground" | "stay_property" | "stay_order" | "vendor_property" | "store" | "store_product" | "store_order" | "vendor_store_order" | "gig" | "gig_order" | "vendor_gig_order" | "freelance" | "freelance_payments";
                                     id: string;
                                 };
                                 read: boolean;
@@ -46774,7 +46774,7 @@ export interface paths {
         put?: never;
         /**
          * Add a photo to your portfolio
-         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. Up to 12 photos and links together.
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. Up to GET /v1/gigs/rules `limits.portfolio` photos and links together.
          */
         post: {
             parameters: {
@@ -46997,7 +46997,7 @@ export interface paths {
         put?: never;
         /**
          * Add a link to your portfolio
-         * @description Up to 12 photos and links together.
+         * @description Up to GET /v1/gigs/rules `limits.portfolio` photos and links together.
          */
         post: {
             parameters: {
@@ -47386,7 +47386,7 @@ export interface paths {
                             /** @description Up to Ruxstar's most */
                             revisions: number;
                         }[];
-                        /** @description What to ask the customer when they order */
+                        /** @description What to ask the customer when they order, up to GET /v1/gigs/rules `limits.questions` */
                         questions: {
                             text: string;
                             required: boolean;
@@ -47739,7 +47739,7 @@ export interface paths {
                             /** @description Up to Ruxstar's most */
                             revisions: number;
                         }[];
-                        /** @description What to ask the customer when they order */
+                        /** @description What to ask the customer when they order, up to GET /v1/gigs/rules `limits.questions` */
                         questions?: {
                             text: string;
                             required: boolean;
@@ -47874,7 +47874,7 @@ export interface paths {
         put?: never;
         /**
          * Add a photo to a gig
-         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. Up to 5; the first is the cover.
+         * @description Send the image itself with Content-Type image/jpeg, image/png or image/webp, up to 8 MB. Up to GET /v1/gigs/rules `limits.gigPhotos`; the first is the cover.
          */
         post: {
             parameters: {
@@ -49478,9 +49478,9 @@ export interface paths {
                 content: {
                     "application/json": {
                         message: string;
-                        /** @description For example a shared drive folder */
+                        /** @description For example a shared drive folder. Up to GET /v1/gigs/rules `limits.links` */
                         links: string[];
-                        /** @description Files you uploaded with POST /v1/gigs/files and haven't used yet */
+                        /** @description Files you uploaded with POST /v1/gigs/files and haven't used yet, up to GET /v1/gigs/rules `limits.files` */
                         fileIds: string[];
                     };
                 };
@@ -50078,7 +50078,7 @@ export interface paths {
         put?: never;
         /**
          * Upload a file to attach to an order or a delivery
-         * @description Send the file itself with Content-Type application/octet-stream and its name in `name`. Up to Ruxstar's delivery size (at most 25 MB); the files on one order or one delivery add up to that too. Allowed: pdf, jpg, jpeg, png, gif, webp, heic, psd, ai, eps, mp4, mov, webm, mp3, wav, m4a, zip, txt, csv, doc, docx, xls, xlsx, ppt, pptx, ttf, otf. Then pass its id in `fileIds`. Files not used within a day are deleted; used ones go a set number of days after the order ends.
+         * @description Send the file itself with Content-Type application/octet-stream and its name in `name`. Up to Ruxstar's delivery size (at most 25 MB); the files on one order or one delivery add up to that too. Allowed: the kinds in GET /v1/gigs/rules `limits.extensions`, out of pdf, jpg, jpeg, png, gif, webp, heic, psd, ai, eps, mp4, mov, webm, mp3, wav, m4a, zip, txt, csv, doc, docx, xls, xlsx, ppt, pptx, ttf, otf. Then pass its id in `fileIds`. Files not used within a day are deleted; used ones go a set number of days after the order ends.
          */
         post: {
             parameters: {
@@ -50625,7 +50625,7 @@ export interface paths {
                                 live: boolean;
                                 /** @description New freelancers can start */
                                 signupsOpen: boolean;
-                                /** @description Fixed by Ruxstar; not settings */
+                                /** @description Set by Ruxstar in the console */
                                 limits: {
                                     /** @description Photos and links on a profile, together */
                                     portfolio: number;
@@ -52734,7 +52734,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description Files you uploaded with POST /v1/gigs/files and haven't used yet */
+                        /** @description Files you uploaded with POST /v1/gigs/files and haven't used yet, up to GET /v1/gigs/rules `limits.files` */
                         fileIds?: string[];
                         note?: string | null;
                         coupon?: string;
@@ -53088,9 +53088,10 @@ export interface paths {
                         tier: "basic" | "standard" | "premium";
                         answers: {
                             questionId: string;
+                            /** @description Up to GET /v1/gigs/rules `limits.answer` characters */
                             answer: string;
                         }[];
-                        /** @description Files you uploaded with POST /v1/gigs/files and haven't used yet */
+                        /** @description Files you uploaded with POST /v1/gigs/files and haven't used yet, up to GET /v1/gigs/rules `limits.files` */
                         fileIds?: string[];
                         note?: string | null;
                         coupon?: string;
@@ -73397,6 +73398,20 @@ export interface paths {
                                     maxDays: number;
                                     /** @description The most revisions a package or custom offer can include */
                                     maxRevisions: number;
+                                    /** @description Photos and links on a freelancer's portfolio, together. A portfolio already over it keeps its items but can't add more */
+                                    maxPortfolio: number;
+                                    /** @description Photos on one gig; publishing needs one. A gig already over it keeps its photos but can't add more */
+                                    maxGigPhotos: number;
+                                    /** @description Questions a gig asks the customer. A gig already over it keeps selling, and must fit when it is next edited */
+                                    maxQuestions: number;
+                                    /** @description Files on one order's brief or one delivery */
+                                    maxFiles: number;
+                                    /** @description Links in one delivery */
+                                    maxLinks: number;
+                                    /** @description Characters in one answer to a gig's question. Orders made keep their answers */
+                                    maxAnswer: number;
+                                    /** @description File kinds, by extension, that customers and freelancers can upload. Files uploaded already stay */
+                                    fileTypes: ("pdf" | "jpg" | "jpeg" | "png" | "gif" | "webp" | "heic" | "psd" | "ai" | "eps" | "mp4" | "mov" | "webm" | "mp3" | "wav" | "m4a" | "zip" | "txt" | "csv" | "doc" | "docx" | "xls" | "xlsx" | "ppt" | "pptx" | "ttf" | "otf")[];
                                     /** @description Every category, hidden ones too. When changing, send the full list: a key already used can be renamed or hidden but not removed */
                                     categories: {
                                         /** @description Stays the same for ever; gigs, orders and GST items use it */
@@ -73624,6 +73639,20 @@ export interface paths {
                             maxDays?: number;
                             /** @description The most revisions a package or custom offer can include */
                             maxRevisions?: number;
+                            /** @description Photos and links on a freelancer's portfolio, together. A portfolio already over it keeps its items but can't add more */
+                            maxPortfolio?: number;
+                            /** @description Photos on one gig; publishing needs one. A gig already over it keeps its photos but can't add more */
+                            maxGigPhotos?: number;
+                            /** @description Questions a gig asks the customer. A gig already over it keeps selling, and must fit when it is next edited */
+                            maxQuestions?: number;
+                            /** @description Files on one order's brief or one delivery */
+                            maxFiles?: number;
+                            /** @description Links in one delivery */
+                            maxLinks?: number;
+                            /** @description Characters in one answer to a gig's question. Orders made keep their answers */
+                            maxAnswer?: number;
+                            /** @description File kinds, by extension, that customers and freelancers can upload. Files uploaded already stay */
+                            fileTypes?: ("pdf" | "jpg" | "jpeg" | "png" | "gif" | "webp" | "heic" | "psd" | "ai" | "eps" | "mp4" | "mov" | "webm" | "mp3" | "wav" | "m4a" | "zip" | "txt" | "csv" | "doc" | "docx" | "xls" | "xlsx" | "ppt" | "pptx" | "ttf" | "otf")[];
                             /** @description Every category, hidden ones too. When changing, send the full list: a key already used can be renamed or hidden but not removed */
                             categories?: {
                                 /** @description Stays the same for ever; gigs, orders and GST items use it */
@@ -73799,6 +73828,20 @@ export interface paths {
                                     maxDays: number;
                                     /** @description The most revisions a package or custom offer can include */
                                     maxRevisions: number;
+                                    /** @description Photos and links on a freelancer's portfolio, together. A portfolio already over it keeps its items but can't add more */
+                                    maxPortfolio: number;
+                                    /** @description Photos on one gig; publishing needs one. A gig already over it keeps its photos but can't add more */
+                                    maxGigPhotos: number;
+                                    /** @description Questions a gig asks the customer. A gig already over it keeps selling, and must fit when it is next edited */
+                                    maxQuestions: number;
+                                    /** @description Files on one order's brief or one delivery */
+                                    maxFiles: number;
+                                    /** @description Links in one delivery */
+                                    maxLinks: number;
+                                    /** @description Characters in one answer to a gig's question. Orders made keep their answers */
+                                    maxAnswer: number;
+                                    /** @description File kinds, by extension, that customers and freelancers can upload. Files uploaded already stay */
+                                    fileTypes: ("pdf" | "jpg" | "jpeg" | "png" | "gif" | "webp" | "heic" | "psd" | "ai" | "eps" | "mp4" | "mov" | "webm" | "mp3" | "wav" | "m4a" | "zip" | "txt" | "csv" | "doc" | "docx" | "xls" | "xlsx" | "ppt" | "pptx" | "ttf" | "otf")[];
                                     /** @description Every category, hidden ones too. When changing, send the full list: a key already used can be renamed or hidden but not removed */
                                     categories: {
                                         /** @description Stays the same for ever; gigs, orders and GST items use it */
