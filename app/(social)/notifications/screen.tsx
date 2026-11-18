@@ -48,8 +48,11 @@ const ICONS: Record<Notification["type"], IconName> = {
   "shop.updated": "bag",
 };
 
-function hrefOf(link: Notification["link"]) {
-  switch (link.screen) {
+/** Where a notification opens on the website, or null for screens that only exist in the app. */
+function hrefOf(link: Notification["link"]): string | null {
+  switch (link.screen as string) {
+    case "post":
+      return `/p/${link.id}`;
     case "verification":
       return link.id === "delivery" ? "/verify/delivery" : "/verify";
     case "delivery_job":
@@ -110,7 +113,7 @@ function hrefOf(link: Notification["link"]) {
     case "vendor_store_order":
       return `/store/orders/${link.id}`;
     default:
-      return `/p/${link.id}`;
+      return null;
   }
 }
 
@@ -152,9 +155,10 @@ export function NotificationsScreen() {
         </Empty>
       ) : (
         <ul className={styles.rows}>
-          {items.map((n) => (
-            <li key={n.id}>
-              <Link href={hrefOf(n.link)} className={styles.row}>
+          {items.map((n) => {
+            const href = hrefOf(n.link);
+            const row = (
+              <>
                 <span className={styles.rowIcon}>
                   <Icon name={ICONS[n.type] ?? "bell"} filled={n.type === "post.like"} size={20} />
                 </span>
@@ -166,9 +170,20 @@ export function NotificationsScreen() {
                   {ago(n.createdAt)}
                 </time>
                 {!n.read && <span className={styles.dot} aria-label="Unread" />}
-              </Link>
-            </li>
-          ))}
+              </>
+            );
+            return (
+              <li key={n.id}>
+                {href ? (
+                  <Link href={href} className={styles.row}>
+                    {row}
+                  </Link>
+                ) : (
+                  <div className={styles.row}>{row}</div>
+                )}
+              </li>
+            );
+          })}
           {hasMore && <li ref={sentinel} className={styles.sentinel} aria-hidden />}
           {loadingMore && <SkeletonRows count={1} />}
         </ul>
