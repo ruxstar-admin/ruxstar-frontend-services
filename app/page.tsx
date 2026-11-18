@@ -66,7 +66,13 @@ const BUSINESSES: { kind: SceneKind; icon: IconName; name: string; line: string;
   { kind: "turf", icon: "ball", name: "Sports & turf", line: "Book courts and grounds by the hour, in the slot that suits you.", href: "/discover?category=turf" },
   { kind: "stays", icon: "bed", name: "Stays", line: "Find a PG or hostel, see which beds are free and reserve one.", href: "/discover?category=stays" },
   { kind: "shop", icon: "bag", name: "Local shops", line: "Order from shops near you and get it delivered to your door.", href: "/discover?category=shop" },
-  { kind: "freelance", icon: "briefcase", name: "Freelancers", line: "Hire skilled people near you, booked and paid through Ruxstar." },
+  {
+    kind: "freelance",
+    icon: "briefcase",
+    name: "Freelancers",
+    line: "Hire skilled people near you, booked and paid through Ruxstar.",
+    href: "/discover?category=gigs",
+  },
 ];
 
 const TRUST: { icon: IconName; title: string; text: string }[] = [
