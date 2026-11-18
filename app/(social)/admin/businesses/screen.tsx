@@ -22,7 +22,7 @@ const STATES: { value: State; label: string }[] = [
   { value: "suspended", label: "On hold" },
 ];
 
-const MODULES: Business["module"][] = ["pod", "events", "coaching", "stays"];
+const MODULES: Business["module"][] = ["pod", "events", "coaching", "stays", "turf", "shop", "gigs"];
 
 function Results({ filter }: { filter: BusinessFilter }) {
   const onSignedOut = useOnSignedOut();
