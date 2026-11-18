@@ -9,7 +9,7 @@ export const revalidate = 3600;
 const PER_KIND = 200;
 const PAGE_SIZE = 50;
 
-const STATIC_PAGES = ["/", "/terms", "/privacy", "/refunds", "/shipping", "/contact", "/delete-account"];
+const STATIC_PAGES = ["/", "/discover", "/terms", "/privacy", "/refunds", "/shipping", "/contact", "/delete-account"];
 
 /** Each signed-out list on the API, and where its items open on the website. */
 const LISTINGS = [

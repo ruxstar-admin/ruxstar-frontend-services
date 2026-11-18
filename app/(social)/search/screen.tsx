@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Avatar } from "@/components/profile/Avatar";
-import { Icon, Tag } from "@/components/ui";
+import { ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
-import { useMe, useOnSignedOut } from "@/components/social/session";
-import type { PublicProfile } from "@/lib/api/account";
+import { useMe } from "@/components/social/session";
+import { isSignedOut, type PublicProfile } from "@/lib/api/account";
 import { findPeople } from "@/lib/api/social";
 import { SkeletonRows } from "../notifications/screen";
 import styles from "@/components/social/social.module.css";
@@ -19,6 +19,7 @@ interface Outcome {
   term: string;
   people: PublicProfile[];
   failed: boolean;
+  signedOut?: boolean;
 }
 
 /** Someone opened from Search, kept in this browser only. */
@@ -72,10 +73,10 @@ const subtitleOf = (p: { username: string; city: string | null }) => [`@${p.user
 
 /**
  * People by name or @username; shops are searched in Discover. Before typing, the people you opened from here
- * lately (this browser only), then the newest members. Stale answers are ignored.
+ * lately (this browser only), then the newest members. Stale answers are ignored. Finding people needs an account; businesses
+ * can be browsed signed out in Discover.
  */
 export function SearchScreen() {
-  const onSignedOut = useOnSignedOut();
   const me = useMe();
   const recent = useRecentPeople(me?.id);
   const [query, setQuery] = useState("");
@@ -89,16 +90,31 @@ export function SearchScreen() {
       () =>
         findPeople(term || undefined)
           .then((people) => live && setOutcome({ term, people, failed: false }))
-          .catch((err) => live && !onSignedOut(err) && setOutcome({ term, people: [], failed: true })),
+          .catch((err) => live && setOutcome({ term, people: [], failed: true, signedOut: isSignedOut(err) })),
       term ? DEBOUNCE_MS : 0,
     );
     return () => {
       live = false;
       clearTimeout(timer);
     };
-  }, [term, onSignedOut]);
+  }, [term]);
 
   const current = outcome?.term === term ? outcome : null;
+
+  if (me === null || outcome?.signedOut) {
+    return (
+      <div className={styles.column}>
+        <h1 className="sr-only">Search</h1>
+        <Empty title="Sign in to find people">
+          <p>Looking for a business, an event or a place to play? Those are open to everyone in Discover.</p>
+          <ButtonLink href="/signin?next=%2Fsearch">Sign in</ButtonLink>
+          <ButtonLink href="/discover" variant="secondary">
+            Browse businesses
+          </ButtonLink>
+        </Empty>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.column}>

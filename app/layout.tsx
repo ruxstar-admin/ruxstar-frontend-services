@@ -7,9 +7,9 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans",
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ruxstar.com"),
-  title: "Ruxstar · Live on 30 November",
-  description: "Print, events, coaching, and stays from the people around you. Ruxstar goes live on 30 November 2026.",
-  openGraph: { title: "Ruxstar · Live on 30 November", siteName: "Ruxstar", type: "website" },
+  title: "Ruxstar",
+  description: "Discover, book and pay local businesses: print, events, coaching, sports grounds, stays and shops near you.",
+  openGraph: { title: "Ruxstar", siteName: "Ruxstar", type: "website" },
 };
 
 export const viewport: Viewport = {

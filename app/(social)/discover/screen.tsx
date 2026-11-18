@@ -3,14 +3,23 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Button, Icon, type IconName } from "@/components/ui";
+import { Button, ButtonLink, Icon, type IconName } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
-import { useOnSignedOut } from "@/components/social/session";
+import { useMe, useOnSignedOut } from "@/components/social/session";
 import { useNearEnd, usePages } from "@/components/social/use-pages";
 import { FilterRow, FilterSelect } from "@/components/shop/FilterSelect";
 import { ShopCard, ShopCardSkeleton } from "@/components/shop/ShopCard";
 import { formError } from "@/lib/api/account";
-import { discoverCatalog, MODULE_LABEL, shops, type BusinessModule, type Category, type PodProduct, type ShopFilters } from "@/lib/api/shops";
+import {
+  discoverCatalog,
+  GUEST_MODULES,
+  MODULE_LABEL,
+  shops,
+  type BusinessModule,
+  type Category,
+  type PodProduct,
+  type ShopFilters,
+} from "@/lib/api/shops";
 import social from "@/components/social/social.module.css";
 import styles from "@/components/shop/shop.module.css";
 
@@ -149,9 +158,14 @@ const SEARCH_HINT: Partial<Record<BusinessModule, { placeholder: string; label: 
   shop: { placeholder: "Shop name", label: "Search shops" },
 };
 
-/** Businesses customers can order from: every kind at once, until they pick a type and then what it offers. Same as the app's Discover tab. */
+/**
+ * Businesses customers can order from: every kind at once, until they pick a type and then what it offers. Same as the app's
+ * Discover tab. Signed out, everything the API lists without an account can be browsed; print shops ask to sign in.
+ */
 export function DiscoverScreen({ initialCategory = null }: { initialCategory?: BusinessModule | null }) {
   const onSignedOut = useOnSignedOut();
+  const me = useMe();
+  const [guest, setGuest] = useState(false);
   const [text, setText] = useState("");
   const [q, setQ] = useState("");
   const [category, setCategory] = useState<BusinessModule | null>(initialCategory);
@@ -173,6 +187,7 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
         if (!live) return;
         setCategories(c.categories);
         setProducts(c.podProducts);
+        setGuest(c.guest);
         setCatalogError(null);
       },
       (err) => {
@@ -186,7 +201,9 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
 
   const known = categories ?? [];
   const isLive = (module: BusinessModule) => known.some((c) => c.module === module && c.live);
-  const browsable = known.filter((c) => c.live && OPEN_ON_WEB.includes(c.module)).map((c) => c.module);
+  const browsable = known
+    .filter((c) => c.live && OPEN_ON_WEB.includes(c.module) && (!guest || GUEST_MODULES.includes(c.module)))
+    .map((c) => c.module);
   const types = categories ? known.map((c) => c.module) : category ? [category] : [];
   const picked = known.find((c) => c.module === category);
   const comingSoon = picked ? !picked.live || !OPEN_ON_WEB.includes(picked.module) : false;
@@ -203,15 +220,17 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
   return (
     <div className={styles.page}>
       <h1 className="sr-only">Discover</h1>
-      <nav className={styles.shortcuts} aria-label="Your bookings and orders">
-        {isLive("events") && <Shortcut href="/tickets" icon="ticket" label="Tickets" spoken="Your tickets" />}
-        {isLive("coaching") && <Shortcut href="/classes" icon="book" label="Classes" spoken="Your classes" />}
-        {isLive("turf") && <Shortcut href="/bookings" icon="ball" label="Grounds" spoken="Your ground bookings" />}
-        {isLive("stays") && <Shortcut href="/reservations" icon="home" label="Stays" spoken="Your stays" />}
-        {shown === "shop" && <Shortcut href="/cart" icon="bag" label="Cart" spoken="Your cart" />}
-        <Shortcut href={shown === "shop" ? "/orders?tab=shops" : "/orders"} icon="receipt" label="Orders" spoken="Your orders" />
-        <Shortcut href="/payments" icon="wallet" label="Payments" spoken="Your payments" />
-      </nav>
+      {!guest && me !== null && (
+        <nav className={styles.shortcuts} aria-label="Your bookings and orders">
+          {isLive("events") && <Shortcut href="/tickets" icon="ticket" label="Tickets" spoken="Your tickets" />}
+          {isLive("coaching") && <Shortcut href="/classes" icon="book" label="Classes" spoken="Your classes" />}
+          {isLive("turf") && <Shortcut href="/bookings" icon="ball" label="Grounds" spoken="Your ground bookings" />}
+          {isLive("stays") && <Shortcut href="/reservations" icon="home" label="Stays" spoken="Your stays" />}
+          {shown === "shop" && <Shortcut href="/cart" icon="bag" label="Cart" spoken="Your cart" />}
+          <Shortcut href={shown === "shop" ? "/orders?tab=shops" : "/orders"} icon="receipt" label="Orders" spoken="Your orders" />
+          <Shortcut href="/payments" icon="wallet" label="Payments" spoken="Your payments" />
+        </nav>
+      )}
       <label className={social.searchBox}>
         <Icon name="search" size={20} />
         <input
@@ -267,6 +286,11 @@ export function DiscoverScreen({ initialCategory = null }: { initialCategory?: B
         <PropertyResults q={q} />
       ) : shown === "shop" ? (
         <StoreResults q={q} />
+      ) : shown === "pod" && guest ? (
+        <Empty title="Sign in to see print shops">
+          <p>Events, courses, grounds, stays and local shops are open to browse without an account.</p>
+          <ButtonLink href={`/signin?next=${encodeURIComponent("/discover?category=pod")}`}>Sign in</ButtonLink>
+        </Empty>
       ) : shown === "pod" ? (
         <Results key={`${q}|${product}`} filters={filters} />
       ) : categories ? (

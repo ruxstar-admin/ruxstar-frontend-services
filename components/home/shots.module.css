@@ -1,0 +1,281 @@
+/* Pieces of the app at true size. Inside them the app's own conventions hold: 1px control borders, small radii. */
+
+.ui {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  width: 100%;
+  max-width: 340px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 14px/20px var(--font);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font: 600 16px/22px var(--font);
+  letter-spacing: -0.01em;
+}
+
+.meta {
+  display: block;
+  color: var(--ink-2);
+  font: 400 13px/18px var(--font);
+}
+
+.strong {
+  font-weight: 600;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  justify-self: start;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--raised);
+  font: 600 13px/18px var(--font);
+  white-space: nowrap;
+}
+
+.ok {
+  background: color-mix(in srgb, var(--success) 16%, transparent);
+  color: #7ee2a0;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.file svg {
+  flex-shrink: 0;
+  color: var(--logo-blue);
+}
+
+.fileText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.lines {
+  display: grid;
+  gap: 8px;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.total {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-weight: 700;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: var(--radius-button);
+  background: var(--action);
+  color: var(--on-action);
+  font: 600 14px/1 var(--font);
+}
+
+.buttonOff {
+  background: var(--raised);
+  color: var(--ink);
+}
+
+.tear {
+  border-top: 1px dashed var(--line);
+}
+
+.qrWrap {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.qr {
+  display: block;
+  border-radius: 10px;
+}
+
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font: 600 13px/1 var(--font);
+}
+
+.dayOn {
+  background: var(--logo-yellow);
+  color: var(--on-action);
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.slot {
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: 600 13px/1 var(--font);
+}
+
+.taken {
+  border-color: transparent;
+  background: var(--surface);
+  color: var(--ink-3);
+  text-decoration: line-through;
+}
+
+.picked {
+  border-color: var(--logo-blue);
+  background: var(--logo-blue);
+  color: var(--on-action);
+}
+
+.beds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.bed {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.bed svg {
+  color: var(--ink-2);
+}
+
+.bedPicked {
+  border-color: var(--logo-yellow);
+}
+
+.bedPicked svg {
+  color: var(--logo-yellow);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.itemName {
+  min-width: 0;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+}
+
+.stepper svg {
+  color: var(--ink-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--bg);
+  color: var(--ink);
+  font: 500 14px/20px var(--font);
+}
+
+.chip svg {
+  flex-shrink: 0;
+}
+
+.chip-field {
+  min-width: min(100%, 280px);
+  color: var(--ink);
+}
+
+.chip-field svg {
+  color: var(--ink-2);
+}
+
+.chip-ok svg {
+  color: var(--success);
+}
+
+.chip-pay {
+  border-color: transparent;
+  background: var(--action);
+  color: var(--on-action);
+  font-weight: 600;
+}
+
+.listing {
+  max-width: 380px;
+  gap: 18px;
+}
+
+.listingTop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.appIcon {
+  display: block;
+  flex-shrink: 0;
+  border-radius: 16px;
+}

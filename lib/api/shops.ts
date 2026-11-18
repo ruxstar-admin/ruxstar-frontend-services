@@ -1,4 +1,4 @@
-import { signedIn } from "./account";
+import { isSignedOut, signedIn } from "./account";
 import { api, unwrap } from "./client";
 import type { paths } from "./schema";
 import type { Page } from "./social";
@@ -33,14 +33,35 @@ export const MODULE_LABEL: Record<BusinessModule, string> = {
   shop: "Local shops",
 };
 
-let catalog: Promise<Pick<Catalog, "categories" | "podProducts">> | null = null;
+type DiscoverCatalog = Pick<Catalog, "categories" | "podProducts"> & { guest: boolean };
+
+let catalog: Promise<DiscoverCatalog> | null = null;
+
+/** Modules whose lists the API serves signed out. Print shops need an account to see. */
+export const GUEST_MODULES: readonly BusinessModule[] = ["events", "coaching", "turf", "stays", "shop"];
+
+/** The catalog needs an account, so signed-out visitors get every module as open; lists with nothing in them stay hidden. */
+const guestCatalog = (): DiscoverCatalog => ({
+  guest: true,
+  podProducts: [],
+  categories: (["pod", ...GUEST_MODULES] as const).map((module) => ({
+    module,
+    label: MODULE_LABEL[module],
+    description: "",
+    live: true,
+    signupsOpen: false,
+    gstinRequired: false,
+    types: [],
+  })),
+});
 
 /** The categories and what print shops can make, for the Discover filters. Fetched once per visit. */
 export function discoverCatalog() {
   catalog ??= signedIn(() => unwrap(api.GET("/v1/vendor/catalog")))
-    .then((r) => ({ categories: r.data.categories, podProducts: r.data.podProducts }))
+    .then((r) => ({ categories: r.data.categories, podProducts: r.data.podProducts, guest: false }))
     .catch((err) => {
       catalog = null;
+      if (isSignedOut(err)) return guestCatalog();
       throw err;
     });
   return catalog;

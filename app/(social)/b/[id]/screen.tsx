@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { Button, ButtonLink, Icon, Tag } from "@/components/ui";
 import { Empty } from "@/components/social/PostList";
 import { useBack } from "@/components/social/Shell";
-import { useOnSignedOut } from "@/components/social/session";
+import { useSignInFirst } from "@/components/social/session";
+import { isSignedOut } from "@/lib/api/account";
 import { ReviewCard } from "@/components/reviews/Reviews";
 import { ShopCover } from "@/components/shop/ShopCard";
 import { ApiError } from "@/lib/api/client";
@@ -177,9 +178,9 @@ function ShopView({ shop }: { shop: Shop }) {
   );
 }
 
-/** A print shop's public page: photos, what it prints and for how much, and the Order button. Same as the app. */
+/** A print shop's page: photos, what it prints and for how much, and the Order button. Same as the app. The API shows print shops to signed-in people only. */
 export function ShopScreen({ id }: { id: string }) {
-  const onSignedOut = useOnSignedOut();
+  const signIn = useSignInFirst();
   const [shop, setShop] = useState<Shop | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [attempt, setAttempt] = useState(0);
@@ -188,14 +189,22 @@ export function ShopScreen({ id }: { id: string }) {
     let live = true;
     getShop(id).then(
       (s) => live && setShop(s),
-      (err) => live && !onSignedOut(err) && setError(err),
+      (err) => live && setError(err),
     );
     return () => {
       live = false;
     };
-  }, [id, attempt, onSignedOut]);
+  }, [id, attempt]);
 
   if (shop) return <ShopView shop={shop} />;
+  if (isSignedOut(error)) {
+    return (
+      <Empty title="Sign in to see this print shop">
+        <p>You&apos;ll come straight back here after signing in.</p>
+        <Button onClick={signIn}>Sign in</Button>
+      </Empty>
+    );
+  }
   if (error) {
     const gone = error instanceof ApiError && error.status === 404;
     return (

@@ -140,7 +140,7 @@ function Nav() {
             <ButtonLink href={`/signin?next=${encodeURIComponent(pathname)}`} variant="ghost">
               Sign in
             </ButtonLink>
-            <ButtonLink href="/signup">Join Ruxstar</ButtonLink>
+            <ButtonLink href={`/signup?next=${encodeURIComponent(pathname)}`}>Join Ruxstar</ButtonLink>
           </div>
         ) : (
           <div className={styles.end}>

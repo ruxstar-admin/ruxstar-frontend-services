@@ -18,9 +18,12 @@ export function SignInForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
   const [reset, setReset] = useState(false);
+  const [signUpHref, setSignUpHref] = useState("/signup");
 
   // Read after mounting so the server render and the first client render match.
   useEffect(() => {
+    const next = nextPath("");
+    if (next) setSignUpHref(`/signup?next=${encodeURIComponent(next)}`);
     const number = sessionStorage.getItem(RESET_DONE_KEY);
     if (!number) return;
     sessionStorage.removeItem(RESET_DONE_KEY);
@@ -55,7 +58,7 @@ export function SignInForm() {
 
   const foot = (
     <p className={styles.foot}>
-      New to Ruxstar? <Link href="/signup">Create an account</Link>
+      New to Ruxstar? <Link href={signUpHref}>Create an account</Link>
     </p>
   );
 
